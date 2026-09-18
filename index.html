@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Terrastate, a free turn-based strategy game in your browser</title>
+<meta name="description" content="Terrastate: rule a nation, forge alliances, take the Nexus. A free single-player strategy game that runs in your browser, no account, no download. Also in ancient Rome as Romaterra.">
+<meta property="og:title" content="Terrastate">
+<meta property="og:description" content="Rule a nation. Forge alliances. Win the season. Free, in your browser.">
+<meta property="og:image" content="img/terrastate-map.jpg">
+<meta name="theme-color" content="#0d1420">
+<link rel="icon" href="icons/terrastate-64.png">
+<link rel="apple-touch-icon" href="icons/terrastate-180.png">
+<link rel="manifest" href="terrastate.webmanifest">
+<style>
+  :root{--bg:#0d1420;--bg2:#131c2c;--panel:#182335;--border:#243147;--text:#e7eef8;--muted:#93a3bd;--accent:#4f8cff;--accent2:#37d9a9;--gold:#e3b341;--rome:#d9a441}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--text);font:16px/1.55 system-ui,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+  a{color:var(--accent)}
+  .wrap{max-width:1040px;margin:0 auto;padding:0 20px}
+  header.hero{padding:64px 0 40px;text-align:center;background:radial-gradient(ellipse at top,rgba(79,140,255,.16),transparent 60%)}
+  .brand{display:inline-flex;align-items:center;gap:14px;margin-bottom:10px}
+  .brand img{width:56px;height:56px;border-radius:14px}
+  h1{font-size:clamp(34px,7vw,60px);letter-spacing:4px;margin:0;font-weight:800}
+  .tag{color:var(--accent2);font-size:clamp(17px,2.6vw,22px);font-weight:600;margin:8px 0 18px}
+  .lead{color:var(--muted);max-width:640px;margin:0 auto 26px}
+  .cta{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+  .btn{display:inline-block;padding:15px 26px;border-radius:12px;font-weight:700;font-size:17px;text-decoration:none;border:1px solid transparent}
+  .btn.main{background:linear-gradient(90deg,#4f8cff,#37d9a9);color:#04121c}
+  .btn.rome{background:linear-gradient(90deg,#d9a441,#c98be0);color:#1a1410}
+  .btn.ghost{border-color:var(--border);color:var(--text);background:var(--bg2)}
+  .note{color:var(--muted);font-size:14px;margin-top:14px}
+  section{padding:34px 0;border-top:1px solid var(--border)}
+  h2{font-size:24px;margin:0 0 14px}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px}
+  .card{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:16px}
+  .card b{display:block;margin-bottom:4px}
+  .card p{margin:0;color:var(--muted);font-size:15px}
+  .shots{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px}
+  .shots img{width:100%;height:auto;border-radius:12px;border:1px solid var(--border);display:block}
+  .shots figcaption{color:var(--muted);font-size:13px;margin-top:6px}
+  .steps{counter-reset:s;display:grid;gap:10px}
+  .steps div{position:relative;padding-left:44px;color:var(--muted)}
+  .steps div::before{counter-increment:s;content:counter(s);position:absolute;left:0;top:0;width:30px;height:30px;border-radius:50%;background:var(--accent);color:#04121c;font-weight:800;display:grid;place-items:center}
+  .mono{font-family:ui-monospace,"IBM Plex Mono",Menlo,Consolas,monospace;font-size:12px;letter-spacing:2px;color:var(--accent2)}
+  .soon{border-left:3px solid var(--gold);background:var(--bg2);padding:12px 16px;border-radius:0 12px 12px 0}
+  footer{padding:30px 0 50px;color:var(--muted);font-size:13px;text-align:center}
+  @media(max-width:600px){header.hero{padding:44px 0 30px}.btn{width:100%;text-align:center}}
+</style>
+</head>
+<body>
+<header class="hero"><div class="wrap">
+  <div class="brand"><img src="icons/terrastate-192.png" alt=""><h1>TERRASTATE</h1></div>
+  <div class="tag">Rule a nation. Forge alliances. Win the season.</div>
+  <p class="lead">A turn-based geopolitical strategy game against hundreds of AI nations. Free, in your browser, no account and no download. Take it one turn at a time or let the world run at 20x.</p>
+  <div class="cta">
+    <a class="btn main" href="play.html">▶ Play Terrastate</a>
+    <a class="btn rome" href="romaterra.html">🏛 Play Romaterra (ancient Rome)</a>
+  </div>
+  <div class="note">Works on desktop, tablet and phone. Your game saves in your browser; you can install it as an app from the browser menu ("Add to Home Screen" / "Install") and play offline.</div>
+</div></header>
+
+<section><div class="wrap">
+  <div class="mono">WHAT IT IS</div>
+  <h2>A world that answers back</h2>
+  <div class="grid">
+    <div class="card"><b>🌍 One shared world</b><p>Hundreds of AI nations with their own temperament: they trade, ally, betray and go to war, with you and with each other.</p></div>
+    <div class="card"><b>⚔ Real tactical combat</b><p>Three-phase battles with unit counters, doctrines and logistics. Planning wins, not just numbers.</p></div>
+    <div class="card"><b>🤝 Alliances that matter</b><p>Found a bloc, sign pacts, run joint operations and call for defence. Alliance victories are shared.</p></div>
+    <div class="card"><b>🏛 One way to win</b><p>Capture the Nexus, build the Earth Command Center and hold it. If nobody manages, the top score when the clock runs out takes the season.</p></div>
+    <div class="card"><b>🎯 Campaign</b><p>Six scenarios with one clear goal each, from your first three regions to winning a season on Warlord difficulty.</p></div>
+    <div class="card"><b>⏸ Your tempo</b><p>Turn-based by default: the world waits for you. Or auto-play at 1x, 5x or 20x. Quick, Standard or Epic seasons. Recruit, Veteran or Warlord.</p></div>
+  </div>
+</div></section>
+
+<section><div class="wrap">
+  <div class="mono">IN GAME</div>
+  <h2>Screens</h2>
+  <div class="shots">
+    <figure style="margin:0"><img src="img/terrastate-map.jpg" alt="Tactical world map" loading="lazy"><figcaption>The tactical map: theaters, alliances, threats and the Nexus.</figcaption></figure>
+    <figure style="margin:0"><img src="img/terrastate-fleets.jpg" alt="War Room" loading="lazy"><figcaption>The War Room: what threatens you and how to hold.</figcaption></figure>
+    <figure style="margin:0"><img src="img/terrastate-home.jpg" alt="Home dashboard" loading="lazy"><figcaption>Home: what needs you this turn.</figcaption></figure>
+    <figure style="margin:0"><img src="img/romaterra-map.jpg" alt="Romaterra map" loading="lazy"><figcaption>Romaterra: the same game in the age of Rome, legions, denarii and the race for Roma.</figcaption></figure>
+  </div>
+</div></section>
+
+<section><div class="wrap">
+  <div class="mono">GETTING STARTED</div>
+  <h2>Your first game in three minutes</h2>
+  <div class="steps">
+    <div>Press <b>Play</b>, name your nation and pick a homeland. Choose <b>Recruit</b> and a <b>Quick</b> game the first time, or start the <b>Campaign</b> and let the scenarios teach you.</div>
+    <div>Feed your people and keep the lights on: an Agro Complex and a Power Plant first. Then a Base for stability and a couple of empty regions.</div>
+    <div>Press <b>END TURN</b> (or Space) to advance. When you are comfortable, switch on auto-play and watch the world move.</div>
+  </div>
+</div></section>
+
+<section><div class="wrap">
+  <div class="mono">LIVE WORLD</div>
+  <h2>Multiplayer</h2>
+  <div class="soon">The same game, but the other nations are real people: real alliances, real betrayals, one shared season that runs around the clock. The live world is planned for <b>playterrastate.nl</b>. It opens when enough commanders have found their way into the single-player. Until then: practise here, your name and doctrine come with you.</div>
+</div></section>
+
+<footer><div class="wrap">
+  Free, non-commercial hobby project: no payments, no ads, no tracking. Single-player runs entirely in your browser; nothing is sent anywhere.<br>
+  © 2026 Wim Kamphorst · Terrastate™ and Romaterra™ · Privacy, terms and credits are in the game menu (📖).
+</div></footer>
+<script>if('serviceWorker' in navigator)addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));</script>
+</body>
+</html>
