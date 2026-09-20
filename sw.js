@@ -1,6 +1,6 @@
 // Terrastate / Romaterra service worker: makes the site installable and playable offline.
 // Bump VERSION whenever play.html or romaterra.html changes, so players get the new build.
-const VERSION='terrastate-v3.37';
+const VERSION='terrastate-v3.39';
 const FILES=['./','index.html','play.html','romaterra.html','terrastate.webmanifest','romaterra.webmanifest',
   'icons/terrastate-64.png','icons/terrastate-180.png','icons/terrastate-192.png','icons/terrastate-512.png',
   'icons/romaterra-64.png','icons/romaterra-180.png','icons/romaterra-192.png','icons/romaterra-512.png',

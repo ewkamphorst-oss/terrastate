@@ -3051,7 +3051,10 @@ function cmdCommandMsg(c,text){const cl=clanOf(c);if(!cl)return err('Not in an a
   if(cl.commandMsg)dnotify(cl,'command','📢 ALLIANCE ORDER\n'+cl.commandMsg);return ok();}
 // ---- Discord webhook integration: alliances forward ONLY important events to their Discord channel. ----
 const DISCORD_KINDS=['defence','ops','territory','command','treasury']; // categories a clan can toggle
-function dnotify(cl,kind,text){if(!cl||!cl.discord||!cl.discord.url)return;const opts=cl.discord.opts||{};if(opts[kind]===false)return;
+function dnotify(cl,kind,text){if(!cl)return;
+  const dOn=cl.discord&&cl.discord.url&&((cl.discord.opts||{})[kind]!==false);
+  const tOn=cl.telegram&&cl.telegram.token&&cl.telegram.chatId&&((cl.telegram.opts||{})[kind]!==false);
+  if(!dOn&&!tOn)return; // nobody wants this category; the server re-checks each channel's own opts
   (G._dq=G._dq||[]).push({clan:cl.id,kind,text,tick:G.tick});if(G._dq.length>200)G._dq.shift();}
 // Leader sets/clears the alliance webhook. URL must be a real Discord webhook (host-validated, anti-SSRF).
 function cmdSetDiscord(c,url,opts,roles){const cl=clanOf(c);if(!cl)return err('Not in an alliance');if(cl.roles[c.id]!=='leader')return err('Only the alliance leader can set the Discord webhook');
@@ -3061,6 +3064,17 @@ function cmdSetDiscord(c,url,opts,roles){const cl=clanOf(c);if(!cl)return err('N
   const o={};DISCORD_KINDS.forEach(k=>o[k]=!opts||opts[k]!==false);
   const rr={};if(roles)DISCORD_KINDS.forEach(k=>{const id=String(roles[k]||'').trim();if(/^\d{5,25}$/.test(id))rr[k]=id;});
   cl.discord={url,opts:o,roles:rr};
+  return ok({set:true});}
+// ---- Telegram integration: same idea as Discord, via a free Telegram bot (leader sets a bot token + chat id). ----
+const TELEGRAM_KINDS=DISCORD_KINDS; // same event categories a clan can toggle
+function cmdSetTelegram(c,token,chatId,opts){const cl=clanOf(c);if(!cl)return err('Not in an alliance');if(cl.roles[c.id]!=='leader')return err('Only the alliance leader can set the Telegram bot');
+  token=String(token||'').trim();chatId=String(chatId||'').trim();const existing=cl.telegram||null;
+  if(!token&&!chatId){cl.telegram=null;return ok({cleared:true});}
+  if(!token&&existing&&existing.token)token=existing.token; // the server never sends the token back, so a blank field means keep the stored one
+  if(!/^\d{5,}:[A-Za-z0-9_-]{30,}$/.test(token))return err('Enter the bot token from @BotFather (looks like 123456789:AAE\u2026).');
+  if(!/^-?\d{5,20}$/.test(chatId)&&!/^@[A-Za-z0-9_]{5,}$/.test(chatId))return err('Enter a valid Telegram chat id (a number like -1001234567890, or @channelname).');
+  const o={};TELEGRAM_KINDS.forEach(k=>o[k]=!opts||opts[k]!==false);
+  cl.telegram={token,chatId,opts:o};
   return ok({set:true});}
 function cmdClanPost(c,text,ch){const cl=clanOf(c);if(!cl)return err('Not in a clan');if(!String(text).trim())return err('Write a message');const gt=chatGate(c,'clan',text);if(!gt.ok)return err(gt.err);if(!rateOk(c,'clan',5,2))return err('Slow down, too many alliance messages.');
   let channel=CHANS.some(x=>x.k===ch)?ch:'general';
@@ -8197,6 +8211,17 @@ VIEWS.clans=v=>{const c=you();const cl=clanOf(c);
     const collectRoles=()=>({defence:(v.querySelector('#drole_defence')||{}).value||'',ops:(v.querySelector('#drole_ops')||{}).value||''});
     const ds=v.querySelector('#dcsave');if(ds)ds.onclick=()=>{const r=cmdSetDiscord(c,$('dcurl').value,collectOpts(),collectRoles());if(r.ok){toast(r.data&&r.data.cleared?'Discord disconnected':'✅ Discord webhook saved');go('clans');save();}else toast(r.error,'bad');};
     const dcl=v.querySelector('#dcclear');if(dcl)dcl.onclick=()=>{const r=cmdSetDiscord(c,'',null);if(r.ok){toast('Discord disconnected');go('clans');save();}else toast(r.error,'bad');};}
+  // Telegram integration, same alliance events pushed to a free Telegram group (leader only).
+  if(isLead){const tg=cl.telegram||{};const topt=tg.opts||{};const ton=!!(tg.on||(tg.token&&tg.chatId));
+    const tchk=(k,l)=>`<label class="row small" style="gap:6px;align-items:center"><input type="checkbox" class="topt" data-k="${k}" ${topt[k]!==false?'checked':''} style="width:auto"> ${l}</label>`;
+    boxManage.appendChild(h(`<div class="card mb" style="border-left:3px solid #229ED9"><h3>\u2708 Telegram integration <span class="muted small" style="text-transform:none;letter-spacing:0">push alliance events to a Telegram group</span></h3>
+      <div class="small muted" style="text-transform:none;letter-spacing:0">Free: in Telegram, message <b>@BotFather</b>, send <b>/newbot</b> and copy the <b>bot token</b>. Add the bot to your group, then get the group <b>chat id</b> (add <b>@getidsbot</b> or <b>@RawDataBot</b> once). Only war-critical events are sent, never build spam. ${ton?'<span style="color:var(--good)">\u25cf Connected</span>':'<span style="color:var(--muted)">\u25cb Not connected</span>'}</div>
+      <div class="row mt wrap" style="gap:6px"><input id="tgtoken" placeholder="Bot token (123456789:AAE\u2026)" value="${esc(tg.token||'')}" style="flex:1;min-width:180px"><input id="tgchat" placeholder="Chat id (-1001234567890)" value="${esc(tg.chatId||'')}" style="width:170px"><button class="btn sm" id="tgsave">Save</button>${ton?'<button class="btn ghost sm" id="tgclear">Disconnect</button>':''}</div>
+      <div class="row mt wrap" style="gap:12px">${tchk('defence','\ud83d\udea8 Defence calls')}${tchk('ops','\u2694 Joint ops')}${tchk('territory','\ud83c\udff4 Territory')}${tchk('command','\ud83d\udce2 Command')}${tchk('treasury','\ud83c\udfdb Treasury')}</div>
+      <div class="muted small mt" style="text-transform:none;letter-spacing:0">The token is stored server-side and never shown to other players. Events are sent by the game server, in single-player this is a preview.</div></div>`));
+    const collectTOpts=()=>{const o={};v.querySelectorAll('.topt').forEach(x=>o[x.dataset.k]=x.checked);return o;};
+    const tss=v.querySelector('#tgsave');if(tss)tss.onclick=()=>{const r=cmdSetTelegram(c,$('tgtoken').value,$('tgchat').value,collectTOpts());if(r.ok){toast(r.data&&r.data.cleared?'Telegram disconnected':'\u2705 Telegram bot saved');go('clans');save();}else toast(r.error,'bad');};
+    const tclb=v.querySelector('#tgclear');if(tclb)tclb.onclick=()=>{const r=cmdSetTelegram(c,'','',null);if(r.ok){toast('Telegram disconnected');go('clans');save();}else toast(r.error,'bad');};}
   const mrows=mem.slice().sort((a,b)=>scores(b).overall-scores(a).overall).map(m=>{const role=cl.roles[m.id]||'member';const me=m.id===c.id;const pj=projection(m);const short=pj.net.food<0||pj.net.energy<0;const rd=READY[m.ready]||READY.standby;const inc=incomingTo(m.id).filter(x=>x.threat>=0.02).length;
     let act='';if(isLead&&!me)act=`<select class="btn ghost sm rolesel" data-roleid="${m.id}" style="width:auto;padding:3px 5px" title="Set alliance role">${['member','officer','diplomat','recruiter'].map(rk=>`<option value="${rk}" ${role===rk?'selected':''}>${ROLE[rk]}</option>`).join('')}</select> ${m.isAI?'':`<button class="btn ghost sm" data-lead="${m.id}">Lead</button> `}<button class="btn ghost sm" data-kick="${m.id}">Kick</button>`;
     else if(isOff&&!me&&role==='member')act=`<button class="btn ghost sm" data-kick="${m.id}">Kick</button>`;
@@ -8916,6 +8941,7 @@ function showSettings(){const bg=h(`<div class="modal-bg"><div class="modal"><di
      <div class="row wrap mt" style="gap:6px" id="setLens">${Object.entries(SOLO_LENGTHS).map(([k,v])=>`<button class="btn sm ${G.solo.len===k?'':'ghost'}" data-slen="${k}" title="${esc(v.d)}">${v.n} · ${v.ticks}</button>`).join('')}</div></div>`:''}
    ${window.__MP__?'':`<div class="row wrap mt" style="gap:6px;border-top:1px solid var(--border);padding-top:10px"><div style="flex:1;min-width:180px"><b>💾 Back-up your game</b><div class="muted small">Your game lives in this browser. Download a back-up so clearing your browser or switching computers can't lose your season.</div></div><button class="btn sec sm" id="setExport">⬇ Download back-up</button><button class="btn ghost sm" id="setImport">⬆ Load back-up</button><input type="file" id="setImportFile" accept="application/json,.json" style="display:none"></div>`}
    <div class="row wrap mt" style="gap:6px;border-top:1px solid var(--border);padding-top:10px"><button class="btn sec sm" onclick="reportProblem('bug','')">🛟 Report a problem</button><span class="muted small" style="align-self:center">${window.__MP__?'Private ticket to the game admin, bug, cheat or account.':'Copies a diagnostic block to paste in Discord / e-mail.'}</span></div>
+   ${isSoloGame()?`<div class="row wrap mt" style="gap:6px;border-top:1px solid var(--border);padding-top:10px"><div style="flex:1;min-width:180px"><b>💬 Community</b><div class="muted small">Questions, tips, screenshots, bug reports and news. Tell us there if you want online multiplayer.</div></div><a class="btn sec sm" href="https://discord.gg/PZGPKuzPCb" target="_blank" rel="noopener">💬 Join the Discord</a></div>`:''}
    <div class="muted small mt">Settings are saved on this device.</div></div></div>`);
   document.body.appendChild(bg);
   const close=()=>bg.remove();bg.querySelector('[data-x]').onclick=close;bg.onclick=e=>{if(e.target===bg)close();};
