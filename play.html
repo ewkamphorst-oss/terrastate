@@ -889,7 +889,7 @@ const SCENARIOS=[
  {k:'first_light',n:'First Light',ic:'🌅',diff:'recruit',len:'quick',turns:80,
   brief:'Your nation is young and the world is warming up. Feed your people, keep the lights on, and grow.',
   goal:'Grow to 3 regions with stability at 50 or higher, within 80 turns.',
-  tips:'Build an Agro Complex and a Power Plant first. Then a Base for stability, and claim two empty neighbours (War Room → free regions cost no fight).',
+  tips:'Build an Agro Complex and a Power Plant first. Then a Base for stability, and claim two empty neighbours (Frontier → free regions cost no fight).',
   check:c=>{const rg=regionsOf(c).length;if(rg>=3&&c.stab>=50)return 'win';if(!rg)return 'lose';return scTurns()>=80?'lose':null;},
   prog:c=>regionsOf(c).length+'/3 regions · stability '+Math.round(c.stab)},
  {k:'breadbasket',n:'Breadbasket',ic:'🌾',diff:'recruit',len:'quick',turns:120,
@@ -1436,19 +1436,19 @@ const DIR=[
  // alliance (allies defend you, and it raises your garrison cap). Recon (Intelligence HQ) is optional, so it comes last.
  {p:1,k:'d_treaty',n:'Join an alliance',hint:'Alliance tab, allies defend you while you sleep',go:'clans',test:c=>c.clan!=null,reward:300},
  {p:1,k:'d_army',n:'Recruit a defensive line',hint:'Armed Forces tab',go:'military',test:c=>UNIT.reduce((s,u)=>s+(c.units[u.k]||0),0)>50,reward:250},
- {p:1,k:'d_fleet',n:'Launch a fleet',hint:'War Room',go:'fleets',test:c=>(c._ops&&c._ops.length)||(c.fleets&&c.fleets.length)||c._hasAttacked,reward:400},
+ {p:1,k:'d_fleet',n:'Launch a fleet',hint:'Frontier',go:'around',test:c=>(c._ops&&c._ops.length)||(c.fleets&&c.fleets.length)||c._hasAttacked,reward:400},
  {p:1,k:'d_intel',n:'Build an Intelligence HQ',hint:'Production tab, optional recon',go:'production',test:c=>reconLevel(c)>0||(c.queue||[]).some(q=>q.k==='intel'),reward:300},
  {p:2,k:'d_path',n:'Choose your National Path',hint:'R&D tab, permanent for the season',go:'research',test:c=>!!c.path,reward:300},
  {p:2,k:'d_market',n:'Trade on the Global Exchange',hint:'Market tab, buy a shortage or sell a surplus',go:'market',test:c=>!!c._traded,reward:250},
- {p:2,k:'d_scout',n:'Scout a region before you strike',hint:'War Room, Scout (300 influence)',go:'fleets',test:c=>Object.keys(c._regionIntel||{}).length>0,reward:250},
- {p:2,k:'d_capture',n:'Hold a second region',hint:'War Room, take empty ground or a weak neighbour',go:'fleets',test:c=>regionsOf(c).length>=2,reward:400},
- {p:2,k:'d_garrison',n:'Station a garrison',hint:'War Room, Defence: on your own or an allied region',go:'fleets',test:c=>!!c._stationed,reward:300},
- {p:2,k:'d_shield',n:'Sleep tight: engage the Planetary Shield once',hint:'War Room, Defence, before a long absence',go:'fleets',test:c=>!!c.shield,reward:300}, // v3.12.5: the shield must actually be engaged at tick time (was `_shieldUsed`, which a one-second on/off toggle satisfied without ever protecting anything)
+ {p:2,k:'d_scout',n:'Scout a region before you strike',hint:'Frontier, Scout (300 influence)',go:'around',test:c=>Object.keys(c._regionIntel||{}).length>0,reward:250},
+ {p:2,k:'d_capture',n:'Hold a second region',hint:'Frontier, take empty ground or a weak neighbour',go:'around',test:c=>regionsOf(c).length>=2,reward:400},
+ {p:2,k:'d_garrison',n:'Station a garrison',hint:'Homeland: on your own or an allied region',go:'self',test:c=>!!c._stationed,reward:300},
+ {p:2,k:'d_shield',n:'Sleep tight: engage the Planetary Shield once',hint:'Homeland, before a long absence',go:'self',test:c=>!!c.shield,reward:300}, // v3.12.5: the shield must actually be engaged at tick time (was `_shieldUsed`, which a one-second on/off toggle satisfied without ever protecting anything)
  {p:2,k:'d_commander',n:'Recruit a Commander',hint:'Military tab, spend influence on a permanent bonus',go:'military',test:c=>(c.commanders||[]).length>0,reward:400},
  {p:3,k:'d_mail',n:'Send a message to another nation',hint:'Messages',go:'mail',test:c=>!!c._mailed,reward:200},
  {p:3,k:'d_convoy',n:'Send a convoy to an ally',hint:'Alliance tab, resources travel the map',go:'clans',test:c=>!!c._convoyed,reward:300},
  {p:3,k:'d_covert',n:'Run a covert operation or an intel sweep',hint:'Covert Ops tab',go:'covert',test:c=>(c._covertLog||[]).length>0,reward:350},
- {p:3,k:'d_acs',n:'Join or launch a coordinated assault',hint:'War Room / Alliance, joint operations',go:'clans',test:c=>!!c._acsDone,reward:400},
+ {p:3,k:'d_acs',n:'Join or launch a coordinated assault',hint:'Alliance, joint operations',go:'clans',test:c=>!!c._acsDone,reward:400},
  {p:3,k:'d_contribute',n:'Pledge to a World Project or an alliance Wonder',hint:'Alliance tab / Home',go:'clans',test:c=>!!c._contributed,reward:500}
 ];
 function dirDone(c){return (c&&c._dir)||[];}
@@ -3381,7 +3381,7 @@ function clanTick(){(G.clans||[]).forEach(cl=>{
           if(!t)t=aiPickACSTarget(o,cl);
           if(t){cl._acsAt=G.tick;o.cp=Math.max(o.cp||0,3);o.res.influence=Math.max(o.res.influence||0,1200);const com=aiStrikeForce(o,t.r,0.6,0.5)||{};
             if(fleetSize(com)){const off=Math.min(ACS_MAX_WINDOW,t.tv+2);const r0=cmdLaunchACS(o,t.r.id,com,off);
-              if(r0&&r0.ok){const yc=G.you!=null?G.countries[G.you]:null;if(yc&&yc.clan===cl.id&&wantNotif(yc,'combat'))sitrep(yc,'alliance','⚔ '+leaderName(o)+' ['+o.tag+'] is leading a coordinated assault on '+t.r.name+' ('+t.r.coord+'), impact in '+off+'t. Join it in the War Room.',{coord:t.r.coord,sev:1,go:'fleets'});
+              if(r0&&r0.ok){const yc=G.you!=null?G.countries[G.you]:null;if(yc&&yc.clan===cl.id&&wantNotif(yc,'combat'))sitrep(yc,'alliance','⚔ '+leaderName(o)+' ['+o.tag+'] is leading a coordinated assault on '+t.r.name+' ('+t.r.coord+'), impact in '+off+'t. Join it in Homeland.',{coord:t.r.coord,sev:1,go:'fleets'});
                 const hd=t.r.owner!=null?G.countries[t.r.owner]:null;if(hd&&hd.isAI===false&&hd.clan!==cl.id)sitrep(hd,'alert','⚔ '+cl.name+' ['+cl.tag+'] launched a coordinated assault on '+t.r.name+', lands in '+off+'t. Reinforce now.',{coord:t.r.coord,sev:3,go:'fleets'});}}}}}
     }catch(e){}
     try{aiNexusRace(cl);}catch(e){}
@@ -3403,7 +3403,7 @@ function clanTick(){(G.clans||[]).forEach(cl=>{
         const disp=(setter.pers&&(setter.pers.diplomacy||50))||50;const scope=(clanAtWarAny(cl.id)||disp<45)?'territory':'home';
         cmdSetStandingOrder(setter,scope,0.45,true);}
       // Members top up the reserve when it's wanted (AI-led, or a human turned auto-Legion on) and it isn't already deep.
-      const wantReserve=(aiLed&&cl.standingDef)||(cl.standingDef&&cl.standingDef.autoLegion);
+      const wantReserve=legionCount(cl)<20000; // v3.37: AI members top up the shared Legion reserve in any alliance (their own units, defence-only, capped) so the Legion actually fills in solo
       if(wantReserve&&legionCount(cl)<20000){clanMembers(cl).forEach(m=>{if(!m.isAI||m.retired||m.clan==null)return;
         if(cl.legion&&cl.legion.cd&&cl.legion.cd[m.id]!=null&&G.tick-cl.legion.cd[m.id]<LEGION_CD)return;
         if(Math.random()>0.12)return;const army=fleetSize(m.units||{});if(army*0.12<LEGION_MIN)return; // only well-armed members, keeps a real reserve
@@ -3717,9 +3717,9 @@ function aiBattleOrder(atkC,R){const p=atkC.pers||{risk:50};return (R.ratio<0.9-
 function battleAlert(atkC,r,defC){if(!defC)return;const cl=clanOf(defC);
   if(defC.id===G.you){toast('⚔ '+r.name+' is under attack, reinforce or brace!','bad');}
   else if(cl){const youIn=clanMembers(cl).some(m=>m.id===G.you);if(youIn)clanPost(cl,defC.id,'⚔ ALERT: '+r.name+' ('+r.coord+') is under attack, reinforcements welcome!');}
-  const me=you();if(me&&cl&&clanMembers(cl).some(m=>m.id===G.you)&&defC.id!==G.you)toast('⚔ Ally under attack: '+r.name+', you can reinforce from the War Room.','warn');}
+  const me=you();if(me&&cl&&clanMembers(cl).some(m=>m.id===G.you)&&defC.id!==G.you)toast('⚔ Ally under attack: '+r.name+', you can reinforce from Homeland.','warn');}
 function startBattle(c,f,r,prevOwner,defC){f.status='battle';f.bTick=0;f.order=(c.id===G.you?'press':'auto');
-  sitrep(c,'battle','⚔ Landed at '+r.name+(defC?' ('+defC.name+')':'')+', 3-tick engagement under way; result follows',{coord:r.coord,sev:1,go:'fleets'});if(defC)sitrep(defC,'battle','⚔ '+c.name+' ['+c.tag+'] landed at '+r.name+', battle under way for 3 ticks. Reinforce now: War Room → Defence',{coord:r.coord,sev:3,go:'fleets'});
+  sitrep(c,'battle','⚔ Landed at '+r.name+(defC?' ('+defC.name+')':'')+', 3-tick engagement under way; result follows',{coord:r.coord,sev:1,go:'fleets'});if(defC)sitrep(defC,'battle','⚔ '+c.name+' ['+c.tag+'] landed at '+r.name+', battle under way for 3 ticks. Reinforce now: Homeland',{coord:r.coord,sev:3,go:'fleets'});
   f.bStart=Object.assign({},f.units);f.bLog=[];f.bDefLost={};f.prevOwner=prevOwner;
   // Snapshot the defender's shield AT LANDING, so a last-second shield (armed after the fleet arrives)
   // can't retroactively save the region. The shield must already be up when the attack lands.
@@ -3727,7 +3727,7 @@ function startBattle(c,f,r,prevOwner,defC){f.status='battle';f.bTick=0;f.order=(
   const pool=defenderPool(r,defC);f.bDefStart=Object.assign({},pool.units);
   if(defC){aiRemember(c,defC.id,pool.units);aiRemember(defC,c.id,f.units);} // both sides now know what the other fields (what a battle report shows)
   battleAlert(c,r,defC);
-  if(c.id===G.you)toast('⚔ Engagement at '+r.name+', Tick 1 of 3. Set Press On / Retreat in the War Room.','warn');
+  if(c.id===G.you)toast('⚔ Engagement at '+r.name+', Tick 1 of 3. Set Press On / Retreat in Homeland.','warn');
   else if(prevOwner===G.you){/* handled by battleAlert */}}
 // ==== COMBAT v4, TARGETING LAYER (who dies) ===============================================================================
 // The 5-phase ratio model still decides WHO WINS and HOW MUCH each side loses per tick (BATTLE_W / BATTLE_CAP, unchanged, so
@@ -3924,7 +3924,7 @@ function advanceBattle(c,f){const r=G.regions.find(x=>x.id===f.target);
   // can act on how it is actually going, not guess. The full report still lands when the battle resolves.
   if(t<3&&fleetSize(f.units)>=1){const _rt=EG.R.ratio;const _lost=f.bStart?Math.round((1-fleetSize(f.units)/Math.max(1,fleetSize(f.bStart)))*100):0;
     const _how=_rt>=1.25?'you are breaking their line':_rt>=1?'you hold the upper hand':'they are winning the exchange';
-    if(c.isAI===false){sitrep(c,'battle','⚔ '+r.name+' — tick '+t+' of 3: '+_how+' (power ratio '+_rt.toFixed(2)+'), ~'+_lost+'% of this fleet lost so far. Set Press On or Retreat in the War Room before the next tick.',{coord:r.coord,sev:_rt<1?2:1,go:'fleets'});
+    if(c.isAI===false){sitrep(c,'battle','⚔ '+r.name+' — tick '+t+' of 3: '+_how+' (power ratio '+_rt.toFixed(2)+'), ~'+_lost+'% of this fleet lost so far. Set Press On or Retreat in Homeland before the next tick.',{coord:r.coord,sev:_rt<1?2:1,go:'fleets'});
       if(c.id===G.you&&typeof toast==='function')toast('⚔ '+r.name+' '+t+'/3: '+(_rt>=1?'winning':'losing')+' (ratio '+_rt.toFixed(2)+'), press on or retreat?',_rt<1?'warn':'');}
     if(defC&&defC.isAI===false&&defC.id!==c.id){sitrep(defC,'battle','🛡 '+r.name+' — tick '+t+' of 3 holding vs '+c.name+': '+(_rt<1?'you have the edge':_rt<1.25?'it is close':'they are pushing through')+' (enemy power ratio '+_rt.toFixed(2)+'). Reinforce fast units now to swing it.',{coord:r.coord,sev:_rt>=1.25?3:2,go:'fleets'});}}
   if(t>=3||fleetSize(f.units)<1){finalizeBattle(c,f,r,defC,EG.R,false);return;}
@@ -4033,7 +4033,7 @@ function finalizeBattle(c,f,r,defC,R,retreated){const prevOwner=f.prevOwner;
     news('nexus','🏛 '+head+' ('+r.coord+')');
     (G._nexusLog=G._nexusLog||[]).unshift({tick:G.tick,atk:c.id,def:prevOwner,captured:!!captured,repelled:!captured&&!success,retreated:!!retreated,coord:r.coord});if(G._nexusLog.length>16)G._nexusLog.length=16;}
   if(retreated){const keep=fleetSize(f.units);if(c.isAI===false)sitrep(c,'fleet','↩ Retreated from '+r.name+' after tick '+Math.min(3,f.bTick||1)+', '+full(keep)+' units coming home (tick #'+(G.tick+f.travel)+')',{coord:r.coord,go:'fleets'});if(c.id===G.you)toast('↩ Retreated from '+r.name+' with '+full(keep)+' units intact.','warn');
-    else if(prevOwner===G.you){toast('↩ '+leaderName(c)+' broke off the assault on '+r.name+', you held. See the report in War Room → Defence.','warn');chronicle('↩ '+leaderName(c)+' of '+c.name+' broke off their attack on '+r.name+', your defence held.','war',{who:c.id,rid:r.id});}}
+    else if(prevOwner===G.you){toast('↩ '+leaderName(c)+' broke off the assault on '+r.name+', you held. See the report in Homeland.','warn');chronicle('↩ '+leaderName(c)+' of '+c.name+' broke off their attack on '+r.name+', your defence held.','war',{who:c.id,rid:r.id});}}
   // ACS survivor return to member fleets, else normal return
   if(f.acs&&f.members&&f.members.length){
     // Return survivors PER UNIT TYPE, proportional to what each member actually contributed of THAT type —
@@ -4089,12 +4089,12 @@ function runTick(){
     if(c.shield&&c.shield.status==='arming'&&G.tick>=c.shield.armAt){c.shield.status='active';if(c.id===G.you)toast('🛡 Shield fully engaged, captures blocked, production at 50%. Lower it to act again.','warn');}
     // v3.17: solo back-up reminder — a gentle nudge every so often to download a back-up (the game lives in the browser).
     if(c.isAI===false&&typeof window!=='undefined'&&!window.__MP__&&G.tick>0&&G.tick%150===0){try{sitrep(c,'tip','💾 Reminder: your game lives in this browser. Download a back-up from Settings so clearing your browser can\'t lose this season.',{});}catch(e){}}
-    if(c.isAI===false){try{const inc=incomingTo(c.id);const seen=c._incSeen=c._incSeen||{};const now={};inc.forEach(i=>{const k=String(i.fleet&&i.fleet.id!=null?i.fleet.id:'acs'+(i.region.id));now[k]=1;if(!seen[k]){seen[k]={t:G.tick};(c._incMeta=c._incMeta||{})[k]={rn:i.region.name,on:(i.from?i.from.name+' ['+(i.from.tag||'')+']':'unknown'),coord:i.region.coord};sitrep(c,'alert','🚨 Incoming: '+(i.from?i.from.name+' ['+(i.from.tag||'')+']':'unknown')+' → '+i.region.name+', '+(i.stealth?'stealth, ':'')+'~'+full(i.atkP)+' power, lands in '+i.eta+'t'+(i.threat>=1?' (OVERWHELMING)':i.threat>=0.5?' (major)':''),{coord:i.region.coord,sev:i.threat>=0.5?3:2,go:'fleets'});try{tipOnce(c,'incoming','First incoming attack. Battles last 3 ticks — reinforce from the War Room and call your alliance for help.','help-army');}catch(e){}}});for(const k in seen){if(now[k])continue;const meta=(c._incMeta||{})[k];if(typeof seen[k]!=='object')seen[k]={t:seen[k]};const info=seen[k];
+    if(c.isAI===false){try{const inc=incomingTo(c.id);const seen=c._incSeen=c._incSeen||{};const now={};inc.forEach(i=>{const k=String(i.fleet&&i.fleet.id!=null?i.fleet.id:'acs'+(i.region.id));now[k]=1;if(!seen[k]){seen[k]={t:G.tick};(c._incMeta=c._incMeta||{})[k]={rn:i.region.name,on:(i.from?i.from.name+' ['+(i.from.tag||'')+']':'unknown'),coord:i.region.coord};sitrep(c,'alert','🚨 Incoming: '+(i.from?i.from.name+' ['+(i.from.tag||'')+']':'unknown')+' → '+i.region.name+', '+(i.stealth?'stealth, ':'')+'~'+full(i.atkP)+' power, lands in '+i.eta+'t'+(i.threat>=1?' (OVERWHELMING)':i.threat>=0.5?' (major)':''),{coord:i.region.coord,sev:i.threat>=0.5?3:2,go:'fleets'});try{tipOnce(c,'incoming','First incoming attack. Battles last 3 ticks — reinforce from Homeland and call your alliance for help.','help-army');}catch(e){}}});for(const k in seen){if(now[k])continue;const meta=(c._incMeta||{})[k];if(typeof seen[k]!=='object')seen[k]={t:seen[k]};const info=seen[k];
         if(!info.done){info.done=true;let f=null,owner=null;if(!String(k).startsWith('acs')){const fid=+k;G.countries.forEach(o=>{if(f)return;const x=(o&&o.fleets||[]).find(y=>y.id===fid);if(x){f=x;owner=o;}});}
           const rn=meta?meta.rn:'your region';const on=meta?meta.on:'the enemy';
           // v3.17: does the player still have a defensive fleet stationed/en route to that region? Then they can now stand it down.
           const _canRecall=(()=>{try{const rg=G.regions.find(x=>x.coord===(meta&&meta.coord));return !!(rg&&(c.fleets||[]).some(z=>(z.status==='garrison'||z.intent==='garrison'||z.intent==='reinforce')&&z.target===rg.id));}catch(e){return false;}})();
-          const _dest=_canRecall?'fleets':'reports';const _rh=_canRecall?' — you can recall your defence in the War Room':'';
+          const _dest=_canRecall?'fleets':'reports';const _rh=_canRecall?' — you can recall your defence in Homeland':'';
           if(f&&f.status==='battle'){/* landed, startBattle already logged it */}
           else if(f&&(f.status==='returning'||f.status==='home')){sitrep(c,'alert','↩ The enemy fleet from '+on+' heading for '+rn+' turned back, no battle'+_rh,{coord:meta?meta.coord:null,go:_dest});if(c.id===G.you)toast('↩ '+on+' pulled back from '+rn+(_canRecall?' — you can recall your defence':''),'warn');}
           else if(!f){sitrep(c,'alert','✅ The threat from '+on+' to '+rn+' is gone, they broke off the attack'+_rh,{coord:meta?meta.coord:null,go:_dest});if(c.id===G.you)toast('✅ Threat on '+rn+' passed'+(_canRecall?' — you can recall your defence':''),'warn');}
@@ -4125,7 +4125,7 @@ function runTick(){
       (c.fleets||[]).forEach(f=>{if(f.status!=='garrison')return;
         if(_threat(f.target)){f._defThreatened=true;f._standDownNoted=false;}
         else if(f._defThreatened&&!f._standDownNoted){f._standDownNoted=true;const r0=G.regions.find(x=>x.id===f.target);const mine=r0&&r0.owner===c.id;
-          sitrep(c,'fleet','↩ The attack on '+(r0?r0.name:'the region')+(mine?'':' (an ally)')+' has passed. Your '+full(fleetSize(f.units))+' stationed units are idle now, withdraw them in the War Room to bring them home.',{coord:r0?r0.coord:null,sev:1,go:'fleets'});
+          sitrep(c,'fleet','↩ The attack on '+(r0?r0.name:'the region')+(mine?'':' (an ally)')+' has passed. Your '+full(fleetSize(f.units))+' stationed units are idle now, withdraw them in Homeland to bring them home.',{coord:r0?r0.coord:null,sev:1,go:'fleets'});
           if(c.id===G.you&&typeof toast==='function')toast('↩ Threat passed at '+(r0?r0.name:'a region')+', your defence there is idle, you can withdraw it.','warn');}});
     }catch(e){}}
     if(c.isAI===false)try{progressTick(c);}catch(e){} // directives & achievements, judged by the engine (server-side in MP)
@@ -4164,7 +4164,7 @@ function runTick(){
       if(_defP>0&&_atkP<0.02*_defP){
         for(const k in f.units)f.units[k]=Math.max(0,Math.floor(f.units[k]*0.85));
         if(c.id===G.you)toast('Skirmish at '+r.name+', a token force was brushed aside (build up before you strike).','warn');
-        else if(prevOwner===G.you)toast('🛡 You brushed aside a token probe by '+leaderName(c)+' at '+r.name+', filed under War Room → Defence → Battle reports.','warn');
+        else if(prevOwner===G.you)toast('🛡 You brushed aside a token probe by '+leaderName(c)+' at '+r.name+', filed under Homeland → Battle reports.','warn');
         else if(prevOwner===G.you)toast('🛡 A minor probe at '+r.name+' was repelled at the perimeter.');
         sitrep(c,'battle','• Skirmish at '+r.name+', force too small, probe repelled',{coord:r.coord,go:'reports'});if(prevOwner!=null)sitrep(G.countries[prevOwner],'battle','• Minor probe by '+c.name+' at '+r.name+' repelled at the perimeter',{coord:r.coord,go:'reports'});
         if(_involvesPlayer(c.id,prevOwner)){G.battles.unshift({tick:G.tick,region:r.name,coord:r.coord,outcome:'skirmish',atkId:c.id,defId:prevOwner,ratio:(_atkP/Math.max(1,_defP)).toFixed(3),atkP:Math.round(_atkP),defP:Math.round(_defP),why:'Force below 2% of defence, filed as a skirmish, not a full engagement.',narr:(c.id===G.you?'Your token force':leaderName(c)+' of '+c.name)+' probed '+r.name+' and was brushed aside.',youAtk:c.id===G.you,phases:[],detail:null,atkName:c.id===G.you?'Your forces':c.name,defName:prevOwner===G.you?'Your forces':(defC?defC.name:'Neutral garrison'),atkTag:c.tag,defTag:defC?defC.tag:'—',atkColor:c.color,defColor:defC?defC.color:'#5a6a86'});if(G.battles.length>BATTLES_KEEP())G.battles.length=BATTLES_KEEP();}
@@ -4321,7 +4321,7 @@ function newCountry(name,tag,col,gov,doc,isAI){const c={id:G.countries.length,na
   // Safety nets ON by default for humans (feedback 2026-09-02): auto-mobilise + emergency shield while offline, and
   // ministerial delegation so a casual never starves in their sleep. All switchable in War Room / Home. Recall stays off
   // (it would cancel deliberate attacks). AI nations keep their own decision engine.
-  if(!isAI){c.roe={mobilize:true,recall:false,shield:true};c.autoBuild=true;c.autoResearch=true;}
+  if(!isAI){c.roe={mobilize:true,recall:false,shield:true};c.autoBuild=false;c.autoResearch=false;} // v3.37: auto-build AND auto-research OFF by default; the player delegates them only if they choose to
   G.countries.push(c);return c;}
 function ensurePopulation(target){const active=G.countries.filter(c=>!c.retired);const ai=active.filter(c=>c.isAI).length,humans=active.filter(c=>!c.isAI).length;
   const want=Math.max(0,target-humans);let n=0;while(G.countries.filter(c=>!c.retired&&c.isAI).length<want){if(spawnAI()==null)break;n++;}return n;}
@@ -4489,7 +4489,7 @@ function movementsBoard(c,inc,title){const now=G.tick;const rows=[];const HEAD=t
   const helpBar=inN?`<div class="row wrap mt" style="gap:6px;align-items:center">${(sosR&&homeUnits>0)?`<button class="btn sm" onclick="BR_DEFEND(${sosR.region.id})" title="Send your own units to defend">🛡 Reinforce</button>`:(sosR?`<button class="btn sm" onclick="go('military')" title="You have no army home — recruit one first">🎖 Recruit an army</button>`:'')}${(_inCl&&sosR)?`<button class="btn sec sm" onclick="SOS_HELP(${sosR.region.id})" title="Ping your alliance to send reinforcements">🆘 Call alliance for help</button>`:(!_inCl?`<button class="btn sec sm" onclick="go('clans')" title="Join an alliance so you can call for help">🤝 Join an alliance for backup</button>`:'')}${!_shielded&&!_armSh&&fleetsAllHome(c)?`<button class="btn sec sm" onclick="(function(){var r=cmdShield(you(),true);if(r.ok){toast('🛡 Shield engaging',\'warn\');go('fleets');drawTop();save();}else toast(r.error,'bad');})()" title="Block captures while it is up (arms in ${SHIELD_ARM}t)">🛡 Engage shield</button>`:''}<span class="muted small">${homeUnits>0?'Reinforce your own region, or call your team.':'No army home — recruit, call allies, or hold the shield.'}</span></div>`:'';
   const _homeComp=Object.entries(c.units||{}).filter(([k,n])=>n>0&&UBYK[k]).sort((a,b)=>b[1]-a[1]);
   const homeCompHTML=(homeUnits>0&&_homeComp.length)?`<details class="small" style="margin-top:3px"><summary style="cursor:pointer;color:var(--muted);font-size:11px">🏠 Which units are home (${_homeComp.length} type${_homeComp.length!==1?'s':''})</summary><div class="row wrap" style="gap:4px 6px;margin-top:5px">${_homeComp.map(([k,n])=>`<span class="tag" style="white-space:nowrap" title="${esc(UBYK[k].n)}">${esc(UBYK[k].n)} <b>${full(n)}</b></span>`).join('')}</div></details>`:'';
-  const summary=`<div class="row wrap mt" style="gap:6px 14px;font-size:12px"><span>🏠 <b>${full(homeUnits)}</b> units home, ready to send</span><span>🚀 <b>${outN}</b> fleet${outN!==1?'s':''} out</span><span>🛡 <b>${garrN}</b> defending</span>${inN?`<span style="color:var(--danger)">⚠ <b>${inN}</b> enemy inbound</span>`:''}</div>${homeCompHTML}${protLine}${helpBar}<div class="muted" style="font-size:11px;margin-top:2px">Launch from the War Room, Offence tab, each strike costs 2 CP, up to 6 waves per target region.</div>`;
+  const summary=`<div class="row wrap mt" style="gap:6px 14px;font-size:12px"><span>🏠 <b>${full(homeUnits)}</b> units home, ready to send</span><span>🚀 <b>${outN}</b> fleet${outN!==1?'s':''} out</span><span>🛡 <b>${garrN}</b> defending</span>${inN?`<span style="color:var(--danger)">⚠ <b>${inN}</b> enemy inbound</span>`:''}</div>${homeCompHTML}${protLine}${helpBar}<div class="muted" style="font-size:11px;margin-top:2px">Launch from the Frontier, each strike costs 2 CP, up to 6 waves per target region.</div>`;
   if(!rows.length)return '<div class="card mb"><div class="clabel">'+HEAD+'</div>'+summary+'<div class="muted small mt">All quiet, nothing in transit right now, yours or theirs.</div></div>';
   // OUT fleets (yours) stay per-fleet — you usually have few and want the detail. INCOMING is grouped per region below.
   const outRows=rows.filter(r=>r.dir==='out');
@@ -4531,7 +4531,7 @@ function forcesGlance(c){const now=G.tick;const atk=[],def=[],inn=[];
   const rowOut=x=>`<div class="small" style="padding:2px 0;white-space:nowrap">${x.tag} ${x.coord?coordChip(x.coord):'?'}${eta(x.eta)} <span class="muted">${full(x.size)}</span></div>`;
   const rowIn=x=>{const col=x.threat>=1?'var(--danger)':x.threat>=0.5?'var(--alert)':'var(--muted2)';return `<div class="small" style="padding:2px 0;white-space:nowrap"><span style="color:${col}">⚠ ${esc(x.who)}</span> → ${coordChip(x.coord)}${eta(x.eta)} <span class="muted">${full(x.size)}</span></div>`;};
   const col=(title,color,items,fn)=>`<div style="flex:1;min-width:170px"><div class="clabel" style="color:${color};margin-bottom:3px">${title} · ${items.length}</div>${items.length?items.slice(0,6).map(fn).join('')+(items.length>6?`<div class="muted small">+${items.length-6} more</div>`:''):'<div class="muted small">none</div>'}</div>`;
-  return `<div class="card mb"><div class="row between wrap" style="gap:8px"><div class="clabel">🎖 Your forces</div><div class="small">🏠 <b>${full(homeUnits)}</b> home · ⚔ <b>${full(deployed)}</b> out · <b>${full(totalU)}</b> total${inn.length?` · <span style="color:var(--danger)">⚠ ${inn.length} inbound</span>`:''}</div></div><div class="row wrap mt" style="gap:16px;align-items:flex-start">${col('⚔ ATTACKING','var(--accent2)',atk,rowOut)}${col('🛡 DEFENDING','var(--ok)',def,rowOut)}${col('⚠ INCOMING','var(--danger)',inn,rowIn)}</div>${(atk.length||def.length||inn.length)?'':'<div class="muted small mt">No fleets in motion.</div>'}<div class="small mt" style="border-top:1px solid var(--border);padding-top:6px">🗺 <b>${regs.length}</b> region${regs.length!==1?'s':''}${regs.some(r=>!regionIsCore(c,r))?' <span class="muted">(⚔ = conquered)</span>':''}: ${terr||'<span class="muted">none</span>'}</div><div class="mt"><button class="btn ghost sm" onclick="GO('fleets')">War Room →</button></div></div>`;}
+  return `<div class="card mb"><div class="row between wrap" style="gap:8px"><div class="clabel">🎖 Your forces</div><div class="small">🏠 <b>${full(homeUnits)}</b> home · ⚔ <b>${full(deployed)}</b> out · <b>${full(totalU)}</b> total${inn.length?` · <span style="color:var(--danger)">⚠ ${inn.length} inbound</span>`:''}</div></div><div class="row wrap mt" style="gap:16px;align-items:flex-start">${col('⚔ ATTACKING','var(--accent2)',atk,rowOut)}${col('🛡 DEFENDING','var(--ok)',def,rowOut)}${col('⚠ INCOMING','var(--danger)',inn,rowIn)}</div>${(atk.length||def.length||inn.length)?'':'<div class="muted small mt">No fleets in motion.</div>'}<div class="small mt" style="border-top:1px solid var(--border);padding-top:6px">🗺 <b>${regs.length}</b> region${regs.length!==1?'s':''}${regs.some(r=>!regionIsCore(c,r))?' <span class="muted">(⚔ = conquered)</span>':''}: ${terr||'<span class="muted">none</span>'}</div><div class="mt"><button class="btn ghost sm" onclick="GO('self')">🛡 Homeland →</button></div></div>`;}
 function readInputs(scope){const com={};scope.querySelectorAll('input[data-cu]').forEach(i=>{const n=+i.value;if(n>0)com[i.dataset.cu]=n;});return com;}
 
 // ---- Coordinate quick-action popover (Planetarion-style: click X:Y:Z for instant Scout/Attack/Reinforce/Sabotage) ----
@@ -4712,7 +4712,7 @@ const MANUAL={
     <h3>Intelligence &amp; covert ops</h3>
     <p>Build an <b>Intelligence HQ</b> and recruit agents. From the <b>Covert</b> tab you can run infra scans (see enemy buildings) and economy scans (see their stockpiles). Successful scans are cached in <b>Cached Intel</b> at the bottom of the Covert tab, formatted as a ready-to-copy intel block so your alliance can act on it immediately.</p>
     <h3>War in one paragraph</h3>
-    <p>Mobilise your army (readiness), then open the <b>War Room</b> and send a fleet at an enemy region. Use the ⚡ <b>Preset</b> buttons to fill your units in one click (Attack, Fast/Air or Defenders mix). Battles resolve over up to <b>3 ticks</b>, you can retreat after each. A smaller <b>combined-arms</b> force that wins the early recon/air phases beats a bigger blind one. Full detail is in the <b>Combat &amp; Formulae</b> tab.</p>
+    <p>Mobilise your army (readiness), then open the <b>Frontier</b> and send a fleet at an enemy region. Use the ⚡ <b>Preset</b> buttons to fill your units in one click (Attack, Fast/Air or Defenders mix). Battles resolve over up to <b>3 ticks</b>, you can retreat after each. A smaller <b>combined-arms</b> force that wins the early recon/air phases beats a bigger blind one. Full detail is in the <b>Combat &amp; Formulae</b> tab.</p>
     <h3>Alliances &amp; diplomacy</h3>
     <p>Diplomacy is waged between <b>alliances</b>, not lone nations. An alliance leader can <b>declare war</b> for a +12% attack bonus, launch joint <b>ACS</b> strikes where multiple fleets land simultaneously as one combined force, and run <b>alliance polls</b> so officers vote on key decisions. Alliances also compete in <b>World Projects</b>, crisis events where pledging resources earns renown and rich rewards for the leading alliance.</p>
     <h3>How to win</h3>
@@ -4721,10 +4721,10 @@ const MANUAL={
     <ul>
       <li>Don't over-expand early, overextension hurts stability and upkeep.</li>
       <li>Keep food and energy positive before you build anything military.</li>
-      <li>Set <b>Rules of Engagement</b> (War Room) before you log off so a night raid can't catch you defenceless.</li>
+      <li>Set <b>Rules of Engagement</b> (Homeland) before you log off so a night raid can't catch you defenceless.</li>
       <li>Scout before you strike, recon and air superiority win battles before the ground phase.</li>
       <li>Join an active alliance. Solo nations are prey.</li>
-      <li>Use the ⚡ <b>Preset</b> buttons in the War Room to fill units with one click, no more entering each type by hand.</li>
+      <li>Use the ⚡ <b>Preset</b> buttons in Homeland to fill units with one click, no more entering each type by hand.</li>
       <li><b>Click any coordinate</b> in reports or news to instantly Scout, Attack or Reinforce it, skip the navigation.</li>
       <li>Run <b>infra + eco scans</b> on a target before attacking; read the Cached Intel in the Covert tab to plan your strike.</li>
     </ul>`,
@@ -4742,7 +4742,7 @@ const MANUAL={
     <ul>
       <li><b>Keep building economy</b>, a second Power Plant / Factory, and an <b>Intelligence HQ</b> so you can scout. Remember each region has only <code>10</code> Development Points of footprint, so don't try to fit everything in one region.</li>
       <li><b>Scout your neighbours.</b> Recruit an agent and run an <b>infra scan</b> on the nearest sectors, your first wars are almost always next door (5 ticks away), so know who's there before protection drops.</li>
-      <li><b>Set Rules of Engagement</b> (War Room) before you log off, so a night raid can't catch you undefended.</li>
+      <li><b>Set Rules of Engagement</b> (Homeland) before you log off, so a night raid can't catch you undefended.</li>
       <li><b>Sell surplus on the Market</b>, turn resources you're drowning in into money for the things you lack.</li>
     </ul>
     <h4>Ticks 11–16 · Commit (pick your identity)</h4>
@@ -4773,7 +4773,7 @@ const MANUAL={
       <li><b>HELD — costly</b> — you held, but it hurt. Reinforce before the next wave.</li>
       <li><b>REGION LOST</b> — the region changed hands. Not game over: you can retake it, and if it was your last you re-land elsewhere with your research intact.</li>
     </ul>
-    <p>A battle plays out over <b>up to 3 ticks</b>. Between ticks the attacker can Retreat or Press On, and fast reinforcements can arrive mid-battle and swing it. Under a many-attacker dogpile the War Room groups everything by region, so you read one line, not sixty.</p>
+    <p>A battle plays out over <b>up to 3 ticks</b>. Between ticks the attacker can Retreat or Press On, and fast reinforcements can arrive mid-battle and swing it. Under a many-attacker dogpile Homeland groups everything by region, so you read one line, not sixty.</p>
     <h3 style="margin-top:18px">Advanced: the math</h3>
     <p>A battle compares your attacking force's <b>raw power</b> to the defender's. The single number that decides everything is the <b>Ratio</b>:</p>
     <div class="frm">Ratio = Attacker raw power ÷ Defender raw power</div>
@@ -4962,14 +4962,14 @@ const HELP=[
   bullets:['Every tick resolves production, battles, diplomacy and the market at once.','Single-player ticks are fast; the live server ticks hourly.','Each tick you regain Command Points (CP) — every order costs CP, so prioritise.','You do not need to be online every tick; ministers can automate routine work.'],
   see:['help-first3','help-where'],anchor:'dashboard'},
  {id:'help-first3',sec:'A',ic:'🚀',title:'Your first actions',short:'Fix shortages, put up a defence, then grow. Under attack? Skip straight to holding the line.',
-  bullets:['1. Fix any red resource: open the Market and buy energy or food, or build the fix in Production.','2. Put up a basic defence: recruit a few units in Armed Forces so a garrison holds while you sleep.','3. Stop being alone: join or found an Alliance, allies reinforce you and the garrison cap rises when you defend together.','Optional: send one Covert scout to see a neighbour before you commit.','UNDER ATTACK NOW? Ignore expansion. Open the War Room, Defence, reinforce, or raise the Planetary Shield if you have no army.'],
+  bullets:['1. Fix any red resource: open the Market and buy energy or food, or build the fix in Production.','2. Put up a basic defence: recruit a few units in Armed Forces so a garrison holds while you sleep.','3. Stop being alone: join or found an Alliance, allies reinforce you and the garrison cap rises when you defend together.','Optional: send one Covert scout to see a neighbour before you commit.','UNDER ATTACK NOW? Ignore expansion. Open Homeland, reinforce, or raise the Planetary Shield if you have no army.'],
   see:['help-crisis','help-eco','help-army'],anchor:'market',cta:'Open Market',anchor2:'military',cta2:'Armed Forces'},
  {id:'help-crisis',sec:'A',ic:'🆘',title:'You are under heavy attack, what now?',short:'Many attacks on one region looks fatal but usually is not. Here is the drill.',
   bullets:['Shield: if it says "capture blocked", your regions cannot be taken this tick, no ground and no units are lost whatever the power gap.','No army home? Reinforce and Strike back do nothing yet, recruit in Armed Forces first, or hold the shield.','Call your alliance: their fleets defend you, and while you are besieged the garrison cap rises so they can really help.','Losing a region is not game over: you re-land elsewhere with your research kept and fresh protection.','Do not forget the economy: a red energy or food line will sink you even if you win the battle, buy it on the Market.'],
-  warn:'The War Room groups incoming per region, so a wall of attacks is one readable line. Tap it for the full list.',
-  see:['help-army','help-alliance'],anchor:'fleets',cta:'Open the War Room',anchor2:'military',cta2:'Recruit'},
+  warn:'Homeland groups incoming per region, so a wall of attacks is one readable line. Tap it for the full list.',
+  see:['help-army','help-alliance'],anchor:'fleets',cta:'Open Homeland',anchor2:'military',cta2:'Recruit'},
  {id:'help-where',sec:'A',ic:'👁',title:'Where do I see incoming, sitrep and CP?',short:'The Home dashboard is your command view.',
-  bullets:['CP counter and the tick clock sit at the top of the screen.','Incoming attacks show as a red/orange bar with ETA in ticks.','The Priority Center on Home lists what needs you right now.','The War Room shows every incoming fleet and lets you reinforce.'],
+  bullets:['CP counter and the tick clock sit at the top of the screen.','Incoming attacks show as a red/orange bar with ETA in ticks.','The Priority Center on Home lists what needs you right now.','Homeland shows every incoming fleet and lets you reinforce.'],
   see:['help-army','help-reports'],anchor:'dashboard'},
  {id:'help-eco',sec:'B',ic:'🏭',title:'Economy & buildings',short:'Regions produce resources; buildings and upkeep consume them.',
   bullets:['Watch food and energy — a deficit drains stability fast.','Build in the Production tab, grouped by category.','Storage is capped; Deep-Core Silos raise the cap.','Tax funds your treasury, but too high a rate hurts stability.'],
@@ -5019,7 +5019,7 @@ const HELP=[
   bullets:['🔴/🟠 bar = incoming attack, by urgency.','🛡 = shield or garrison; ⚔ = war/attack; 🕊 = peace/NAP.','🏙 status dot = Occupied / Pacified / Core on a region.','⏱ urgent tick = the tick is about to resolve — lock your orders.'],
   see:['help-where','help-occupy'],anchor:'dashboard'},
  {id:'help-faq',sec:'C',ic:'❓',title:'Common situations (FAQ)',short:'Quick answers to the questions that come up most.',
-  bullets:['I am under attack — reinforce from the War Room and call help in Combat.','My region produces little — check food/energy, unrest and overextension.','Breaking a NAP — declaring war or attacking a member during a pact is betrayal.','Occupied vs Core — Occupied drags stability; a Provincial Capitol makes it Core.','Helping the alliance fastest — answer defence calls and feed the active goal.','When to pick a doctrine — once you know whether you fight fast or heavy.','End of season — hold the Nexus, or lead the score at the deadline.'],
+  bullets:['I am under attack — reinforce from Homeland and call your alliance.','My region produces little — check food/energy, unrest and overextension.','Breaking a NAP — declaring war or attacking a member during a pact is betrayal.','Occupied vs Core — Occupied drags stability; a Provincial Capitol makes it Core.','Helping the alliance fastest — answer defence calls and feed the active goal.','When to pick a doctrine — once you know whether you fight fast or heavy.','End of season — hold the Nexus, or lead the score at the deadline.'],
   see:['help-army','help-occupy','help-dip','help-goals'],anchor:'dashboard'},
  {id:'help-rules-season',sec:'D',ic:'📅',title:'Season rules',short:'Tick length, season length and the win condition for this season.',dyn:'season',see:['help-season'],anchor:'rankings'}
 ];
@@ -5515,11 +5515,11 @@ function showSeasonEnd(){const c=you();const rt=rankTitle(c.id);archiveSeason('t
     <button class="opt mt" id="ns">▶ New world. Same commander. →</button></div></div>`);
   bg.querySelector('#ns').onclick=()=>{bg.remove();showSeasonDonation(()=>openLobby(G.season.num+1));};document.body.appendChild(bg);}
 
-const NAV=[['dashboard','','Home'],['map','','Map'],['economy','','Economy'],['production','','Production'],['research','','Research'],['military','','Military'],['fleets','','War Room'],['covert','','Covert Ops'],['clans','','Clans'],['diplomacy','','Diplomacy'],['market','','Market'],['rankings','','Rankings'],['reports','','Reports'],['codex','','Codex']];
+const NAV=[['dashboard','','Home'],['map','','Map'],['economy','','Economy'],['production','','Production'],['research','','Research'],['military','','Military'],['fleets','','War Room'],['covert','','Covert Ops'],['self','','Homeland'],['around','','Frontier'],['clans','','Clans'],['diplomacy','','Diplomacy'],['market','','Market'],['rankings','','Rankings'],['reports','','Reports'],['codex','','Codex']];
 // Command-console sidebar: grouped sections + military labels (view keys unchanged)
 // v3.25 Action-first: the core loop (resources, market, war, army, covert) sits up top and always open; the rest is one group lower.
-const NAV_SECTIONS=[['Core',['dashboard','economy','market','fleets','military','covert']],['More',['map','production','research','clans','diplomacy','mail']],['Intel',['rankings','reports','codex']]];
-const NAVLABEL={dashboard:'Home',map:'Tactical Map',fleets:'War Room',military:'Armed Forces',covert:'Covert Ops',economy:'Economy',production:'Production',research:'R&D',market:'Market',diplomacy:'Diplomacy',clans:'Alliance',mail:'Messages',rankings:'Rankings',reports:'Intel Reports',codex:'Field Manual'};
+const NAV_SECTIONS=[['Core',['dashboard','economy','market','self','around','clans','military']],['More',['map','production','research','diplomacy','mail']],['Intel',['rankings','reports','codex']]];
+const NAVLABEL={dashboard:'Home',map:'Tactical Map',self:'Homeland',around:'Frontier',fleets:'War Room',military:'Armed Forces',covert:'Covert Ops',economy:'Economy',production:'Production',research:'R&D',market:'Market',diplomacy:'Diplomacy',clans:'Alliance',mail:'Messages',rankings:'Rankings',reports:'Intel Reports',codex:'Field Manual'};
 const _sv=d=>`<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${d}</svg>`;
 const ICONS={
  dashboard:_sv('<rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="11" width="7" height="10" rx="1"/><rect x="3" y="15" width="7" height="6" rx="1"/>'),
@@ -5535,16 +5535,18 @@ const ICONS={
  market:_sv('<path d="M6 8h12l1 12H5Z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/>'),
  rankings:_sv('<path d="M8 4h8v4a4 4 0 0 1-8 0Z"/><path d="M8 6H5v1a3 3 0 0 0 3 3M16 6h3v1a3 3 0 0 0-3 3"/><path d="M10 15h4v3h-4z"/><path d="M8 21h8M12 18v3"/>'),
  reports:_sv('<path d="M6 3h8l4 4v14H6Z"/><path d="M14 3v4h4"/><path d="M9 12h6M9 16h5"/>'),
+ self:_sv('<path d="M12 3l8 3v6c0 4.8-3.4 8-8 9-4.6-1-8-4.2-8-9V6l8-3Z"/><path d="M9 12l2 2 4-4"/>'),
+ around:_sv('<circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3"/><path d="M12 1v3M12 20v3M1 12h3M20 12h3"/>'),
  covert:_sv('<path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6-10-6-10-6Z"/><circle cx="12" cy="12" r="2.5"/>'),
  codex:_sv('<path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2Z"/><path d="M9 7h7M9 11h7"/>')};
 // Mobile navigation: 4 primary destinations + a "More" sheet grouping the rest.
 const MENUICON=_sv('<line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>');
-const BOTTOMNAV=[['dashboard','Home'],['market','Market'],['fleets','War'],['covert','Covert'],['__more','More']];
-const MOREGROUPS=[['Economy',['economy','production','research','market']],['Military',['military']],['Diplomacy',['diplomacy','clans','covert']],['Standings',['rankings']],['Help',['codex']]];
+const BOTTOMNAV=[['dashboard','Home'],['market','Market'],['self','Homeland'],['around','Frontier'],['__more','More']];
+const MOREGROUPS=[['Economy',['economy','production','research','market']],['Military',['military']],['Diplomacy',['diplomacy','clans']],['Standings',['rankings']],['Help',['codex']]];
 const PRIMARY_NAV=BOTTOMNAV.filter(x=>x[0]!=='__more').map(x=>x[0]); // stay in sync with the bottom bar (Home·Market·War·Covert)
 function navLabel(k){const n=NAV.find(x=>x[0]===k);return n?n[2]:k;}
 function buildMobileNav(){const bn=$('bottomnav');if(!bn)return;bn.innerHTML='';
-  BOTTOMNAV.forEach(([k,label])=>{const isMore=k==='__more';const icon=isMore?MENUICON:(ICONS[k]||'');const badge=k==='fleets'?'<span class="badge" id="wbadge" style="display:none"></span>':'';
+  BOTTOMNAV.forEach(([k,label])=>{const isMore=k==='__more';const icon=isMore?MENUICON:(ICONS[k]||'');const badge=k==='self'?'<span class="badge" id="wbadge" style="display:none"></span>':'';
     const el=h(`<button class="bn ${k===view?'on':''}" data-bk="${k}"><span class="i">${icon}</span><span>${label}</span>${badge}</button>`);
     el.onclick=()=>{if(isMore)openMore();else{closeMore();go(k);}};bn.appendChild(el);});}
 function openMore(){const ms=$('moresheet');if(!ms)return;
@@ -5569,7 +5571,7 @@ function enterApp(){$('setup').style.display='none';$('app').classList.add('on')
   G.countries.forEach(x=>{if(x.treaties&&x.treaties.length)x.treaties=[];});
   G.countries.forEach(x=>{if(x.isAI&&!x.tier)x.tier=weightedTier();if(x.clan===undefined)x.clan=null;if(!x._debuffs)x._debuffs=[];if(!x.repeat)x.repeat={};if(!x.commanders)x.commanders=[];if(!x.treaties)x.treaties=[];if(!x.fleets)x.fleets=[];if(!x.buildings)x.buildings=[];if(!x.queue)x.queue=[];if(!x.rq)x.rq=[];if(!x.mq)x.mq=[];if(!x.tech)x.tech=[];if(!x.units)x.units={};if(!x.res)x.res=Object.assign({},START);if(!x._allyGuess)x._allyGuess={};if(!x._allyKnown)x._allyKnown=[];if(x.agents==null)x.agents=0;});
   (G.clans||[]).forEach(cl=>{if(cl.listed===undefined)cl.listed=true;if(cl.publicMembers===undefined)cl.publicMembers=cl.ai?Math.random()<0.4:false;if(!cl.wonders)cl.wonders=[];});
-  const nav=$('side');nav.innerHTML='';NAV_SECTIONS.forEach(([sec,keys])=>{nav.appendChild(h(`<div class="navsec">${esc(sec)}</div>`));keys.forEach(k=>{const badge=k==='fleets'?'<span class="badge" id="fbadge" style="display:none"></span>':k==='mail'?'<span class="badge" id="mbadge" style="display:none"></span>':'';const label=NAVLABEL[k]||(NAV.find(x=>x[0]===k)||[])[2]||k;const el=h(`<div class="nav ${k===view?'on':''}" data-k="${k}"><span class="i">${ICONS[k]||''}</span><span>${esc(label)}</span>${badge}</div>`);el.onclick=()=>go(k);nav.appendChild(el);});});
+  const nav=$('side');nav.innerHTML='';NAV_SECTIONS.forEach(([sec,keys])=>{nav.appendChild(h(`<div class="navsec">${esc(sec)}</div>`));keys.forEach(k=>{const badge=k==='self'?'<span class="badge" id="fbadge" style="display:none"></span>':k==='mail'?'<span class="badge" id="mbadge" style="display:none"></span>':'';const label=NAVLABEL[k]||(NAV.find(x=>x[0]===k)||[])[2]||k;const el=h(`<div class="nav ${k===view?'on':''}" data-k="${k}"><span class="i">${ICONS[k]||''}</span><span>${esc(label)}</span>${badge}</div>`);el.onclick=()=>go(k);nav.appendChild(el);});});
   buildMobileNav();
   {try{const _me=you();if(_me&&_me._enterTick==null)_me._enterTick=G.tick;}catch(e){}}
   go('dashboard');drawTop();maybeWelcome();maybeModal();maybeQuickstart();if(timer)clearInterval(timer);timer=setInterval(loop,1000);save();}
@@ -5578,7 +5580,7 @@ function enterApp(){$('setup').style.display='none';$('app').classList.add('on')
 function maybeWelcome(){let seen=false;try{seen=localStorage.getItem('earth2026_welcomed');}catch(e){}if(seen||G._tutorialDone)return;
   const steps=[
     {icon:'🏭',tag:'STEP 1 OF 4, BUILD',title:'First priority: Food & Energy',body:'Without <b>🌾 Food</b> and <b>⚡ Energy</b> your stability collapses. Build an <b>Agro Complex</b> and a <b>Power Plant</b> first. Open <b>Production</b> to start.',cta:'Next →',go:'production'},
-    {icon:'🛡',tag:'STEP 2 OF 4, WHILE YOU SLEEP',title:'Set your Rules of Engagement',body:'You don\'t need to be online 24/7. Your automatic defence is already on: the army mobilises and the emergency shield rises when a real attack lands while you sleep (<b>War Room → RoE</b> to adjust, or add fleet recall). Your first '+NEWBIE_PROTECT+' ticks are covered by beginner protection anyway, and great powers can\'t touch you until you attack someone yourself.',cta:'Next →',go:'fleets'},
+    {icon:'🛡',tag:'STEP 2 OF 4, WHILE YOU SLEEP',title:'Set your Rules of Engagement',body:'You don\'t need to be online 24/7. Your automatic defence is already on: the army mobilises and the emergency shield rises when a real attack lands while you sleep (<b>Homeland → Shield</b> to adjust, or add fleet recall). Your first '+NEWBIE_PROTECT+' ticks are covered by beginner protection anyway, and great powers can\'t touch you until you attack someone yourself.',cta:'Next →',go:'fleets'},
     {icon:'🤝',tag:'STEP 3 OF 4, ALLIANCES',title:'Join up, solo nations are prey',body:'Alliances share radar, a treasury, S.O.S. alerts and joint strikes (ACS). Find an open alliance or found your own under <b>Alliance</b>.',cta:'Next →',go:'clans'},
     {icon:'🏛',tag:'STEP 4 OF 4, HOW YOU WIN',title:'Take the Nexus. Hold it '+NEXUS_HOLD+' ticks.',body:'One region rules them all: the <b>Nexus</b>. Capture it, build the <b>Earth Command Center</b> there and hold it for <b>'+NEXUS_HOLD+' ticks</b>, the season ends and you win. If nobody manages that, the highest <b>overall score</b> wins when the <b>'+SEASON_TICKS+'-tick</b> clock ('+Math.round(SEASON_TICKS/168)+' weeks live) runs out. Then the world resets and everyone starts equal.',cta:'Show me the Nexus →',go:'map',nexus:true},
   ];
@@ -5721,7 +5723,7 @@ function priorityItems(){const c=you();if(!c)return [];const out=[];const pj=pro
     const armyN=UNIT.reduce((s,u)=>s+(c.units[u.k]||0),0);
     const besieged=!shielded&&regionsOf(c).length>0&&(inc.length>=3||inbP>=ownDef*2)&&(armyN<200||inbP>=ownDef*2.5);
     const capLeft=regionsOf(c).length<=1&&!c._capShieldUsed; // your one free Emergency Shield still stands
-    if(shielded)out.push({sev:1,cls:'warn',icon:'🛡',title:inc.length+' probe'+(inc.length>1?'s':'')+' inbound, shield holds',detail:(sl!=null?'Beginner protection: your regions cannot be captured for '+sl+' more tick'+(sl===1?'':'s')+'. ':'Shield mode active. ')+'Use the time: recruit, build a garrison, join an alliance.',cta:'War Room',go:'fleets'});
+    if(shielded)out.push({sev:1,cls:'warn',icon:'🛡',title:inc.length+' probe'+(inc.length>1?'s':'')+' inbound, shield holds',detail:(sl!=null?'Beginner protection: your regions cannot be captured for '+sl+' more tick'+(sl===1?'':'s')+'. ':'Shield mode active. ')+'Use the time: recruit, build a garrison, join an alliance.',cta:'Homeland',go:'self'});
     else if(besieged){const homeOk=fleetsAllHome(c);
       // v3.30: if you hold the Nexus Command Center, the shield is the WRONG move — it pauses your own hold counter and
       // never covers the Nexus. So a Nexus holder gets a different call: ride it out, reinforce, and rally the alliance.
@@ -5732,8 +5734,8 @@ function priorityItems(){const c=you();if(!c)return [];const out=[];const pj=pro
           cta:'Reinforce Nexus',go:'fleets',shield:false,sos:c.clan!=null,reinforce:nx.id});}
       else out.push({sev:0,cls:'bad',icon:'🆘',title:'You are besieged, '+inc.length+' attack'+(inc.length>1?'s':'')+' inbound',
         detail:'This is survivable. '+(homeOk?'Engage the Planetary Shield now, it arms in '+SHIELD_ARM+' tick'+(SHIELD_ARM===1?'':'s')+' and then your regions cannot be captured. ':'Recall your fleets, then engage the Planetary Shield. ')+(capLeft?'Your capital also has one free Emergency Shield that blocks the killing blow once. ':'')+'And if you are driven off the map you re-land with your research kept, this is a setback, not the end.'+(c.clan!=null?' Call your alliance too.':' Joining an alliance gets you defenders.'),
-        cta:homeOk?'Engage shield':'War Room',go:'fleets',shield:homeOk,sos:c.clan!=null,reinforce:(inc[0]&&inc[0].region)?inc[0].region.id:null});}
-    else out.push({sev:0,cls:'bad',icon:'⚔',title:inc.length+' incoming attack'+(inc.length>1?'s':''),detail:'Soonest lands in '+eta+' tick'+(eta===1?'':'s')+', reinforce or brace.',cta:'War Room',go:'fleets',sos:c.clan!=null,reinforce:(inc[0]&&inc[0].region)?inc[0].region.id:null});
+        cta:homeOk?'Engage shield':'Homeland',go:'self',shield:homeOk,sos:c.clan!=null,reinforce:(inc[0]&&inc[0].region)?inc[0].region.id:null});}
+    else out.push({sev:0,cls:'bad',icon:'⚔',title:inc.length+' incoming attack'+(inc.length>1?'s':''),detail:'Soonest lands in '+eta+' tick'+(eta===1?'':'s')+', reinforce or brace.',cta:'Homeland',go:'self',sos:c.clan!=null,reinforce:(inc[0]&&inc[0].region)?inc[0].region.id:null});
     // Your army is committed to an attack elsewhere while your OWN ground is under fire: an attacking fleet can't defend home.
     // One tap recalls the whole strike force. (The engine also files this in your tick log so an offline player is nudged.)
     const _striking=(c.fleets||[]).filter(f=>f.status==='outbound'&&f.intent!=='garrison'&&f.intent!=='reinforce');
@@ -5750,7 +5752,7 @@ function priorityItems(){const c=you();if(!c)return [];const out=[];const pj=pro
     // v3.18: show who is already responding (defence roster summary) so the player knows if help is needed.
     const _cl=clanOf(c);const _def=_cl?allianceDefenders(_cl,m.r.id):[];const _u=_def.reduce((s,d)=>s+(d.size||0),0);const _resp=_def.length?' '+_def.length+' ally'+(_def.length===1?'':' allies')+' responding'+(_u?' ('+full(_u)+' units inbound)':'')+'.':' No one is responding yet.';
     out.push({sev:1,cls:'warn',icon:'🛡',title:(m.ally?'Ally ':'Theater-mate ')+m.o.name+' is under attack at '+m.r.coord+(mates.length>1?' (+'+(mates.length-1)+' more)':''),detail:'Enemy ~'+full(m.ap)+' vs defence ~'+full(m.dp)+' · lands in '+m.eta+' tick'+(m.eta===1?'':'s')+'.'+_resp+' Fast units can still make it.',cta:'Send defence',go:'fleets',reinforce:m.r.id});}}catch(e){}
-  if((c._debuffs||[]).some(d=>d.until>=G.tick))out.push({sev:0,cls:'bad',icon:'🛰',title:'Sabotage active against you',detail:'Systems degraded, check the War Room.',cta:'Review',go:'fleets'});
+  if((c._debuffs||[]).some(d=>d.until>=G.tick))out.push({sev:0,cls:'bad',icon:'🛰',title:'Sabotage active against you',detail:'Systems degraded, check Homeland.',cta:'Review',go:'fleets'});
   if(pj.net.money<0){const t=Math.max(0,Math.floor((c.res.money||0)/-pj.net.money));if(t<8)out.push({sev:t<3?0:1,cls:t<3?'bad':'warn',icon:'💰',title:'Treasury running dry',detail:'−'+fmt(-pj.net.money,true)+'/tick · ~'+t+' tick'+(t===1?'':'s')+' of cash left, units and buildings stall at €0. Raise tax, lower readiness or sell surplus.',cta:'Economy',go:'economy',qa:'money'});}
   ['food','energy','fuel'].forEach(k=>{if(pj.net[k]<0){const t=Math.max(0,Math.floor(c.res[k]/-pj.net[k]));if(t<6)out.push({sev:1,cls:t<3?'bad':'warn',icon:k==='food'?'🌾':k==='energy'?'⚡':'🛢',title:RMETA[k].l+' running out',detail:'~'+t+' tick'+(t===1?'':'s')+' left, '+(k==='fuel'?'buy fuel on the Market':'build a '+(k==='food'?'Agro Complex':'Power Plant'))+'.',cta:'Fix',go:k==='fuel'?'market':'production',qa:k});}});
   if(c.stab<30)out.push({sev:1,cls:'bad',icon:'⚖',title:'Stability critical ('+Math.round(c.stab)+'%)',detail:'Unrest risk, lower tax or fix a shortage.',cta:'Economy',go:'economy',qa:'stab'});
@@ -5778,7 +5780,7 @@ function renderAlerts(v){try{const c=you();const cl=c&&clanOf(c);const a=cl&&act
   if(view==='dashboard')return;const items=priorityItems().filter(a=>a.sev===0);if(!items.length)return;
   const bar=h(`<div class="alertbar">${items.map(a=>`<div class="alertrow ${a.cls}" data-go="${a.go}"${a.reinforce!=null?' data-rr="'+a.reinforce+'"':''}><span>${a.icon} ${esc(a.title)}, ${esc(a.detail)}</span><span class="arr">${a.qa?qaHTML(quickFixes(you(),a.qa)):''}${a.reinforce!=null?'<button class="btn sm" data-reinf="'+a.reinforce+'" style="font-size:11px;padding:4px 8px;margin-right:6px" onclick="event.stopPropagation()">🛡 Reinforce</button>':''}${a.sos?'<button class="btn sm" data-sos="1" style="font-size:11px;padding:4px 8px;margin-right:6px" onclick="event.stopPropagation()">🆘 SOS</button>':''}GO →</span></div>`).join('')}</div>`);
   v.appendChild(bar);
-  // For an incoming-attack bar, GO (and the whole row) opens the defend flow for that region — otherwise, on the War Room
+  // For an incoming-attack bar, GO (and the whole row) opens the defend flow for that region — otherwise, on Homeland
   // itself, GO just re-opened the same screen and looked dead. Alerts without a region still navigate to their target.
   bar.querySelectorAll('.alertrow[data-go]').forEach(el=>el.onclick=()=>{const rr=el.getAttribute('data-rr');
     if(rr!=null&&rr!==''){selDefend=+rr;warTab='defence';go('fleets');setTimeout(()=>{const d=document.getElementById('dui');if(d)d.scrollIntoView({block:'center'});},80);}
@@ -5813,7 +5815,7 @@ function renderNexusBar(v){try{const nx=nexus();if(!nx)return;const held=nx.comm
   const pct=held?Math.min(100,Math.round((nx.ccHeld||0)/NEXUS_HOLD*100)):Math.round((1-(nx.ccBuild.done-G.tick)/CC_BUILD_TICKS)*100);
   const bar=h('<div style="margin-bottom:8px;border:1px solid '+col+';border-radius:8px;padding:5px 10px;background:linear-gradient(90deg,rgba(227,179,65,.10),transparent)"><div class="row between" style="gap:8px"><span class="small" style="font-weight:700;color:'+col+'">🏛 '+txt+(mine&&held?', hold '+Math.max(0,NEXUS_HOLD-(nx.ccHeld||0))+' more to WIN':'')+'</span><span class="muted small" style="cursor:pointer" onclick="GO(\'map\')">Map →</span></div><div class="bar mt" style="height:4px"><span style="width:'+pct+'%;background:'+col+'"></span></div></div>');
   v.insertBefore(bar,v.firstChild);}catch(e){}}
-function go(k){const _prevView=view;view=k;if(k!==_prevView)sfx('nav');try{commsRender();}catch(e){}document.querySelectorAll('.nav').forEach(n=>n.classList.toggle('on',n.dataset.k===k));
+function go(k){if(k==='fleets')k=(warTab==='alliance')?'clans':(warTab==='offence')?'around':'self';else if(k==='covert')k='around';const _prevView=view;view=k;if(k!==_prevView)sfx('nav');try{commsRender();}catch(e){}document.querySelectorAll('.nav').forEach(n=>n.classList.toggle('on',n.dataset.k===k));
   document.querySelectorAll('.bn').forEach(n=>{const bk=n.dataset.bk;n.classList.toggle('on',bk===k||(bk==='__more'&&!PRIMARY_NAV.includes(k)));});
   const v=$('view');detSnap(v,_prevView);if(k===_prevView)formSnap(v);else _formMem=null;const _st=k===_prevView?v.scrollTop:0;v.innerHTML='';v.scrollTop=0;try{renderAlerts(v);(VIEWS[k]||(()=>{}))(v);try{renderNexusBar(v);}catch(e){}detRestore(v,k);formRestore(v);if(_st)v.scrollTop=_st;uiPrefSave();try{bindHelpButtons(v);}catch(e){}try{maybeAllianceWelcome();}catch(e){}}catch(e){console.error('view '+k+' error',e);v.innerHTML='<div class="card"><h3>This screen hit an error</h3><div class="muted small">The game is still running in the background, switch tabs and back, or continue. Details are in the browser console.</div><div class="row wrap mt" style="gap:6px"><button class="btn sm" onclick="reportProblem(\'bug\',\'Screen '+k+' hit an error: '+String(e&&e.message||e).replace(/[\'"<>]/g,' ').slice(0,160)+'\')">🛟 Report this</button><button class="btn ghost sm" onclick="go(\'dashboard\')">Home</button></div></div>';}}
 // Report a problem: multiplayer → private support ticket (B17); single-player → copies a diagnostic block to the clipboard for Discord/e-mail.
@@ -5826,7 +5828,7 @@ function drawOpsAlert(){const el=$('opsalert');if(!el)return;const c=you();if(!c
   try{const cl=clanOf(c);def=cl?defenceCalls(cl).length:0;}catch(e){}
   try{ops=(c.fleets||[]).length+((G.acs||[]).filter(o=>o.fleets.some(f=>f.owner===c.id)).length);}catch(e){}
   el.classList.toggle('hot',inc>0);
-  el.title='Open the War Room — see your fleets, incoming attacks and joint operations';
+  el.title='Open Homeland — your defence, incoming attacks and fleets';
   el.innerHTML=`<span title="Incoming attacks on you" style="display:inline-flex;align-items:center;gap:4px;color:${inc?'var(--danger)':'var(--muted2)'};font-weight:${inc?800:700}">⚔<b>${inc}</b></span><span title="Alliance defence calls" style="display:inline-flex;align-items:center;gap:4px;margin-left:9px;color:${def?'var(--alert)':'var(--muted2)'};font-weight:700">🛡<b>${def}</b></span><span title="Your fleets and operations in the field" style="display:inline-flex;align-items:center;gap:4px;margin-left:9px;color:${ops?'var(--tech)':'var(--muted2)'};font-weight:700">🚀<b>${ops}</b></span><span style="opacity:.55;font-weight:400;margin-left:6px">↗</span>`;
   el.onclick=()=>{try{go('fleets');}catch(e){}};}
 function drawTop(){const c=you();const rt=rankTitle(c.id);try{wireSoloFF();}catch(e){}{const tn=$('ticknow');if(tn)tn.textContent='tick #'+G.tick;const tb=tn&&tn.closest('.tick');if(tb){const left=endgameLeft();const eg=left<=ENDGAME_TICKS&&!G._winner;tb.classList.toggle('endgame',eg);const k=tb.querySelector('.k');if(k){const lab=k.firstChild;if(lab&&lab.nodeType===3)lab.nodeValue=eg?'SEASON ENDS IN '+left+' TICK'+(left===1?'':'S')+' ':(window.__MP__?'NEXT TICK ':(G.solo&&G.solo.mode==='turn'?'TURN ':'NEXT TICK ▶ '));}}try{drawSoloTempo();drawScenarioPill();}catch(e){}}try{commsRender();}catch(e){}const _cl=clanOf(c);drawTension();drawOpsAlert();
@@ -6121,7 +6123,7 @@ VIEWS.dashboard=v=>{const c=you();const pj=projection(c),sc=scores(c);const sp=c
    // Under a major assault the action row points at defending, not expanding: Defend / Recruit / Market, Covert steps aside.
    const _actRow=_majorThreat
      ?`<button class="btn" onclick="GO_DEFENCE()" style="flex:1;min-width:120px">🛡 Defend</button><button class="btn sec" onclick="go('military')" style="flex:1;min-width:120px">🎖 Recruit</button><button class="btn sec" onclick="go('market')" style="flex:1;min-width:120px">💱 Market</button>`
-     :`<button class="btn" onclick="go('fleets')" style="flex:1;min-width:120px">⚔ War Room</button><button class="btn sec" onclick="go('market')" style="flex:1;min-width:120px">💱 Market</button><button class="btn sec" onclick="go('covert')" style="flex:1;min-width:120px">🕵 Covert Ops</button>`;
+     :`<button class="btn" onclick="go('self')" style="flex:1;min-width:120px">🛡 Homeland</button><button class="btn sec" onclick="go('market')" style="flex:1;min-width:120px">💱 Market</button><button class="btn sec" onclick="go('covert')" style="flex:1;min-width:120px">🕵 Covert Ops</button>`;
    z1.appendChild(h(`<div class="row" style="gap:8px;flex-wrap:wrap;margin-bottom:4px">${_actRow}</div>
      <div class="muted small" style="margin:0 0 10px" title="Command Points are your per-tick action budget. An attack or coordinated assault costs more; a build, research or trade costs 1. They refill on their own.">🎖 Command <b style="color:${_cp<1?'var(--bad)':'var(--text)'}">${_cp}/${_cap}</b> this cycle · an attack costs 2, most orders 1 · refills +${cpRegen()}/tick</div>`));}
   // ---- NEXUS WATCH: the world stage, public and live. Everyone sees who is fighting for the win at the Nexus and can
@@ -6139,7 +6141,7 @@ VIEWS.dashboard=v=>{const c=you();const pj=projection(c),sc=scores(c);const sp=c
         return `<div class="small" style="padding:3px 0;border-top:1px solid var(--border)"><span class="tag">t${e.tick}</span> <span class="lk" onclick="if(typeof GOTO_NATION==='function')GOTO_NATION(${e.atk})"><b>${a?esc(leaderName(a)):'A raider'}</b></span> ${verb}${d?' vs <b>'+esc(leaderName(d))+'</b>':''}</div>`;}).join('')||'<div class="muted small">No assaults on the Nexus yet.</div>';
       const canDef=(()=>{try{return canDefend(c,nxw);}catch(_){return false;}})();
       const acts=[`<button class="btn sec sm" onclick="if(typeof GOTO_COORD==='function')GOTO_COORD('${nxw.coord}')">🗺 Show Nexus</button>`,
-        `<button class="btn sm" onclick="if(typeof BR_ATTACK==='function')BR_ATTACK(${nxw.id})" title="Open the War Room with the Nexus already targeted">⚔ Attack the Nexus</button>`];
+        `<button class="btn sm" onclick="if(typeof BR_ATTACK==='function')BR_ATTACK(${nxw.id})" title="Open the Frontier with the Nexus already targeted">⚔ Attack the Nexus</button>`];
       if(canDef)acts.push(`<button class="btn sec sm" onclick="if(typeof BR_REINF==='function')BR_REINF(${nxw.id})">🛡 Reinforce it</button>`);
       if(clanOf(c))acts.push(`<button class="btn ghost sm" id="nxwsos">🆘 Rally alliance</button>`);
       const card=h(`<div class="card mb" style="border-left:3px solid var(--gold);background:linear-gradient(180deg,rgba(224,165,42,.06),transparent)">
@@ -6262,7 +6264,7 @@ VIEWS.dashboard=v=>{const c=you();const pj=projection(c),sc=scores(c);const sp=c
   // ---- NATION STATUS : one-glance verdict ----
   {const inc=incomingTo(c.id);const majors=inc.filter(x=>x.threat>=0.5).length;const shortages=['money','food','energy','fuel'].filter(k=>pj.net[k]<0&&(c.res[k]||0)/(-pj.net[k])<12);const unrest=c.stab<35;
    const nlvl=majors>0?'bad':(shortages.length||unrest)?'warn':'ok';const nName=nlvl==='bad'?'UNDER ATTACK':nlvl==='warn'?'STRAINED':'OPERATIONAL';
-   const nMsg=majors>0?`${majors} major assault${majors>1?'s':''} inbound, respond in the War Room`:shortages.length?(shortages[0]==='money'?`Treasury draining ${fmt(-pj.net.money,true)}/tick, raise tax, lower readiness or sell surplus`:`Resource shortfall: ${shortages.join(', ')}, stabilise supply`):unrest?'Domestic unrest, stability is critical':'All systems nominal, economy steady, defences holding';
+   const nMsg=majors>0?`${majors} major assault${majors>1?'s':''} inbound, respond in Homeland`:shortages.length?(shortages[0]==='money'?`Treasury draining ${fmt(-pj.net.money,true)}/tick, raise tax, lower readiness or sell surplus`:`Resource shortfall: ${shortages.join(', ')}, stabilise supply`):unrest?'Domestic unrest, stability is critical':'All systems nominal, economy steady, defences holding';
    z1.appendChild(h(`<div class="threatpanel ${nlvl} mb" style="padding:8px 12px"><div class="row between" style="gap:10px;align-items:center">
      <div class="row" style="gap:8px;align-items:center;min-width:0"><span class="sdot ${nlvl}"></span><b style="color:var(--${nlvl==='bad'?'danger':nlvl==='warn'?'alert':'ok'})">${nName}</b>${nlvl!=='ok'?`<span class="muted small" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(nMsg)}</span>`:''}</div>
      <div class="row" style="gap:14px;align-items:center;flex-shrink:0"><span class="small muted">⚔ ${full(Math.round(power(c,'atk')))}</span><span class="small muted">Score ${full(sc.overall)}</span></div>
@@ -6346,7 +6348,7 @@ VIEWS.dashboard=v=>{const c=you();const pj=projection(c),sc=scores(c);const sp=c
       <div class="row wrap" style="gap:8px">
         <button class="btn sec sm" onclick="go('mail')">✉ Dispatch</button>
         <button class="btn sec sm" id="rivalScoutBtn">🔭 Scout</button>
-        <button class="btn sec sm" onclick="go('war')">⚔ War Room</button>
+        <button class="btn sec sm" onclick="go('self')">🛡 Homeland</button>
       </div>
     </div>`));
     const rsb=z3.querySelector('#rivalScoutBtn');if(rsb)rsb.onclick=()=>{const r=cmdScan(c,rival.id);if(r&&r.ok){toast('Scanning '+rival.name+'…');go('intelligence');}else toast((r&&r.error)||'Cannot scan right now','bad');};}
@@ -6593,12 +6595,12 @@ VIEWS.military=v=>{const c=you();
     {n:'💻 Cyber State',d:'Cyber + spec-ops',mix:{cyber_cell:120,spec_ops:80,quantum_hacker:20}},
     {n:'🏰 Fortress',d:'Militia + SAM + artillery',mix:{militia:400,sam:80,artillery:60}}];
   // Hard bridge from "0 units home": if you have almost no army, say so plainly and give a one-tap defensive line +
-  // a jump back to the War Room. This is where the War Room's "Recruit" button and the besieged panel land you.
+  // a jump back to Homeland. This is where Homeland's "Recruit" button and the besieged panel land you.
   {const armyN=UNIT.reduce((s,u)=>s+(c.units[u.k]||0),0);const inc=(()=>{try{return incomingTo(c.id).some(x=>x.threat>=0.02);}catch(e){return false;}})();
    if(armyN<150){const fort=DOCTRINES.find(d=>d.n.includes('Fortress'));
      v.appendChild(h(`<div class="card mb" style="border-left:4px solid var(--${inc?'bad':'warn'})"><h3>🎖 ${inc?'Under attack with almost no army':'Your army is nearly empty'}</h3>
-       <div class="small">A garrison at home is what lets you and your allies actually hold a region, and it raises the cap on how much allied help can defend you. Queue a defensive line now.${inc?' Meanwhile the Planetary Shield can block captures, War Room.':''}</div>
-       <div class="row wrap mt" style="gap:6px"><button class="btn sm" id="qdef" title="Queue a cheap defensive line">🏰 Queue a defensive line</button>${inc?'<button class="btn sec sm" onclick="GO_DEFENCE()">🛡 War Room</button>':''}</div></div>`));
+       <div class="small">A garrison at home is what lets you and your allies actually hold a region, and it raises the cap on how much allied help can defend you. Queue a defensive line now.${inc?' Meanwhile the Planetary Shield can block captures, Homeland.':''}</div>
+       <div class="row wrap mt" style="gap:6px"><button class="btn sm" id="qdef" title="Queue a cheap defensive line">🏰 Queue a defensive line</button>${inc?'<button class="btn sec sm" onclick="GO_DEFENCE()">🛡 Homeland</button>':''}</div></div>`));
      const qb=v.querySelector('#qdef');if(qb)qb.onclick=()=>{let r;if(fort&&typeof cmdRecruitBatch==='function'){r=cmdRecruitBatch(c,fort.mix);}else{r=cmdRecruit(c,'infantry',200);}toast(r.ok?'🏰 Defensive line queued, it arrives over the next ticks':(r.error||'Not enough resources, buy on the Market first'),r.ok?'':'bad');if(r.ok){go('military');save();}};}}
   v.appendChild(h(`<div class="muted small mb">🏭 Training capacity <b>${full(trainCap(c))}</b>/tick. Big orders arrive in batches over several ticks.</div>`));
   v.appendChild(h(`<div class="card mb"><div class="clabel">🎖 Doctrine presets <span class="muted small" style="text-transform:none;letter-spacing:0">build toward an army identity</span></div>
@@ -6675,26 +6677,79 @@ VIEWS.military=v=>{const c=you();
   mm.appendChild(h(`<h3 class="mt">Commanders <span class="muted small">national bonuses · captured if a fleet is wiped</span></h3><div class="grid g3">${cmds}</div>`));
   if((c._trophies||[]).length)mm.appendChild(h(`<div class="card mt"><h3>War trophies, captured enemy commanders</h3>${c._trophies.slice(-8).reverse().map(t=>`<div class="small mb"><span class="tag">t${t.tick}</span> <b>${esc(t.commander)}</b>, taken from ${esc(t.from)}</div>`).join('')}<div class="muted small">A captured commander is lost to its nation forever (they lose the bonus). Trophies are a trophy, not a transfer.</div></div>`));
   if(c._ops&&c._ops.length){const o=c._ops.slice(0,10).map(x=>`<tr><td>${esc(x.region)}</td><td>tick ${x.tick}</td><td>${x.result==='captured'?'✅ captured':x.result==='partial'?'partial':'❌ repelled'}</td></tr>`).join('');mm.appendChild(h(`<div class="card mt"><h3>Operations log</h3><table><tbody>${o}</tbody></table></div>`));}
-  mm.appendChild(h(`<div class="card mt"><h3>Launch an operation</h3><div class="muted small">Plan attacks in the <b>War Room</b>: pick a target, commit units, and see the travel time (nearby is fast, far is slow). Fleets fight on arrival and survivors return home. Build <b>Intelligence HQ</b> to recon incoming enemies and <b>Radar Array</b> to blind their scouts (Production tab).</div><button class="btn sm mt" onclick="GO('fleets')">Open War Room →</button></div>`));
+  mm.appendChild(h(`<div class="card mt"><h3>Launch an operation</h3><div class="muted small">Plan attacks on the <b>Frontier</b>: pick a target, commit units, and see the travel time (nearby is fast, far is slow). Fleets fight on arrival and survivors return home. Build <b>Intelligence HQ</b> to recon incoming enemies and <b>Radar Array</b> to blind their scouts (Production tab).</div><button class="btn sm mt" onclick="GO('around')">Open Frontier →</button></div>`));
   v.appendChild(milMore);
   $('rd').querySelectorAll('button').forEach(b=>b.onclick=()=>{cmdReady(c,b.dataset.l);toast('Readiness: '+READY[b.dataset.l].l);go('military');drawTop();save();});
   v.querySelectorAll('button[data-cmd]').forEach(b=>b.onclick=()=>{const r=cmdCommander(c,b.dataset.cmd);if(r.ok){toast('Commander recruited');go('military');drawTop();save();}else toast(r.error,'bad');});
   v.querySelectorAll('button[data-skill]').forEach(b=>b.onclick=()=>{const k=b.dataset.skill,wantAlt=b.dataset.alt==='1',isAlt=c.cmdrAlt&&c.cmdrAlt.includes(k);if(wantAlt===!!isAlt){return;}const r=cmdCommanderSkill(c,k);if(r.ok){const cm=COMMANDERS.find(x=>x.k===k);toast((cm?cm.n:'Commander')+': '+(r.data.alt&&cm?cm.alt.n:'Standard')+' stance');go('military');drawTop();save();}else toast(r.error,'bad');});
 };
+// v3.37: reusable "who's helping you now" card, shown at the top of Alliance -> Command (was dead code in the old War Room alliance tab)
+function allianceHelpCard(v,c){const cl=clanOf(c);let body='';
+   if(!cl){body='<div class="muted small">You fly no banner yet. Join or found an <b>alliance</b> to unlock coordinated defence, joint strikes, reinforcements and shared intel.</div><button class="btn sm mt" onclick="GO(\'clans\')">Open Alliance →</button>';}
+   else{const myRegionIds=new Set(regionsOf(c).map(r=>r.id));
+     // In transit = still 'outbound' and not yet landed. An already-landed garrison is defending now, counted separately,
+     // so the "coming to you" number matches the top-bar badge and nothing looks like it vanished.
+     // compStr: compact "which units" line — top types by count, e.g. "Infantry 1.2k · Tank 400". Allies are clan/theater-mates,
+     // so their fleet composition is visible to you (shared intel), same as the "which units are home" view for your own army.
+     const compStr=(u,max)=>Object.entries(u||{}).filter(([k,n])=>n>0&&UBYK[k]).sort((a,b)=>b[1]-a[1]).slice(0,max||4).map(([k,n])=>`${(UBYK[k]||{n:k}).n} <span class="mono">${full(n)}</span>`).join(' · ');
+     const allyReinf=[],allyHere={},allyByOwner={};G.countries.forEach(o=>{if(o.id===c.id||o.retired)return;(o.fleets||[]).forEach(f=>{if(f.intent!=='garrison'||!myRegionIds.has(f.target))return;const r=G.regions.find(x=>x.id===f.target);if(!r)return;
+       if(f.status==='outbound'&&f.eta>G.tick)allyReinf.push({from:o,eta:Math.max(0,f.eta-G.tick),rname:r.name,coord:r.coord,size:fleetSize(f.units),comp:Object.assign({},f.units||{})});
+       else if(f.status==='garrison'){const sz=fleetSize(f.units);allyHere[r.id]=allyHere[r.id]||{rname:r.name,coord:r.coord,n:0,units:0};allyHere[r.id].n++;allyHere[r.id].units+=sz;
+         const e=allyByOwner[o.id]||(allyByOwner[o.id]={o,regs:{},units:0,n:0,comp:{}});e.units+=sz;e.n++;(e.regs[r.id]=e.regs[r.id]||{name:r.name,coord:r.coord,units:0}).units+=sz;for(const k in (f.units||{})){if(f.units[k]>0)e.comp[k]=(e.comp[k]||0)+f.units[k];}}});});
+     allyReinf.sort((a,b)=>a.eta-b.eta);
+     const allyHereList=Object.values(allyHere);const allyByOwnerList=Object.values(allyByOwner).sort((a,b)=>b.units-a.units);
+     const myACS=(G.acs||[]).filter(op=>op.clan===cl.id);
+     const myWars=activeWars().filter(w=>w.a===cl.id||w.b===cl.id);
+     const calls=defenceCalls(cl);
+     const teamPosts=(cl.forum||[]).filter(p=>p.by!==c.id&&/🛡|⚑|⚔|🤝|🕊|📊|reinforc|coalition|rally|OBJECTIVE/i.test(p.text)).slice(0,4);
+     const parts=[];
+     // Who is helping YOU, how many, from whom, where, and when they land.
+     // Allies already ON your ground, defending right now. Surfacing this is what answers "the 19 allies don't seem to be there":
+     // they arrived and are fighting, they were just never shown as present, only as "inbound".
+     if(allyHereList.length){const tot=allyHereList.reduce((s,x)=>s+x.n,0),totU=allyHereList.reduce((s,x)=>s+x.units,0);
+       const _threatNow=regionsOf(c).some(r=>incomingTo(c.id).some(x=>x.region.id===r.id));
+       const allyRows=allyByOwnerList.map(e=>{const where=Object.values(e.regs).map(rr=>esc(rr.name)+(rr.coord?' '+coordChip(rr.coord):'')).join(', ');
+         const cs=compStr(e.comp,4);
+         return `<tr><td style="white-space:nowrap"><b>${esc(leaderName(e.o))}</b> <span class="atag">${esc(e.o.tag||'')}</span></td><td style="white-space:nowrap">${where}</td><td class="r mono">${full(e.units)}</td><td class="r"><button class="btn ghost sm" data-askwd1="${e.o.id}" title="Message ${esc(e.o.tag||'this ally')} to pull their units back when it suits them">✉ Ask to withdraw</button></td></tr>${cs?`<tr><td colspan="4" style="border-top:0;padding:0 8px 7px 8px"><div class="small muted">↳ ${cs}</div></td></tr>`:''}`;}).join('');
+       parts.push(`<div class="small" style="color:var(--ok);font-weight:700">✅ ${allyByOwnerList.length} ally(ies) are defending your ground right now (${tot} fleet${tot!==1?'s':''}, ${full(totU)} units)</div>
+         <div class="scroll mt"><table><thead><tr><th>Ally</th><th>Where</th><th class="r">Units</th><th></th></tr></thead><tbody>${allyRows}</tbody></table></div>
+         <div class="row between wrap" style="gap:8px;margin-top:5px"><span class="muted small" style="min-width:0">These belong to your allies (alliance members and theater-mates). Ask one to pull back, or thank them all and send them home now. Your own stationed fleets are recalled from the <span class="lk" onclick="go('self')">Homeland</span>.</span><span class="row wrap" style="gap:6px"><button class="btn ghost sm" data-askwd="1" title="Message all these allies to pull back when it suits them">✉ Ask all to withdraw</button><button class="btn ${_threatNow?'ghost ':''}sm" data-thankallies="1" title="Send a thank-you and release all their fleets to head home now">🙏 Thanks, all may go home</button></span></div>${_threatNow?'<div class="small" style="color:var(--warn);margin-top:2px">⚠ You are still under attack, you may want to keep them a little longer.</div>':''}`);}
+     if(allyReinf.length){const rows=allyReinf.slice(0,6).map(a=>{const cs=compStr(a.comp,4);return `<tr><td style="white-space:nowrap">${esc(leaderName(a.from))} <span class="atag">${esc(a.from.tag||'')}</span></td><td style="white-space:nowrap">${esc(a.rname||'your ground')} ${a.coord?coordChip(a.coord):''}</td><td class="r mono">${full(a.size||0)}</td><td class="r"><span class="eta">${a.eta}t</span></td></tr>${cs?`<tr><td colspan="4" style="border-top:0;padding:0 8px 7px 8px"><div class="small muted">↳ ${cs}</div></td></tr>`:''}`;}).join('');
+       parts.push(`<div class="small mt" style="color:var(--ok);font-weight:600">🛡 ${allyReinf.length} more allied reinforcement fleet(s) still on the way</div>
+         <div class="scroll"><table><thead><tr><th>From</th><th>To</th><th class="r">Units</th><th class="r">Lands</th></tr></thead><tbody>${rows}</tbody></table></div>`);}
+     // Reconcile the numbers honestly: if allied fleets are sitting out because the garrison cap (2× your own defence) is full,
+     // say so here and point at the real fix, recruit your own army, so "help arrived but nothing changed" makes sense.
+     {let over=0;regionsOf(c).forEach(r=>{try{const pl=defenderPool(r,c);if(pl.excess)over+=pl.excess.length;}catch(e){}});
+      if(over>0)parts.push(`<div class="small mt" style="color:var(--warn)">⚠ ${over} allied fleet(s) arrived but <b>sit out</b>: the garrison cap is <b>2× your own defence</b>, and yours is low. Recruit even a small army (Armed Forces) to unlock their firepower. Your <b>Planetary Shield</b> is what holds the line meanwhile.</div>`);}
+     // Who needs YOU, where and when.
+     if(calls.length){const rows=calls.slice(0,6).map(k=>`<tr><td style="white-space:nowrap">${k.owner.id===c.id?'<b>You</b>':esc(k.owner.name)+' <span class="atag">'+esc(k.owner.tag)+'</span>'}</td><td style="white-space:nowrap">${esc(k.region.name)} ${coordChip(k.region.coord)}</td><td class="r mono" style="color:${k.missing>0?'var(--danger)':'var(--ok)'}">${k.missing>0?'short '+full(k.missing):'covered'}</td><td class="r"><span class="eta">${k.eta}t</span></td><td class="r"><button class="btn sm" data-defend="${k.region.id}">🛡 Help</button></td></tr>`).join('');
+       parts.push(`<div class="small mt" style="color:var(--alert);font-weight:600">📣 ${calls.length} defence call(s), your team needs forces</div>
+         <div class="scroll"><table><thead><tr><th>Holder</th><th>Region</th><th class="r">Status</th><th class="r">Impact</th><th></th></tr></thead><tbody>${rows}</tbody></table></div>`);}
+     if(myACS.length)parts.push(`<div class="small mt" style="color:var(--tech)">⚑ <b>${myACS.length}</b> coordinated alliance strike(s) in progress, see <b>Alliance → Operations board</b> to join.</div>`);
+     if(myWars.length)parts.push(`<div class="small mt" style="color:var(--danger)">⚔ At war with: ${myWars.map(w=>{const o=(G.clans||[]).find(x=>x.id===(w.a===cl.id?w.b:w.a));return o?esc(o.tag):'?';}).join(', ')}.</div>`);
+     if(teamPosts.length)parts.push('<div class="mt" style="border-top:1px solid var(--border);padding-top:6px">'+teamPosts.map(p=>`<div class="small muted" style="padding:2px 0"><span class="tag">t${p.tick}</span> ${esc(p.text)}</div>`).join('')+'</div>');
+     body=parts.length?parts.join(''):'<div class="muted small">No active alliance operations right now. Coordination kicks in automatically when you or an ally is attacked, or when your alliance launches a joint strike.</div>';}
+   const card=h(`<div class="card mb" style="border-left:3px solid var(--accent2)"><h3>🤝 Who's helping you now <span class="muted small" style="text-transform:none;letter-spacing:0">allies on your ground, inbound, and who needs you</span></h3>${body}</div>`);v.appendChild(card);
+   card.querySelectorAll('button[data-defend]').forEach(b=>b.onclick=()=>{const rid=+b.dataset.defend;const com={};for(const k in c.units){const n=Math.floor((c.units[k]||0)*0.5);if(n>0)com[k]=n;}const r=cmdStation(c,rid,com);if(r.ok){cmdAckCall(c,rid,'omw');toast('🚚 Army dispatched & alliance notified, arrives in '+r.data.eta+'t');go('clans');drawTop();save();}else{selDefend=rid;go('self');}});
+   card.querySelectorAll('button[data-thankallies]').forEach(b=>b.onclick=()=>{const r=cmdReleaseAllies(c);if(r.ok){toast('🙏 Thanked your allies — '+full(r.data.units)+' units ('+r.data.n+' fleet'+(r.data.n!==1?'s':'')+') released to head home.');go('clans');drawTop();save();}else toast(r.error,'warn');});
+   card.querySelectorAll('button[data-askwd]').forEach(b=>b.onclick=()=>{const r=cmdAskWithdraw(c);if(r.ok){toast(r.data.complied?('✉ Asked your allies — '+r.data.complied+' AI ally'+(r.data.complied!==1?' fleets are':' fleet is')+' heading home'+(r.data.asked?', '+r.data.asked+' player(s) messaged':'')+'.'):('✉ Message sent, '+r.data.asked+' ally player(s) asked to withdraw when it suits them.'),'');go('clans');drawTop();save();}else toast(r.error,'warn');});
+   card.querySelectorAll('button[data-askwd1]').forEach(b=>b.onclick=()=>{const oid=+b.dataset.askwd1;const o=G.countries[oid];const r=cmdAskWithdraw(c,oid);if(r.ok){toast(r.data.complied?('✉ '+((o&&leaderName(o))||'Ally')+' is heading home.'):('✉ Message sent to '+((o&&leaderName(o))||'the ally')+', asked to withdraw when it suits them.'),'');go('clans');drawTop();save();}else toast(r.error,'warn');});
+}
+VIEWS.self=v=>{warTab='defence';VIEWS.fleets(v);};
+VIEWS.around=v=>{warTab='offence';VIEWS.fleets(v);};
 VIEWS.fleets=v=>{const c=you();const inc=incomingTo(c.id);const cl0=clanOf(c);
-  // Split the War Room into three focused rooms so an attacked player isn't buried under everything at once.
+  // Split Homeland into three focused rooms so an attacked player isn't buried under everything at once.
   const nInc=inc.filter(x=>{const dp=Math.round(regionDef(x.region));return x.atkP>=dp;}).length; // attacks that can actually hurt
   let allianceBadge=0;if(cl0){allianceBadge=defenceCalls(cl0).filter(k=>k.owner.id!==c.id).length;
     G.countries.forEach(o=>{if(o.id===c.id)return;(o.fleets||[]).forEach(f=>{if(f.intent==='garrison'&&regionsOf(c).some(r=>r.id===f.target))allianceBadge++;});});
     allianceBadge+=(G.acs||[]).filter(op=>op.clan===cl0.id&&!op.fleets.some(f=>f.owner===c.id)&&op.fleets.length<ACS_MAX_FLEETS).length;}
   const outCnt0=(c.fleets||[]).filter(f=>f.status==='outbound'||f.status==='staged'||f.status==='battle').length;
   const TABS=[['defence','🛡 Defence',nInc||null],['offence','⚔ Offence',outCnt0||null],['alliance','🤝 Alliance',cl0?(allianceBadge||null):null]];
-  v.appendChild(h(`<div class="ptitle"><h2>War Room ${helpBtn(nInc?'help-crisis':'help-army')}</h2><span class="h">${warTab==='defence'?'Under attack? This room shows only what threatens you and how to hold.':warTab==='offence'?'Plan and track your attacks.':'Coordinate with your alliance, who needs you, who\'s helping.'}</span></div>`));
+  v.appendChild(h(`<div class="ptitle"><h2>${warTab==='offence'?'Frontier':'Homeland'} ${helpBtn(nInc?'help-crisis':'help-army')}</h2><span class="h">${warTab==='offence'?'Your frontier: the theater around you, targets to strike, and what your spies can see. What can you do?':'Your homeland: are you under attack, and what do you do? Defend, hold the line, raise the shield, and track your own strikes.'}</span></div>`));
   {const mb=h(movementsBoard(c,inc));v.appendChild(mb);
    mb.querySelectorAll('[data-recallfleet]').forEach(b=>b.onclick=()=>{const r=recallFleet(c,+b.dataset.recallfleet);if(r.ok){toast('↩ Recalled — your units are heading home');go('fleets');drawTop();save();}else toast(r.error,'bad');});
    mb.querySelectorAll('[data-strikeback]').forEach(b=>b.onclick=()=>{if(typeof GOTO_NATION==='function')GOTO_NATION(+b.dataset.strikeback);});}
-  {const seg=h(`<div class="seg mb" id="wartab" style="flex-wrap:wrap">${TABS.map(([k,l,badge])=>`<button class="${k===warTab?'on':''}" data-wt="${k}">${l}${badge?` <span class="pill ${k==='defence'?'b':k==='alliance'?'a':'g'}" style="margin-left:4px">${badge}</span>`:''}</button>`).join('')}</div>`);
-   v.appendChild(seg);seg.querySelectorAll('button[data-wt]').forEach(b=>b.onclick=()=>{warTab=b.dataset.wt;go('fleets');});}
+  // (tab strip removed in v3.36: You / Around you / Alliance are top-level sidebar rooms)
   const TAB=warTab;
   if(TAB==='defence'&&newbieProtected(c))v.appendChild(h(`<div class="card mb" style="border-left:3px solid var(--ok)"><h3>🛡 Beginner protection active</h3><div class="small">Your regions can't be captured for <b>${newbieLeft(c)}</b> more tick(s) while you find your feet. <span class="muted">Launching an attack ends it early, offence forfeits the shield.</span></div></div>`));
   // ---- DECISION HERO, decisions before information: am I in danger, what do I do, can I log off? ----
@@ -6731,7 +6786,7 @@ VIEWS.fleets=v=>{const c=you();const inc=incomingTo(c.id);const cl0=clanOf(c);
    if(unid)pr.push({ic:'🟡',t:`Reveal <b>${unid}</b> unidentified fleet(s) before they land, scout in the Incoming list`,b:''});
    if(radarLevel(c)<2&&inc.length)pr.push({ic:'📡',t:`Build a <b>Radar Array</b>, spot and auto-detect incoming attacks earlier`,b:`<button class="btn ghost sm" onclick="GO('production')">Build</button>`});
    {if(cl0){const calls0=defenceCalls(cl0).filter(k=>k.owner.id!==c.id);
-     if(calls0.length)pr.push({ic:'🤝',t:`<b>${calls0.length}</b> teammate(s) need defence, the alliance is calling`,b:'<button class="btn ghost sm" data-wtjump="alliance">Open Alliance room</button>'});}}
+     if(calls0.length)pr.push({ic:'🤝',t:`<b>${calls0.length}</b> teammate(s) need defence, the alliance is calling`,b:'<button class="btn ghost sm" onclick="clanTab=\'command\';GO(\'clans\')">Open Alliance room</button>'});}}
    if(pr.length)v.appendChild(h(`<div class="card mb"><h3>🎯 Your next actions <span class="muted small" style="text-transform:none;letter-spacing:0">do these, in order</span></h3>
      ${pr.slice(0,3).map((x,i)=>`<div class="row between wrap" style="gap:8px;padding:7px 0;border-top:1px solid var(--border)"><span class="small">${i+1}. ${x.ic} ${x.t}</span><span class="row" style="gap:6px">${x.b}</span></div>`).join('')}</div>`));}
   // ---- COMMAND CENTER header: threat status · radar · intel feed · signal panels ----
@@ -6790,57 +6845,11 @@ VIEWS.fleets=v=>{const c=you();const inc=incomingTo(c.id);const cl0=clanOf(c);
     card.querySelectorAll('[data-sos]').forEach(bn=>bn.onclick=()=>{const r=cmdCallHelp(c,+bn.dataset.sos);toast(r.ok?'🆘 S.O.S. sent to your alliance, allies who can reach it are asked to reinforce.':r.error,r.ok?'warn':'bad');if(r.ok)save();});
     const mb=card.querySelector('#incMob');if(mb)mb.onclick=()=>{const r=cmdReady(c,'ready');if(r.ok){toast('Forces mobilised');go('fleets');drawTop();save();}else toast(r.error,'bad');};
   }
-  // ---- ALLIANCE COORDINATION, make the team's live activity visible in the War Room ----
-  if(TAB==='alliance'){const cl=clanOf(c);let body='';
-   if(!cl){body='<div class="muted small">You fly no banner yet. Join or found an <b>alliance</b> to unlock coordinated defence, joint strikes, reinforcements and shared intel.</div><button class="btn sm mt" onclick="GO(\'clans\')">Open Alliance →</button>';}
-   else{const myRegionIds=new Set(regionsOf(c).map(r=>r.id));
-     // In transit = still 'outbound' and not yet landed. An already-landed garrison is defending now, counted separately,
-     // so the "coming to you" number matches the top-bar badge and nothing looks like it vanished.
-     // compStr: compact "which units" line — top types by count, e.g. "Infantry 1.2k · Tank 400". Allies are clan/theater-mates,
-     // so their fleet composition is visible to you (shared intel), same as the "which units are home" view for your own army.
-     const compStr=(u,max)=>Object.entries(u||{}).filter(([k,n])=>n>0&&UBYK[k]).sort((a,b)=>b[1]-a[1]).slice(0,max||4).map(([k,n])=>`${(UBYK[k]||{n:k}).n} <span class="mono">${full(n)}</span>`).join(' · ');
-     const allyReinf=[],allyHere={},allyByOwner={};G.countries.forEach(o=>{if(o.id===c.id||o.retired)return;(o.fleets||[]).forEach(f=>{if(f.intent!=='garrison'||!myRegionIds.has(f.target))return;const r=G.regions.find(x=>x.id===f.target);if(!r)return;
-       if(f.status==='outbound'&&f.eta>G.tick)allyReinf.push({from:o,eta:Math.max(0,f.eta-G.tick),rname:r.name,coord:r.coord,size:fleetSize(f.units),comp:Object.assign({},f.units||{})});
-       else if(f.status==='garrison'){const sz=fleetSize(f.units);allyHere[r.id]=allyHere[r.id]||{rname:r.name,coord:r.coord,n:0,units:0};allyHere[r.id].n++;allyHere[r.id].units+=sz;
-         const e=allyByOwner[o.id]||(allyByOwner[o.id]={o,regs:{},units:0,n:0,comp:{}});e.units+=sz;e.n++;(e.regs[r.id]=e.regs[r.id]||{name:r.name,coord:r.coord,units:0}).units+=sz;for(const k in (f.units||{})){if(f.units[k]>0)e.comp[k]=(e.comp[k]||0)+f.units[k];}}});});
-     allyReinf.sort((a,b)=>a.eta-b.eta);
-     const allyHereList=Object.values(allyHere);const allyByOwnerList=Object.values(allyByOwner).sort((a,b)=>b.units-a.units);
-     const myACS=(G.acs||[]).filter(op=>op.clan===cl.id);
-     const myWars=activeWars().filter(w=>w.a===cl.id||w.b===cl.id);
-     const calls=defenceCalls(cl);
-     const teamPosts=(cl.forum||[]).filter(p=>p.by!==c.id&&/🛡|⚑|⚔|🤝|🕊|📊|reinforc|coalition|rally|OBJECTIVE/i.test(p.text)).slice(0,4);
-     const parts=[];
-     // Who is helping YOU, how many, from whom, where, and when they land.
-     // Allies already ON your ground, defending right now. Surfacing this is what answers "the 19 allies don't seem to be there":
-     // they arrived and are fighting, they were just never shown as present, only as "inbound".
-     if(allyHereList.length){const tot=allyHereList.reduce((s,x)=>s+x.n,0),totU=allyHereList.reduce((s,x)=>s+x.units,0);
-       const _threatNow=regionsOf(c).some(r=>incomingTo(c.id).some(x=>x.region.id===r.id));
-       const allyRows=allyByOwnerList.map(e=>{const where=Object.values(e.regs).map(rr=>esc(rr.name)+(rr.coord?' '+coordChip(rr.coord):'')).join(', ');
-         const cs=compStr(e.comp,4);
-         return `<tr><td style="white-space:nowrap"><b>${esc(leaderName(e.o))}</b> <span class="atag">${esc(e.o.tag||'')}</span></td><td style="white-space:nowrap">${where}</td><td class="r mono">${full(e.units)}</td><td class="r"><button class="btn ghost sm" data-askwd1="${e.o.id}" title="Message ${esc(e.o.tag||'this ally')} to pull their units back when it suits them">✉ Ask to withdraw</button></td></tr>${cs?`<tr><td colspan="4" style="border-top:0;padding:0 8px 7px 8px"><div class="small muted">↳ ${cs}</div></td></tr>`:''}`;}).join('');
-       parts.push(`<div class="small" style="color:var(--ok);font-weight:700">✅ ${allyByOwnerList.length} ally(ies) are defending your ground right now (${tot} fleet${tot!==1?'s':''}, ${full(totU)} units)</div>
-         <div class="scroll mt"><table><thead><tr><th>Ally</th><th>Where</th><th class="r">Units</th><th></th></tr></thead><tbody>${allyRows}</tbody></table></div>
-         <div class="row between wrap" style="gap:8px;margin-top:5px"><span class="muted small" style="min-width:0">These belong to your allies (alliance members and theater-mates). Ask one to pull back, or thank them all and send them home now. Your own stationed fleets are recalled from the <span class="lk" onclick="warTab='defence';go('fleets')">Defence tab</span>.</span><span class="row wrap" style="gap:6px"><button class="btn ghost sm" data-askwd="1" title="Message all these allies to pull back when it suits them">✉ Ask all to withdraw</button><button class="btn ${_threatNow?'ghost ':''}sm" data-thankallies="1" title="Send a thank-you and release all their fleets to head home now">🙏 Thanks, all may go home</button></span></div>${_threatNow?'<div class="small" style="color:var(--warn);margin-top:2px">⚠ You are still under attack, you may want to keep them a little longer.</div>':''}`);}
-     if(allyReinf.length){const rows=allyReinf.slice(0,6).map(a=>{const cs=compStr(a.comp,4);return `<tr><td style="white-space:nowrap">${esc(leaderName(a.from))} <span class="atag">${esc(a.from.tag||'')}</span></td><td style="white-space:nowrap">${esc(a.rname||'your ground')} ${a.coord?coordChip(a.coord):''}</td><td class="r mono">${full(a.size||0)}</td><td class="r"><span class="eta">${a.eta}t</span></td></tr>${cs?`<tr><td colspan="4" style="border-top:0;padding:0 8px 7px 8px"><div class="small muted">↳ ${cs}</div></td></tr>`:''}`;}).join('');
-       parts.push(`<div class="small mt" style="color:var(--ok);font-weight:600">🛡 ${allyReinf.length} more allied reinforcement fleet(s) still on the way</div>
-         <div class="scroll"><table><thead><tr><th>From</th><th>To</th><th class="r">Units</th><th class="r">Lands</th></tr></thead><tbody>${rows}</tbody></table></div>`);}
-     // Reconcile the numbers honestly: if allied fleets are sitting out because the garrison cap (2× your own defence) is full,
-     // say so here and point at the real fix, recruit your own army, so "help arrived but nothing changed" makes sense.
-     {let over=0;regionsOf(c).forEach(r=>{try{const pl=defenderPool(r,c);if(pl.excess)over+=pl.excess.length;}catch(e){}});
-      if(over>0)parts.push(`<div class="small mt" style="color:var(--warn)">⚠ ${over} allied fleet(s) arrived but <b>sit out</b>: the garrison cap is <b>2× your own defence</b>, and yours is low. Recruit even a small army (Armed Forces) to unlock their firepower. Your <b>Planetary Shield</b> is what holds the line meanwhile.</div>`);}
-     // Who needs YOU, where and when.
-     if(calls.length){const rows=calls.slice(0,6).map(k=>`<tr><td style="white-space:nowrap">${k.owner.id===c.id?'<b>You</b>':esc(k.owner.name)+' <span class="atag">'+esc(k.owner.tag)+'</span>'}</td><td style="white-space:nowrap">${esc(k.region.name)} ${coordChip(k.region.coord)}</td><td class="r mono" style="color:${k.missing>0?'var(--danger)':'var(--ok)'}">${k.missing>0?'short '+full(k.missing):'covered'}</td><td class="r"><span class="eta">${k.eta}t</span></td><td class="r"><button class="btn sm" data-defend="${k.region.id}">🛡 Help</button></td></tr>`).join('');
-       parts.push(`<div class="small mt" style="color:var(--alert);font-weight:600">📣 ${calls.length} defence call(s), your team needs forces</div>
-         <div class="scroll"><table><thead><tr><th>Holder</th><th>Region</th><th class="r">Status</th><th class="r">Impact</th><th></th></tr></thead><tbody>${rows}</tbody></table></div>`);}
-     if(myACS.length)parts.push(`<div class="small mt" style="color:var(--tech)">⚑ <b>${myACS.length}</b> coordinated alliance strike(s) in progress, see <b>Alliance → Operations board</b> to join.</div>`);
-     if(myWars.length)parts.push(`<div class="small mt" style="color:var(--danger)">⚔ At war with: ${myWars.map(w=>{const o=(G.clans||[]).find(x=>x.id===(w.a===cl.id?w.b:w.a));return o?esc(o.tag):'?';}).join(', ')}.</div>`);
-     if(teamPosts.length)parts.push('<div class="mt" style="border-top:1px solid var(--border);padding-top:6px">'+teamPosts.map(p=>`<div class="small muted" style="padding:2px 0"><span class="tag">t${p.tick}</span> ${esc(p.text)}</div>`).join('')+'</div>');
-     body=parts.length?parts.join(''):'<div class="muted small">No active alliance operations right now. Coordination kicks in automatically when you or an ally is attacked, or when your alliance launches a joint strike.</div>';}
-   v.appendChild(h(`<div class="card mb" style="border-left:3px solid var(--accent2)"><h3>🤝 Alliance status <span class="muted small" style="text-transform:none;letter-spacing:0">who is helping you, and who needs you</span></h3>${body}</div>`));}
+  // (v3.37) alliance "who's helping you" moved to Alliance -> Command via allianceHelpCard(); no longer rendered here
   // Active sabotage against you
   const myDeb=(c._debuffs||[]).filter(d=>d.until>=G.tick);
   if(TAB==='defence'&&myDeb.length)v.appendChild(h(`<div class="card mb" style="border-left:3px solid var(--bad)"><h3>Sabotage active against you</h3>${myDeb.map(d=>`<div class="small">${d.type==='radar'?'📡 Radar network':'⚡ Power grid'} crippled, recovers in <b>${d.until-G.tick} tick(s)</b>.</div>`).join('')}</div>`));
-  if(TAB==='offence')v.appendChild(h(`<div class="card mb"><h3>Covert operations</h3><div class="muted small">Run sabotage, deep recon, treasury raids and more from the dedicated <b>Covert Ops</b> screen (needs a Covert Ops Center).</div><button class="btn sm mt" onclick="GO('covert')">Open Covert Ops →</button></div>`));
+  // covert operations are merged into Around you, rendered after Nearest targets (v3.36)
   // Sleep / Shield mode, anti hit-and-hide
   if(TAB==='defence'){const sh=c.shield;const homeOk=fleetsAllHome(c);
    const state=!sh?'off':sh.status==='arming'?'arming':'active';
@@ -6851,7 +6860,7 @@ VIEWS.fleets=v=>{const c=you();const inc=incomingTo(c.id);const cl0=clanOf(c);
      :`<div class="small" style="color:var(--good)">🛡 Shield ACTIVE, captures blocked (not the Nexus), production 50%, offence disabled.</div><button class="btn sec sm mt" id="shieldoff">Lower shield & resume</button>`;
    const roe=c.roe||{};
    v.appendChild(h(`<details class="card mb" id="wrDefSet" ${state!=='off'?'open style="border-left:3px solid var(--gold)"':''}>
-     <summary style="cursor:pointer;font-weight:700">🛡 Defence settings <span class="muted small" style="font-weight:400">shield &amp; auto-defence, set these before you log off${state!=='off'?' · <b style="color:var(--gold)">SHIELD ON</b>':''}</span></summary>
+     <summary style="cursor:pointer;font-weight:700">🛡 Shield &amp; sleep-safe defence <span class="muted small" style="font-weight:400">the Planetary Shield blocks captures while you are away; set your auto-defence too${state!=='off'?' · <b style="color:var(--gold)">SHIELD ON</b>':''}</span></summary>
      <div class="mt"><b class="small">Shield mode</b> <span class="muted small">safe downtime, no hit-and-hide</span>${body}</div>
      <div class="mt" style="border-top:1px solid var(--border);padding-top:10px"><b class="small">Rules of Engagement</b> <span class="muted small">the game defends for you while you sleep</span>
        <label class="row" style="gap:8px;margin:5px 0"><input type="checkbox" id="roeMob" ${roe.mobilize?'checked':''} style="width:auto"> <span class="small">Auto-<b>mobilise</b> when a major threat is inbound</span></label>
@@ -6972,7 +6981,7 @@ VIEWS.fleets=v=>{const c=you();const inc=incomingTo(c.id);const cl0=clanOf(c);
         const defParts=[ownItem].concat(natItems).filter(Boolean);
         const defLine=defParts.length?`<tr class="mydef"><td colspan="7" style="border-top:0;padding:0 8px 9px 8px"><div class="small"><span class="muted">🛡 Defenders (${nDefenders}): </span>${defParts.join('<span class="muted"> · </span>')}</div></td></tr>`:'';
         return `<tr><td>${mine?'<b>You</b>':(o?esc(o.name)+' <span class="atag">'+esc(o.tag)+'</span>':'ally')}</td><td style="white-space:nowrap">${esc(r.name)} ${coordChip(r.coord)}</td><td class="r mono" style="color:var(--danger)">${full(ap)}${foeCell}</td><td class="r mono" style="color:var(--ok)">${full(dp)}</td><td class="r"><span class="eta">${typeof eta==='number'?eta+'t':'—'}</span></td><td class="r" style="color:${verdict.c};font-weight:600;white-space:nowrap">${verdict.t}</td><td class="r"><span class="row" style="gap:4px;justify-content:flex-end;flex-wrap:wrap"><button class="btn ghost sm" data-detail="${r.id}" data-unid="${nUnid}" title="Scan the incoming fleets and see the defence plan, all here">${open?'▾':'▸'} Scan/plan${nUnid?' <span class="pill n">'+nUnid+'?</span>':''}</button>${strike}<button class="btn sm" data-defend="${r.id}">🛡 Reinforce</button></span></td></tr>${defLine}<tr class="drow" data-drow="${r.id}"${open?'':' hidden'}><td colspan="7" style="padding:2px 6px 12px">${detail}</td></tr>`;}).join('');
-      body+='<div class="small mb" style="color:var(--bad);font-weight:600">🔴 '+(TAB==='alliance'?(_inCl?'Alliance & theater-mates under attack, send help':'Theater-mates under attack, help if you want'):(underAttack.some(r=>r.owner!==c.id)?'Regions under attack, yours, your allies and theater-mates. Tap Reinforce to send defence.':'Your regions under attack'))+'</div>'+(TAB==='alliance'?'<div class="muted small mb">'+(_inCl?'Your alliance members plus the nations of your home theater ('+esc(theaterName(homeCluster(c)))+'). Theater-mates can never attack you; helping them is optional and builds goodwill.':'These are <b>not</b> alliance members, you fly no banner yet. They are the nations of your home theater <b>'+esc(theaterName(homeCluster(c)))+'</b>: your continent is your team, nobody inside it can attack you, and you may reinforce them if you like. Want real teammates with shared plans and a treasury? Join or found an alliance.')+'</div>':'')+'<div class="scroll"><table><thead><tr><th>Holder</th><th>Region</th><th class="r" title="Total enemy combat POWER (not unit count) landing on this region">Enemy power ⚔</th><th class="r" title="Your defending combat POWER here">Your power 🛡</th><th class="r">ETA</th><th class="r">Verdict</th><th></th></tr></thead><tbody>'+rows+'</tbody></table></div>'+(_mateMore?'<div class="muted small mt">+'+_mateMore+' more theater-mates under attack → <span class="lk" onclick="warTab=\'alliance\';go(\'fleets\')">Alliance tab</span></div>':'');}
+      body+='<div class="small mb" style="color:var(--bad);font-weight:600">🔴 '+(TAB==='alliance'?(_inCl?'Alliance & theater-mates under attack, send help':'Theater-mates under attack, help if you want'):(underAttack.some(r=>r.owner!==c.id)?'Regions under attack, yours, your allies and theater-mates. Tap Reinforce to send defence.':'Your regions under attack'))+'</div>'+(TAB==='alliance'?'<div class="muted small mb">'+(_inCl?'Your alliance members plus the nations of your home theater ('+esc(theaterName(homeCluster(c)))+'). Theater-mates can never attack you; helping them is optional and builds goodwill.':'These are <b>not</b> alliance members, you fly no banner yet. They are the nations of your home theater <b>'+esc(theaterName(homeCluster(c)))+'</b>: your continent is your team, nobody inside it can attack you, and you may reinforce them if you like. Want real teammates with shared plans and a treasury? Join or found an alliance.')+'</div>':'')+'<div class="scroll"><table><thead><tr><th>Holder</th><th>Region</th><th class="r" title="Total enemy combat POWER (not unit count) landing on this region">Enemy power ⚔</th><th class="r" title="Your defending combat POWER here">Your power 🛡</th><th class="r">ETA</th><th class="r">Verdict</th><th></th></tr></thead><tbody>'+rows+'</tbody></table></div>'+(_mateMore?'<div class="muted small mt">+'+_mateMore+' more theater-mates under attack → <span class="lk" onclick="clanTab=\'command\';GO(\'clans\')">Alliance</span></div>':'');}
     if(garr.length)body+=garr.map(f=>{const r=G.regions.find(x=>x.id===f.target);return `<div class="fleetrow"><span class="pill g">🛡 ${f.status==='garrison'?'stationed':'deploying'}</span><span>${r?esc(r.name)+' <span class="tag">'+r.coord+'</span>':'—'}</span><span class="muted small">${full(fleetSize(f.units))} units${f.status==='outbound'?' · arrives in '+(f.eta-G.tick)+'t':' defending'}</span><button class="btn ghost sm" data-recall="${f.id}" style="margin-left:auto">Recall</button></div>`;}).join('');
     if(selDefend!=null){const r=G.regions.find(x=>x.id===selDefend);if(r&&canDefend(c,r)){const home=homeFor(c,r)||regionsOf(c)[0];
       const baseT=home?travelFor(c,home,r):null;const slowT=(baseT!=null)?baseT+Math.max(1,Math.ceil(baseT*REINFORCE_SLOW)):null;const travel=baseT;
@@ -7010,6 +7019,8 @@ VIEWS.fleets=v=>{const c=you();const inc=incomingTo(c.id);const cl0=clanOf(c);
     return `<tr><td style="white-space:nowrap"><span class="tag">${x.r.coord}</span> ${esc(x.r.name)}</td><td style="white-space:nowrap">${o?emblem(o)+' '+esc(o.tag):'<span class="muted">unclaimed</span>'}</td><td class="r">${defCell}</td><td class="r eta">${x.eta}t</td><td class="r"><button class="btn ghost sm" data-scout="${x.r.id}" title="Scout this region: ${SCOUT_COST} influence + 1 command point">🔍 Scout</button>${clanOf(c)?` <button class="btn ghost sm" data-shareintel="${x.r.id}" title="Post this target's intel to alliance chat">📤</button>`:''} <button class="btn sm" data-tgt="${x.r.id}">Target</button></td></tr>`;}).join('');
   if(TAB==='offence')v.appendChild(h(`<div class="card mb"><h3>Nearest targets <span class="muted small" style="text-transform:none;letter-spacing:0">scout before you commit</span></h3><div class="scroll"><table><thead><tr><th>Region</th><th>Owner</th><th class="r">Est. defence</th><th class="r">Travel</th><th></th></tr></thead><tbody>${nr}</tbody></table></div></div>`));
 
+  // ---- COVERT OPS embedded in Around you: your eyes and dirty tricks on the neighbourhood ----
+  if(TAB==='offence'){v.appendChild(h(`<div class="ptitle" style="margin-top:14px;border-top:1px solid var(--border);padding-top:12px"><h2 style="font-size:19px">🕵 Covert Ops</h2><span class="h">Your spies: see what is hidden, and hit them where it hurts. Each mission shows its cost and what it needs.</span></div>`));try{covertRender(v,true);}catch(e){console.error('covert embed',e);}}
   // Sandbox Combat Simulator, test the 5-phase math with virtual armies, no Excel needed.
   const myArmy={};UNIT.forEach(u=>myArmy[u.k]=c.units[u.k]||0);
   if(TAB==='offence')v.appendChild(h(`<div class="card"><details class="rawmath" style="background:transparent;border:0;padding:0"><summary style="font-size:14px;color:var(--text)">🧪 Combat Simulator, test the 5-phase math (sandbox)</summary>
@@ -7399,7 +7410,7 @@ function regionSheetHTML(r,c,hostiles,incRegions){const o=r.owner!=null?G.countr
     <div class="row wrap mt" style="gap:6px">${acts}</div>${pinUI}`;}
 function bindRegionSheet(card,r,c,close){const q=s=>card.querySelector(s);const cc=q('[data-cardclose]');if(cc)cc.onclick=close;
   card.querySelectorAll('[data-act]').forEach(b=>b.onclick=()=>{const a=b.dataset.act;
-    if(a==='scout'){const res=cmdScoutRegion(c,r.id);if(res.ok){toast('🔍 Scouts sent to '+r.coord+', report in the War Room');save();go('map');}else toast(res.error,'bad');}
+    if(a==='scout'){const res=cmdScoutRegion(c,r.id);if(res.ok){toast('🔍 Scouts sent to '+r.coord+', report in Homeland');save();go('map');}else toast(res.error,'bad');}
     else if(a==='attack'){selTarget=r.id;warTab='offence';go('fleets');}
     else if(a==='acs'){selTarget=r.id;warTab='offence';go('fleets');setTimeout(()=>{const el=document.getElementById('acs');if(el)el.scrollIntoView({block:'center'});},60);}
     else if(a==='reinforce'){selDefend=r.id;warTab='defence';go('fleets');}
@@ -7608,7 +7619,7 @@ function renderMapBelow(v,c,hostiles,incRegions){v.innerHTML='';
    const findAlly=()=>{const cl=clanOf(me);let a=null;if(cl)a=clanMembers(cl).filter(m=>m.id!==me.id&&regionsOf(m).length)[0];if(a)GOTO_NATION(a.id);else toast(cl?'No allied territory to show.':'Join an alliance to have allies.','warn');};
    const findConflict=()=>{const hot=clusterList().map(clu=>({clu,b:areaBattles(G.regions.filter(r=>r.cluster===clu))+G.regions.filter(r=>r.cluster===clu&&regionHeat(r)>0).length})).sort((a,b)=>b.b-a.b)[0];if(hot&&hot.b>0)GOTO_SECTOR(hot.clu,1);else toast('No active fighting anywhere right now.','warn');};
    const findRich=()=>{const clu=clusterList().map(cl2=>({cl2,e:areaEco(G.regions.filter(r=>r.cluster===cl2))})).sort((a,b)=>b.e-a.e)[0];if(clu)GOTO_SECTOR(clu.cl2,1);};
-   const findWeak=()=>{const t=G.regions.filter(r=>r.owner!=null&&r.owner!==me.id&&!sameTheaterAlly(me,r)).map(r=>({r,d:regionDef(r)})).sort((a,b)=>a.d-b.d)[0];if(t){selTarget=t.r.id;toast('Weakest reachable target selected, open the War Room to strike.');GOTO_SECTOR(t.r.cluster,t.r.sector);}};
+   const findWeak=()=>{const t=G.regions.filter(r=>r.owner!=null&&r.owner!==me.id&&!sameTheaterAlly(me,r)).map(r=>({r,d:regionDef(r)})).sort((a,b)=>a.d-b.d)[0];if(t){selTarget=t.r.id;toast('Weakest reachable target selected, open the Frontier to strike.');GOTO_SECTOR(t.r.cluster,t.r.sector);}};
    const qa=h(`<div class="card mb"><div class="clabel">⚡ Quick actions</div><div class="row wrap mt" style="gap:6px">
      <button class="btn sec sm" data-q="enemy">🔴 Find enemy</button><button class="btn sec sm" data-q="ally">🟢 Find ally</button><button class="btn sec sm" data-q="conflict">🔥 Find conflict</button><button class="btn sec sm" data-q="rich">💰 Richest theater</button><button class="btn sec sm" data-q="weak">🎯 Weakest target</button></div></div>`);
    v.appendChild(qa);const H={enemy:findEnemy,ally:findAlly,conflict:findConflict,rich:findRich,weak:findWeak};
@@ -7741,8 +7752,8 @@ function renderMapBelow(v,c,hostiles,incRegions){v.innerHTML='';
   // Search jump: auto-open the found nation's card + highlight its tile
   if(mapFocus!=null&&cellMarkers){const idx=cellMarkers.findIndex(m=>m.owner&&m.owner.id===mapFocus);if(idx>=0){fillCard(cellMarkers[idx]);const tile=wrap.querySelector(`[data-tile="${idx}"]`);if(tile){tile.style.outline='2px solid var(--accent)';tile.scrollIntoView({block:'center'});}}mapFocus=null;}
 };
-VIEWS.covert=v=>{const c=you();
-  v.appendChild(h(`<div class="ptitle"><h2>Covert Operations ${helpBtn('help-covert')}</h2><span class="h">Run your agents in the shadows, sabotage, recon, raids. Stealth beats their alert.</span></div>`));
+function covertRender(v,embedded){const c=you();
+  if(!embedded)v.appendChild(h(`<div class="ptitle"><h2>Covert Operations ${helpBtn('help-covert')}</h2><span class="h">Run your agents in the shadows, sabotage, recon, raids. Stealth beats their alert.</span></div>`));
   if(bTotal(c,'covert')<1){const d=BUILD.find(x=>x.k==='covert');const unlocked=buildUnlocked(c,d);const r0=regionsOf(c)[0];const lv0=r0?blevel(c,r0.id,'covert'):0;const cost=bcost('covert',lv0);const cs=Object.entries(cost).map(([k,vv])=>costTok(k,vv)).join(' ');const queued=(c.queue||[]).some(q=>q.k==='covert');
     const req=d.req?(TECH.find(x=>x.k===d.req)||{}).n:'';
     // A44: no empty screen, show what covert ops will give you, and the one button that gets you there.
@@ -7859,7 +7870,8 @@ ${block||'  (geen data)'}
         <select id="ffF" style="width:auto" title="Nation to frame">${others.map(f=>`<option value="${f.id}">frame: ${esc(f.name)} (${esc(f.tag)})</option>`).join('')}</select>
         <input type="text" inputmode="numeric" class="qint" id="ffA" placeholder="agents" style="width:90px" value="${FALSE_FLAG_MIN}"><button class="btn sm" id="ffGo" ${(cdl>0||(c.agents||0)<FALSE_FLAG_MIN)?'disabled':''}>Run False Flag</button></div></div>`);
     v.appendChild(ff);const fg=ff.querySelector('#ffGo');if(fg)fg.onclick=()=>{const tv=+ff.querySelector('#ffT').value,fv=+ff.querySelector('#ffF').value;if(tv===fv){toast('Pick a different nation to frame than the target.','bad');return;}const r=cmdFalseFlag(c,tv,fv,+ff.querySelector('#ffA').value);if(r.ok){toast(r.data.exposed?'🎭 False Flag EXPOSED, the trail leads back to you.':'🎭 False Flag done, the blame falls elsewhere.',r.data.exposed?'warn':'good');go('covert');drawTop();save();}else toast(r.error,'bad');};}
-};
+}
+VIEWS.covert=v=>covertRender(v,false);
 VIEWS.clans=v=>{const c=you();const cl=clanOf(c);
   v.appendChild(h(`<div class="ptitle"><h2>Alliance ${helpBtn('help-alliance')}</h2><span class="h">Band together, coordinate assaults, pool a treasury, out-scale rivals.</span></div>`));
   if(!cl){
@@ -7921,6 +7933,7 @@ VIEWS.clans=v=>{const c=you();const cl=clanOf(c);
   boxChat.hidden=clanTab!=='chat';boxTreas.hidden=clanTab!=='treasury';boxMem.hidden=clanTab!=='members';boxManage.hidden=clanTab!=='manage';boxDip.hidden=clanTab!=='diplomacy';boxCmd.hidden=clanTab!=='command';
   v.appendChild(boxChat);v.appendChild(boxCmd);v.appendChild(boxTreas);v.appendChild(boxMem);v.appendChild(boxDip);v.appendChild(boxManage);
   // ---- v3.19 COMMAND tab (Fase 2-4): standing defence order, war-plan board, and the Alliance Legion reserve ----
+  try{allianceHelpCard(boxCmd,c);}catch(e){console.error('allianceHelpCard',e);}
   {const canOff=isClanOfficer(c);const sd=cl.standingDef;const wp=cl.warPlan;const legN=legionCount(cl);const legT=legionTotals(cl);const myLeg=(cl.legion&&cl.legion.donors&&cl.legion.donors[c.id])?fleetSize(cl.legion.donors[c.id]):0;
    // --- Standing defence order ---
    const soStat=sd?`<div class="small">Active: auto-defend <b>${sd.scope==='home'?'home-theater regions':'all alliance territory'}</b> when incoming threat ≥ <b>${Math.round(sd.threshold*100)}%</b>${sd.autoLegion?' · <span style="color:var(--ok)">Legion auto-deploys</span>':' · advisory + opted-in auto-assist'}.</div>`:'<div class="muted small">No standing order. Members still defend manually and via their own auto-assist setting.</div>';
@@ -7937,9 +7950,9 @@ VIEWS.clans=v=>{const c=you();const cl=clanOf(c);
        const win=`tick #${t.fromTick}–${t.toTick}`+(t.toTick<G.tick?' (passed)':t.fromTick>G.tick?` (opens in ${t.fromTick-G.tick}t)`:' (open now)');
        const mine=(t.claims||[]).find(x=>x.by===c.id);
        const roleBtns=PLAN_ROLES.map(rn=>`<button class="btn ${mine&&mine.role===rn?'sm':'ghost sm'}" data-planrole="${i}:${rn}" title="Claim ${rn}">${rn}</button>`).join(' ');
-       return `<div style="padding:8px 0;border-top:1px solid var(--border)"><div class="row between wrap" style="gap:8px"><span class="small">${i+1}. 🎯 <b>${esc(t.name)}</b> ${coordChip(t.coord)} · <span class="muted">${win}</span>${t.note?' · '+esc(t.note):''}</span><button class="btn ghost sm" onclick="GO('fleets')">Launch in War Room</button></div>
+       return `<div style="padding:8px 0;border-top:1px solid var(--border)"><div class="row between wrap" style="gap:8px"><span class="small">${i+1}. 🎯 <b>${esc(t.name)}</b> ${coordChip(t.coord)} · <span class="muted">${win}</span>${t.note?' · '+esc(t.note):''}</span><button class="btn ghost sm" onclick="GO('around')">Launch on the Frontier</button></div>
          <div class="mt small"><span class="muted">Roles:</span> ${claims}</div><div class="row wrap mt" style="gap:4px"><span class="muted small" style="align-self:center">Claim yours:</span>${roleBtns}</div></div>`;}).join('');
-   }else wpBody='<div class="muted small">No war plan yet. An officer can lay out up to five targets with landing windows; members then claim a role. Claims are intentions, real strikes still launch via ACS in the War Room.</div>';
+   }else wpBody='<div class="muted small">No war plan yet. An officer can lay out up to five targets with landing windows; members then claim a role. Claims are intentions, real strikes still launch via ACS in Homeland.</div>';
    const wpCtrl=canOff?`<div class="mt" style="border-top:1px solid var(--border);padding-top:8px"><div class="mono small muted mb">OFFICERS, add a target · coordinate, opens-in ticks, closes-in ticks, note</div>
        <div class="row wrap" style="gap:6px;align-items:flex-end"><input id="wpCoord" placeholder="3:2:7" style="width:100px;font-family:var(--mono)"><input id="wpFrom" type="number" min="0" max="72" value="6" title="opens in ticks" style="width:64px"><input id="wpTo" type="number" min="0" max="96" value="14" title="closes in ticks" style="width:64px"><input id="wpNote" maxlength="100" placeholder="e.g. hit the capital together" style="flex:1;min-width:140px"><button class="btn sm" id="wpAdd">${wp?'Add target':'Start plan'}</button>${wp?'<button class="btn ghost sm" id="wpClear">Clear plan</button>':''}</div></div>`:'';
    boxCmd.appendChild(h(`<div class="card mb" style="border-left:3px solid var(--tech)"><h3>🗺 War plan <span class="muted small" style="text-transform:none;letter-spacing:0">shared targets & role-claims</span></h3>${wpBody}${wpCtrl}</div>`));
@@ -8205,7 +8218,7 @@ VIEWS.clans=v=>{const c=you();const cl=clanOf(c);
          <div class="row between wrap" style="gap:6px"><div class="small"><b>${isMe?'You':esc(call.owner.name)}</b> <span class="tag">${call.owner.tag}</span> → <b>${esc(call.region.name)}</b> ${coordChip(call.region.coord)} <span class="pill ${sb.p}">${sb.t}</span></div><span class="eta" style="color:var(--bad)">impact ${call.eta}t · ${call.threats.length}⚔</span></div>
          <div class="row between wrap mt" style="gap:6px"><span class="small">Need <b>${full(call.required)}</b> · have <b style="color:${pct>=100?'var(--good)':pct>=50?'var(--warn)':'var(--bad)'}">${full(call.assigned)}</b>${call.missing?` · <span style="color:var(--bad)">missing ${full(call.missing)}</span>`:''}</span><span class="row" style="gap:5px">${scanBtn}${defBtn}${assignBtn}</span></div>
          <div class="bar mt"><span style="width:${pct}%;background:${pct>=100?'var(--good)':pct>=50?'var(--warn)':'var(--bad)'}"></span></div></div>`;}).join('');
-     boxChat.appendChild(h(`<div class="card mb" style="border-left:3px solid var(--bad)"><h3>Alliance defence <span class="muted small" style="text-transform:none;letter-spacing:0">required vs assigned power · clanmates auto-reinforce critical calls</span></h3>${rows}<div class="muted small mt"><b>Assign my army</b> stations a defensive fleet to that region (speed matters, it must arrive before impact). <b>Scan</b> shares enemy intel alliance-wide; <b>Plan</b> loads the attacker into the War Room simulator. AI clanmates automatically send help to CRITICAL calls they can reach.</div></div>`));}}
+     boxChat.appendChild(h(`<div class="card mb" style="border-left:3px solid var(--bad)"><h3>Alliance defence <span class="muted small" style="text-transform:none;letter-spacing:0">required vs assigned power · clanmates auto-reinforce critical calls</span></h3>${rows}<div class="muted small mt"><b>Assign my army</b> stations a defensive fleet to that region (speed matters, it must arrive before impact). <b>Scan</b> shares enemy intel alliance-wide; <b>Plan</b> loads the attacker into the Frontier combat simulator. AI clanmates automatically send help to CRITICAL calls they can reach.</div></div>`));}}
   // ---- ALLIANCE OPERATIONS BOARD, join a joint strike your alliance already launched ----
   {const myOps=(G.acs||[]).filter(op=>op.clan===cl.id);
    let body='';
@@ -8225,7 +8238,7 @@ VIEWS.clans=v=>{const c=you();const cl=clanOf(c);
          body+=`<div class="card mt" style="border-left:3px solid var(--accent)"><h3>Commit forces → ${r?esc(r.name):''} <span class="muted small" style="text-transform:none;letter-spacing:0">lands in ${op.landTick-G.tick}t · 600 influence · 2 CP</span></h3><div id="jui" style="max-width:760px">${unitInputs(c)}</div>
            <div class="row wrap" style="gap:5px;margin-top:7px"><span class="muted small" style="align-self:center">Commit:</span><button class="btn sec sm" data-fill="0.25" data-qbox="jui">25%</button><button class="btn sec sm" data-fill="0.5" data-qbox="jui">50%</button><button class="btn sec sm" data-fill="1" data-qbox="jui">MAX</button><button class="btn sec sm" data-fill="fast" data-qbox="jui" title="Only fast units — the ones that reach a battle already in progress">⚡ Fast only</button><button class="btn ghost sm" data-fill="0" data-qbox="jui">Clear</button></div>
            <div class="row mt wrap" style="gap:8px"><button class="btn sm" id="joingo">Send fleet</button><button class="btn ghost sm" id="joinclr">Cancel</button></div></div>`;}}
-   }else body='<div class="muted small">No joint operations running. Launch one from the <b>War Room</b>, pick a target, then "🤝 Coordinate assault". Members can then join it here.</div>';
+   }else body='<div class="muted small">No joint operations running. Launch one from the <b>Frontier</b>, pick a target, then "🤝 Coordinate assault". Members can then join it here.</div>';
    const ob=h(`<div class="card mb" style="border-left:3px solid var(--accent)"><h3>⚑ Joint operations (ACS) <span class="muted small" style="text-transform:none;letter-spacing:0">any member may join, no approval needed, up to ${ACS_MAX_FLEETS} fleets that can reach it in time</span></h3>${body}</div>`);
    boxChat.appendChild(ob);
    ob.querySelectorAll('[data-joinop]').forEach(b=>b.onclick=()=>OPEN_JOINOP(b.dataset.joinop));
@@ -8248,7 +8261,7 @@ VIEWS.clans=v=>{const c=you();const cl=clanOf(c);
       <div class="muted small mt">Anti-feeder transfer cap: you may still gift <b>${fmt(remainCap,true)}</b> worth this season (${Math.round(NETWORTH_CAP*100)}% of your net worth). ${isOff?'Officers may withdraw for the war effort.':'Only officers can withdraw.'}</div>
       ${(cl.tlog||[]).length?`<details class="mt"><summary class="small muted" style="cursor:pointer">🏦 Treasury log, every deposit & withdrawal (transparency)</summary><div class="mt">${cl.tlog.slice(0,10).map(e=>{const m=G.countries[e.by];return `<div class="row between small" style="padding:3px 0;border-top:1px solid var(--border)"><span><span class="tag">t${e.tick}</span> ${e.dir==='in'?'<span style="color:var(--good)">＋</span>':'<span style="color:var(--bad)">－</span>'} ${esc(m?m.name:'—')}</span><span class="mono">${fmt(e.amt,e.res==='money')} ${RMETA[e.res]?RMETA[e.res].l:e.res}</span></div>`;}).join('')}</div></details>`:''}</div>
     <div class="card"><h3>Recruit, invite AI nations</h3>${invHtml}</div></div>`));
-  boxManage.appendChild(h(`<div class="card mb" style="border-left:3px solid var(--accent)"><h3>Coordinated assault (ACS)</h3><div class="muted small">Launch a joint attack from the <b>War Room</b>: pick a target, commit your units, and clanmates' fleets are timed to land on the <b>same tick</b> as one combined force. More fleets = more power, but oversized clans suffer a bureaucracy penalty (currently <b>${Math.round(bur*100)}%</b> efficiency).</div><button class="btn sm mt" onclick="GO('fleets')">Open War Room →</button></div>`));
+  boxManage.appendChild(h(`<div class="card mb" style="border-left:3px solid var(--accent)"><h3>Coordinated assault (ACS)</h3><div class="muted small">Launch a joint attack from the <b>Frontier</b>: pick a target, commit your units, and clanmates' fleets are timed to land on the <b>same tick</b> as one combined force. More fleets = more power, but oversized clans suffer a bureaucracy penalty (currently <b>${Math.round(bur*100)}%</b> efficiency).</div><button class="btn sm mt" onclick="GO('around')">Open Frontier →</button></div>`));
   // Alliance wonders, pooled treasury projects that buff every member (shared goals)
   {const wdone=cl.wonders||[];
     const fundOf=w=>{let m=1;for(const r in w.cost){const need=w.cost[r]||0;if(need>0)m=Math.min(m,(cl.treasury[r]||0)/need);}return Math.max(0,Math.min(1,m));};
@@ -8273,7 +8286,7 @@ VIEWS.clans=v=>{const c=you();const cl=clanOf(c);
     const unread=x.k!==curCh?(cl.forum||[]).filter(p=>(p.ch||'general')===x.k&&p.tick>(c._chatSeen[x.k]||0)&&p.by!==c.id).length:0;
     const badge=unread?` <span style="background:var(--bad);color:#fff;font-size:9px;padding:1px 5px;border-radius:8px;font-family:var(--mono);vertical-align:middle">${unread}</span>`:'';
     return `<button class="btn ${x.k===curCh?'sm':'ghost sm'}" data-chan="${x.k}">${x.ic} ${x.n}${badge}</button>`;}).join('');
-  const chHint=curCh==='officer'?'🎖 Private, only leaders & officers can read or post here.':curCh==='war'?'⚔ War chat, the alliance\'s battle channel: reports, SOS calls, assault coordination (your own threats live in the War Room screen).':curCh==='logi'?'📦 Logistics, convoys, donations, wonders, objectives.':'💬 General alliance chat.';
+  const chHint=curCh==='officer'?'🎖 Private, only leaders & officers can read or post here.':curCh==='war'?'⚔ War chat, the alliance\'s battle channel: reports, SOS calls, assault coordination (your own threats live in Homeland screen).':curCh==='logi'?'📦 Logistics, convoys, donations, wonders, objectives.':'💬 General alliance chat.';
   const fr=cl.forum.filter(p=>(p.ch||'general')===curCh).slice(0,24).map(p=>{const a=G.countries[p.by];return `<div class="small" style="padding:6px 0;border-top:1px solid var(--border)"><span class="tag">t${p.tick}</span> <strong>${esc(a?leaderName(a):'—')}</strong>: ${esc(p.text)}</div>`;}).join('');
   // v3.16 quick templates: one tap posts a ready line to the right channel — lowers the bar to coordinate.
   const _myR=regionsOf(c)[0];const _coord=_myR?_myR.coord:'';
@@ -8297,7 +8310,7 @@ VIEWS.clans=v=>{const c=you();const cl=clanOf(c);
   v.querySelectorAll('button[data-defend]').forEach(b=>b.onclick=()=>{const rid=+b.dataset.defend;const com={};for(const k in c.units){const n=Math.floor((c.units[k]||0)*0.5);if(n>0)com[k]=n;}const r=cmdStation(c,rid,com);if(r.ok){toast('🛡 Defensive fleet dispatched, arrives in '+r.data.eta+'t (speed matters!)');go('clans');drawTop();save();}else toast(r.error,'bad');});
   v.querySelectorAll('button[data-wonder]').forEach(b=>b.onclick=()=>{const r=cmdBuildWonder(c,b.dataset.wonder);if(r.ok){toast('🏛 Alliance wonder built, bonus active for every member!');go('clans');drawTop();save();}else toast(r.error,'bad');});
   v.querySelectorAll('button[data-ascan]').forEach(b=>b.onclick=()=>{const r=cmdScan(c,+b.dataset.ascan);if(r.ok){toast(r.data.seen?'🛰 Recon shared with the alliance, enemy composition revealed':'Recon blocked by their radar, try again or raise Recon.',r.data.seen?'':'warn');go('clans');drawTop();save();}else toast(r.error,'bad');});
-  v.querySelectorAll('button[data-plandef]').forEach(b=>b.onclick=()=>{const hit=findFleet(+b.dataset.plandef);if(hit){_defPlan={atk:Object.assign({},hit.f.units)};toast('Loaded the incoming force into the War Room simulator.');go('fleets');}});
+  v.querySelectorAll('button[data-plandef]').forEach(b=>b.onclick=()=>{const hit=findFleet(+b.dataset.plandef);if(hit){_defPlan={atk:Object.assign({},hit.f.units)};toast('Loaded the incoming force into the Frontier combat simulator.');go('fleets');}});
   v.querySelectorAll('button[data-eng]').forEach(b=>b.onclick=()=>{const r=cmdSendEngineers(c,+b.dataset.eng);if(r.ok){toast('🔧 Engineers sent, 1 tick saved');go('clans');save();}else toast(r.error,'bad');});
   v.querySelectorAll('button[data-promote]').forEach(b=>b.onclick=()=>{const id=+b.dataset.promote;const cur=cl.roles[id];const r=cmdClanRole(c,id,cur==='member'?'officer':'member');if(r.ok){go('clans');save();}else toast(r.error,'bad');});
   v.querySelectorAll('select.rolesel').forEach(s=>s.onchange=()=>{const r=cmdClanRole(c,+s.dataset.roleid,s.value);if(r.ok){toast('Role updated');go('clans');save();}else toast(r.error,'bad');});
@@ -8377,7 +8390,7 @@ VIEWS.diplomacy=v=>{const c=you();
         <div class="small">🎯 <b>Front:</b> ${front}</div>
         ${(function(){const ti=warTargetIntel(c,foe);
           const rows=ti.known.map(m=>{const r=regionsOf(m).slice().sort((a,b)=>regionDef(b)-regionDef(a))[0];
-            return `<div class="small" style="display:flex;justify-content:space-between;gap:8px;padding:1px 0"><span>${emblem(m)} ${esc(leaderName(m))} <span class="atag">${esc(m.tag)}</span></span>${r?`<span class="tag lk" onclick="GOTO_COORD('${r.coord}')" title="Jump to this region in the War Room and strike">📍 ${esc(r.coord)}</span>`:'<span class="muted small">no ground</span>'}</div>`;}).join('');
+            return `<div class="small" style="display:flex;justify-content:space-between;gap:8px;padding:1px 0"><span>${emblem(m)} ${esc(leaderName(m))} <span class="atag">${esc(m.tag)}</span></span>${r?`<span class="tag lk" onclick="GOTO_COORD('${r.coord}')" title="Jump to this region in Homeland and strike">📍 ${esc(r.coord)}</span>`:'<span class="muted small">no ground</span>'}</div>`;}).join('');
           return `<div class="mt" style="border-top:1px dashed var(--border);padding-top:6px">
             <div class="small"><b>🎯 Their nations</b> ${ti.total?`<span class="muted">(${ti.known.length} of ${ti.total} known${ti.hidden?', '+ti.hidden+' hidden':''})</span>`:''}</div>
             ${rows||'<div class="muted small">None uncovered yet, this alliance keeps its members secret.</div>'}
@@ -8760,9 +8773,9 @@ VIEWS.codex=v=>{
      <b>Counters (damage multipliers)</b>, bring the counter to what they have (scout first) and the same 1,000 units hit twice as hard:<br>
      <div class="scroll mt"><table><thead><tr><th>Class</th><th>Strong against</th><th>Weak against</th></tr></thead><tbody>${rows}</tbody></table></div>
      <b>Losses per tick</b> (attacker / defender, before the ratio adjusts them): tick 1 ~13% / 11%, tick 2 ~30% / 30%, tick 3 ~34% / 42%; capped at 15/35/45% and 14/38/60%. A winning ratio pushes losses onto the loser. <b>Retreat</b> after tick 1 keeps ~85% of your force, after tick 2 about half.<br><br>
-     <b>Supply Trucks</b> carry no fight but are the only units that loot: 3,500 resources each, on any ground win, taken from the trucks that <i>survive</i>. Infantry, Cyber and Recon hunt trucks first, escort with what fires before them (Armor and Air outgun infantry; SAM/Interceptors beat air). The defender's calculator (War Room → incoming fleet → Reveal) tells you exactly how many units stop 90% of their trucks. <b>What a win pays:</b> spoils of war (influence + a cash bounty per enemy unit destroyed, capped) on any win; loot with trucks; the region itself, its production and territory score, on a capture. A repelled defender earns the same bounty for the attackers it destroys. The <b>Battle forecast</b> in the launch screen shows all of this for the exact force you are about to send.`)));}
+     <b>Supply Trucks</b> carry no fight but are the only units that loot: 3,500 resources each, on any ground win, taken from the trucks that <i>survive</i>. Infantry, Cyber and Recon hunt trucks first, escort with what fires before them (Armor and Air outgun infantry; SAM/Interceptors beat air). The defender's calculator (Homeland → incoming fleet → Reveal) tells you exactly how many units stop 90% of their trucks. <b>What a win pays:</b> spoils of war (influence + a cash bounty per enemy unit destroyed, capped) on any win; loot with trucks; the region itself, its production and territory score, on a capture. A repelled defender earns the same bounty for the attackers it destroys. The <b>Battle forecast</b> in the launch screen shows all of this for the exact force you are about to send.`)));}
   v.appendChild(h(sec('Combat, the 3-tick battle',
-    'Battles resolve over up to <b>3 ticks</b>: Tick 1 a recon/air skirmish (light losses), Tick 2 the main ground clash, Tick 3 the occupation that decides capture (ratio ≥ 1.25). After Tick 1 and Tick 2 you choose <b>Retreat</b> or <b>Press On</b> in the War Room, retreating early keeps most of your force. Over-stacking one region bleeds combat power (logistics). A last region can\'t fall to a single strike, but a follow-up within 2 ticks CAN take it, so nobody is invincible.')));
+    'Battles resolve over up to <b>3 ticks</b>: Tick 1 a recon/air skirmish (light losses), Tick 2 the main ground clash, Tick 3 the occupation that decides capture (ratio ≥ 1.25). After Tick 1 and Tick 2 you choose <b>Retreat</b> or <b>Press On</b> in Homeland, retreating early keeps most of your force. Over-stacking one region bleeds combat power (logistics). A last region can\'t fall to a single strike, but a follow-up within 2 ticks CAN take it, so nobody is invincible.')));
   v.appendChild(h(sec('Defending, garrisons, reinforcement & shield',
     '<b>Garrison cap:</b> allied fleets stationed on a region fight up to <b>2× the owner\'s own defence</b> (minimum 3,000 power); anything beyond that is overcrowded and sits out, help is welcome, a wall of sixty is not. Recruit your own units to raise the cap. <b>Theater density:</b> above '+THEATER_SOFTCAP+' human nations in one theater everyone there produces less (−2% per extra nation, floor −30%). Station fleets on your own or an ally\'s region as a <b>garrison</b> (they fight from Tick 1). Because battles last 3 ticks, an attack fires a <b>clan-chat alert</b> and fast units (Interceptors, Strike Fighters, Spec-Ops) sent as <b>reinforcement</b> can arrive mid-battle and swing it. Going offline? Engage <b>Shield mode</b> (all fleets home): after a short arming phase, captures are blocked and production halves, but you can\'t attack while shielded.')));
   v.appendChild(h(sec('Stealth & intelligence',
@@ -8779,7 +8792,7 @@ VIEWS.codex=v=>{
       <div><b>Command Points</b><br>+${cpRegen()} per tick, max ${cpCap()} (large alliances regenerate slower)</div>
       <div><b>Win</b><br>Hold the Nexus with an Earth Command Center for ${NEXUS_HOLD} ticks · else highest overall score at the clock</div>
       <div><b>Beginner protection</b><br>${NEWBIE_PROTECT} ticks, regions can't be captured; ends early if you attack. Afterwards, Superpowers and the Hegemon still cannot attack you until you strike first.</div>
-      <div><b>Safety nets</b><br>Auto-mobilise + emergency shield (RoE) and ministerial delegation are ON by default; small nations (Emerging State) shield earlier. Rebuild relief +15% for ${REBUILD_TICKS} ticks after losing a region.</div>
+      <div><b>Safety nets</b><br>Auto-mobilise + emergency shield (RoE) are ON by default. Auto-build and auto-research are both OFF by default (you run your own economy and tech; turn either on in Home if you want the AI to help). Small nations (Emerging State) shield earlier. Rebuild relief +15% for ${REBUILD_TICKS} ticks after losing a region.</div>
       <div><b>Building</b><br>${BUILD_SLOTS} builds per region at once · ${REGION_DP} Development Points of footprint per region</div>
       <div><b>Occupation &amp; Autonomy</b><br>Your <b>home sector</b> is your Core State — free. Every region you hold outside it is <b>occupied</b> and drags <b>+${OCC_PENALTY} overextension</b> on your <i>whole</i> empire (cuts non-money production, floor −60%). Build a <b>Provincial Capitol</b> in an occupied region to integrate it into a Core State and remove that drag. Federation (−25% overextension) and Supply Chain (−25%) stack on top. Conquest is cheap; holding it means consolidating.</div>
       <div><b>Alliances</b><br>max ${CLAN_MAX} members · bureaucracy penalty beyond ${CLAN_CORE} · war lasts ${WAR_DURATION} ticks, rematch after ${WAR_REMATCH_CD}</div>
@@ -8802,9 +8815,9 @@ window.SOS_HELP=function(rid){const c=you();if(!c)return;const r=cmdCallHelp(c,r
 window.GOTO_COORD=(coord)=>{if(!coord)return;const p=(''+coord).split(':').map(Number);if(p.length<2||isNaN(p[0])||isNaN(p[1]))return;const r=p.length>=3?G.regions.find(x=>x.coord===p[0]+':'+p[1]+':'+p[2]):null;if(r){WM.sel=r.id;mapView.level=2;mapView.cluster=r.cluster;mapView.sector=r.sector;WM.jump={kind:'region',a:r};go('map');return;}GOTO_SECTOR(p[0],p[1]);};
 // Focus the map on a nation's home theater
 window.GOTO_NATION=(cid)=>{const co=G.countries[cid];if(!co)return;const r=regionsOf(co)[0];if(r)GOTO_SECTOR(r.cluster,r.sector);else toast('That nation has no territory to show.','warn');};
-// Open the War Room straight on the Alliance tab (who is defending you). Used by the top-bar "allies inbound" badge.
-window.SHOW_ALLYDEF=()=>{try{warTab='alliance';}catch(e){}go('fleets');};
-// Open the War Room straight on the Defence tab. Used by the crisis action buttons.
+// Open Homeland straight on the Alliance tab (who is defending you). Used by the top-bar "allies inbound" badge.
+window.SHOW_ALLYDEF=()=>{clanTab='command';go('clans');};
+// Open Homeland straight on the Defence tab. Used by the crisis action buttons.
 window.GO_DEFENCE=()=>{try{warTab='defence';}catch(e){}go('fleets');};
 // Recall every fleet that is out ON THE OFFENSIVE (not garrisons defending an ally) so it comes home to defend.
 window.RECALL_STRIKES=()=>{const c=you();if(!c)return;const out=(c.fleets||[]).filter(f=>f.status==='outbound'&&f.intent!=='garrison'&&f.intent!=='reinforce');let n=0;out.forEach(f=>{const r=recallFleet(c,f.id);if(r&&r.ok)n++;});if(typeof toast==='function')toast(n?('↩ Recalled '+n+' strike fleet'+(n>1?'s':'')+', heading home to defend'):'No attacking fleets to recall',n?'warn':'bad');if(n){try{warTab='defence';}catch(e){}go('fleets');drawTop();save();}};
@@ -8821,7 +8834,7 @@ window.BUY_RES=(r)=>{const c=you();if(!c)return;if(typeof MARKET==='undefined'||
   setTimeout(()=>{const el=document.querySelector('[data-qty="'+r+'"]');if(el)el.scrollIntoView({block:'center'});},60);};
 // Count allied reinforcements genuinely IN TRANSIT to your regions (+ soonest ETA), for the top-bar defence badge.
 // Must be status 'outbound' and not yet landed — an already-arrived garrison is defending, not "inbound", so counting
-// it here made the badge read higher than what the War Room could show, which looked like the allies weren't real.
+// it here made the badge read higher than what Homeland could show, which looked like the allies weren't real.
 function myAlliedInbound(c){if(!c||clanOf(c)==null)return {n:0,soon:0};const rids=new Set(regionsOf(c).map(r=>r.id));let n=0,soon=Infinity;
   G.countries.forEach(o=>{if(!o||o.id===c.id||o.retired)return;(o.fleets||[]).forEach(f=>{if(f.intent==='garrison'&&f.status==='outbound'&&f.eta>G.tick&&rids.has(f.target)){n++;soon=Math.min(soon,Math.max(0,f.eta-G.tick));}});});
   return {n,soon:soon===Infinity?0:soon};}
