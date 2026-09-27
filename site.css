@@ -51,9 +51,9 @@ section{padding:64px 0;border-top:1px solid var(--border)}
 .hero{position:relative;overflow:hidden;padding:72px 0 64px}
 .hero-map{position:absolute;inset:0;background:url(img/v1/terrastate-map-crop.jpg) center 40%/cover no-repeat;opacity:.55}
 .hero::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,rgba(11,15,23,.97) 0%,rgba(11,15,23,.82) 45%,rgba(11,15,23,.45) 100%),linear-gradient(0deg,var(--bg) 0%,transparent 30%);pointer-events:none}
-.hero-grid{position:relative;z-index:1;display:grid;grid-template-columns:1.25fr .9fr;gap:40px;align-items:center}
+.hero-grid{position:relative;z-index:1;display:grid;grid-template-columns:1.3fr .85fr;gap:40px;align-items:center}
 .hero-grid>*{min-width:0}
-.brand{font:800 clamp(40px,10.5vw,96px)/.95 var(--disp);letter-spacing:clamp(1px,.5vw,4px);margin:4px 0 14px}
+.brand{font:800 clamp(40px,6vw,84px)/.95 var(--disp);letter-spacing:clamp(1px,.35vw,4px);margin:4px 0 14px}
 .brand b{color:var(--accent)}
 .tagline{font:700 clamp(19px,2.6vw,24px)/1.3 var(--disp);margin:0 0 10px}
 .lead{color:var(--muted);max-width:560px;margin:0 0 26px}
@@ -133,6 +133,7 @@ footer{padding:36px 0 56px;border-top:1px solid var(--border);text-align:center}
 .foot-links{margin-bottom:10px}.foot-links a{color:var(--text);text-decoration:none}
 
 @media(max-width:900px){
+  .brand{font-size:clamp(40px,10.5vw,84px)}
   .hero-grid{grid-template-columns:1fr}.hud{max-width:460px}
   .eras,.two{grid-template-columns:1fr}
   .grid,.turns{grid-template-columns:1fr 1fr}
