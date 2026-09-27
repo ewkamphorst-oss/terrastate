@@ -3,115 +3,204 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Terrastate, a free turn-based strategy game in your browser</title>
-<meta name="description" content="Terrastate: rule a nation, forge alliances, take the Nexus. A free single-player strategy game that runs in your browser, no account, no download. Also in ancient Rome as Romaterra.">
-<meta property="og:title" content="Terrastate">
-<meta property="og:description" content="Rule a nation. Forge alliances. Win the season. Free, in your browser.">
-<meta property="og:image" content="img/terrastate-map.jpg">
-<meta name="theme-color" content="#0d1420">
+<title>Terrastate and Romaterra, free strategy in your browser</title>
+<meta name="description" content="Rule a nation against hundreds of AI rivals, turn by turn. Terrastate in the modern world, Romaterra in the age of Rome. Free, in your browser, no account, no download.">
+<meta property="og:title" content="Terrastate and Romaterra">
+<meta property="og:description" content="One world. Hundreds of AI nations. One prize to hold. Free strategy in your browser, now at version 1.0.">
+<meta property="og:image" content="img/v1/terrastate-map-crop.jpg">
+<meta name="theme-color" content="#0b0f17">
 <link rel="icon" href="icons/terrastate-64.png">
 <link rel="apple-touch-icon" href="icons/terrastate-180.png">
 <link rel="manifest" href="terrastate.webmanifest">
-<style>
-  :root{--bg:#0d1420;--bg2:#131c2c;--panel:#182335;--border:#243147;--text:#e7eef8;--muted:#93a3bd;--accent:#4f8cff;--accent2:#37d9a9;--gold:#e3b341;--rome:#d9a441}
-  *{box-sizing:border-box}
-  body{margin:0;background:var(--bg);color:var(--text);font:16px/1.55 system-ui,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
-  a{color:var(--accent)}
-  .wrap{max-width:1040px;margin:0 auto;padding:0 20px}
-  header.hero{padding:64px 0 40px;text-align:center;background:radial-gradient(ellipse at top,rgba(79,140,255,.16),transparent 60%)}
-  .brand{display:inline-flex;align-items:center;gap:14px;margin-bottom:10px}
-  .brand img{width:56px;height:56px;border-radius:14px}
-  h1{font-size:clamp(34px,7vw,60px);letter-spacing:4px;margin:0;font-weight:800}
-  .tag{color:var(--accent2);font-size:clamp(17px,2.6vw,22px);font-weight:600;margin:8px 0 18px}
-  .lead{color:var(--muted);max-width:640px;margin:0 auto 26px}
-  .cta{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
-  .btn{display:inline-block;padding:15px 26px;border-radius:12px;font-weight:700;font-size:17px;text-decoration:none;border:1px solid transparent}
-  .btn.main{background:linear-gradient(90deg,#4f8cff,#37d9a9);color:#04121c}
-  .btn.rome{background:linear-gradient(90deg,#d9a441,#c98be0);color:#1a1410}
-  .btn.ghost{border-color:var(--border);color:var(--text);background:var(--bg2)}
-  .btn.discord{background:#5865F2;color:#fff}
-  .note{color:var(--muted);font-size:14px;margin-top:14px}
-  section{padding:34px 0;border-top:1px solid var(--border)}
-  h2{font-size:24px;margin:0 0 14px}
-  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px}
-  .card{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:16px}
-  .card b{display:block;margin-bottom:4px}
-  .card p{margin:0;color:var(--muted);font-size:15px}
-  .shots{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px}
-  .shots img{width:100%;height:auto;border-radius:12px;border:1px solid var(--border);display:block}
-  .shots figcaption{color:var(--muted);font-size:13px;margin-top:6px}
-  .steps{counter-reset:s;display:grid;gap:10px}
-  .steps div{position:relative;padding-left:44px;color:var(--muted)}
-  .steps div::before{counter-increment:s;content:counter(s);position:absolute;left:0;top:0;width:30px;height:30px;border-radius:50%;background:var(--accent);color:#04121c;font-weight:800;display:grid;place-items:center}
-  .mono{font-family:ui-monospace,"IBM Plex Mono",Menlo,Consolas,monospace;font-size:12px;letter-spacing:2px;color:var(--accent2)}
-  .soon{border-left:3px solid var(--gold);background:var(--bg2);padding:12px 16px;border-radius:0 12px 12px 0}
-  footer{padding:30px 0 50px;color:var(--muted);font-size:13px;text-align:center}
-  @media(max-width:600px){header.hero{padding:44px 0 30px}.btn{width:100%;text-align:center}}
-</style>
+<link rel="stylesheet" href="site.css">
+<script data-goatcounter="https://playterrastate.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
 </head>
 <body>
-<header class="hero"><div class="wrap">
-  <div class="brand"><img src="icons/terrastate-192.png" alt=""><h1>TERRASTATE</h1></div>
-  <div class="tag">Rule a nation. Forge alliances. Win the season.</div>
-  <p class="lead">A turn-based geopolitical strategy game against hundreds of AI nations. Free, in your browser, no account and no download. Take it one turn at a time or let the world run at 20x.</p>
-  <div class="cta">
-    <a class="btn main" href="play.html">▶ Play Terrastate</a>
-    <a class="btn rome" href="romaterra.html">🏛 Play Romaterra (ancient Rome)</a>
+
+<nav class="topbar">
+  <div class="wrap row">
+    <a class="logo" href="#top"><img src="icons/terrastate-64.png" alt=""><span>TERRA<b>STATE</b></span></a>
+    <div class="navlinks">
+      <a href="#eras">Two eras</a>
+      <a href="#action">In action</a>
+      <a href="#turn">How it plays</a>
+      <a class="pill-new" href="updates.html">Update 1.0</a>
+    </div>
+    <a class="endturn small" href="play.html">PLAY <span>▶</span></a>
   </div>
-  <div class="note">Works on desktop, tablet and phone. Your game saves in your browser; you can install it as an app from the browser menu ("Add to Home Screen" / "Install") and play offline.</div>
-</div></header>
+</nav>
 
-<section><div class="wrap">
-  <div class="mono">WHAT IT IS</div>
-  <h2>A world that answers back</h2>
-  <div class="grid">
-    <div class="card"><b>🌍 One shared world</b><p>Hundreds of AI nations with their own temperament: they trade, ally, betray and go to war, with you and with each other.</p></div>
-    <div class="card"><b>⚔ Real tactical combat</b><p>Three-phase battles with unit counters, doctrines and logistics. Planning wins, not just numbers.</p></div>
-    <div class="card"><b>🤝 Alliances that matter</b><p>Found a bloc, sign pacts, run joint operations and call for defence. Alliance victories are shared.</p></div>
-    <div class="card"><b>🏛 One way to win</b><p>Capture the Nexus, build the Earth Command Center and hold it. If nobody manages, the top score when the clock runs out takes the season.</p></div>
-    <div class="card"><b>🎯 Campaign</b><p>Six scenarios with one clear goal each, from your first three regions to winning a season on Warlord difficulty.</p></div>
-    <div class="card"><b>⏸ Your tempo</b><p>Turn-based by default: the world waits for you. Or auto-play at 1x, 5x or 20x. Quick, Standard or Epic seasons. Recruit, Veteran or Warlord.</p></div>
+<header class="hero" id="top">
+  <div class="hero-map" aria-hidden="true"></div>
+  <div class="wrap hero-grid">
+    <div>
+      <div class="kicker">FREE BROWSER STRATEGY · VERSION 1.0</div>
+      <h1 class="brand">TERRA<b>STATE</b></h1>
+      <p class="tagline">One world. Hundreds of AI nations. One prize to hold.</p>
+      <p class="lead">Build an economy, raise an army, find allies and take the Nexus before anyone else can hold it. Turn by turn, at your pace. Free, in your browser, no account and no download.</p>
+      <div class="cta">
+        <a class="endturn" href="play.html"><small>TURN tick #0</small>PLAY TERRASTATE <span>▶</span></a>
+        <a class="endturn rome" href="romaterra.html"><small>ANNO I</small>PLAY ROMATERRA <span>▶</span></a>
+      </div>
+      <div class="statline"><span class="dot"></span> 300 AI nations · 25 theaters · Quick, Standard or Epic seasons · phone and desktop</div>
+    </div>
+
+    <aside class="hud" aria-label="Example of the in-game Home screen">
+      <div class="hud-top">
+        <div><div class="k">MONEY</div><div class="v">€803.4M</div><div class="d up">+€13.1M/t</div></div>
+        <div><div class="k">COMMAND</div><div class="v">30<span>/30</span></div></div>
+        <div><div class="k">ARMY</div><div class="v">216</div><div class="d">home</div></div>
+      </div>
+      <div class="hud-alert">▲ Nexus hold 3/12 ticks · <b>Polynesian Emirate</b></div>
+      <div class="hud-h"><span class="num">1</span> NOW · WHO LANDS, AND WHEN</div>
+      <div class="hud-cols">
+        <div class="col red"><div class="ch">INCOMING</div>
+          <div class="ln"><span>TASP → Yellow Sea Rim</span><b>1t</b></div>
+          <div class="ln"><span>ARAC → Nile Delta</span><b>3t</b></div></div>
+        <div class="col green"><div class="ch">DEFENCE</div>
+          <div class="ln"><span>CAUC → Yellow Sea Rim</span><b>now</b></div>
+          <div class="ln"><span>OSTR → Nile Delta</span><b>2t</b></div></div>
+      </div>
+      <div class="hud-next">
+        <div class="k">NEXT ACTION</div>
+        <b>Incoming attack on Yellow Sea Rim</b>
+        <div class="d">Lands in 1 tick · ~52,043 attack power</div>
+        <span class="hud-btn">Defend homeland</span>
+      </div>
+    </aside>
   </div>
-</div></section>
+</header>
 
-<section><div class="wrap">
-  <div class="mono">IN GAME</div>
-  <h2>Screens</h2>
-  <div class="shots">
-    <figure style="margin:0"><img src="img/terrastate-map.jpg" alt="Tactical world map" loading="lazy"><figcaption>The tactical map: theaters, alliances, threats and the Nexus.</figcaption></figure>
-    <figure style="margin:0"><img src="img/terrastate-fleets.jpg" alt="War Room" loading="lazy"><figcaption>The War Room: what threatens you and how to hold.</figcaption></figure>
-    <figure style="margin:0"><img src="img/terrastate-home.jpg" alt="Home dashboard" loading="lazy"><figcaption>Home: what needs you this turn.</figcaption></figure>
-    <figure style="margin:0"><img src="img/romaterra-map.jpg" alt="Romaterra map" loading="lazy"><figcaption>Romaterra: the same game in the age of Rome, legions, denarii and the race for Roma.</figcaption></figure>
+<section class="update-band">
+  <div class="wrap row wrapgap">
+    <div>
+      <div class="kicker gold">VERSION 1.0 · 27 SEPTEMBER 2026</div>
+      <div class="ub-title">A clearer round. Same world.</div>
+      <div class="muted">Your start region stays yours. Home tells you who lands, and when. Rivals stay unknown until you scan. And it plays properly on your phone.</div>
+    </div>
+    <a class="btn gold" href="updates.html">See what is new in 1.0 →</a>
   </div>
-</div></section>
+</section>
 
-<section><div class="wrap">
-  <div class="mono">GETTING STARTED</div>
-  <h2>Your first game in three minutes</h2>
-  <div class="steps">
-    <div>Press <b>Play</b>, name your nation and pick a homeland. Choose <b>Recruit</b> and a <b>Quick</b> game the first time, or start the <b>Campaign</b> and let the scenarios teach you.</div>
-    <div>Feed your people and keep the lights on: an Agro Complex and a Power Plant first. Then a Base for stability and a couple of empty regions.</div>
-    <div>Press <b>END TURN</b> (or Space) to advance. When you are comfortable, switch on auto-play and watch the world move.</div>
+<section id="eras">
+  <div class="wrap">
+    <div class="kicker">CHOOSE YOUR ERA</div>
+    <h2>One game, two worlds</h2>
+    <p class="muted intro">The same rules and the same fight for one central prize. Different age, different armies, different feel. Your save for each game is kept separately in your browser.</p>
+    <div class="eras">
+      <article class="era terra">
+        <div class="era-head">
+          <div><div class="kicker">MODERN · 2026</div><h3>TERRA<b>STATE</b></h3></div>
+          <img src="img/v1/terrastate-dashboard-phone.jpg" alt="Terrastate Home screen on a phone" loading="lazy">
+        </div>
+        <dl class="facts">
+          <dt>The world</dt><dd>An alternative 2026: 25 theaters from Europe to Oceania</dd>
+          <dt>Win</dt><dd>Take the <b>Nexus</b>, build the Earth Command Center, hold it 12 ticks</dd>
+          <dt>Money</dt><dd>Euro, food, energy, steel, fuel, electronics</dd>
+          <dt>Armies</dt><dd>Infantry, battle tanks, strike fighters, drones, Titan mechs</dd>
+          <dt>Look</dt><dd>Night-blue command centre, clean and cool</dd>
+        </dl>
+        <a class="endturn" href="play.html">PLAY TERRASTATE <span>▶</span></a>
+      </article>
+      <article class="era rome">
+        <div class="era-head">
+          <div><div class="kicker">ANTIQUITY · ANNO I</div><h3 class="cinzel">ROMATERRA</h3></div>
+          <img src="img/v1/romaterra-dashboard-phone.jpg" alt="Romaterra Home screen on a phone" loading="lazy">
+        </div>
+        <dl class="facts">
+          <dt>The world</dt><dd>Rome against the rest: from Hesperia to Serica, Aethiopia to Thule</dd>
+          <dt>Win</dt><dd>Take <b>Roma</b>, raise the Imperial Palace, hold it 48 ticks</dd>
+          <dt>Money</dt><dd>Denarii, grain, timber, iron, livestock, bronze</dd>
+          <dt>Armies</dt><dd>Legionaries, cataphracts, ballistae, war elephants</dd>
+          <dt>Look</dt><dd>Marble, bronze and gold, with Roman lettering</dd>
+        </dl>
+        <a class="endturn rome" href="romaterra.html">PLAY ROMATERRA <span>▶</span></a>
+      </article>
+    </div>
   </div>
-</div></section>
+</section>
 
-<section><div class="wrap">
-  <div class="mono">COMMUNITY</div>
-  <h2>Play together, even in single-player</h2>
-  <p class="lead" style="margin:0 0 16px">Questions, tips, screenshots and bug reports live on the Discord. It is also where you tell us whether you want real online multiplayer: that is what decides if the live world gets built.</p>
-  <div class="cta" style="justify-content:flex-start"><a class="btn discord" href="https://discord.gg/PZGPKuzPCb" target="_blank" rel="noopener">💬 Join the Discord</a></div>
-</div></section>
+<section id="action">
+  <div class="wrap">
+    <div class="kicker">IN ACTION</div>
+    <h2>Same fight, two eras</h2>
+    <p class="muted intro">Real screens from version 1.0, taken in the last ticks of a season when the whole world marches on the prize.</p>
+    <div class="tabs" role="tablist">
+      <button class="on" data-tab="battle" role="tab">The battle</button>
+      <button data-tab="dashboard" role="tab">Home under siege</button>
+      <button data-tab="map" role="tab">The map</button>
+    </div>
+    <div class="pair">
+      <figure><div class="lbl terra">TERRASTATE</div><img id="shot-t" src="img/v1/terrastate-battle-phone.jpg" alt="Terrastate screen" loading="lazy"></figure>
+      <figure><div class="lbl rome">ROMATERRA</div><img id="shot-r" src="img/v1/romaterra-battle-phone.jpg" alt="Romaterra screen" loading="lazy"></figure>
+      <div class="pair-text">
+        <p id="shot-txt"><b>Line held.</b> Twenty-one times outgunned, and still the flag stays yours. Every battle report says in one line what happened, what you lost, what they lost, and what to do next.</p>
+      </div>
+    </div>
+    <figure class="wide"><img src="img/v1/terrastate-battle-desk.jpg" alt="Battle report on a laptop" loading="lazy"><figcaption>On a laptop: the battle report, with the next move right under it.</figcaption></figure>
+  </div>
+</section>
 
-<section><div class="wrap">
-  <div class="mono">LIVE WORLD</div>
-  <h2>Multiplayer</h2>
-  <div class="soon">The same game, but the other nations are real people: real alliances, real betrayals, one shared season that runs around the clock. The live world is planned for <b>playterrastate.nl</b>. It opens when enough commanders have found their way into the single-player. Until then: practise here, your name and doctrine come with you, and <a href="https://discord.gg/PZGPKuzPCb" target="_blank" rel="noopener">say on the Discord</a> if you want it.</div>
-</div></section>
+<section id="turn">
+  <div class="wrap">
+    <div class="kicker">HOW IT PLAYS</div>
+    <h2>One turn, three moves</h2>
+    <div class="turns">
+      <div class="card"><span class="num">1</span><div class="k">READ</div><b>Who lands, and when</b><p>Home shows what is in the air: incoming in red, help in green, your own strikes in blue. One next action on top.</p></div>
+      <div class="card"><span class="num">2</span><div class="k">ORDER</div><b>Build, recruit, scout, strike</b><p>Each order costs command points. Scout before you sail: a rival's strength is unknown until your scan lands.</p></div>
+      <div class="card"><span class="num">3</span><div class="k">END TURN</div><b>The world answers</b><p>Every nation moves at once. Battles resolve, markets shift, alliances call for help. Or let it run at 1x, 5x or 20x.</p></div>
+    </div>
+  </div>
+</section>
 
-<footer><div class="wrap">
-  Free, non-commercial hobby project: no payments, no ads, no tracking. Single-player runs entirely in your browser; nothing is sent anywhere.<br>
-  <a href="https://discord.gg/PZGPKuzPCb" target="_blank" rel="noopener">💬 Discord</a> · © 2026 Wim Kamphorst · Terrastate™ and Romaterra™ · Privacy, terms and credits are in the game menu (📖).
-</div></footer>
-<script>if('serviceWorker' in navigator)addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));</script>
+<section>
+  <div class="wrap">
+    <div class="kicker">WHAT YOU GET</div>
+    <h2>A world that answers back</h2>
+    <div class="grid">
+      <div class="card"><div class="k">NEIGHBOURS</div><b>Nations with a temperament</b><p>Some raid, some hold, some are rich and thin. They trade, ally, betray and remember a strike.</p></div>
+      <div class="card"><div class="k">COMBAT</div><b>Battles in phases</b><p>Air, recon and ground, unit counters and doctrines. A smaller combined force beats a bigger blind one.</p></div>
+      <div class="card"><div class="k">ALLIANCES</div><b>Friends who answer</b><p>Found a bloc, share intel, call for defence and plan joint strikes. An alliance win is shared.</p></div>
+      <div class="card"><div class="k">ECONOMY</div><b>A market that tells the truth</b><p>The price you read is the price you pay. Buy into a hot market and it costs you.</p></div>
+      <div class="card"><div class="k">CAMPAIGN</div><b>Six scenarios</b><p>Learn the game one clear goal at a time, from your first regions to a season on Warlord.</p></div>
+      <div class="card"><div class="k">YOUR TEMPO</div><b>Turn-based, or let it run</b><p>Quick, Standard or Epic. Recruit, Veteran or Warlord. Save slots, and it works offline.</p></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap two">
+    <div>
+      <div class="kicker">COMMUNITY</div>
+      <h2>Tell us your season</h2>
+      <p class="muted">Questions, tips, screenshots and bug reports live on the Discord. It is also where you tell us whether you want real online multiplayer.</p>
+      <a class="btn discord" href="https://discord.gg/PZGPKuzPCb" target="_blank" rel="noopener">Join the Discord</a>
+    </div>
+    <div class="soon">
+      <div class="kicker gold">LIVE WORLD · LATER</div>
+      <b>Multiplayer</b>
+      <p class="muted">The same game, with real people as the other nations: one shared season that runs around the clock. It opens when enough commanders have found their way into the single-player. Until then, practise here.</p>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="foot-links"><a href="play.html">Play Terrastate</a> · <a href="romaterra.html">Play Romaterra</a> · <a href="updates.html">Updates</a> · <a href="https://discord.gg/PZGPKuzPCb" target="_blank" rel="noopener">Discord</a></div>
+    <div class="muted small">Free, non-commercial hobby project: no payments, no ads. Single-player runs entirely in your browser. Privacy, terms and credits are in the game menu.<br>© 2026 Wim Kamphorst · Terrastate™ and Romaterra™ · a work of fiction</div>
+  </div>
+</footer>
+
+<script>
+(function(){
+  var T={battle:'<b>Line held.</b> Twenty-one times outgunned, and still the flag stays yours. Every battle report says in one line what happened, what you lost, what they lost, and what to do next.',
+    dashboard:'<b>Home under siege.</b> In the last ticks of the season everyone marches on the prize. Home shows who lands and when, your army, and the one thing to do now.',
+    map:'<b>The map.</b> Red lines are attacks in the air, the crown marks the prize. Pinch or scroll to zoom from the whole world down to a single region.'};
+  var bs=document.querySelectorAll('.tabs button');
+  bs.forEach(function(b){b.onclick=function(){bs.forEach(function(x){x.classList.remove('on')});b.classList.add('on');var k=b.dataset.tab;
+    document.getElementById('shot-t').src='img/v1/terrastate-'+k+'-phone.jpg';document.getElementById('shot-r').src='img/v1/romaterra-'+k+'-phone.jpg';document.getElementById('shot-txt').innerHTML=T[k];};});
+  if('serviceWorker' in navigator)addEventListener('load',function(){navigator.serviceWorker.register('sw.js').catch(function(){})});
+})();
+</script>
 </body>
 </html>
