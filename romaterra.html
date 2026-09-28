@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Romaterra 1.0</title>
+<title>Romaterra 2.0</title>
 <link rel="manifest" href="romaterra.webmanifest"><meta name="theme-color" content="#1a1410"><link rel="icon" href="icons/romaterra-64.png"><link rel="apple-touch-icon" href="icons/romaterra-180.png">
 <script>window.__MP_URL__=''; /* '' = live multiplayer not open yet */ if('serviceWorker' in navigator)addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));</script>
 <script data-goatcounter="https://playterrastate.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
@@ -1036,10 +1036,10 @@ const UNIT=[
  {k:'cyber_cell',   n:'Spy Networks',        cls:'cyber',  tier:1,req:'mil_combined',phase:'Intrigue', fast:true, atk:8, def:16,bt:2,cost:{money:30000,electronics:40,research:20},up:{money:400,energy:15}},
  {k:'supply_truck', n:'Supply Wagons',      cls:'support',tier:1,req:'mil_combined',phase:'Ground',fast:true, atk:2, def:6, bt:1,cost:{money:24000,steel:8},                 up:{money:180,fuel:4}},
  {k:'interceptor',  n:'Velites',       cls:'airdef', tier:2,req:'mil_air',     phase:'Ranged',   fast:true, atk:18,def:24,bt:3,cost:{money:70000,electronics:30,fuel:15},   up:{money:1100,fuel:10}},
- {k:'strike_fighter',n:'Horse Archers',   cls:'air',    tier:2,req:'mil_air',     phase:'Ranged',   fast:true, atk:34,def:16,bt:3,cost:{money:92000,electronics:35,fuel:20},   up:{money:1400,fuel:12}},
+ {k:'strike_fighter',n:'Horse Archers',   cls:'air',    tier:2,req:'mil_air',     phase:'Ranged',   fast:true, atk:40,def:16,bt:3,cost:{money:80000,electronics:35,fuel:20},   up:{money:1400,fuel:10}} /* v2 air balance */,
  {k:'sam',          n:'Shield Wall',      cls:'sam',    tier:2,req:'mil_air',     phase:'Ranged',   fast:false,atk:6, def:30,bt:2,cost:{money:46000,steel:15,electronics:20}, up:{money:300,energy:10}},
  {k:'powered_armor',n:'Praetorian Guard',      cls:'inf',    tier:3,req:'mil_advanced',phase:'Ground',fast:false,atk:30,def:30,bt:3,cost:{money:120000,steel:40,electronics:30},up:{money:1500,energy:20}},
- {k:'strat_bomber', n:'Siege Onagers',  cls:'air',    tier:3,req:'mil_advanced',phase:'Ranged',   fast:true, atk:48,def:18,bt:4,cost:{money:155000,electronics:50,fuel:30}, up:{money:2200,fuel:20}},
+ {k:'strat_bomber', n:'Siege Onagers',  cls:'air',    tier:3,req:'mil_advanced',phase:'Ranged',   fast:true, atk:58,def:18,bt:4,cost:{money:135000,electronics:50,fuel:30}, up:{money:2200,fuel:16}},
  {k:'quantum_hacker',n:'Sicarii Assassins',   cls:'cyber',  tier:4,req:'mil_quantum', phase:'Intrigue', fast:true, atk:14,def:26,bt:3,cost:{money:95000,electronics:80,research:60},up:{money:900,energy:25}},
  // v3.13.4 DOCTRINE UNITS (Tier 4). Asymmetric: cheap glass-cannon drones that shred armour in the Air phase, and recon that
  // dominates the intel phase. Juggernaut: hugely powerful, few-unit tanks (concentrate force in a SMALL fleet → dodge the
@@ -1200,7 +1200,7 @@ const SOLO_SPEEDS={1:20000,5:4000,20:500}; // auto-play: ms per tick at 1x / 5x 
 let SOLO_DIFF={aiEcon:1,humBias:0,needAdj:0}; // live multipliers read by the engine; identity outside solo
 function isSoloGame(){return typeof window!=='undefined'&&!window.__MP__&&!(typeof process!=='undefined'&&process.versions&&process.versions.node);} // browser + not the MP client (the headless server shims `window`, hence the Node check)
 function soloCfg(){if(!isSoloGame())return null;G.solo=G.solo||{};const s=G.solo;if(!SOLO_DIFFS[s.diff])s.diff='veteran';if(!SOLO_LENGTHS[s.len])s.len=s.len||'epic';if(!SOLO_LENGTHS[s.len])s.len='epic';if(s.mode!=='turn'&&s.mode!=='auto')s.mode='turn';if(!SOLO_SPEEDS[s.speed])s.speed=1;return s;}
-function applySoloSettings(){const s=soloCfg();if(!s)return;const d=SOLO_DIFFS[s.diff];SOLO_DIFF={aiEcon:d.aiEcon,humBias:d.humBias,needAdj:d.needAdj};NEWBIE_PROTECT=d.protect;SEASON_TICKS=SOLO_LENGTHS[s.len].ticks;}
+function applySoloSettings(){const s=soloCfg();if(!s)return;const d=SOLO_DIFFS[s.diff];SOLO_DIFF={aiEcon:d.aiEcon,humBias:d.humBias,needAdj:d.needAdj};NEWBIE_PROTECT=d.protect;SEASON_TICKS=SOLO_LENGTHS[s.len].ticks;try{FINALE_WINDOW=finaleWindowFor();ENDGAME_TICKS=FINALE_WINDOW;LATE_SEASON_TICKS=FINALE_WINDOW*2;}catch(e){}}
 function soloTickMs(){const s=soloCfg();if(!s)return TICK_MS;return s.mode==='turn'?1e12:(SOLO_SPEEDS[s.speed]||TICK_MS);}
 // ---- v3.32 CAMPAIGN: six scenarios with a briefing, a fixed difficulty/length and a win/lose check per turn ----
 const SCENARIOS=[
@@ -1239,9 +1239,9 @@ const SCENARIOS=[
   prog:c=>{const nx=nexus();return (nx&&nx.owner===c.id?(nx.commandCenter?'Roma + Center':'Roma held, build the Center'):'Roma not yours')+' · turn '+scTurns()+'/250';}},
  {k:'iron_crown',n:'Iron Crown',ic:'👑',diff:'warlord',len:'standard',turns:400,
   brief:'The final test. Warlord difficulty: the AI is stronger than you and it knows where you live. Win the season anyway.',
-  goal:'Win the season: hold Roma with an Imperial Palace for 12 turns, or top the rankings when the 400-turn clock runs out.',
+  goal:'Win the season: hold Roma with an Imperial Palace for 48 turns, or hold Roma the most turns in the Last Battle at the end of the 400-turn season.',
   tips:'Everything you learned: economy first, a defensible core, an alliance that fights, and a late push for Roma when the world is exhausted.',
-  check:c=>{if(G._winner!=null)return G._winner===c.id?'win':'lose';if(G._seasonEnd)return rankTitle(c.id).pos===1?'win':'lose';if(!regionsOf(c).length)return 'lose';return null;},
+  check:c=>{if(G._winner!=null)return G._winner===c.id?'win':'lose';if(G._seasonEnd){if(G._finale&&G._finale.winner!=null)return finaleWonBy(c)?'win':'lose';return rankTitle(c.id).pos===1?'win':'lose';}if(!regionsOf(c).length)return 'lose';return null;},
   prog:c=>'rank #'+(rankTitle(c.id).pos||'?')+' · '+Math.max(0,SEASON_TICKS-scTurns())+' turns left'}];
 function scenarioOf(k){return SCENARIOS.find(x=>x.k===k)||null;}
 function curScenario(){const s=soloCfg();return s&&s.scenario?scenarioOf(s.scenario):null;}
@@ -1390,6 +1390,8 @@ function cmdReleaseAllies(c,rid){const cl=clanOf(c);
   if(cl){const allRegs=Array.from(new Set(Object.values(byOwner).flatMap(e=>Array.from(e.regs)))).join(', ');
     clanPost(cl,c.id,'🙏 Thank you to everyone who stood on my ground at '+allRegs+'. The threat has passed, so I have released your '+full(units)+' units ('+n+' arm'+(n!==1?'ies':'y')+') to head home. Much appreciated!','logi');}
   return ok({n,units});}
+// v1.0.2: AI allies stationed on someone else's ground go home by themselves once nothing has been inbound there for 24 ticks.
+function aiGarrisonReturnTick(){const QUIET=24;const incBy={};G.countries.forEach(o=>{if(!o||!o.isAI||o.retired)return;(o.fleets||[]).slice().forEach(f=>{if(!f||f.status!=='garrison')return;const r=G.regions.find(x=>x.id===f.target);if(!r||r.owner==null||r.owner===o.id)return;const ow=G.countries[r.owner];if(!ow)return;if(!incBy[ow.id]){try{incBy[ow.id]=incomingTo(ow.id)||[];}catch(e){incBy[ow.id]=[];}}if(incBy[ow.id].some(x=>x&&x.region&&x.region.id===r.id)){f._quiet=0;return;}f._quiet=(f._quiet||0)+1;if(f._quiet<QUIET)return;const sz=fleetSize(f.units||{});const res=recallFleet(o,f.id);if(res&&res.ok&&ow.isAI===false){try{sitrep(ow,'alliance','↩ '+leaderName(o)+' ['+(o.tag||'ally')+'] sent '+full(sz)+' units home from '+r.name+'. The threat there has passed.',{go:'fleets'});}catch(e){}}});});}
 // Message-only stand-down: ASK the allies stationed on your ground to withdraw, rather than sending them home yourself.
 // Human allies are only asked (they decide, nicer multiplayer etiquette); AI allies are cooperative and comply now.
 function cmdAskWithdraw(c,onlyOwner){const cl=clanOf(c);
@@ -2097,9 +2099,9 @@ function nexusLine(compact){try{
     return '<div class="small" style="display:block;margin:2px 0 6px;padding:5px 10px;border:1px solid var(--gold);border-radius:8px;background:var(--bg2)"><b>🎯 SCENARIO</b> · '+esc(sc.ic+' '+sc.n)+' — '+esc(sc.goal)+' <span class="muted">· '+esc(pr)+'</span></div>';
   }
   const nx=nexus();if(!nx)return '';const o=nx.owner!=null?G.countries[nx.owner]:null;const me=G.you!=null&&nx.owner===G.you;const coord=nx.cluster+':'+nx.sector+':'+nx.slot;const left=_ticksLeft();
-  if(compact)return `<span class="small muted" style="white-space:nowrap" title="Season goal: capture Roma, build the Imperial Palace and hold it ${NEXUS_HOLD} ticks, otherwise highest score when the clock runs out">🏛 Roma ${coordChip(coord)} · ${o?(me?'<b style="color:var(--gold)">yours</b>':esc(o.tag||o.name)):'unclaimed'} · ${left}t left</span>`;
+  if(compact)return `<span class="small muted" style="white-space:nowrap" title="Season goal: capture Roma, build the Imperial Palace and hold it ${NEXUS_HOLD} ticks, otherwise whoever holds it the most ticks in the Last Battle (the final ${FINALE_WINDOW} ticks)">🏛 Roma ${coordChip(coord)} · ${o?(me?'<b style="color:var(--gold)">yours</b>':esc(o.tag||o.name)):'unclaimed'} · ${left}t left</span>`;
   const st=nx.ccBuild?('Imperial Palace under construction, ready in '+(nx.ccBuild.done-G.tick)+' tick'+(nx.ccBuild.done-G.tick===1?'':'s')):!nx.commandCenter?(G.tick<ccUnlockTick()?'Imperial Palace unlocks at tick #'+ccUnlockTick():'Imperial Palace not built'):(nx.ccHolder===nx.owner?('held '+(nx.ccHeld||0)+'/'+NEXUS_HOLD+' ticks'):'Imperial Palace contested');
-  return `<div class="small" style="display:block;margin:2px 0 6px;padding:5px 10px;border:1px solid ${me?'var(--gold)':'var(--border2)'};border-radius:8px;background:var(--bg2)"><b>🏛 SEASON GOAL</b> · Roma ${coordChip(coord)} <b>${esc(nx.name)}</b> · held by ${o?(me?'<b style="color:var(--gold)">YOU</b>':esc(o.name)+(o.tag?' ['+esc(o.tag)+']':'')):'nobody'} · ${st} · <span class="muted">${left} ticks left on the season clock, then highest overall score wins</span></div>`;}catch(e){return '';}}
+  return `<div class="small" style="display:block;margin:2px 0 6px;padding:5px 10px;border:1px solid ${me?'var(--gold)':'var(--border2)'};border-radius:8px;background:var(--bg2)"><b>🏛 SEASON GOAL</b> · Roma ${coordChip(coord)} <b>${esc(nx.name)}</b> · held by ${o?(me?'<b style="color:var(--gold)">YOU</b>':esc(o.name)+(o.tag?' ['+esc(o.tag)+']':'')):'nobody'} · ${st} · <span class="muted">${left} ticks left on the season clock, then the Last Battle decides</span></div>`;}catch(e){return '';}}
 function _ticksLeft(){return Math.max(0,SEASON_TICKS-(G.tick-((G.season&&G.season.startTick)||0)));}
 function _nexusChat(){const nx=nexus();if(!nx)return null;const o=nx.owner!=null?G.countries[nx.owner]:null;
   if(nx.commandCenter&&o){const left=Math.max(0,NEXUS_HOLD-(nx.ccHeld||0));return left<=4?('⚠ '+leaderName(o)+' is '+left+' ticks from winning at Roma ('+nx.coord+'), everyone on the CC NOW.'):('Imperial Palace is up at '+nx.coord+', '+leaderName(o)+' holding. We break it or the season\'s theirs.');}
@@ -2322,15 +2324,15 @@ function nexus(){return G.regions.find(r=>r.id===G.nexusId);}
 const CC_UNLOCK_FRAC=0.2; // the Earth Command Center can't be built in week 1, no day-one Nexus rush
 function ccUnlockTick(){return ((G.season&&G.season.startTick)||0)+Math.round(SEASON_TICKS*CC_UNLOCK_FRAC);}
 function cmdBuildCC(c){const nx=nexus();if(!nx||nx.owner!==c.id)return err('You must control Roma region first');if(G.tick<ccUnlockTick())return err('Roma is still dormant, the Imperial Palace can be built from tick #'+ccUnlockTick()+' ('+(ccUnlockTick()-G.tick)+' ticks from now). Hold the ground until then.');if(nx.commandCenter)return err('The Imperial Palace already exists');if(!afford(c,CC_COST))return err('Imperial Palace, '+affordMsg(c,CC_COST));if(c.cp<2)return err(cpNote(c,2));if(nx.ccBuild)return err('The Imperial Palace is already under construction, '+(nx.ccBuild.done-G.tick)+' tick(s) to go');pay(c,CC_COST);c.cp-=2;nx.ccBuild={holder:c.id,done:G.tick+CC_BUILD_TICKS};
-  news('territory',c.name+' has started the EARTH COMMAND CENTER at Roma, ready in '+CC_BUILD_TICKS+' ticks, then '+NEXUS_HOLD+' ticks of holding wins the season. The whole world is on the clock.');chronicle('🏛 You started the Imperial Palace. It completes in '+CC_BUILD_TICKS+' ticks, lose Roma before then and the works are torn down.','news');
-  worldAlert(c,'🏛 '+c.name+' ['+c.tag+'] is building the EARTH COMMAND CENTER at Roma ('+nx.coord+'), ready in '+CC_BUILD_TICKS+' ticks, win '+NEXUS_HOLD+' ticks later. Break it or the season is theirs.');return ok({ticks:CC_BUILD_TICKS});}
+  news('territory',c.name+' has started the IMPERIAL PALACE at Roma, ready in '+CC_BUILD_TICKS+' ticks, then '+NEXUS_HOLD+' ticks of holding wins the season. The whole world is on the clock.');chronicle('🏛 You started the Imperial Palace. It completes in '+CC_BUILD_TICKS+' ticks, lose Roma before then and the works are torn down.','news');
+  worldAlert(c,'🏛 '+c.name+' ['+c.tag+'] is building the IMPERIAL PALACE at Roma ('+nx.coord+'), ready in '+CC_BUILD_TICKS+' ticks, win '+NEXUS_HOLD+' ticks later. Break it or the season is theirs.');return ok({ticks:CC_BUILD_TICKS});}
 // The Command Center takes CC_BUILD_TICKS to raise (v3.9.2): the world gets a real window to react instead of an instant hold-clock.
 // Losing the Nexus during construction tears the works down, no refund; the CC is the win button, treat it that way.
 const CC_BUILD_TICKS=24; // ROMATERRA: 6 real hours of public warning while the Palace is under construction
 function worldAlert(from,text){G.countries.forEach(o=>{if(!o||o.retired||o.isAI!==false||o.id===from.id)return;sitrep(o,'alert',text,{sev:3,go:'dashboard'});});if(from.id!==G.you&&you())toast(text,'bad');}
 function ccBuildTick(){const nx=nexus();if(!nx||!nx.ccBuild)return;const b=nx.ccBuild;
   if(nx.owner!==b.holder){nx.ccBuild=null;const o=G.countries[b.holder];news('territory','The Imperial Palace works at Roma were torn down, '+(o?o.name:'the builder')+' lost the ground before it was finished.');return;}
-  if(G.tick>=b.done){nx.ccBuild=null;nx.commandCenter=true;nx.ccHolder=b.holder;nx.ccHeld=0;const o=G.countries[b.holder];news('territory',(o?o.name:'?')+' has completed the EARTH COMMAND CENTER, hold Roma '+NEXUS_HOLD+' ticks to win the season!');if(o)worldAlert(o,'🏛 The EARTH COMMAND CENTER is complete at Roma ('+nx.coord+'), '+o.name+' ['+o.tag+'] wins in '+NEXUS_HOLD+' ticks unless Roma falls.');if(b.holder===G.you)toast('🏛 Imperial Palace complete, hold Roma '+NEXUS_HOLD+' ticks to WIN.','good');}}
+  if(G.tick>=b.done){nx.ccBuild=null;nx.commandCenter=true;nx.ccHolder=b.holder;nx.ccHeld=0;const o=G.countries[b.holder];news('territory',(o?o.name:'?')+' has completed the IMPERIAL PALACE, hold Roma '+NEXUS_HOLD+' ticks to win the season!');if(o)worldAlert(o,'🏛 The IMPERIAL PALACE is complete at Roma ('+nx.coord+'), '+o.name+' ['+o.tag+'] wins in '+NEXUS_HOLD+' ticks unless Roma falls.');if(b.holder===G.you)toast('🏛 Imperial Palace complete, hold Roma '+NEXUS_HOLD+' ticks to WIN.','good');}}
 function checkWin(c){const nx=nexus();if(!nx||!nx.commandCenter)return;if(nx.ccHolder!==nx.owner){nx.ccHolder=nx.owner;nx.ccHeld=0;if(nx.owner!=null){const o=G.countries[nx.owner];news('territory',o.name+' seized the Imperial Palace at '+nx.name+'!');if(nx.owner===G.you)toast('🏛 You seized the Imperial Palace, hold it to win!');else if(o)toast('⚠ '+leaderName(o)+' seized the Imperial Palace!','bad');}}}
 function scores(c){if(c._fog&&c._pub)return c._pub; // fog of war: only the public leaderboard scores are known for enemies
   const pj=projection(c),rg=regionsOf(c);const owned=c.tech.length;
@@ -2338,7 +2340,7 @@ function scores(c){if(c._fog&&c._pub)return c._pub; // fog of war: only the publ
     technology=Math.round(owned*500+pj.prod.research),territory=Math.round(rg.reduce((s,r)=>s+r.sv,0)),
     diplomacy=Math.round((c.clan!=null?500:0)+((clanOf(c)?clanMembers(clanOf(c)).length:0)*120)+((clanOf(c)?(clanOf(c).wins||0):0)*250)+bTotal(c,'monument')*300-c.over*2),stability=Math.round(c.stab*20);
   const overall=Math.round(economic*SCOREW.economic+military*SCOREW.military+technology*SCOREW.technology+territory*SCOREW.territory+diplomacy*SCOREW.diplomacy+stability*SCOREW.stability);
-  return {economic,military,technology,territory,diplomacy,stability,overall};}
+  return {economic,military,technology,territory,diplomacy,stability,overall:finaleScoreBonus(c,overall)};}
 function afford(c,cost){return Object.keys(cost).every(k=>c.res[k]>=cost[k]);}
 // Explain exactly which resources are short (so a failed action always tells the player why)
 function affordMsg(c,cost){const short=Object.keys(cost).filter(k=>(c.res[k]||0)<cost[k]).map(k=>`${fmt(cost[k]-(c.res[k]||0),RMETA[k]&&RMETA[k].money)} ${RMETA[k]?RMETA[k].l:k}`);return short.length?'Not enough, short '+short.join(', '):'Insufficient resources';}
@@ -3782,6 +3784,20 @@ function cmdJoinACS(c,opId,committed){const cl=clanOf(c);if(!cl)return err('Join
   c._acsDone=G.tick;return ok({landsIn:left,fleets:op.fleets.length});}
 // Withdraw from a joint operation before it lands (v3.9): your fleet turns around and flies home; the leader cannot leave —
 // the operation is theirs to carry. Not possible on the landing tick: by then the force is committed.
+// Update 2: the leader calls off their own joint strike. Every committed fleet turns back (or is stood down if it has not left yet),
+// and the alliance is told in war chat, so nobody is left wondering where the assault went.
+function cmdCancelACS(c,opId){const op=(G.acs||[]).find(x=>x.id===opId);if(!op)return err('Operation not found');
+  if(op.leader!==c.id)return err('Only the leader can call off this operation. Use Withdraw to pull your own army out.');
+  const left=op.landTick-G.tick;if(left<1)return err('Too late, the force lands this tick');
+  const r=G.regions.find(x=>x.id===op.target);let n=0,units=0;
+  op.fleets.forEach(f=>{const o=G.countries[f.owner];if(!o)return;const elapsed=Math.max(0,(f.travel||2)-left);n++;units+=fleetSize(f.units||{});
+    if(elapsed<=0){for(const k in f.units)o.units[k]=(o.units[k]||0)+(f.units[k]||0);}
+    else (o.fleets=o.fleets||[]).push({id:G._fid++,owner:o.id,home:f.home,target:op.target,units:f.units,travel:f.travel||2,status:'returning',rEta:G.tick+elapsed,_acsLeft:true});
+    if(o.isAI===false&&o.id!==c.id)sitrep(o,'alliance','↩ '+c.name+' called off the joint strike on '+(r?r.name:'the target')+'. Your '+full(fleetSize(f.units||{}))+' units '+(elapsed?'are home in '+elapsed+'t':'are back in your pool')+'.',{go:'fleets'});});
+  G.acs=(G.acs||[]).filter(x=>x!==op);
+  if(c.isAI===false)sitrep(c,'fleet','↩ You called off the joint strike on '+(r?r.name:'the target')+'. '+n+' fleet(s), '+full(units)+' units, turn back.',{go:'fleets'});
+  const cl=clanOf(c);if(cl)clanPost(cl,c.id,'✖ '+c.name+' called off the joint strike on '+(r?r.name:'the target')+' ('+op.coord+'). All '+n+' army(ies) turn back. Thanks for standing ready.','war');
+  return ok({n,units});}
 function cmdLeaveACS(c,opId){const op=(G.acs||[]).find(x=>x.id===opId);if(!op)return err('Operation not found');
   const i=op.fleets.findIndex(f=>f.owner===c.id);if(i<0)return err('You are not part of that operation');
   if(op.leader===c.id)return err('The leader carries the operation, you cannot withdraw from your own assault');
@@ -4542,7 +4558,7 @@ function finalizeBattle(c,f,r,defC,R,retreated){const prevOwner=f.prevOwner;
   if(r.nexus){const dn=defC?(leaderName(defC)+' ['+defC.tag+']'):'the garrison';const an=leaderName(c)+' ['+c.tag+']';
     const head=captured?('⚔ '+an+' SEIZED Roma from '+dn+'!'):retreated?('↩ '+an+' broke off the assault on Roma — '+dn+' held.'):success?('⚔ '+an+' battered Roma defence but could not take it — '+dn+' holds.'):('🛡 '+dn+' repelled '+an+' at Roma.');
     news('nexus','🏛 '+head+' ('+r.coord+')');
-    (G._nexusLog=G._nexusLog||[]).unshift({tick:G.tick,atk:c.id,def:prevOwner,captured:!!captured,repelled:!captured&&!success,retreated:!!retreated,coord:r.coord});if(G._nexusLog.length>16)G._nexusLog.length=16;}
+    (G._nexusLog=G._nexusLog||[]).unshift({tick:G.tick,atk:c.id,def:prevOwner,captured:!!captured,repelled:!captured&&!success,retreated:!!retreated,coord:r.coord,aN:Math.round(fleetSize(f.bStart||{})||((R.detail||{}).atkN)||0),dN:Math.round(fleetSize(f.bDefStart||{})||((R.detail||{}).defN)||0),joint:!!f.acs});if(G._nexusLog.length>16)G._nexusLog.length=16;}
   if(retreated){const keep=fleetSize(f.units);if(c.isAI===false)sitrep(c,'fleet','↩ Retreated from '+r.name+' after tick '+Math.min(3,f.bTick||1)+', '+full(keep)+' units coming home (tick #'+(G.tick+f.travel)+')',{coord:r.coord,go:'fleets'});if(c.id===G.you)toast('↩ Retreated from '+r.name+' with '+full(keep)+' units intact.','warn');
     else if(prevOwner===G.you){toast('↩ '+leaderName(c)+' broke off the assault on '+r.name+', you held. See the report in Homeland.','warn');chronicle('↩ '+leaderName(c)+' of '+c.name+' broke off their attack on '+r.name+', your defence held.','war',{who:c.id,rid:r.id});}}
   // ACS survivor return to member fleets, else normal return
@@ -4564,6 +4580,7 @@ function runTick(){
   G._spot0=Object.assign({},G.prices);
   try{warTableTick();}catch(e){}
   try{endgameTick();}catch(e){}
+  try{aiGarrisonReturnTick();}catch(e){}
   // Cheap per-tick map-share cache (one pass over regions) for catch-up scaling.
   {const cnt={};G.regions.forEach(r=>{if(r.owner!=null)cnt[r.owner]=(cnt[r.owner]||0)+1;});G._regCnt=cnt;let mx=0;for(const k in cnt)if(cnt[k]>mx)mx=cnt[k];G._maxReg=mx;}
   G.countries.forEach(c=>{if(c.retired)return;const pj=c._pj=projection(c);
@@ -4708,7 +4725,7 @@ function runTick(){
     const combo=nMem>=5?0.15:nMem>=4?0.12:nMem>=3?0.10:nMem>=2?0.06:0.03;
     const coord=(1+combo+seasonBonus().acsAtk)*(cl?bureaucracy(cl):1)*clamp(1-0.04*Math.max(0,nF-4),0.75,1);
     const members=op.fleets.map(f=>({owner:f.owner,home:f.home,travel:f.travel,share:fleetSize(f.units),comp:cleanInts(f.units)}));
-    const bf={id:G._fid++,owner:op.leader,home:(op.fleets[0]||{}).home,target:op.target,units:combined,travel:2,status:'battle',coord,acs:true,acsCombo:combo,acsMembers:nMem,members,
+    const bf={id:G._fid++,owner:op.leader,home:(op.fleets[0]||{}).home,target:op.target,units:combined,travel:2,status:'battle',coord,acs:true,acsOp:op.id,acsCombo:combo,acsMembers:nMem,members,
       bTick:0,order:(op.leader===G.you?'press':'auto'),bStart:Object.assign({},combined),bLog:[],bDefLost:{},prevOwner};
     const pool=defenderPool(r,defC);bf.bDefStart=Object.assign({},pool.units);
     (leadC.fleets=leadC.fleets||[]).push(bf);
@@ -4763,7 +4780,8 @@ function runTick(){
   // national event (player-facing choice) every few ticks
   if(G._pendingEvent==null&&G.tick>=G._nextEvent){G._pendingEvent=Math.floor(rand(0,EVENTS.length));G._nextEvent=G.tick+Math.floor(rand(5,9));}
   // season end
-  if(G.tick-G.season.startTick>=SEASON_TICKS)G._seasonEnd=true;
+  if(G.tick-G.season.startTick>=SEASON_TICKS&&!G._seasonEnd){const _otT=G._overtime?G.tick-G._overtime.start:0;if(G._winner==null&&_otT<FINALE_OT&&finaleNexusAction()){if(!G._overtime)finaleOpenOvertime();}else{G._seasonEnd=true;finaleClose();}}
+  try{finaleRecord();}catch(e){}
   {const me=you();if(me&&!me.retired){const L=slog(me);const n=regionsOf(me).length;if(n>(L.maxRegions||0))L.maxRegions=n;
     if(L._peakRank==null)L._peakRank=9999;const rp=rankTitle(me.id);if(rp.pos&&rp.pos<L._peakRank)L._peakRank=rp.pos;
     if(rp.total&&rp.pos>rp.total*0.55)L.lowRank=1;else if(L.lowRank&&rp.pos&&rp.total&&rp.pos<=rp.total*0.25)L.comeback=1;}} // tracked for the legacy title
@@ -5002,13 +5020,13 @@ function roundBoard(c){const now=G.tick;const inc=(typeof incomingTo==='function
     const friendly=f.status==='returning'||f.status==='garrison'||f.intent==='garrison'||f.intent==='reinforce'||(r&&r.owner===c.id&&f.status!=='battle');
     if(f.status==='outbound'||f.status==='staged'||f.status==='battle'){if(friendly&&f.status!=='battle')help.push(row);else mine.push(row);}
     else if(friendly)help.push(row);});
-  G.countries.forEach(o=>{if(!o||o.id===c.id||o.retired||c.clan==null||o.clan!==c.clan)return;(o.fleets||[]).forEach(f=>{if(f.intent!=='reinforce'&&f.intent!=='garrison')return;const r=G.regions.find(x=>x.id===f.target);if(!r||r.owner!==c.id)return;help.push({who:o.tag||o.name,coord:r.coord,name:r.name,eta:(f.eta||now)-now,size:fleetSize(f.units||{}),ally:true});});});
+  G.countries.forEach(o=>{if(!o||o.id===c.id||o.retired||c.clan==null||o.clan!==c.clan)return;(o.fleets||[]).forEach(f=>{if(f.intent!=='reinforce'&&f.intent!=='garrison')return;const r=G.regions.find(x=>x.id===f.target);if(!r||r.owner!==c.id)return;help.push({who:o.tag||o.name,oid:o.id,coord:r.coord,name:r.name,eta:(f.eta||now)-now,size:fleetSize(f.units||{}),ally:true,here:f.status==='garrison'});});});
   const calls=[];
   try{const hs=homeSector(c);if(hs)G.countries.forEach(o=>{if(!o||o.id===c.id||o.retired||homeSector(o)!==hs)return;const hit=(incomingTo(o.id)||[]).find(x=>x.threat>=0.15&&x.region);if(hit)calls.push({who:o.tag||o.name,region:hit.region,eta:hit.eta});});}catch(e){}
   const eta=e=>e==null?'':(e<=0?'now':'<b class="reta">'+e+'t</b>');
   const inHTML=inc.length?inc.slice(0,6).map(x=>{const who=x.from?(x.from.tag||x.from.name):'???';return `<div class="rline"><span>⚠ ${esc(who)} → ${x.region?esc(x.region.name):'?'} ${x.region?coordChip(x.region.coord):''}</span><span>${eta(x.eta)}</span></div>`;}).join('')+(inc.length>6?`<div class="muted small">+${inc.length-6} more</div>`:''):'<div class="muted small">No one is coming. Yet.</div>';
   const callHTML=calls.slice(0,3).map(x=>`<div class="rline"><span>🆘 ${esc(x.who)} at ${esc(x.region.name)} ${coordChip(x.region.coord)} <button class="btn ghost sm" onclick="BR_REINF(${x.region.id})">Go</button></span><span>${eta(x.eta)}</span></div>`).join('');
-  const helpHTML=callHTML+(help.length?help.slice(0,4).map(x=>`<div class="rline"><span>🛡 ${x.ally?esc(x.who)+' → ':''}${esc(x.name||'')} ${x.coord?coordChip(x.coord):''}</span><span>${eta(x.eta)}</span></div>`).join(''):(callHTML?'':`<div class="muted small">${full(fleetSize(c.units||{}))} units sitting at home.</div>`));
+  const helpHTML=callHTML+(help.length?help.slice(0,4).map(x=>`<div class="rline"><span>🛡 ${x.ally?esc(x.who)+' → ':''}${esc(x.name||'')} ${x.coord?coordChip(x.coord):''}${x.ally&&x.here?` <button class="btn ghost sm" data-sendhome="${x.oid}" title="Thank them and send their units home">↩ Send home</button>`:''}</span><span>${eta(x.eta)}</span></div>`).join(''):(callHTML?'':`<div class="muted small">${full(fleetSize(c.units||{}))} units sitting at home.</div>`));
   const outHTML=mine.length?mine.slice(0,6).map(x=>`<div class="rline"><span>⚔ ${esc(x.name)} ${coordChip(x.coord)}${x.recall?` <button class="btn ghost sm" data-recallfleet="${x.fid}">↩</button>`:''}</span><span>${eta(x.eta)}</span></div>`).join(''):'<div class="muted small">Your armies are home.</div>';
   const lands=(G.battles||[]).filter(b=>b&&(b.atkId===c.id||b.defId===c.id)).slice(0,3).map(b=>{const youTook=b.atkId===c.id&&b.outcome==='captured';const youLost=b.defId===c.id&&b.outcome==='captured';
     const who=youTook?'You took':(youLost?(esc(b.atkTag||b.atkName||'They')+' took'):(b.atkId===c.id?'You struck':'They struck'));
@@ -5188,17 +5206,17 @@ function renderLanding(){
       <p style="max-width:600px;margin:0 auto;font-size:clamp(15px,3.6vw,17px);color:var(--text)">A grand-strategy <b>solo</b> season against AI nations. The world advances every <b>tick</b> — set orders, wait for the tick, deal with what happened. Same rules the live world will use.</p>
       <div class="row" style="gap:12px;justify-content:center;margin-top:30px;flex-wrap:wrap">${hasSave?'<button class="btn sec" id="lc2" style="font-size:16px;padding:15px 24px">▶ Resume your nation</button>':''}<button class="btn" id="lp2" style="font-size:16px;padding:15px 30px">🦅 Start, create your nation →</button><button class="btn sec" id="lcamp" style="font-size:16px;padding:15px 24px">🎯 Campaign, 6 scenarios</button>${anySlot()?'<button class="btn ghost" id="lslots" style="font-size:16px;padding:15px 20px">🏺 Saved games</button>':''}</div>
       <div class="row" style="gap:8px;justify-content:center;margin-top:14px;flex-wrap:wrap"><button class="btn ghost sm" id="lpSee">👁 See it in action</button><button class="btn ghost sm" id="lpNews">📄 What's new</button><button class="btn ghost sm" id="lmCombat">⚔ Combat &amp; formulae</button></div>
-      <div class="muted small mt">Free · browser only · you vs AI · later multiplayer will use this same engine</div><div class="small mt" style="border:1px solid var(--border2);border-radius:10px;padding:8px 12px;display:inline-block;max-width:560px"><b>How you win a season:</b> capture <b>Roma</b>, build the <b>Imperial Palace</b> there and hold it for ${NEXUS_HOLD} ticks. If nobody does, the highest overall score when the clock runs out wins. Then the world resets. <b>Campaign</b> is practice. <b>Start</b> asks you to pick Quick (200 turns), Standard (400) or Epic (840).</div>
+      <div class="muted small mt">Free · browser only · you vs AI · later multiplayer will use this same engine</div><div class="small mt" style="border:1px solid var(--border2);border-radius:10px;padding:8px 12px;display:inline-block;max-width:560px"><b>How you win a season:</b> capture <b>Roma</b>, build the <b>Imperial Palace</b> there and hold it for ${NEXUS_HOLD} ticks. If nobody does, the Last Battle decides: whoever holds Roma the most ticks at the end of the season wins, together with their alliance. Then the world resets. <b>Campaign</b> is practice. <b>Start</b> asks you to pick Quick (200 turns), Standard (400) or Epic (840).</div>
     </section>
     <section id="playerupdate" style="max-width:680px;margin:0 auto 14px">
-      <a class="card" href="updates/romaterra-1.0.pdf" target="_blank" rel="noopener" style="display:block;text-decoration:none;color:inherit;margin:0 auto">
+      <a class="card" href="updates.html" target="_self" rel="noopener" style="display:block;text-decoration:none;color:inherit;margin:0 auto">
         <div class="row between wrap" style="gap:10px;align-items:center">
           <div style="min-width:0;flex:1">
-            <div><span class="mono" style="color:var(--gold);font-size:11px;letter-spacing:1px">VERSION 1.0</span> <span class="muted small">27 September 2026</span></div>
-            <div style="font-weight:700;margin-top:3px">Romaterra 1.0</div>
-            <div class="muted small mt">Same world, clearer round. Your start region stays yours, a landing takes a cut, and a rival stays unknown until you scan.</div>
+            <div><span class="mono" style="color:var(--gold);font-size:11px;letter-spacing:1px">VERSION 2.0 · UPDATE 2</span> <span class="muted small">28 September 2026</span></div>
+            <div style="font-weight:700;margin-top:3px">Romaterra 2.0: The Last Battle</div>
+            <div class="muted small mt">Every season now ends in a fight. Hold Roma the longest in the final ticks and the season is yours. Plus: see where every army is heading, pull out of a joint attack, and stronger air power.</div>
           </div>
-          <span class="btn ghost sm" style="flex:none;pointer-events:none">Read the note</span>
+          <span class="btn ghost sm" style="flex:none;pointer-events:none">What is new</span>
         </div>
       </a>
     </section>
@@ -5264,7 +5282,7 @@ function renderLanding(){
   {const b=s.querySelector('#lpNews');if(b)b.onclick=()=>{const t=s.querySelector('#playerupdate');if(t)t.scrollIntoView({behavior:'smooth',block:'center'});};}
 }
 // ---- Legal identity: ONE place to change the operator / contact / copyright holder. Used by the Privacy, Terms and Credits tabs and the footer.
-const LEGAL={operator:'Wim Kamphorst',email:'earth2026game@gmail.com',author:'Wim Kamphorst',country:'the Netherlands',law:'Dutch law',dpa:'Autoriteit Persoonsgegevens (the Dutch data protection authority)',dpaUrl:'https://www.autoriteitpersoonsgegevens.nl',version:'1.0',updated:'September 2026',build:'Version 1.0 · 27 Sep 2026',minAge:16};
+const LEGAL={operator:'Wim Kamphorst',email:'earth2026game@gmail.com',author:'Wim Kamphorst',country:'the Netherlands',law:'Dutch law',dpa:'Autoriteit Persoonsgegevens (the Dutch data protection authority)',dpaUrl:'https://www.autoriteitpersoonsgegevens.nl',version:'1.0',updated:'September 2026',build:'Version 2.0 · 28 Sep 2026',minAge:16};
 LEGAL.contact=`<b>${LEGAL.operator}</b>, <a href="mailto:${LEGAL.email}">${LEGAL.email}</a>`;
 // ---- Landing-page manual: beginner's handbook + combat formulae -------------
 const MANUAL={
@@ -5591,8 +5609,8 @@ const HELP=[
   bullets:['Occupied: fresh conquest, lower output, unrest, can rebel.','Pacified: calmer and more productive — reach it with a garrison and time, or Pacify.','Core: full output, counts as homeland — build a Provincial Capitol.','Many Occupied regions without Core drag your stability (overextension).'],
   warn:'High unrest risks sabotage or a revolt. Pacify or garrison restless ground.',
   see:['help-army','help-eco'],anchor:'map'},
- {id:'help-season',sec:'B',ic:'👑',title:'Season, Roma & scores',short:'Win by holding Roma, or by leading the score when the clock runs out.',
-  bullets:['Roma is the single central region — capture it and build the Imperial Palace.','Hold it long enough to win the season early.','Otherwise the highest overall score at the deadline takes it.','Renown from wars, goals and world projects feeds your standing.','Alliance win: one member holds Roma, but the victory is SHARED by the whole alliance. Concentrate your forces on one holder — allies who help win too, so never fight each other for it.','Armies landing on the same tick fight as ONE combined army; only the biggest contributor takes the ground, the rest win alongside them.'],
+ {id:'help-season',sec:'B',ic:'👑',title:'Season, Roma & scores',short:'Win by holding Roma, or by holding it the longest in the Last Battle.',
+  bullets:['Roma is the single central region — capture it and build the Imperial Palace.','Hold it long enough to win the season early.','Otherwise the Last Battle decides: whoever holds Roma the most ticks at the end of the season wins it. Only if nobody held it does the highest overall score win.','Renown from wars, goals and world projects feeds your standing.','Alliance win: one member holds Roma, but the victory is SHARED by the whole alliance. Concentrate your forces on one holder — allies who help win too, so never fight each other for it.','Armies landing on the same tick fight as ONE combined army; only the biggest contributor takes the ground, the rest win alongside them.'],
   see:['help-rules-season','help-goals'],anchor:'rankings'},
  {id:'help-market',sec:'B',ic:'📈',title:'Market & bounties',short:'Trade resources on a live market; post and fulfil bounties.',
   bullets:['Prices move with supply and demand each tick.','Place buy/sell orders; they clear when the price meets.','Bounties let players pay others to hit a target.','Do not dump your whole stock at once — you move the price against yourself.'],
@@ -5604,7 +5622,7 @@ const HELP=[
   bullets:['🔴/🟠 bar = incoming attack, by urgency.','🛡 = shield or garrison; ⚔ = war/attack; 🕊 = peace/NAP.','🏙 status dot = Occupied / Pacified / Core on a region.','⏱ urgent tick = the tick is about to resolve — lock your orders.'],
   see:['help-where','help-occupy'],anchor:'dashboard'},
  {id:'help-faq',sec:'C',ic:'❓',title:'Common situations (FAQ)',short:'Quick answers to the questions that come up most.',
-  bullets:['I am under attack — reinforce from Homeland and call your alliance.','My region produces little — check grain/timber, unrest and overextension.','Breaking a NAP — declaring war or attacking a member during a pact is betrayal.','Occupied vs Core — Occupied drags stability; a Provincial Capitol makes it Core.','Helping the alliance fastest — answer defence calls and feed the active goal.','When to pick a doctrine — once you know whether you fight fast or heavy.','End of season — hold Roma, or lead the score at the deadline.'],
+  bullets:['I am under attack — reinforce from Homeland and call your alliance.','My region produces little — check grain/timber, unrest and overextension.','Breaking a NAP — declaring war or attacking a member during a pact is betrayal.','Occupied vs Core — Occupied drags stability; a Provincial Capitol makes it Core.','Helping the alliance fastest — answer defence calls and feed the active goal.','When to pick a doctrine — once you know whether you fight fast or heavy.','End of season: hold Roma to win outright, or hold it the most ticks in the Last Battle.'],
   see:['help-army','help-occupy','help-dip','help-goals'],anchor:'dashboard'},
  {id:'help-rules-season',sec:'D',ic:'📅',title:'Season rules',short:'Tick length, season length and the win condition for this season.',dyn:'season',see:['help-season'],anchor:'rankings'}
 ];
@@ -5614,7 +5632,7 @@ let _helpShowAll=false;
 // Dynamic lemma bodies are generated from live tables so the manual can never drift from the engine.
 function helpDynBody(kind){try{
   if(kind==='season'){const secs=(typeof SEASON_TICKS!=='undefined'?SEASON_TICKS:'—');const hold=(typeof NEXUS_HOLD!=='undefined'?NEXUS_HOLD:'—');const solo=(typeof window!=='undefined'&&!window.__MP__);
-    return `<ul><li><b>Tick length:</b> ${Math.round(TICK_MS/60000)} minutes (${solo?'single-player':'live server'}).</li><li><b>Season length:</b> ${secs} ticks.</li><li><b>Win condition:</b> capture Roma, build the Imperial Palace, and hold it ${hold} ticks — or lead the overall score when the clock runs out.</li><li><b>Winning with an alliance:</b> one member physically holds Roma, but the win is <b>shared by the whole alliance</b>. Pile your forces behind one holder — allies who help win too, so you never fight each other for it.</li><li>These numbers can change per season; everything else in Help stays the same.</li></ul>`;}
+    return `<ul><li><b>Tick length:</b> ${Math.round(TICK_MS/60000)} minutes (${solo?'single-player':'live server'}).</li><li><b>Season length:</b> ${secs} ticks.</li><li><b>Win condition:</b> capture Roma, build the Imperial Palace, and hold it ${hold} ticks. Otherwise the Last Battle decides: whoever holds Roma the most ticks in the final ${FINALE_WINDOW} ticks (plus up to ${FINALE_OT} ticks of overtime) wins. Only if nobody held it does the highest overall score win.</li><li><b>Winning with an alliance:</b> one member physically holds Roma, but the win is <b>shared by the whole alliance</b>. Pile your forces behind one holder — allies who help win too, so you never fight each other for it.</li><li>These numbers can change per season; everything else in Help stays the same.</li></ul>`;}
   if(kind==='units'){const CL=(typeof CLASS_NAME!=='undefined'?CLASS_NAME:{});const rows=Object.keys(UNIT||{}).map(k=>{const u=UNIT[k];return `<tr><td><b>${esc(u.n||k)}</b></td><td>${esc((CL[u.cls]||u.cls||'—'))}</td><td class="r">${u.tier||'—'}</td></tr>`;}).join('');
     return `<div class="scroll"><table><thead><tr><th>Unit</th><th>Class</th><th class="r">Tier</th></tr></thead><tbody>${rows||'<tr><td colspan="3" class="muted small">—</td></tr>'}</tbody></table></div>`;}
   if(kind==='buildings'){const rows=Object.keys(BUILD||{}).map(k=>{const b=BUILD[k];return `<tr><td><b>${esc(b.n||k)}</b></td><td class="small">${esc((b.d||'').slice(0,90))}</td></tr>`;}).join('');
@@ -5803,7 +5821,7 @@ function renderSetup(scenarioKey){const SC=scenarioKey?scenarioOf(scenarioKey):n
       const nx=b.querySelector('#wnext');if(nx)nx.onclick=()=>{if(!st.sel)return;st.step=3;render();};
     } else {
       b.innerHTML=`<div class="mono" style="color:var(--accent2);font-size:11px;letter-spacing:2px">STEP 3 OF 3</div>
-        <h3 style="margin:4px 0 2px">Pick a playstyle</h3><div class="small" style="border-left:3px solid var(--gold);padding:6px 10px;margin:6px 0 4px;background:var(--bg2);border-radius:6px"><b>🏛 The goal:</b> capture Roma, build the Imperial Palace, hold it ${NEXUS_HOLD} ticks, or lead the overall score when the ${SOLO_LENGTHS[st.len].ticks}-turn clock runs out. Everything below is a means to that.</div>
+        <h3 style="margin:4px 0 2px">Pick a playstyle</h3><div class="small" style="border-left:3px solid var(--gold);padding:6px 10px;margin:6px 0 4px;background:var(--bg2);border-radius:6px"><b>🏛 The goal:</b> capture Roma, build the Imperial Palace, hold it ${NEXUS_HOLD} ticks, or hold it the most ticks in the Last Battle at the end of the ${SOLO_LENGTHS[st.len].ticks}-turn season. Everything below is a means to that.</div>
         <p class="muted small" style="margin:2px 0 6px">New here? Pick one, it sets a sensible government and economy for you. You can fine-tune below.</p>
         <div class="grid g3" id="presets">${PLAY_PRESETS.map(pr=>`<div class="regi card${st.preset===pr.k?' sel':''}" data-preset="${pr.k}" style="padding:11px;cursor:pointer"><div class="row between"><strong>${pr.ic} ${esc(pr.n)}</strong></div><div class="muted small mt">${esc(pr.d)}</div></div>`).join('')}</div>
         <details class="mt"${st.preset?'':' open'}><summary class="small muted" style="cursor:pointer">⚙ Fine-tune government &amp; doctrine</summary>
@@ -5850,7 +5868,7 @@ function _rebaseSoloClock(){
 }
 function startGame(name,tag,col,gov,doc,region,regions){
   G.regions=regions;G.countries=[];G.news=[];G.tick=0;G.you=0;G._fid=1;G._id={name,tag,col,gov,doc};
-  G.playerAch=[];G.playerDir=[];G.chronicle=[];G.battles=[];G.powerHist=[];G._pendingEvent=null;G._seasonEnd=false;
+  G.playerAch=[];G.playerDir=[];G.chronicle=[];G.battles=[];G.powerHist=[];G._pendingEvent=null;G._seasonEnd=false;G._overtime=null;G._finale=null;
   MARKET.forEach(r=>G.prices[r]=BASEP[r]);
   {const nx=regions.reduce((a,b)=>b.sv>a.sv?b:a);nx.nexus=true;nx.commandCenter=false;nx.ccHeld=0;nx.ccHolder=null;G.nexusId=nx.id;G._winner=null;}
   G.clans=[];G._clanId=1;G.acs=[];G.convoys=[];G.bounties=[];G.clusterChat={};G.orders={};G.candles={};G.forum=[];G.wars=[];
@@ -5875,7 +5893,7 @@ function startGame(name,tag,col,gov,doc,region,regions){
   reg.owner=you.id;homeClusterInvalidate();you.pop=reg.pop;you.units={infantry:40,militia:20};
   you.buildings=[{rid:reg.id,k:'farm',lv:1},{rid:reg.id,k:'power',lv:1}];foundingBalance(you); // v3.18 (Batch F): grant until food+energy flow ≥0, no losing start
   consumePendingAlliance(1);
-  G.season={num:1,startTick:G.tick};G._nextEvent=G.tick+Math.floor(rand(3,6));G._pendingEvent=null;G._seasonEnd=false;
+  G.season={num:1,startTick:G.tick};G._nextEvent=G.tick+Math.floor(rand(3,6));G._pendingEvent=null;G._seasonEnd=false;G._overtime=null;G._finale=null;
   resetSeasonStats();
   G.nextAt=Date.now()+soloTickMs();
   try{legacyGreeting(you);}catch(e){}
@@ -5900,7 +5918,7 @@ function startNextSeason(){const id=G._id;const num=G.season.num+1;
    if(!region){const ai=pick(G.countries.filter(x=>x&&x.isAI&&!x.retired&&regionsOf(x).length>1));region=ai?regionsOf(ai)[0]:pick(regions.filter(r=>!r.nexus));} // an AI nation steps aside
    region.owner=p.id;homeClusterInvalidate();p.pop=region.pop;p.units={infantry:40,militia:20};p.buildings=[{rid:region.id,k:'farm',lv:1},{rid:region.id,k:'power',lv:1}];foundingBalance(p);} // v3.18 (Batch F)
   consumePendingAlliance(num);
-  G.season={num,startTick:G.tick};G._nextEvent=G.tick+Math.floor(rand(3,6));G._pendingEvent=null;G._seasonEnd=false;
+  G.season={num,startTick:G.tick};G._nextEvent=G.tick+Math.floor(rand(3,6));G._pendingEvent=null;G._seasonEnd=false;G._overtime=null;G._finale=null;
   resetSeasonStats();
   try{legacyGreeting(p);}catch(e){}
   G.nextAt=Date.now()+soloTickMs();enterApp();}
@@ -6009,7 +6027,7 @@ function archiveSeason(endType,winnerId){
 function seasonFinaleHTML(c,rt,won){const L=slog(c);const lt=legacyTitle(c,rt,won);
   pushPlayerLegacy({season:G.season.num,title:lt.t,rank:rt.pos,total:rt.total,won:!!won,captures:L.captures,warsWon:L.warsWon,nemesis:(nemesis(c)||{}).tag||null,date:Date.now()});
   const hist=playerLegacyHistory().slice(0,-1).slice(-3).reverse(); // prior seasons (exclude the one we just pushed)
-  const medal=won?'🏆 Conqueror of the World':rt.pos===1?'🥇 Season Champion':rt.pos<=3?'🥈 Podium finish':rt.pos<=Math.ceil(rt.total*.1)?'🏅 Top 10%':'Campaign complete';
+  const medal=won?'🏆 Conqueror of the World':rt.pos===1?'🥇 Highest score':rt.pos<=3?'🥈 Podium finish':rt.pos<=Math.ceil(rt.total*.1)?'🏅 Top 10%':'Season complete';
   const stat=(ic,v,l)=>`<div style="text-align:center"><div style="font-size:19px;font-weight:800">${ic} ${v}</div><div class="muted small">${l}</div></div>`;
   const statsGrid=`<div class="grid g4" style="gap:10px;margin:12px 0">
     ${stat('🟢',L.captures,'regions taken')}${stat('🔴',L.lost,'regions lost')}
@@ -6110,8 +6128,8 @@ function showSeasonDonation(onClose){
   const pl=bg.querySelector('#dnPaypal');if(pl)pl.onclick=()=>{setTimeout(done,150);};
   bg.querySelector('#dnLater').onclick=done;
 }
-function showSeasonEnd(){const c=you();const rt=rankTitle(c.id);archiveSeason('timeout',null);
-  const bg=h(`<div class="modal-bg"><div class="modal" style="max-width:520px;max-height:88vh;overflow:auto">${seasonFinaleHTML(c,rt,false)}
+function showSeasonEnd(){const c=you();const rt=rankTitle(c.id);archiveSeason('timeout',(G._finale&&G._finale.winner!=null)?G._finale.winner:null);
+  const bg=h(`<div class="modal-bg"><div class="modal" style="max-width:520px;max-height:88vh;overflow:auto">${lastBattleHTML(c)}${seasonFinaleHTML(c,rt,(typeof finaleWonBy==='function'&&finaleWonBy(c)))}
     <button class="opt mt" id="ns">▶ New world. Same commander. →</button></div></div>`);
   bg.querySelector('#ns').onclick=()=>{bg.remove();showSeasonDonation(()=>openLobby(G.season.num+1));};document.body.appendChild(bg);}
 
@@ -6232,7 +6250,7 @@ function refreshBadges(){const inc=incomingTo(G.you);const real=inc.filter(x=>x.
       const mn=document.querySelector('.nav[data-k="mail"]');if(mn)mn.title=un?(un+' unread'):'Messages';}catch(e){}}
 function showPulse(title,body){if(document.querySelector('.modal-bg'))return false;const bg=h('<div class="modal-bg"><div class="modal" style="max-width:440px"><h2 style="margin:0 0 8px">'+esc(title)+'</h2><p class="small" style="margin:0 0 12px;line-height:1.5">'+esc(body)+'</p><button class="btn" id="pulseok" style="min-height:48px;width:100%">Continue</button></div></div>');bg.querySelector('#pulseok').onclick=()=>bg.remove();document.body.appendChild(bg);return true;}
 function airLines(c){const inc=(typeof incomingTo==='function'?incomingTo(c.id):[]).filter(x=>x&&x.threat>=0.02).sort((a,b)=>a.eta-b.eta);const mine=(c.fleets||[]).filter(f=>f&&['outbound','returning','battle','staged'].includes(f.status));
-  const _atks=[...new Set(inc.map(y=>y.from?leaderName(y.from):null).filter(Boolean))];const who=inc[0]?(inc.length>1?(inc.length+(true?' enemy armies are on the march':' enemy fleets are in the air')+(_atks.length?' ('+_atks.slice(0,3).join(', ')+(_atks.length>3?' +'+(_atks.length-3):'')+')':'')+(inc[0].region?', first toward '+inc[0].region.name:'')+'.'):((inc[0].from?leaderName(inc[0].from):'Someone')+(true?' is on the march':' is in the air')+(inc[0].region?' toward '+inc[0].region.name:'')+'.')):(mine.length?(mine.length===1?'One of your armies is out.':mine.length+' of your armies are out.'):'Nobody is on the march.');
+  const _atks=[...new Set(inc.map(y=>y.from?leaderName(y.from):null).filter(Boolean))];const who=inc[0]?(inc.length>1?(inc.length+(true?' enemy armies are on the march':' enemy armies are on the march')+(_atks.length?' ('+_atks.slice(0,3).join(', ')+(_atks.length>3?' +'+(_atks.length-3):'')+')':'')+(inc[0].region?', first toward '+inc[0].region.name:'')+'.'):((inc[0].from?leaderName(inc[0].from):'Someone')+(true?' is on the march':' is in the air')+(inc[0].region?' toward '+inc[0].region.name:'')+'.')):(mine.length?(mine.length===1?'One of your armies is out.':mine.length+' of your armies are out.'):'Nobody is on the march.');
   const when=inc[0]?(inc.length>1?(inc[0].eta<=0?'The first lands this tick.':'The first lands in '+inc[0].eta+' tick'+(inc[0].eta===1?'':'s')+'.'):((inc[0].from?leaderName(inc[0].from):'They')+(inc[0].eta<=0?' lands this tick.':' lands in '+inc[0].eta+' tick'+(inc[0].eta===1?'':'s')+'.'))):(mine[0]?(mine[0].status==='returning'?'Yours is home in '+Math.max(0,(mine[0].rEta||G.tick)-G.tick)+' ticks.':'Yours lands in '+Math.max(0,(mine[0].eta||G.tick)-G.tick)+' ticks.'):'Nothing lands on you this tick.');
   const can=inc.length?'You can still reinforce, or end the turn.':'You can build, recruit, or end the turn.';
   return [who,when,can];}
@@ -6464,7 +6482,7 @@ function drawOpsAlert(){const el=$('opsalert');if(!el)return;const c=you();if(!c
   el.title='Open Homeland — your defence, incoming attacks and armies';
   el.innerHTML=`<span title="Incoming attacks on you" style="display:inline-flex;align-items:center;gap:4px;color:${inc?'var(--danger)':'var(--muted2)'};font-weight:${inc?800:700}">⚔<b>${inc}</b></span><span title="Alliance defence calls" style="display:inline-flex;align-items:center;gap:4px;margin-left:9px;color:${def?'var(--alert)':'var(--muted2)'};font-weight:700">🛡<b>${def}</b></span><span title="Your armies and operations in the field" style="display:inline-flex;align-items:center;gap:4px;margin-left:9px;color:${ops?'var(--tech)':'var(--muted2)'};font-weight:700">🦅<b>${ops}</b></span><span style="opacity:.55;font-weight:400;margin-left:6px">↗</span>`;
   el.onclick=()=>{try{go('fleets');}catch(e){}};}
-function drawTop(){const c=you();const rt=rankTitle(c.id);try{wireSoloFF();}catch(e){}{const tn=$('ticknow');if(tn)tn.textContent='tick #'+G.tick;const tb=tn&&tn.closest('.tick');if(tb){const left=endgameLeft();const eg=left<=ENDGAME_TICKS&&!G._winner;tb.classList.toggle('endgame',eg);const k=tb.querySelector('.k');if(k){const lab=k.firstChild;if(lab&&lab.nodeType===3)lab.nodeValue=eg?'SEASON ENDS IN '+left+' TICK'+(left===1?'':'S')+' ':(window.__MP__?'NEXT TICK ':(G.solo&&G.solo.mode==='turn'?'TURN ':'NEXT TICK ▶ '));}}try{drawSoloTempo();drawScenarioPill();}catch(e){}}try{commsRender();}catch(e){}const _cl=clanOf(c);drawTension();drawOpsAlert();
+function drawTop(){const c=you();const rt=rankTitle(c.id);try{wireSoloFF();}catch(e){}{const tn=$('ticknow');if(tn)tn.textContent='tick #'+G.tick;const tb=tn&&tn.closest('.tick');if(tb){const left=endgameLeft();const eg=left<=ENDGAME_TICKS&&!G._winner;tb.classList.toggle('endgame',eg);const k=tb.querySelector('.k');if(k){const lab=k.firstChild;if(lab&&lab.nodeType===3)lab.nodeValue=(G._overtime&&!G._seasonEnd)?'OVERTIME '+(G.tick-G._overtime.start+1)+'/'+FINALE_OT+' ':eg?'SEASON ENDS IN '+left+' TICK'+(left===1?'':'S')+' ':(window.__MP__?'NEXT TICK ':(G.solo&&G.solo.mode==='turn'?'TURN ':'NEXT TICK ▶ '));}}try{drawSoloTempo();drawScenarioPill();}catch(e){}}try{commsRender();}catch(e){}const _cl=clanOf(c);drawTension();drawOpsAlert();
   const _hr=homeRegionOf(c);const _hc=_hr?_hr.coord:null;const _ai=myAlliedInbound(c);
   const _coordPill=_hc?`<span class="tag lk" onclick="event.stopPropagation();if(typeof GOTO_COORD==='function')GOTO_COORD('${_hc}')" title="Your capital, ${_hc} — click to see it on the map">📍 ${_hc}</span>`:'';
   const _defPill=_ai.n>0?`<span class="pill" style="background:rgba(201,139,224,.16);color:var(--ok);cursor:pointer;border:1px solid var(--ok)" onclick="event.stopPropagation();if(typeof SHOW_ALLYDEF==='function')SHOW_ALLYDEF()" title="${_ai.n} allied reinforcement army(s) are on the way to defend your regions — click to see who and when">🛡 ${_ai.n} all${_ai.n===1?'y':'ies'} inbound${_ai.soon>0?' · '+_ai.soon+'t':''}</span>`:'';
@@ -6776,7 +6794,7 @@ VIEWS.dashboard=v=>{const c=you();const pj=projection(c),sc=scores(c);const sp=c
   // screens (stacked on mobile). Each card keeps its exact content and handlers, only its parent zone changes.
   const z1=h(`<div class="dash-zone"><div class="zone-h z1"><span class="zn">1</span> Now · who lands, and when</div></div>`);
   try{const rb=h(roundBoard(c));z1.appendChild(rb);
-    rb.querySelectorAll('[data-recallfleet]').forEach(b=>b.onclick=async ()=>{const r=await recallFleet(c,+b.dataset.recallfleet);if(r.ok){toast('↩ Recalled — your units are heading home');go('dashboard');drawTop();save();}else toast(r.error,'bad');});
+    rb.querySelectorAll('[data-recallfleet]').forEach(b=>b.onclick=async ()=>{const r=await recallFleet(c,+b.dataset.recallfleet);if(r.ok){toast('↩ Recalled — your units are heading home');go('dashboard');drawTop();save();}else toast(r.error,'bad');});rb.querySelectorAll('[data-sendhome]').forEach(b=>b.onclick=async ()=>{const oid=+b.dataset.sendhome;const o=G.countries[oid];const r=await cmdAskWithdraw(c,oid);if(r.ok){toast(r.data.complied?('↩ '+((o&&leaderName(o))||'Your ally')+' is heading home. Thanks for the backup!'):('✉ Asked '+((o&&leaderName(o))||'your ally')+' to pull back.'));go('dashboard');drawTop();save();}else toast(r.error,'bad');});
     const ac=h(aroundYou(c));if(ac){z1.appendChild(ac);
       ac.querySelectorAll('[data-scoutnb]').forEach(b=>b.onclick=async ()=>{const r=await cmdScoutRegion(c,+b.dataset.scoutnb);if(r.ok){toast(r.data&&r.data.miss?'Scan bounced. You learned nothing.':'Scan in.');go('dashboard');drawTop();save();}else toast(r.error,'warn');});}}catch(e){}
   const zoneGrid=h(`<div class="dash-cols"></div>`);
@@ -6795,7 +6813,7 @@ VIEWS.dashboard=v=>{const c=you();const pj=projection(c),sc=scores(c);const sp=c
   {try{const nxw=nexus();
    if(nxw){const awakened=G.tick>=ccUnlockTick();const recent=(G._nexusLog||[]);
     let inN=0,inETA=Infinity;G.countries.forEach(o=>{if(!o||o.retired)return;(o.fleets||[]).forEach(f=>{if(f&&f.target===nxw.id&&(f.status==='battle'||(f.status==='outbound'&&f.intent!=='garrison'))){inN++;inETA=Math.min(inETA,f.status==='battle'?0:Math.max(0,(f.eta||G.tick)-G.tick));}});});
-    if(nxw.commandCenter||nxw.ccBuild||awakened||recent.length||inN>0){
+    if(!(typeof finaleActive==='function'&&finaleActive())&&(nxw.commandCenter||nxw.ccBuild||awakened||recent.length||inN>0)){
       const o=nxw.owner!=null?G.countries[nxw.owner]:null;const ocl=o?clanOf(o):null;const mine=nxw.owner===G.you;
       const near=nxw.commandCenter&&(NEXUS_HOLD-(nxw.ccHeld||0))<=3;
       const holdLine=nxw.ccBuild?`⏳ Imperial Palace building, ready in <b>${Math.max(0,nxw.ccBuild.done-G.tick)}t</b>`:nxw.commandCenter?`🏛 Hold <b style="color:${near?'var(--danger)':'var(--gold)'}">${nxw.ccHeld||0}/${NEXUS_HOLD}</b>${near?' — '+(NEXUS_HOLD-(nxw.ccHeld||0))+' from victory!':''}`:awakened?'Imperial Palace not built yet':'Not buildable yet';
@@ -7733,7 +7751,7 @@ VIEWS.fleets=v=>{const c=you();const inc=incomingTo(c.id);const cl0=clanOf(c);
         const fleetRows=inc2.slice().sort((a,b)=>a.eta-b.eta).map(x=>{const seen=!!(x.fleet&&(x.fleet.seen||x.fleet.acs));const who=seen?(x.from&&x.from.leader?leaderName(x.from):(x.from?x.from.name:'Unknown')):'Unidentified';const scan=(!seen&&x.fleet&&!x.fleet.acs)?`<button class="btn ghost sm" data-scan="${x.fleet.id}" title="Reveal this army's composition: 400 influence + 1 command point">🔍 Reveal (400 · 1 CP)</button>`:'';return `<tr><td>${esc(who)} ${seen?'<span class="tag">'+esc((x.from&&x.from.tag)||'')+'</span>':'<span class="pill n">?</span>'}${seen&&x.fleet&&x.fleet.units?'<div class="small muted">'+esc(fleetMixText(x.fleet.units,4))+'</div>':''}</td><td class="r mono" style="color:var(--danger)">${full(Math.round(x.atkP))}</td><td class="r"><span class="eta">${x.eta}t</span></td><td class="r">${scan}</td></tr>`;}).join('');
         const seenF=inc2.filter(x=>x.fleet&&x.fleet.seen&&x.fleet.units&&r.owner===c.id);
         const planHTML=seenF.length?defencePlanHTML(c,r,seenF):'<div class="muted small mt">Reveal an army (400 influence + 1 CP) above to see its composition and a defence plan: what holds, what stops their wagons, and your counter-attack window.</div>';
-        const nUnid=inc2.filter(x=>x.fleet&&!x.fleet.seen&&!x.fleet.acs).length;const revealAll=nUnid>1?`<div class="mt"><button class="btn ghost sm" data-scanall="${inc2.filter(x=>x.fleet&&!x.fleet.seen&&!x.fleet.acs).map(x=>x.fleet.id).join(',')}" title="400 influence + 1 command point per fleet">🔍 Reveal all ${nUnid} (${nUnid*400} · ${nUnid} CP)</button></div>`:'';
+        const nUnid=inc2.filter(x=>x.fleet&&!x.fleet.seen&&!x.fleet.acs).length;const revealAll=nUnid>1?`<div class="mt"><button class="btn ghost sm" data-scanall="${inc2.filter(x=>x.fleet&&!x.fleet.seen&&!x.fleet.acs).map(x=>x.fleet.id).join(',')}" title="400 influence + 1 command point per army">🔍 Reveal all ${nUnid} (${nUnid*400} · ${nUnid} CP)</button></div>`:'';
         const askScan=(mine&&clanOf(c)&&nUnid)?`<div class="mt"><button class="btn ghost sm" data-scanreq="${r.id}" title="Ask an alliance-mate with recon to reveal the ${nUnid} unidentified army(s) for you">🔍 Ask alliance to scan (${nUnid} unidentified)</button></div>`:'';
         const detail=`<div class="scroll"><table><thead><tr><th>Attacker</th><th class="r">Power</th><th class="r">ETA</th><th></th></tr></thead><tbody>${fleetRows}</tbody></table></div>${revealAll}${askScan}${planHTML}`;
         // v3.29: FULL defender breakdown under the row — WHO is defending this region, how many units each sent,
@@ -7817,7 +7835,7 @@ VIEWS.fleets=v=>{const c=you();const inc=incomingTo(c.id);const cl0=clanOf(c);
   const _updWaveInfo=()=>{const wi=v.querySelector('#waveinfo');const lbb=v.querySelector('#launch');if(!wi)return;
     const com=readInputs(v.querySelector('#ui'));let total=0;for(const k in com)total+=com[k];
     const stag=!!(v.querySelector('#wavestagger')&&v.querySelector('#wavestagger').checked);
-    if(_waves<=1){wi.innerHTML=total>0?`One army of <b>${full(total)}</b> units.`:'';if(lbb)lbb.textContent='⚔ Launch attack';return;}
+    if(_waves<=1){wi.innerHTML=total>0?`One army of <b>${full(total)}</b> units.`+((_n)=>_n?'<div class="small" style="margin-top:4px;color:'+(/will fight/.test(_n)?'var(--warn)':'var(--danger)')+'">⏳ '+esc(_n)+'</div>':'')(travel!=null?finaleLaunchNote(c,tgt.id,G.tick+_departIn+travel):''):'';if(lbb)lbb.textContent='⚔ Launch attack';return;}
     const per=Math.floor(total/_waves),cp=_waves*2;const land0=travel!=null?G.tick+_departIn+travel:null;
     const landStr=land0!=null?(stag?`land ticks <b>#${land0}–#${land0+_waves-1}</b>`:`all land tick <b>#${land0}</b>`):'';
     wi.innerHTML=`<b>${_waves}</b> waves of ~<b>${full(per)}</b> units each${total>0?'':' (pick units first)'} · ${landStr} · costs <b>${cp} CP</b> <span class="${c.cp>=cp?'':'muted'}" style="${c.cp>=cp?'color:var(--ok)':'color:var(--danger)'}">(you have ${Math.floor(c.cp)})</span>${stag?'':' · <span style="color:var(--warn)">same tick, solo armies still fight one by one</span>'}`;
@@ -7829,7 +7847,7 @@ VIEWS.fleets=v=>{const c=you();const inc=incomingTo(c.id);const cl0=clanOf(c);
   const lb=v.querySelector('#launch');if(lb)lb.onclick=async ()=>{const com=readInputs(v.querySelector('#ui'));const stealth=!!(v.querySelector('#stealthchk')&&v.querySelector('#stealthchk').checked);
     if(_waves>1){const stag=!!(v.querySelector('#wavestagger')&&v.querySelector('#wavestagger').checked);const r=await cmdLaunchWaves(c,tgt.id,com,{stealth,departIn:_departIn,waves:_waves,stagger:stag});
       if(r.ok){sfx('launch');const msg=r.data.launched<r.data.requested?'⚔ Launched '+r.data.launched+' of '+r.data.requested+' waves ('+(r.data.stopped||'not enough command points for the rest')+').':'⚔ Launched '+r.data.launched+' waves, last lands tick #'+r.data.land+'.';toast(msg,r.data.launched<r.data.requested?'warn':'');selTarget=null;go('fleets');drawTop();save();}else toast(r.error,'bad');return;}
-    const r=await cmdOp(c,tgt.id,com,{stealth,departIn:_departIn});if(r.ok){sfx('launch');toast(r.data.departIn>0?('🕒 Attack scheduled, departs in '+r.data.departIn+'t, lands tick #'+r.data.land+'.'):(r.data.stealth?'🕶 Stealth army launched, hidden until it closes in. ':'⚔ Army launched, ')+'lands tick #'+r.data.land+' (in '+r.data.eta+'t).',r.data.departIn>0?'warn':'');selTarget=null;go('fleets');drawTop();save();}else toast(r.error,'bad');};
+    const r=await cmdOp(c,tgt.id,com,{stealth,departIn:_departIn});if(r.ok){sfx('launch');toast(r.data.departIn>0?('🕒 Attack scheduled, departs in '+r.data.departIn+'t, lands tick #'+r.data.land+'.'):(r.data.stealth?'🕶 Stealth army launched, hidden until it closes in. ':'⚔ Army launched, ')+'lands tick #'+r.data.land+' (in '+r.data.eta+'t).'+(finaleLaunchNote(c,tgt.id,r.data.land)?' ⏳ '+finaleLaunchNote(c,tgt.id,r.data.land):''),(r.data.departIn>0||finaleLaunchNote(c,tgt.id,r.data.land))?'warn':'');selTarget=null;go('fleets');drawTop();save();}else toast(r.error,'bad');};
   const sim=v.querySelector('#simrun');if(sim)sim.onclick=()=>{const read=pfx=>{const u={};v.querySelectorAll(`input[data-su^="${pfx}:"]`).forEach(i=>{const k=i.dataset.su.split(':')[1];const n=+i.value;if(n>0)u[k]=n;});return u;};
     const aU=read('a'),dU=read('d');const aTech=[];if(v.querySelector('input[data-sc="a:armor"]').checked)aTech.push('armor');if(v.querySelector('input[data-sc="a:supply"]').checked)aTech.push('supply');
     const infra=clamp(+v.querySelector('input[data-sc="d:infra"]').value||60,0,100);
@@ -7858,7 +7876,7 @@ VIEWS.fleets=v=>{const c=you();const inc=incomingTo(c.id);const cl0=clanOf(c);
   v.querySelectorAll('button[data-joinnav]').forEach(b=>b.onclick=()=>{toast('Commit your army to the alliance strike below.');OPEN_JOINOP(b.dataset.joinnav);});
   v.querySelectorAll('[data-scout]').forEach(b=>b.onclick=async ()=>{const r=await cmdScoutRegion(c,+b.dataset.scout);if(r.ok&&r.data&&r.data.miss){toast('🔍 The scan bounced off their radar. No report this time, try again or raise your recon.','warn');go('fleets');drawTop();save();}else if(r.ok){toast('🔍 Scout report, defence '+full(r.data.lo)+'–'+full(r.data.hi)+' ('+r.data.conf+'% confidence)');go('fleets');drawTop();save();}else toast(r.error,'bad');});
   v.querySelectorAll('[data-shareintel]').forEach(b=>b.onclick=async ()=>{const r=await cmdShareIntel(c,+b.dataset.shareintel);toast(r.ok?'📤 Intel posted to alliance chat.':r.error,r.ok?'':'bad');if(r.ok)save();});
-  v.querySelectorAll('button[data-scan]').forEach(b=>b.onclick=async ()=>{const r=await cmdScan(c,+b.dataset.scan);if(r.ok){toast(r.data.seen?'Recon successful, enemy composition revealed':'Recon blocked, heavy watchtower interference. Signatures remain unclear; try again or build up Recon.',r.data.seen?'':'warn');go('fleets');drawTop();save();}else toast(r.error,'bad');});v.querySelectorAll('button[data-scanall]').forEach(b=>b.onclick=async ()=>{const ids=String(b.dataset.scanall).split(',').map(Number);let okN=0,bl=0,er='';for(const id of ids){const r=await cmdScan(c,id);if(!r.ok){er=r.error;break;}if(r.data&&r.data.seen)okN++;else bl++;}if(okN||bl){toast('🔍 '+okN+' of '+ids.length+' fleets revealed'+(bl?', '+bl+' blocked by their radar':''),okN?'':'warn');go('fleets');drawTop();save();}if(er)toast(er,'bad');});
+  v.querySelectorAll('button[data-scan]').forEach(b=>b.onclick=async ()=>{const r=await cmdScan(c,+b.dataset.scan);if(r.ok){toast(r.data.seen?'Recon successful, enemy composition revealed':'Recon blocked, heavy watchtower interference. Signatures remain unclear; try again or build up Recon.',r.data.seen?'':'warn');go('fleets');drawTop();save();}else toast(r.error,'bad');});v.querySelectorAll('button[data-scanall]').forEach(b=>b.onclick=async ()=>{const ids=String(b.dataset.scanall).split(',').map(Number);let okN=0,bl=0,er='';for(const id of ids){const r=await cmdScan(c,id);if(!r.ok){er=r.error;break;}if(r.data&&r.data.seen)okN++;else bl++;}if(okN||bl){toast('🔍 '+okN+' of '+ids.length+' armies revealed'+(bl?', '+bl+' blocked by their radar':''),okN?'':'warn');go('fleets');drawTop();save();}if(er)toast(er,'bad');});
   // Ask your alliance to reveal the unidentified inbound fleets (covers the crisis card and the defence-table detail).
   v.querySelectorAll('button[data-scanreq]').forEach(b=>b.onclick=async ()=>{const r=await cmdRequestScan(c,+b.dataset.scanreq);if(r.ok){toast(r.data.revealed?('🔭 '+(r.data.helper||'An ally')+' revealed '+r.data.revealed+' of '+r.data.requested+' army(s) for you.'):('🔍 Scan request sent to your alliance ('+r.data.requested+' unidentified). Allies with recon can Reveal them.'),r.data.revealed?'good':'warn');go('fleets');drawTop();save();}else toast(r.error,'warn');});
   // War Room defence table: expand a region row into its full battle panel (fleets + scans + defence plan). Pure UI toggle, no re-render.
@@ -9086,7 +9104,7 @@ VIEWS.clans=v=>{const c=you();const cl=clanOf(c);
   {const calls=defenceCalls(cl);
    if(calls.length){const SB={ASSIGNED:{p:'g',t:'✓ ASSIGNED'},OPEN:{p:'w',t:'⚠ OPEN'},CRITICAL:{p:'b',t:'⚠⚠ CRITICAL'}};
      const rows=calls.slice(0,16).map(call=>{const isMe=call.owner.id===c.id;const sb=SB[call.status];const pct=Math.min(100,Math.round(call.assigned/Math.max(1,call.required)*100));
-       const unseen=call.threats.filter(x=>!x.fleet.seen&&!x.fleet.acs);const scanBtn=unseen.length?`<button class="btn ghost sm" data-ascan="${unseen.map(x=>x.fleet.id).join(',')}" title="Reveal every unidentified fleet on this call: 400 influence + 1 CP each">Scan ${unseen.length>1?'all '+unseen.length+' ('+(unseen.length*400)+')':'(400)'}</button>`:'';const seenMix=call.threats.filter(x=>x.fleet&&(x.fleet.seen||x.fleet.acs)).map(x=>`<div class="small muted" style="margin-top:4px">🔍 <b>${esc((x.from&&x.from.tag)||'?')}</b>, ${full(fleetSize(x.fleet.units||{}))} units, lands in ${x.eta}t: ${esc(fleetMixText(x.fleet.units,4))}</div>`).join('');
+       const unseen=call.threats.filter(x=>!x.fleet.seen&&!x.fleet.acs);const scanBtn=unseen.length?`<button class="btn ghost sm" data-ascan="${unseen.map(x=>x.fleet.id).join(',')}" title="Reveal every unidentified army on this call: 400 influence + 1 CP each">Scan ${unseen.length>1?'all '+unseen.length+' ('+(unseen.length*400)+')':'(400)'}</button>`:'';const seenMix=call.threats.filter(x=>x.fleet&&(x.fleet.seen||x.fleet.acs)).map(x=>`<div class="small muted" style="margin-top:4px">🔍 <b>${esc((x.from&&x.from.tag)||'?')}</b>, ${full(fleetSize(x.fleet.units||{}))} units, lands in ${x.eta}t: ${esc(fleetMixText(x.fleet.units,4))}</div>`).join('');
        const seenFleet=call.threats.find(x=>x.fleet.seen);const defBtn=seenFleet?`<button class="btn ghost sm" data-plandef="${seenFleet.fleet.id}">Plan</button>`:'';
        const assignBtn=`<button class="btn sm" data-defend="${call.region.id}">Assign my army</button>`;
        return `<div class="warnrow" style="${call.status==='CRITICAL'?'border-color:rgba(217,75,58,.6)':''}">
@@ -9105,7 +9123,7 @@ VIEWS.clans=v=>{const c=you();const cl=clanOf(c);
        return `<div class="warnrow" style="border-color:rgba(217,164,65,.5)">
          <div class="row between wrap" style="gap:6px"><div class="small"><b>⚑ Assault on ${r?esc(r.name):'—'}</b> ${coordChip(op.coord)} <span class="muted">· led by ${esc(op.leader===c.id?'you':leaderName(lead||{name:'ally'}))}</span></div><span class="eta" style="color:var(--alert)">lands in ${left}t</span></div>
          <div class="row between wrap mt" style="gap:6px"><span class="small">${op.fleets.length}/${ACS_MAX_FLEETS} armies · power <b style="color:${pct>=100?'var(--good)':'var(--warn)'}">${full(pw)}</b> / needed ~${full(need)}</span>
-           <span>${joined?('<span class="pill g">✓ you joined</span>'+(op.leader!==c.id&&left>=1?` <button class="btn ghost sm" data-leaveop="${op.id}">↩ Withdraw</button>`:'')):canJoin?`<button class="btn sm" data-joinop="${op.id}">✅ Join operation</button>`:`<span class="muted small">${op.fleets.length>=ACS_MAX_FLEETS?'<span title="A coordinated assault takes at most '+ACS_MAX_FLEETS+' armies. Joining never needs approval from the leader, this one is simply full.">🔒 full · '+ACS_MAX_FLEETS+'/'+ACS_MAX_FLEETS+'</span>':'⏱ too far, your army needs '+travel+'t but it lands in '+left+'t'}</span>`}</span></div>
+           <span>${joined?('<span class="pill g">✓ you joined</span>'+(op.leader!==c.id&&left>=1?` <button class="btn ghost sm" data-leaveop="${op.id}">↩ Withdraw</button>`:'')+(op.leader===c.id&&left>=1?` <button class="btn ghost sm" data-cancelop="${op.id}" title="Every army in this strike turns back, and the alliance is told">✖ Call off</button>`:'')):canJoin?`<button class="btn sm" data-joinop="${op.id}">✅ Join operation</button>`:`<span class="muted small">${op.fleets.length>=ACS_MAX_FLEETS?'<span title="A coordinated assault takes at most '+ACS_MAX_FLEETS+' armies. Joining never needs approval from the leader, this one is simply full.">🔒 full · '+ACS_MAX_FLEETS+'/'+ACS_MAX_FLEETS+'</span>':'⏱ too far, your army needs '+travel+'t but it lands in '+left+'t'}</span>`}</span></div>
          <div class="small muted" style="margin-top:3px">🤝 Committed: ${op.fleets.length?op.fleets.map(f=>{const o=G.countries[f.owner];return o?'<a onclick="GOTO_NATION('+o.id+')" style="cursor:pointer;color:var(--accent);font-weight:600">'+esc(o.tag)+'</a>':'?';}).join(' · '):'no one yet, be the first'} · lands within <b>${left}t</b> window</div>
          <div class="bar mt"><span style="width:${pct}%;background:${pct>=100?'var(--good)':'var(--warn)'}"></span></div></div>`;}).join('');
      if(selJoinOp!=null){const op=myOps.find(x=>x.id===selJoinOp);
@@ -9188,7 +9206,7 @@ VIEWS.clans=v=>{const c=you();const cl=clanOf(c);
   const cms=v.querySelector('#cmdmsgset');if(cms)cms.onclick=async ()=>{const r=await cmdCommandMsg(c,($('cmdmsg').value)||'');if(r.ok){toast('Command message pinned');go('clans');save();}else toast(r.error,'bad');};
   v.querySelectorAll('button[data-defend]').forEach(b=>b.onclick=async ()=>{const rid=+b.dataset.defend;const com={};for(const k in c.units){const n=Math.floor((c.units[k]||0)*0.5);if(n>0)com[k]=n;}const r=await cmdStation(c,rid,com);if(r.ok){toast('🛡 Defensive army dispatched, arrives in '+r.data.eta+'t (speed matters!)');go('clans');drawTop();save();}else toast(r.error,'bad');});
   v.querySelectorAll('button[data-wonder]').forEach(b=>b.onclick=async ()=>{const r=await cmdBuildWonder(c,b.dataset.wonder);if(r.ok){toast('🏛 Alliance wonder built, bonus active for every member!');go('clans');drawTop();save();}else toast(r.error,'bad');});
-  v.querySelectorAll('button[data-ascan]').forEach(b=>b.onclick=async ()=>{const ids=String(b.dataset.ascan).split(',').map(Number);let okN=0,bl=0,er='';for(const id of ids){const r=await cmdScan(c,id);if(!r.ok){er=r.error;break;}if(r.data&&r.data.seen)okN++;else bl++;}if(okN||bl){toast(okN?(ids.length>1?'🛰 '+okN+' of '+ids.length+' fleets revealed and shared with the alliance':'🦅 Recon shared with the alliance, enemy composition revealed'):'Recon blocked by their watchtower, try again or raise Recon.',okN?'':'warn');go('clans');drawTop();save();}if(er)toast(er,'bad');});
+  v.querySelectorAll('button[data-ascan]').forEach(b=>b.onclick=async ()=>{const ids=String(b.dataset.ascan).split(',').map(Number);let okN=0,bl=0,er='';for(const id of ids){const r=await cmdScan(c,id);if(!r.ok){er=r.error;break;}if(r.data&&r.data.seen)okN++;else bl++;}if(okN||bl){toast(okN?(ids.length>1?'🛰 '+okN+' of '+ids.length+' armies revealed and shared with the alliance':'🦅 Recon shared with the alliance, enemy composition revealed'):'Recon blocked by their watchtower, try again or raise Recon.',okN?'':'warn');go('clans');drawTop();save();}if(er)toast(er,'bad');});
   v.querySelectorAll('button[data-plandef]').forEach(b=>b.onclick=()=>{const hit=findFleet(+b.dataset.plandef);if(hit){_defPlan={atk:Object.assign({},hit.f.units)};toast('Loaded the incoming force into the Frontier combat simulator.');go('fleets');}});
   v.querySelectorAll('button[data-eng]').forEach(b=>b.onclick=async ()=>{const r=await cmdSendEngineers(c,+b.dataset.eng);if(r.ok){toast('🔧 Engineers sent, 1 tick saved');go('clans');save();}else toast(r.error,'bad');});
   v.querySelectorAll('button[data-promote]').forEach(b=>b.onclick=async ()=>{const id=+b.dataset.promote;const cur=cl.roles[id];const r=await cmdClanRole(c,id,cur==='member'?'officer':'member');if(r.ok){go('clans');save();}else toast(r.error,'bad');});
@@ -9532,8 +9550,8 @@ VIEWS.rankings=v=>{const c=you();const rt=rankTitle(c.id);const myS=scores(c);co
     const holder=nx&&nx.commandCenter&&nx.owner!=null?G.countries[nx.owner]:null;const holdLeft=holder?Math.max(0,NEXUS_HOLD-(nx.ccHeld||0)):null;
     const rows=top.map((o,i)=>{const gap=lead?Math.round((1-o.s/Math.max(1,lead.s))*100):0;const inC=i===0||gap<=15;const me=o.x.id===c.id;
       return `<tr${me?' style="background:rgba(217,164,65,.09)"':''}><td>${i+1}</td><td>${emblem(o.x)} ${me?'<b>You</b>':nationLink(o.x.id,esc(o.x.name))} <span class="tag">${esc(o.x.tag)}</span></td><td class="r">${full(o.s)}</td><td class="r">${i===0?'<span class="pill g">leads</span>':inC?'<span class="pill w">−'+gap+'% · in reach</span>':'<span class="muted">−'+gap+'%</span>'}</td></tr>`;}).join('');
-    const nxLine=holder?`<div class="small" style="color:var(--gold);font-weight:600">🏛 ${holder.id===c.id?'You hold':esc(holder.name)+' holds'} Roma — an outright win in <b>${holdLeft}</b> tick${holdLeft===1?'':'s'} unless the Imperial Palace is broken.</div>`:(nx?`<div class="small">🏛 Roma is ${nx.owner!=null?'held by '+esc((G.countries[nx.owner]||{}).name||'a rival')+' (no Imperial Palace yet)':'unclaimed'} — take it, build the Center and hold ${NEXUS_HOLD} ticks for an instant win.</div>`:'');
-    v.appendChild(h(`<div class="card mb" style="border-left:3px solid var(--gold)"><h3>Who can still win <span class="muted small" style="text-transform:none;letter-spacing:0">${left} tick${left===1?'':'s'} to the score lock</span></h3>${nxLine}<div class="scroll mt"><table><thead><tr><th></th><th>Nation</th><th class="r">Score</th><th class="r">Gap to #1</th></tr></thead><tbody>${rows}</tbody></table></div><div class="muted small mt">Two ways to win: hold Roma (instant), or lead the overall score at the lock. Within ~15% of the leader is still catchable in the ticks left.</div></div>`));}}catch(e){}}
+    const nxLine=holder?`<div class="small" style="color:var(--gold);font-weight:600">🏛 ${holder.id===c.id?'You hold':esc(holder.name)+' holds'} Roma — an outright win in <b>${holdLeft}</b> tick${holdLeft===1?'':'s'} unless the Imperial Palace is broken.</div>`:(nx?`<div class="small">🏛 Roma is ${nx.owner!=null?'held by '+esc((G.countries[nx.owner]||{}).name||'a rival')+' (no Imperial Palace yet)':'unclaimed'} — take it, build the Palace and hold ${NEXUS_HOLD} ticks for an instant win.</div>`:'');
+    v.appendChild(h(`<div class="card mb" style="border-left:3px solid var(--gold)"><h3>Who can still win <span class="muted small" style="text-transform:none;letter-spacing:0">${left} tick${left===1?'':'s'} to the end</span></h3>${nxLine}<div class="scroll mt"><table><thead><tr><th></th><th>Nation</th><th class="r">Score</th><th class="r">Gap to #1</th></tr></thead><tbody>${rows}</tbody></table></div><div class="muted small mt">Two ways to win: hold Roma long enough for an instant win, or hold Roma the most ticks in the Last Battle (the final ${FINALE_WINDOW} ticks). The score only decides if nobody held it, and it ranks everyone else.</div></div>`));}}catch(e){}}
   // ---- PATHS TO VICTORY, every dimension crowns a champion at season end; chase the one that fits your path ----
   {const champs=victoryChampions();
    const bestC=champs.filter(x=>x.myPos).sort((a,b)=>a.myPos-b.myPos)[0];const bestDim=bestC?bestC.v.n+' #'+bestC.myPos:'—';
@@ -9695,7 +9713,7 @@ VIEWS.codex=v=>{
     <div class="grid g3 mt small">
       <div><b>Tick</b><br>${isSoloGame()?'Solo: you end each turn yourself (END TURN or Space), or auto-play at 1x / 5x / 20x · season '+SEASON_TICKS+' turns':(Math.round(TICK_MS/60000)>=60?Math.round(TICK_MS/3600000)+' h':Math.round(TICK_MS/60000)+' min')+' per tick in this build · season '+SEASON_TICKS+' ticks ('+seasonLiveLabel()+' live)'}</div>
       <div><b>Command Points</b><br>+${cpRegen()} per tick, max ${cpCap()} (large alliances regenerate slower)</div>
-      <div><b>Win</b><br>Hold Roma with an Imperial Palace for ${NEXUS_HOLD} ticks · else highest overall score at the clock</div>
+      <div><b>Win</b><br>Hold Roma with an Imperial Palace for ${NEXUS_HOLD} ticks · else whoever holds Roma the most ticks in the Last Battle (the final ${FINALE_WINDOW} ticks)</div>
       <div><b>Beginner protection</b><br>${NEWBIE_PROTECT} ticks, regions can't be captured; ends early if you attack. Afterwards, Superpowers and the Hegemon still cannot attack you until you strike first.</div>
       <div><b>Safety nets</b><br>Auto-mobilise + emergency shield (RoE) are ON by default. Auto-build and auto-research are both OFF by default (you run your own economy and tech; turn either on in Home if you want the AI to help). Small nations (Rising Tribe) shield earlier. Rebuild relief +15% for ${REBUILD_TICKS} ticks after losing a region.</div>
       <div><b>Building</b><br>${BUILD_SLOTS} builds per region at once · ${REGION_DP} Development Points of footprint per region</div>
@@ -9965,18 +9983,106 @@ function iconInit(){if(typeof document==='undefined'||window.__iconObs)return;ic
   const obs=new MutationObserver(muts=>{for(const m of muts){if(m.type==='characterData')iconize(m.target);else m.addedNodes.forEach(nd=>iconize(nd));}});
   obs.observe(document.body,{childList:true,subtree:true,characterData:true});window.__iconObs=obs;}
 // ==== SEASON ENDGAME, the last 20 ticks are announced: clock turns gold, one calm line on every screen, sitreps at 20/10/5/1.
-const ENDGAME_TICKS=80; // ROMATERRA ×4 (20 real hours)
-const LATE_SEASON_TICKS=160; // ROMATERRA ×4 (40 real hours before the end) // a softer, earlier heads-up so players position for the Nexus before the gold countdown
+let ENDGAME_TICKS=80; // ROMATERRA ×4 (20 real hours)
+let LATE_SEASON_TICKS=160; // ROMATERRA ×4 (40 real hours before the end) // a softer, earlier heads-up so players position for the Nexus before the gold countdown
 function endgameLeft(){try{return _ticksLeft();}catch(e){return 999;}}
-function endgameLine(){const left=endgameLeft();if(G._winner)return '';const nx=nexus();const h=nx&&nx.owner!=null?G.countries[nx.owner]:null;const c=you();const rt=c?rankTitle(c.id):null;
-  const nxStr=h?` · Roma held by <b>${esc(h.name)}</b> [${esc(h.tag)}] ${nx.ccHeld||0}/${NEXUS_HOLD}`:(nx?' · Roma is unclaimed':'');
-  if(left<=ENDGAME_TICKS)return `<div class="alertbar"><div class="alertrow endgame" data-go="rankings"><span>⌛ <b>SEASON ENDGAME</b>, ${left} tick${left===1?'':'s'} left · scores lock at tick #${G.tick+left}${nxStr}${rt?` · you are #${rt.pos}`:''}</span><span class="arr">Rankings →</span></div></div>`;
+function endgameLine(){const left=endgameLeft();if(G._winner)return '';if(G._overtime&&!G._seasonEnd){const _nx=nexus();const _h=_nx&&_nx.owner!=null?G.countries[_nx.owner]:null;const _k=G.tick-G._overtime.start+1;return `<div class="alertbar"><div class="alertrow endgame" data-go="dashboard" style="border-left-color:var(--danger)"><span>⏱ <b>OVERTIME ${_k}/${FINALE_OT}, THE LAST BATTLE</b> · the season ends when the fight for Roma is over${_h?` · held by <b>${esc(_h.name)}</b> [${esc(_h.tag)}]`:''}${typeof finaleLeaderStr==='function'?finaleLeaderStr():''}</span><span class="arr">Watch →</span></div></div>`;}const nx=nexus();const h=nx&&nx.owner!=null?G.countries[nx.owner]:null;const c=you();const rt=c?rankTitle(c.id):null;
+  const nxStr=(h?` · Roma held by <b>${esc(h.name)}</b> [${esc(h.tag)}] ${nx.ccHeld||0}/${NEXUS_HOLD}`:(nx?' · Roma is unclaimed':''))+(typeof finaleLeaderStr==='function'&&endgameLeft()<=FINALE_WINDOW?finaleLeaderStr():'');
+  if(left<=FINALE_WINDOW)return `<div class="alertbar"><div class="alertrow endgame" data-go="dashboard"><span>⚔ <b>THE LAST BATTLE</b>, ${left} tick${left===1?'':'s'} left · hold Roma the most ticks to win the season${nxStr}</span><span class="arr">Watch →</span></div></div>`;
+  if(left<=ENDGAME_TICKS)return `<div class="alertbar"><div class="alertrow endgame" data-go="rankings"><span>⌛ <b>SEASON ENDGAME</b>, ${left} tick${left===1?'':'s'} left · the Last Battle starts in ${left-FINALE_WINDOW} tick${left-FINALE_WINDOW===1?'':'s'}${nxStr}${rt?` · you are #${rt.pos}`:''}</span><span class="arr">Rankings →</span></div></div>`;
   // 21–40 ticks left: a calmer amber "late season" nudge — position now, the Nexus is the only fast win.
-  if(left<=LATE_SEASON_TICKS)return `<div class="alertbar"><div class="alertrow" data-go="rankings" style="border-left:3px solid var(--alert);background:linear-gradient(90deg,rgba(224,165,42,.10),transparent 70%)"><span>🌆 <b>Late season</b>, ${left} ticks to the score lock. Roma is the only fast win, position now${nxStr}${rt?` · you are #${rt.pos}`:''}.</span><span class="arr">Rankings →</span></div></div>`;
+  if(left<=LATE_SEASON_TICKS)return `<div class="alertbar"><div class="alertrow" data-go="rankings" style="border-left:3px solid var(--alert);background:linear-gradient(90deg,rgba(224,165,42,.10),transparent 70%)"><span>🌆 <b>Late season</b>, ${left} ticks to go. The Last Battle starts ${FINALE_WINDOW} ticks before the end: whoever holds Roma the most ticks from then on wins the season. Position now${nxStr}${rt?` · you are #${rt.pos}`:''}.</span><span class="arr">Rankings →</span></div></div>`;
   return '';}
-function endgameTick(){const left=endgameLeft();if(![LATE_SEASON_TICKS,120,ENDGAME_TICKS,40,20,4,1].includes(left))return;
+// ---- Update 2: THE LAST BATTLE (finale) ------------------------------------------------------------------------
+// The season used to stop dead on its last tick, even with armies mid-fight at Roma. Now:
+//  1. every battle for Roma that is still running (or armies already marching on it) is fought out in an
+//     OVERTIME of up to FINALE_OT ticks before the scores lock,
+//  2. HOLD RACE: every tick of the finale Roma holder banks a tick; whoever held it the most ticks wins the season
+//     (their alliance shares the win). Ties go to whoever holds it at the final whistle. The Imperial Palace win (hold it NEXUS_HOLD ticks) stays,
+//  3. the last FINALE_WINDOW ticks are recorded tick by tick (armies marching, garrison, battles, score race) for the
+//     live panel, the world news and the end screen.
+// Engine-side and deterministic, so it works the same in solo and on the multiplayer server.
+var FINALE_OT=12,FINALE_WINDOW=finaleWindowFor(),FINALE_BONUS=0,FINALE_ALLY_BONUS=0; // ROMATERRA: 15-min ticks, so the Last Battle runs 80 ticks (20 real hours) and overtime up to 12 ticks (3 h: a 9-tick march plus a 3-tick battle)
+function finaleWindowFor(){return Math.max(20,Math.min(80,Math.round(SEASON_TICKS/10)));}
+function finaleMarks(){return FINALE_WINDOW>=80?[48,20,4]:FINALE_WINDOW>=40?[20,8]:[12,5];}
+// Hold race standings, best first: [{id,t,holding}]
+function finaleHoldTable(){const F=G._finale;if(!F||!F.hold)return [];const T=finaleTargets();const now=new Set(T.map(r=>r.owner).filter(x=>x!=null));
+  return Object.keys(F.hold).map(k=>({id:+k,t:F.hold[k],holding:now.has(+k)})).filter(x=>G.countries[x.id]).sort((a,b)=>(b.t-a.t)||((b.holding?1:0)-(a.holding?1:0))||(scores(G.countries[b.id]).overall-scores(G.countries[a.id]).overall));}
+function finaleLeader(){const t=finaleHoldTable();return t.length?t[0]:null;}
+function finaleLeaderStr(){try{const L=finaleLeader();if(!L)return '';const o=G.countries[L.id];return ' · 👑 leader <b>'+esc(o.tag)+'</b> '+L.t+'t';}catch(e){return '';}}
+// Did this nation win the season through the Last Battle (itself, or its alliance)?
+function finaleWonBy(c){const F=G._finale;if(!c||!F||F.winner==null)return false;if(F.winner===c.id)return true;return F.winnerClan!=null&&c.clan===F.winnerClan;}
+function finaleTargets(){try{const t=(typeof nexuses==='function'?nexuses():[nexus()]).filter(Boolean);return t.length?t:[nexus()].filter(Boolean);}catch(e){return [nexus()].filter(Boolean);}}
+function finaleTargetSet(){return new Set(finaleTargets().map(r=>r.id));}
+function finalePrimary(){const T=finaleTargets();if(T.length<2)return T[0]||null;return T.map(r=>({r,n:finaleMarch(r).n})).sort((a,b)=>b.n-a.n)[0].r;}
+function finaleEndTick(){return ((G.season&&G.season.startTick)||0)+SEASON_TICKS;}
+function finaleActive(){try{if(G._winner!=null)return false;return !!(G._overtime&&!G._seasonEnd)||(endgameLeft()<=FINALE_WINDOW&&!G._seasonEnd);}catch(e){return false;}}
+// Anything still fighting for, or marching on, Roma that can land before the overtime cap? Only armies that left
+// BEFORE the clock ran out count: the overtime finishes the fights that were already under way, it is not a new season.
+function finaleLeft(f){return f.departTick!=null?f.departTick:((f.eta||0)-(f.travel||0));}
+function finaleNexusAction(){const T=finaleTargetSet();if(!T.size)return false;const endT=finaleEndTick(),capT=endT+FINALE_OT;const ot=G._overtime;let live=false;
+  G.countries.forEach(o=>{if(!o||o.retired||live)return;(o.fleets||[]).forEach(f=>{if(!f||!T.has(f.target)||live)return;
+    if(f.acs&&f.status==='battle'){if(!ot||(ot.ops||[]).includes(f.acsOp)||f.acsOp==null&&finaleLeft(f)<=endT)live=true;return;}
+    const fair=finaleLeft(f)<=endT;
+    if(f.status==='battle'&&fair)live=true;else if(fair&&(f.status==='outbound'||f.status==='staged')&&f.intent!=='garrison'&&f.intent!=='reinforce'&&(f.eta||0)<=capT-1)live=true;});});
+  if(!live)(G.acs||[]).forEach(op=>{if(op&&T.has(op.target)&&op.landTick<=capT-1&&(!ot||(ot.ops||[]).includes(op.id)))live=true;});
+  return live;}
+function finaleOpenOvertime(){const T=finaleTargetSet();const ops=(G.acs||[]).filter(op=>op&&T.has(op.target)).map(op=>op.id);
+  G.countries.forEach(o=>{(o&&o.fleets||[]).forEach(f=>{if(f&&T.has(f.target)&&f.acs&&f.status==='battle'&&f.acsOp!=null)ops.push(f.acsOp);});});G._overtime={start:G.tick,ops};}
+// Who can still make it: an army leaving now from the nation's best home lands at `land`; its fight needs BATTLE_TICKS.
+function finaleLaunchNote(c,rid,land){try{if(!c||rid==null||land==null)return '';const endT=finaleEndTick();if(endT-G.tick>LATE_SEASON_TICKS&&!G._overtime)return '';
+  const isNx=finaleTargetSet().has(rid);const needEnd=land+BATTLE_TICKS;
+  if(needEnd<=endT)return '';
+  if(isNx&&G._overtime)return 'The clock has run out. The overtime only waits for armies that left before it did, so this one fights only if the Last Battle is still going when it lands (tick #'+land+').';
+  if(isNx&&land<=endT)return 'Lands tick #'+land+', but the fight runs past the season clock (tick #'+endT+'). Battles for Roma are fought out in the Last Battle overtime. It will fight.';
+  if(isNx&&land<=endT+FINALE_OT-1)return 'Lands tick #'+land+', after the season clock (tick #'+endT+'). Armies that leave before the clock runs out fight on in the Last Battle overtime (up to '+FINALE_OT+' extra ticks). It will fight.';
+  return 'Too late: this army lands tick #'+land+' and a fight takes '+BATTLE_TICKS+' ticks, but the season ends at tick #'+endT+(isNx?' plus at most '+FINALE_OT+' ticks of overtime':'. Only battles for Roma get overtime')+'. It will not fight.';}catch(e){return '';}}
+function finaleMarch(nx){const inbound={};let n=0;
+  G.countries.forEach(o=>{if(!o||o.retired)return;(o.fleets||[]).forEach(f=>{if(!f||f.target!==nx.id)return;if(!(f.status==='outbound'||f.status==='staged'||f.status==='battle'))return;
+    const atk=f.intent!=='garrison'&&f.intent!=='reinforce';const sz=f.status!=='battle'&&f._size!=null?f._size:fleetSize(f.units||{});const k=o.id+(atk?':a':':d');
+    const e=inbound[k]||(inbound[k]={id:o.id,tag:o.tag,name:o.name,n:0,eta:999,atk,fighting:false,joint:false});e.n+=sz;n+=sz;
+    if(f.status==='battle'){e.fighting=true;e.eta=0;if(f.acs)e.joint=true;}else e.eta=Math.min(e.eta,Math.max(0,(f.eta||G.tick)-G.tick));});});
+  (G.acs||[]).forEach(op=>{if(!op||op.target!==nx.id)return;(op.fleets||[]).forEach(f=>{const o=G.countries[f.owner];if(!o)return;const k=o.id+':a';
+    const e=inbound[k]||(inbound[k]={id:o.id,tag:o.tag,name:o.name,n:0,eta:999,atk:true,fighting:false,joint:true});const sz=fleetSize(f.units||{});e.n+=sz;n+=sz;e.joint=true;e.eta=Math.min(e.eta,Math.max(0,op.landTick-G.tick));});});
+  return {list:Object.values(inbound).sort((a,b)=>(b.fighting-a.fighting)||(a.eta-b.eta)||(b.n-a.n)),n};}
+function finaleRecord(){try{if(G._winner!=null)return;const nx=finalePrimary();if(!nx)return;const TT=finaleTargets();const left=endgameLeft();if(left>FINALE_WINDOW&&!G._overtime)return;
+  const F=G._finale=G._finale||{ticks:[],start:G.tick,news:{}};if(F.done)return;
+  const holder=nx.owner!=null?G.countries[nx.owner]:null;const m=TT.length<2?finaleMarch(nx):(()=>{const all=TT.map(finaleMarch);return {list:[].concat(...all.map(x=>x.list)),n:all.reduce((t,x)=>t+x.n,0)};})();
+  let garrison=0;try{garrison=fleetSize((defenderPool(nx,holder)||{}).units||{});}catch(e){}
+  const top=activeRanked().slice(0,5).map(x=>({id:x.id,tag:(G.countries[x.id]||{}).tag,name:(G.countries[x.id]||{}).name,s:Math.round(x.s)}));
+  const fights=(G._nexusLog||[]).filter(e=>e&&e.tick===G.tick&&e.atk!==e.def).length;
+  const snap={tick:G.tick,left,ot:G._overtime?(G.tick-G._overtime.start+1):0,holder:holder?holder.id:null,cc:!!nx.commandCenter,ccHeld:nx.ccHeld||0,garrison,inbN:m.n,armies:m.list.filter(x=>x.atk).length,fights,top};
+  const last=F.ticks[F.ticks.length-1];if(last&&last.tick===G.tick)F.ticks[F.ticks.length-1]=snap;else F.ticks.push(snap);if(F.ticks.length>40)F.ticks.shift();
+  // HOLD RACE: bank one tick for every Nexus holder, once per tick
+  if(F.holdTick!==G.tick){F.holdTick=G.tick;F.hold=F.hold||{};TT.forEach(r=>{if(r.owner!=null)F.hold[r.owner]=(F.hold[r.owner]||0)+1;});
+    const L=finaleLeader();if(L&&L.id!==F.leader){const lc=G.countries[L.id];if(lc&&F.leader!=null)news('nexus','👑 New leader in the Last Battle: '+leaderName(lc)+' of '+lc.name+' ['+lc.tag+'], '+L.t+' tick'+(L.t===1?'':'s')+' holding Roma. Whoever holds it longest wins the season.');F.leader=L.id;}}
+  // world news: the build-up and every overtime tick, in plain words
+  const hn=holder?(leaderName(holder)+' ['+holder.tag+']'):'nobody';const armies=m.list.filter(x=>x.atk);
+  const say=(key,txt)=>{if(F.news[key])return;F.news[key]=1;news('nexus',txt);};
+  if(!G._overtime){
+    if(left===FINALE_WINDOW)say('w','⚔ THE LAST BATTLE begins: '+left+' ticks on the clock. Roma ('+nx.coord+') is held by '+hn+'. '+(armies.length?armies.length+' armies ('+full(m.n)+' units) are marching on it.':'No army is marching on it yet.')+' Whoever holds it the most ticks from now on wins the season. Battles still running at the end are fought out.');
+    else if(finaleMarks().indexOf(left)>=0)say('c'+left,'⏳ '+left+' ticks left. Roma: '+hn+(nx.commandCenter?' · Imperial Palace '+(nx.ccHeld||0)+'/'+NEXUS_HOLD:'')+' · garrison '+full(garrison)+' · '+armies.length+' armies ('+full(m.n)+' units) inbound.');
+    else if(left===1)say('c1','🔔 FINAL TICK. '+(finaleNexusAction()?'Armies are still fighting for Roma: the Last Battle goes into overtime.':'Nothing is marching on Roma. The season ends with '+hn+' holding it.'));
+  }else say('ot'+snap.ot,'⏱ OVERTIME '+snap.ot+'/'+FINALE_OT+': '+(fights?fights+' battle'+(fights>1?'s':'')+' at Roma this tick. ':'')+'Roma held by '+hn+' · '+armies.length+' armies ('+full(m.n)+' units) still in the fight.');
+}catch(e){}}
+function finaleClose(){try{const nx=finalePrimary();const TT=finaleTargets();const F=G._finale=G._finale||{ticks:[],start:G.tick,news:{}};if(F.done)return;
+  const holder=nx&&nx.owner!=null?G.countries[nx.owner]:null;
+  F.done=true;F.endTick=G.tick;F.ot=G._overtime?(G.tick-G._overtime.start):0;F.holder=holder?holder.id:null;F.holderClan=holder&&holder.clan!=null?holder.clan:null;
+  F.holderName=holder?holder.name:null;F.holderTag=holder?holder.tag:null;
+  F.holders=[...new Set(TT.map(r=>r.owner).filter(x=>x!=null))];F.holderClans=[...new Set(F.holders.map(id=>(G.countries[id]||{}).clan).filter(x=>x!=null))];F.targets=TT.map(r=>({name:r.name,coord:r.coord,owner:r.owner}));
+  F.battles=F.ticks.reduce((t,x)=>t+(x.fights||0),0);
+  {const L=finaleLeader();F.holdTable=finaleHoldTable().slice(0,8);if(L&&L.t>0){F.winner=L.id;F.winnerTicks=L.t;const wc=G.countries[L.id];F.winnerClan=wc&&wc.clan!=null?wc.clan:null;F.winnerName=wc?wc.name:null;F.winnerTag=wc?wc.tag:null;}}
+  try{_rankTick=-1;_rankCache=null;}catch(e){}
+  if(F.winner!=null){const wc=G.countries[F.winner];news('nexus','🏆 THE LAST BATTLE IS OVER. '+leaderName(wc)+' of '+wc.name+' ['+wc.tag+'] held Roma '+F.winnerTicks+' ticks, longer than anyone, and WINS THE SEASON'+(F.winnerClan!=null?' together with their alliance':'')+'.');return;}
+  news('nexus','🏁 THE LAST BATTLE IS OVER. Nobody held Roma during the finale, so the season is decided on score.');
+}catch(e){}}
+function finaleScoreBonus(c,overall){try{const F=G._finale;if(!F||!F.done||!c)return overall;const hs=F.holders||(F.holder!=null?[F.holder]:[]);const cs=F.holderClans||(F.holderClan!=null?[F.holderClan]:[]);
+  if(hs.includes(c.id))return Math.round(overall*(1+FINALE_BONUS));if(c.clan!=null&&cs.includes(c.clan))return Math.round(overall*(1+FINALE_ALLY_BONUS));return overall;}catch(e){return overall;}}
+
+var LASTBATTLE_TEXTS=1;
+function endgameTick(){const left=endgameLeft();if(![LATE_SEASON_TICKS,120,ENDGAME_TICKS,40,20,4,1].filter(v=>v<=LATE_SEASON_TICKS).includes(left))return;
   const late=left>ENDGAME_TICKS;
-  G.countries.forEach(c=>{if(c.isAI||c.retired)return;sitrep(c,'alert',left===1?'⌛ FINAL TICK, the season ends next tick. Scores lock; the Hall of Fame is written.':late?('🌆 Late season, '+left+' ticks to the score lock. Position for Roma, it is the only way to win early.'):('⌛ Season endgame, '+left+' ticks left. Final scores lock at tick #'+(G.tick+left)+'. Secure your ranking.'),{sev:left<=5?3:late?1:2,go:'rankings'});});}
+  G.countries.forEach(c=>{if(c.isAI||c.retired)return;sitrep(c,'alert',left===1?'⌛ FINAL TICK. Scores lock next tick, unless armies are still fighting for Roma: then the Last Battle runs up to '+FINALE_OT+' ticks of overtime.':late?('🌆 Late season, '+left+' ticks to go. Position for Roma: the Last Battle starts '+FINALE_WINDOW+' ticks before the end, and whoever holds it the most ticks from then on wins the season.'):(left>=FINALE_WINDOW?'⚔ The Last Battle begins: hold Roma the most ticks from now on to win the season. The clock runs out at tick #'+(G.tick+left)+'.':'⌛ '+left+' ticks left in the Last Battle. The clock runs out at tick #'+(G.tick+left)+'. Check the hold race on Home.'),{sev:left<=5?3:late?1:2,go:'rankings'});});}
 // ---- NEXUS TEST MODE (only active when window.__NEXUSTEST__ is set by the nexus-test build) ----
 // Drops you straight into the endgame at the Nexus so the last-40-ticks features can be tested in seconds
 // instead of playing a whole season. Never runs in the normal solo or multiplayer builds.
@@ -13114,6 +13220,29 @@ function tallyLines(t,limit){
   if(!rows.length)html='<div class="muted small">None</div>';
   return {html,n:rows.reduce((s,x)=>s+x.n,0),types:rows.length};
 }
+// Update 2: under EN ROUTE / BATTLE, one line per fleet: where it is going, when it lands, and who it flies with.
+function enRouteListHTML(c){try{const now=G.tick;const rows=[];
+  const tagOf=id=>{const o=G.countries[id];return o?(o.tag||o.name):'?';};
+  const regOf=id=>G.regions.find(x=>x.id===id);
+  const place=r=>r?(esc(r.name)+' '+coordChip(r.coord)):'?';
+  const withTxt=ids=>{const t=[...new Set(ids.filter(id=>id!=null&&id!==c.id))].map(tagOf);return t.length?' · with '+esc(t.slice(0,4).join(', '))+(t.length>4?' +'+(t.length-4):''):'';};
+  (c.fleets||[]).forEach(f=>{if(!f)return;const r=regOf(f.target);const n=fleetSize(f.units||{});
+    if(f.status==='outbound'||f.status==='staged'){const eta=Math.max(0,(f.eta||now)-now);const help=f.intent==='garrison'||f.intent==='reinforce';
+      rows.push({eta,html:(help?'🛡 Defending ':'⚔ Attacking ')+place(r)+' · lands in <b>'+eta+'t</b> · '+full(n)+' units'});}
+    else if(f.status==='battle'){const mem=(f.members||[]).map(m=>m.owner);
+      rows.push({eta:0,html:'💥 Fighting at '+place(r)+(f.acs?' · <b>joint strike</b>'+withTxt(mem):'')+' · '+full(n)+' units'});}
+    else if(f.status==='returning'){const eta=Math.max(0,(f.rEta||now)-now);
+      rows.push({eta:eta+1000,html:'↩ Coming home from '+place(r)+' · <b>'+eta+'t</b> · '+full(n)+' units'});}});
+  // joint strikes you joined that are still in the air (their units are not in your own fleet list)
+  (G.acs||[]).forEach(op=>{if(!op||!(op.fleets||[]).some(f=>f.owner===c.id))return;const r=regOf(op.target);const mine=op.fleets.filter(f=>f.owner===c.id).reduce((t,f)=>t+fleetSize(f.units||{}),0);const eta=Math.max(0,(op.landTick||now)-now);
+    rows.push({eta,html:'🤝 Joint strike on '+place(r)+' · lands in <b>'+eta+'t</b>'+(op.leader!==c.id?' · led by '+esc(tagOf(op.leader)):'')+withTxt(op.fleets.map(f=>f.owner))+' · your '+full(mine)+' units'+((op.landTick-now)>=1?(op.leader===c.id?' <button class="btn ghost sm" data-cancelop="'+op.id+'">✖ Call off</button>':' <button class="btn ghost sm" data-leaveop="'+op.id+'">↩ Withdraw</button>'):'')});});
+  // joint battles led by an ally that carry your units
+  G.countries.forEach(o=>{if(!o||o.id===c.id)return;(o.fleets||[]).forEach(f=>{if(!f||f.status!=='battle'||!f.acs||!(f.members||[]).some(m=>m.owner===c.id))return;const r=regOf(f.target);
+    rows.push({eta:0,html:'💥 Joint strike fighting at '+place(r)+' · led by '+esc(tagOf(o.id))+withTxt((f.members||[]).map(m=>m.owner))});});});
+  if(!rows.length)return '';
+  rows.sort((a,b)=>a.eta-b.eta);
+  return '<div style="border-top:1px solid var(--border);margin-top:6px;padding-top:6px">'+rows.slice(0,6).map(x=>'<div class="small" style="padding:2px 0">'+x.html+'</div>').join('')+(rows.length>6?'<div class="muted small">+'+(rows.length-6)+' more, see Nearby</div>':'')+'</div>';
+}catch(e){return '';}}
 function armyChipHTML(c){
   const a=homeArmy(c);
   const homeT=tallyUnits(c.units);
@@ -13123,6 +13252,7 @@ function armyChipHTML(c){
     if(f.status==='garrison'||f.intent==='garrison'||f.intent==='reinforce')Object.assign(garrT,mergeTally(garrT,t));
     else if(f.status==='outbound'||f.status==='staged'||f.status==='battle'||f.status==='returning')Object.assign(outT,mergeTally(outT,t));
   });
+  (G.acs||[]).forEach(op=>{(op&&op.fleets||[]).forEach(f=>{if(f&&f.owner===c.id)Object.assign(outT,mergeTally(outT,tallyUnits(f.units)));});});
   (c.mq||[]).forEach(m=>{if(m&&m.count)trainT[m.k]=(trainT[m.k]||0)+m.count;});
   const H=tallyLines(homeT,8), O=tallyLines(outT,6), Gq=tallyLines(garrT,5), Q=tallyLines(trainT,5);
   return '<div class="combat-home" style="padding:10px 12px;border-radius:10px;border:1px solid var(--border2);background:linear-gradient(90deg,rgba(217,164,65,.10),transparent);margin-bottom:8px">'+
@@ -13138,7 +13268,7 @@ function armyChipHTML(c){
     '<button class="btn ghost sm" data-ch="self">Defend</button></div></div>'+
     '<div class="grid g2 mt" style="gap:10px;margin-top:10px">'+
     '<div style="background:var(--panel2);border-radius:8px;padding:8px 10px"><div class="mono small" style="color:var(--ok)">HOME</div>'+H.html+'</div>'+
-    '<div style="background:var(--panel2);border-radius:8px;padding:8px 10px"><div class="mono small" style="color:var(--accent2)">EN ROUTE / BATTLE</div>'+O.html+'</div>'+
+    '<div style="background:var(--panel2);border-radius:8px;padding:8px 10px"><div class="mono small" style="color:var(--accent2)">EN ROUTE / BATTLE</div>'+O.html+enRouteListHTML(c)+'</div>'+
     '<div style="background:var(--panel2);border-radius:8px;padding:8px 10px"><div class="mono small" style="color:var(--accent)">STATIONED</div>'+Gq.html+'</div>'+
     '<div style="background:var(--panel2);border-radius:8px;padding:8px 10px"><div class="mono small" style="color:var(--alert)">TRAINING QUEUE</div>'+Q.html+'</div>'+
     '</div></div>';
@@ -14194,6 +14324,23 @@ function soloGo(d){
   }catch(e){}
 }
 
+// Update 2: growth lessons. Players who only defend stay on one region all season; these three steps teach expansion.
+function growLesson(c){try{if(!c||c.isAI!==false||c._guideOff)return null;if(G.tick<=15)return null;
+  if(typeof SEASON_TICKS!=='undefined'&&G.season&&G.tick-G.season.startTick>SEASON_TICKS*0.8)return null;
+  const n=regionsOf(c).length;if(n>=3||n<1)return null;
+  const scouted=Object.values(c._regionIntel||{}).some(x=>x&&!x.miss);
+  const a=typeof homeArmy==='function'?homeArmy(c):{n:fleetSize(c.units||{})};
+  const out=(c.fleets||[]).some(f=>f&&(f.status==='outbound'||f.status==='staged'||f.status==='battle')&&f.intent!=='garrison'&&f.intent!=='reinforce')||(G.acs||[]).some(op=>(op.fleets||[]).some(f=>f.owner===c.id));
+  if(out)return null; // an attack is already under way: let it land
+  if(n===1&&!scouted)return {sev:2,what:'Lesson 1 of 3: scout a neighbour',
+    why:'You only grow by taking ground. First see what a neighbour holds: open Nearby and press Scout on a region close to you (300 influence, 1 command point).',go:'around',btn:'Open Nearby'};
+  if(n===1&&a.n<400)return {sev:2,what:'Lesson 2 of 3: build a strike force',
+    why:'Your scout report shows their defence. Recruit enough to send about one and a half times that, and still keep some army at home.',go:'military',btn:'Recruit'};
+  if(n===1)return {sev:2,what:'Lesson 2 of 3: take your first region',
+    why:'Pick a scouted region a few ticks away and send about one and a half times its defence. Your first attack ends the beginner shield, so keep a home army.',go:'around',btn:'Pick a target'};
+  return {sev:2,what:'Lesson 3 of 3: hold three regions',
+    why:'Every region adds income and score. New ground is weak at first and the old owner often strikes back, so keep a reserve. Then take one more.',go:'around',btn:'Open Nearby'};
+}catch(e){return null;}}
 function soloNextAction(c){
   try{
     if(!c)return null;
@@ -14237,6 +14384,7 @@ function soloNextAction(c){
         why:(G.tick<=15)?'First ticks: pick a cheap tech. Do not lock a National Path yet unless you know your style.':'You have points sitting unused.',
         go:'research',btn:'Open research'};
     }
+    {const gl=growLesson(c);if(gl)return gl;}
     if(typeof cpCap==='function'&&c.cp>=cpCap()*0.95){
       return {sev:2,what:'Command Points are full',
         why:'CP refill every tick and do not stack past the cap. Spend them on a build, recruit, or trade.',
@@ -14620,6 +14768,128 @@ window.__fitTables=fitTables;
  '@media (max-width:760px){.alertbar .alertrow{flex-wrap:wrap;padding:8px 10px}.alertbar .alertrow>span:first-child{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;font-size:12.5px;flex:1 1 100%}.alertbar .alertrow>.arr{flex:1 1 100%;display:flex;gap:6px;flex-wrap:wrap;align-items:center}.alertbar .alertrow>.arr br{display:none}.alertbar .alertrow>.arr .btn{padding:6px 10px!important;font-size:12px!important;min-height:0!important}}'
 ].join('\n');document.head.appendChild(st);}catch(e){}})();
 </script>
+<script>
+/* v2 joint strike withdraw / call off */
+(function(){try{document.addEventListener('click',async function(e){const b=e.target&&e.target.closest&&e.target.closest('[data-cancelop],#view .combat-home [data-leaveop]');if(!b)return;e.preventDefault();e.stopPropagation();
+  const c=you();if(!c)return;let r;
+  if(b.dataset.cancelop!=null){r=await cmdCancelACS(c,+b.dataset.cancelop);if(r&&r.ok)toast('✖ Joint strike called off. '+r.data.n+' army(ies) turn back and your alliance has been told.','warn');}
+  else{r=await cmdLeaveACS(c,+b.dataset.leaveop);if(r&&r.ok)toast('↩ You pulled out of the joint strike. Your alliance has been told.','warn');}
+  if(r&&!r.ok)toast(r.error,'bad');try{go(view);drawTop();save();}catch(_){}},true);}catch(e){}})();
+</script>
+<script>
+/* v2 finale: THE LAST BATTLE panel, end screen, styles */
+(function(){try{
+var st=document.createElement('style');st.textContent=[
+'.finale-card{border:1px solid rgba(227,179,65,.55);background:linear-gradient(135deg,rgba(227,179,65,.10),rgba(240,98,95,.06) 60%,transparent);position:relative;overflow:hidden}',
+'.finale-card.ot{border-color:rgba(240,98,95,.7);background:linear-gradient(135deg,rgba(240,98,95,.14),rgba(227,179,65,.08) 60%,transparent)}',
+'.fn-head{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;flex-wrap:wrap}',
+'.fn-kick{font:700 12px var(--mono,monospace);letter-spacing:2.5px;color:var(--gold,#e3b341)}',
+'.finale-card.ot .fn-kick{color:var(--danger,#f0625f)}',
+'.fn-title{font-size:20px;font-weight:800;margin-top:2px}',
+'.fn-clock{text-align:right;line-height:1}',
+'.fn-clock b{display:block;font:800 40px var(--mono,monospace);color:var(--gold,#e3b341)}',
+'.finale-card.ot .fn-clock b{color:var(--danger,#f0625f);animation:fnpulse 1.2s infinite}',
+'.fn-clock span{font:600 11px var(--mono,monospace);letter-spacing:1.5px;color:var(--muted);text-transform:uppercase}',
+'@keyframes fnpulse{0%,100%{opacity:1}50%{opacity:.55}}',
+'.fn-sub{color:var(--muted);font-size:13px;margin:6px 0 10px}',
+'.fn-lead{font-size:15px;margin:0 0 10px;padding:8px 12px;border-radius:10px;background:rgba(227,179,65,.12);border:1px solid rgba(227,179,65,.45)}',
+'.fn-tiles{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}',
+'.fn-tile{background:var(--panel2);border:1px solid var(--border);border-radius:10px;padding:8px 10px;min-width:0}',
+'.fn-tile .l{font:600 10.5px var(--mono,monospace);letter-spacing:1.5px;color:var(--muted);text-transform:uppercase}',
+'.fn-tile .v{font-size:17px;font-weight:800;margin-top:2px;overflow-wrap:anywhere}',
+'.fn-tile .s{font-size:12px;color:var(--muted)}',
+'.fn-spark{margin:10px 0 2px}',
+'.fn-cols{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px}',
+'.fn-box{background:var(--panel2);border:1px solid var(--border);border-radius:10px;padding:8px 10px;min-width:0}',
+'.fn-box h4{margin:0 0 4px;font:700 11px var(--mono,monospace);letter-spacing:1.5px;color:var(--muted);text-transform:uppercase}',
+'.fn-row{display:flex;justify-content:space-between;gap:8px;font-size:13px;padding:3px 0;border-top:1px solid var(--border)}',
+'.fn-row:first-of-type{border-top:0}',
+'.fn-row.me{color:var(--accent2,#37d9a9);font-weight:700}',
+'.fn-you{margin-top:10px;padding:8px 10px;border-left:3px solid var(--gold,#e3b341);background:rgba(227,179,65,.07);border-radius:0 10px 10px 0;font-size:13.5px}',
+'.fn-you.late{border-left-color:var(--danger,#f0625f);background:rgba(240,98,95,.08)}',
+'.fn-act{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}',
+'@media (max-width:760px){.fn-tiles{grid-template-columns:1fr 1fr}.fn-cols{grid-template-columns:1fr}.fn-clock{text-align:left}.fn-clock b{font-size:32px}.fn-title{font-size:17px}.fn-spark .muted span:nth-child(2){display:none}.fn-row{flex-wrap:wrap;font-size:12.5px}.fn-row>span:last-child{margin-left:auto}}',
+'.lastbattle{border:1px solid rgba(227,179,65,.55);border-radius:12px;padding:12px 14px;margin-bottom:12px;background:linear-gradient(135deg,rgba(227,179,65,.12),transparent)}',
+'.lastbattle .lb-kick{font:700 12px var(--mono,monospace);letter-spacing:2.5px;color:var(--gold,#e3b341)}',
+'.lastbattle .lb-title{font-size:20px;font-weight:800;margin:3px 0}',
+'.lastbattle .lb-sub{color:var(--muted);font-size:13px}',
+'.lastbattle .lb-you{margin-top:8px;font-weight:700}',
+'.lastbattle .lb-you.good{color:var(--ok,#48c26a)}'
+].join('\n');document.head.appendChild(st);
+}catch(e){}})();
+
+function finaleSparkSVG(ticks){try{const T=(ticks||[]).slice(-22);if(T.length<2)return '';const max=Math.max(1,...T.map(x=>x.inbN||0));const W=100/T.length;
+  const bars=T.map((x,i)=>{const h=Math.max(2,Math.round((x.inbN||0)/max*36));const col=x.ot?'var(--danger,#f0625f)':(x.fights?'var(--gold,#e3b341)':'#7a8699');
+    return '<rect x="'+(i*W+W*0.15).toFixed(2)+'%" y="'+(40-h)+'" width="'+(W*0.7).toFixed(2)+'%" height="'+h+'" rx="1.5" fill="'+col+'"><title>tick '+x.tick+': '+full(x.inbN||0)+' units marching, '+(x.fights||0)+' battle(s)</title></rect>';}).join('');
+  return '<div class="fn-spark"><svg width="100%" height="40" preserveAspectRatio="none" role="img" aria-label="Units marching on Roma, tick by tick">'+bars+'</svg><div class="muted" style="font-size:11px;display:flex;justify-content:space-between"><span>t'+T[0].tick+'</span><span>units marching on Roma · grey = quiet · gold = battle · red = overtime</span><span>t'+T[T.length-1].tick+'</span></div></div>';}catch(e){return '';}}
+
+function finaleHoldRaceHTML(c,n){const T=finaleHoldTable();if(!T.length)return '<div class="muted small">Nobody has held Roma yet. The first to take it leads.</div>';const max=Math.max(1,T[0].t);
+  const row=(x,i)=>{const o=G.countries[x.id]||{};return '<div class="fn-row'+(x.id===c.id?' me':'')+'" style="align-items:center"><span style="min-width:74px">'+(i===0?'👑 ':'#'+(i+1)+' ')+esc(o.tag||'?')+(x.holding?' 🏛':'')+'</span><span style="flex:1;height:8px;background:var(--border);border-radius:4px;overflow:hidden;margin:0 8px"><span style="display:block;height:100%;width:'+Math.round(x.t/max*100)+'%;background:'+(i===0?'var(--gold,#e3b341)':'var(--accent,#4f8cff)')+'"></span></span><span class="mono">'+x.t+'t</span></div>';};
+  const me=T.findIndex(x=>x.id===c.id);return T.slice(0,n||5).map(row).join('')+(me>=(n||5)?row(T[me],me):'');}
+function finaleLeadLine(c){const T=finaleHoldTable();const L=T[0];const left=endgameLeft();const room=(G._overtime&&!G._seasonEnd?Math.max(0,FINALE_OT-(G.tick-G._overtime.start)):left+FINALE_OT);
+  if(!L)return '<div class="fn-lead">👑 Nobody has held Roma yet. Take it and every tick you keep it counts.</div>';
+  const o=G.countries[L.id]||{};const mine=L.id===c.id||(c.clan!=null&&o.clan===c.clan);const me=T.find(x=>x.id===c.id);const my=me?me.t:0;
+  let you='';if(L.id===c.id)you='That is you. Keep holding.';else if(mine)you='That is your alliance: you share the win.';else{const need=L.t-my+1;you='You: '+my+' tick'+(my===1?'':'s')+'. '+(need>room?'Out of reach for you now. Back whoever can still catch up.':'You need '+need+' more to take the lead.');}
+  return '<div class="fn-lead">👑 If it ended now, <b>'+esc(o.name||'?')+' ['+esc(o.tag||'?')+']</b> wins the season: held Roma <b>'+L.t+' tick'+(L.t===1?'':'s')+'</b>. <span class="muted">'+you+'</span></div>';}
+function finalePanelHTML(c){try{if(!c||typeof finaleActive!=='function'||!finaleActive())return '';const nx=finalePrimary();if(!nx)return '';const TT=finaleTargets();const F=G._finale||{ticks:[]};
+  const left=endgameLeft();const ot=G._overtime&&!G._seasonEnd?(G.tick-G._overtime.start+1):0;
+  const holder=nx.owner!=null?G.countries[nx.owner]:null;const m=finaleMarch(nx);
+  let garrison=0;try{garrison=fleetSize((defenderPool(nx,holder)||{}).units||{});}catch(e){}
+  const mine=!!(holder&&holder.id===c.id);const ally=!!(holder&&!mine&&c.clan!=null&&holder.clan===c.clan);
+  const fights=(F.ticks||[]).reduce((t,x)=>t+(x.fights||0),0);
+  const armies=m.list.filter(x=>x.atk);
+  const clock=ot?'<b>'+ot+'/'+FINALE_OT+'</b><span>overtime</span>':'<b>'+left+'</b><span>tick'+(left===1?'':'s')+' left</span>';
+  const hTxt=holder?(esc(holder.tag)+(mine?' (you)':ally?' (ally)':'')):'Nobody';
+  const hSub=holder?(esc(holder.name)+(nx.commandCenter?' · Palace '+(nx.ccHeld||0)+'/'+NEXUS_HOLD:'')):(nx.commandCenter?'Imperial Palace empty':'unclaimed');
+  const tiles='<div class="fn-tiles">'+
+    '<div class="fn-tile"><div class="l">Holder</div><div class="v">'+hTxt+'</div><div class="s">'+hSub+'</div></div>'+
+    '<div class="fn-tile"><div class="l">Garrison</div><div class="v">'+full(garrison)+'</div><div class="s">units defending</div></div>'+
+    '<div class="fn-tile"><div class="l">Marching on it</div><div class="v">'+full(m.n)+'</div><div class="s">'+armies.length+' arm'+(armies.length===1?'y':'ies')+' attacking</div></div>'+
+    '<div class="fn-tile"><div class="l">Battles</div><div class="v">'+fights+'</div><div class="s">at Roma, this finale</div></div></div>';
+  const march=m.list.slice(0,8).map(x=>'<div class="fn-row'+(x.id===c.id?' me':'')+'"><span>'+(x.atk?'⚔':'🛡')+' '+esc(x.tag||'?')+(x.joint?' · joint':'')+'</span><span class="mono">'+full(x.n)+'</span><span>'+(x.fighting?'<b style="color:var(--danger)">fighting</b>':(x.eta+'t'))+'</span></div>').join('')||'<div class="muted small">No army is marching on Roma.</div>';
+  const logE=(G._nexusLog||[]).filter(e=>e&&e.atk!==e.def&&e.tick>=G.tick-(FINALE_WINDOW+FINALE_OT)).slice(0,7);
+  const log=logE.map(e=>{const a=e.atk!=null?G.countries[e.atk]:null,d=e.def!=null?G.countries[e.def]:null;
+    const verb=e.captured?'<b style="color:var(--danger)">seized it</b>':e.retreated?'broke off':e.repelled?'<span style="color:var(--ok)">repelled</span>':'battered it';
+    return '<div class="fn-row'+((e.atk===c.id||e.def===c.id)?' me':'')+'"><span><span class="tag">t'+e.tick+'</span> '+esc(a?a.tag:'?')+(e.joint?'+':'')+' → '+esc(d?d.tag:'garrison')+'</span><span>'+verb+'</span><span class="mono muted">'+(e.aN?full(e.aN)+' vs '+full(e.dN||0):'')+'</span></div>';}).join('')||'<div class="muted small">No battles at Roma yet. The first army to land starts it.</div>';
+  const rk=activeRanked();const top=rk.slice(0,5);const myPos=rk.findIndex(x=>x.id===c.id);
+  const race=top.map((x,i)=>{const o=G.countries[x.id]||{};return '<div class="fn-row'+(x.id===c.id?' me':'')+'"><span>#'+(i+1)+' '+esc(o.tag||'?')+(holder&&holder.id===x.id?' 🏛':'')+'</span><span class="mono">'+full(Math.round(x.s))+'</span></div>';}).join('')+
+    (myPos>=5?'<div class="fn-row me"><span>#'+(myPos+1)+' you</span><span class="mono">'+full(Math.round(rk[myPos].s))+'</span></div>':'');
+  let youHtml='',late=false;
+  if(mine)youHtml='🏛 <b>You hold Roma.</b> Every tick you keep it counts toward the win. Reinforce it, every defender counts.';
+  else{const hm=(()=>{try{return homeFor(c,nx);}catch(e){return null;}})();const tr=hm?travelFor(c,hm,nx):null;
+    if(tr==null)youHtml='You have no home region that can reach Roma.';
+    else{const land=G.tick+tr;const note=finaleLaunchNote(c,nx.id,land);const lastLaunch=Math.min(finaleEndTick(),finaleEndTick()+FINALE_OT-1-tr);
+      if(note&&/will not fight/.test(note)){late=true;youHtml='⏳ Your armies need <b>'+tr+' ticks</b> to reach Roma. That is too late for this season. Watch the Last Battle, or back an ally who is already there.';}
+      else if(ot)youHtml='⚔ An army from '+esc(hm.name)+' needs <b>'+tr+' ticks</b> to reach Roma. '+esc(note||'');
+      else youHtml='⚔ An army from '+esc(hm.name)+' reaches Roma in <b>'+tr+' ticks</b>'+(ally?' (your ally holds it: reinforce, or strike its attackers)':'')+'. Last launch that still fights: <b>tick #'+Math.max(G.tick,lastLaunch)+'</b>'+(lastLaunch<finaleEndTick()?'':' (the clock runs out at tick #'+finaleEndTick()+', armies that left before then fight on in overtime)')+'.';}}
+  const acts='<div class="fn-act"><button class="btn sm" onclick="if(typeof BR_ATTACK===\'function\')BR_ATTACK('+nx.id+')">⚔ Attack Roma</button>'+
+    ((mine||ally)?'<button class="btn sec sm" onclick="if(typeof BR_REINF===\'function\')BR_REINF('+nx.id+')">🛡 Reinforce it</button>':'')+
+    '<button class="btn ghost sm" onclick="if(typeof GOTO_COORD===\'function\')GOTO_COORD(\''+nx.coord+'\')">🗺 Show on map</button></div>';
+  return '<div class="card mb finale-card'+(ot?' ot':'')+'"><div class="fn-head"><div><div class="fn-kick">'+(ot?'⏱ OVERTIME · THE LAST BATTLE':'⚔ THE LAST BATTLE')+'</div><div class="fn-title">'+esc(nx.name)+' '+coordChip(nx.coord)+'</div></div><div class="fn-clock">'+clock+'</div></div>'+
+    '<div class="fn-sub">'+(ot?'The clock has run out, but the fight for Roma goes on, and every tick still counts in the hold race. The season ends when the last battle there is over, at most '+FINALE_OT+' ticks.':'Whoever holds Roma the most ticks in the Last Battle wins the season, together with their alliance. When the clock hits zero, battles still running are fought out (up to '+FINALE_OT+' extra ticks).')+'</div>'+finaleLeadLine(c)+
+    (TT.length>1?'<div class="small" style="margin:-4px 0 8px">'+TT.map(r=>{const o=r.owner!=null?G.countries[r.owner]:null;return '<span style="margin-right:12px">'+(r.id===nx.id?'<b>':'')+esc(r.name)+(r.id===nx.id?'</b>':'')+': '+(o?esc(o.tag)+(o.id===c.id?' (you)':''):'nobody')+'</span>';}).join('')+'</div>':'')+tiles+finaleSparkSVG(F.ticks)+
+    '<div class="fn-cols"><div class="fn-box"><h4>Marching on Roma</h4>'+march+'</div><div class="fn-box"><h4>Battles at Roma</h4>'+log+'</div></div>'+
+    '<div class="fn-cols"><div class="fn-box"><h4>Hold race · most ticks holding Roma wins</h4>'+finaleHoldRaceHTML(c,5)+'</div><div class="fn-you'+(late?' late':'')+'">'+youHtml+acts+'</div></div></div>';
+}catch(e){return '';}}
+
+function lastBattleHTML(c){try{const F=G._finale;if(!F||!F.done)return '';
+  const W=F.winner!=null?G.countries[F.winner]:null;const won=typeof finaleWonBy==='function'&&finaleWonBy(c);const meWin=!!(c&&W&&W.id===c.id);
+  const peak=(F.ticks||[]).reduce((m,x)=>Math.max(m,x.inbN||0),0);
+  const logE=(G._nexusLog||[]).filter(e=>e&&e.atk!==e.def&&e.tick>=(F.start||0));const myPart=c?logE.filter(e=>e.atk===c.id||e.def===c.id).length:0;
+  const T=F.holdTable||[];const max=Math.max(1,(T[0]||{}).t||1);const myRow=T.find(x=>c&&x.id===c.id);
+  const race=T.slice(0,5).map((x,i)=>{const o=G.countries[x.id]||{};return '<div class="small" style="display:flex;align-items:center;gap:8px;padding:2px 0'+(c&&x.id===c.id?';color:var(--accent2);font-weight:700':'')+'"><span style="min-width:70px">'+(i===0?'👑 ':'#'+(i+1)+' ')+esc(o.tag||'?')+'</span><span style="flex:1;height:7px;background:var(--border);border-radius:4px;overflow:hidden"><span style="display:block;height:100%;width:'+Math.round(x.t/max*100)+'%;background:'+(i===0?'var(--gold,#e3b341)':'var(--accent,#4f8cff)')+'"></span></span><span class="mono">'+x.t+'t</span></div>';}).join('');
+  const title=W?'🏆 '+esc(W.name)+' ['+esc(W.tag)+'] wins the season':'Nobody held Roma: the season goes to the best score';
+  const sub=(W?'Held Roma '+F.winnerTicks+' tick'+(F.winnerTicks===1?'':'s')+' in the Last Battle, longer than anyone'+(F.winnerClan!=null?'. Their alliance shares the win':'')+'. ':'')+(F.ot?'Overtime ran '+F.ot+' extra tick'+(F.ot===1?'':'s')+'. ':'')+F.battles+' battle'+(F.battles===1?'':'s')+' at Roma · at the peak '+full(peak)+' units marching on it.';
+  const you=meWin?'<div class="lb-you good">🏆 That is you. You won the season.</div>':won?'<div class="lb-you good">🤝 Your alliance won the season. The victory is shared.</div>':(myRow?'<div class="lb-you">You held Roma '+myRow.t+' tick'+(myRow.t===1?'':'s')+'.</div>':myPart?'<div class="lb-you">You fought '+myPart+' battle'+(myPart===1?'':'s')+' for it.</div>':'');
+  return '<div class="lastbattle"><div class="lb-kick">⚔ THE LAST BATTLE</div><div class="lb-title">'+title+'</div><div class="lb-sub">'+sub+'</div>'+you+(race?'<div class="mt"><div class="small muted" style="margin-bottom:3px">Hold race</div>'+race+'</div>':'')+'</div>';}catch(e){return '';}}
+
+(function(){try{
+  const wrap=(k)=>{const orig=VIEWS[k];if(!orig||orig._fin)return;const w=function(v){const r=orig.apply(this,arguments);try{const html=finalePanelHTML(you());if(html){const el=h(html);const t=v.querySelector('.ptitle');if(t&&t.parentNode===v)v.insertBefore(el,t.nextSibling);else v.insertBefore(el,v.firstChild);}}catch(e){}return r;};w._fin=1;VIEWS[k]=w;};
+  wrap('dashboard');wrap('rankings');wrap('self');
+}catch(e){}})();
+</script>
+
+
 
 </body>
 </html>
