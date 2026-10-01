@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Romaterra 2.0</title>
+<title>Romaterra 3.0</title>
 <link rel="manifest" href="romaterra.webmanifest"><meta name="theme-color" content="#1a1410"><link rel="icon" href="icons/romaterra-64.png"><link rel="apple-touch-icon" href="icons/romaterra-180.png">
 <script>window.__MP_URL__=''; /* '' = live multiplayer not open yet */ if('serviceWorker' in navigator)addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));</script>
 <script data-goatcounter="https://playterrastate.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
@@ -142,6 +142,7 @@
   .navsec{font-family:var(--mono);font-size:9px;letter-spacing:2.5px;text-transform:uppercase;color:var(--muted2);padding:13px 12px 4px}
   .navsec:first-child{padding-top:2px}
   .nav .badge{margin-left:auto;background:var(--bad);color:#fff;font-family:var(--mono);font-size:10px;padding:1px 6px;border-radius:9px}
+  .flagi{display:inline-block;line-height:0;vertical-align:-3px;cursor:default}.flagi svg{border-radius:2px;display:block}#topNation .flagi{cursor:pointer}
   .emblem{display:inline-grid;place-items:center;width:22px;height:22px;border-radius:6px;font-family:var(--mono);font-weight:600;font-size:10px;color:#fff;flex-shrink:0}
   .fleetrow{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border)}
   .fleetrow:last-child{border-bottom:0}
@@ -1192,15 +1193,15 @@ const NEXUS_HOLD=48;            // ROMATERRA: 48 ticks = 12 real hours at 15 min
 // Single-player only. In multiplayer (window.__MP__) and on the headless server every function here is inert and every
 // tunable keeps its default, so the live world is untouched. Settings live in G.solo and travel with the save.
 const SOLO_DIFFS={
-  recruit:{n:'Recruit',ic:'🌱',d:'Learn the ropes. AI economies run at 85%, rivals rarely single you out, 48 ticks of beginner protection.',aiEcon:0.85,humBias:-30,needAdj:0.20,protect:48},
+  recruit:{n:'Recruit',ic:'🌱',d:'Learn the ropes. AI economies run at 85%, rivals rarely single you out, 48 ticks of beginner protection.',aiEcon:0.85,humBias:-30,needAdj:0.20,protect:48,skill:-0.1},
   veteran:{n:'Veteran',ic:'⚔',d:'The standard game, exactly the live-world balance. Fair AI, 24 ticks of protection.',aiEcon:1,humBias:0,needAdj:0,protect:24},
-  warlord:{n:'Warlord',ic:'💀',d:'AI economies run at 115%, rivals actively hunt you, only 8 ticks of protection. For veterans.',aiEcon:1.15,humBias:25,needAdj:-0.08,protect:8}};
+  warlord:{n:'Warlord',ic:'💀',d:'The AI never gets extra resources, it just plays sharper: better choices, tighter alliance strikes, rivals actively hunt you, only 8 ticks of protection. For veterans.',aiEcon:1,humBias:25,needAdj:-0.08,protect:8,skill:0.12}};
 const SOLO_LENGTHS={quick:{n:'Quick',ticks:200,d:'≈200 turns, a session or two'},standard:{n:'Standard',ticks:400,d:'≈400 turns, the sweet spot'},epic:{n:'Epic',ticks:840,d:'840 turns, the full live-world season'}};
 const SOLO_SPEEDS={1:20000,5:4000,20:500}; // auto-play: ms per tick at 1x / 5x / 20x (20x ≈ 1 tick/s in practice: the 1 s loop plus tick time)
-let SOLO_DIFF={aiEcon:1,humBias:0,needAdj:0}; // live multipliers read by the engine; identity outside solo
+let SOLO_DIFF={aiEcon:1,humBias:0,needAdj:0,skill:0}; // live multipliers read by the engine; identity outside solo
 function isSoloGame(){return typeof window!=='undefined'&&!window.__MP__&&!(typeof process!=='undefined'&&process.versions&&process.versions.node);} // browser + not the MP client (the headless server shims `window`, hence the Node check)
 function soloCfg(){if(!isSoloGame())return null;G.solo=G.solo||{};const s=G.solo;if(!SOLO_DIFFS[s.diff])s.diff='veteran';if(!SOLO_LENGTHS[s.len])s.len=s.len||'epic';if(!SOLO_LENGTHS[s.len])s.len='epic';if(s.mode!=='turn'&&s.mode!=='auto')s.mode='turn';if(!SOLO_SPEEDS[s.speed])s.speed=1;return s;}
-function applySoloSettings(){const s=soloCfg();if(!s)return;const d=SOLO_DIFFS[s.diff];SOLO_DIFF={aiEcon:d.aiEcon,humBias:d.humBias,needAdj:d.needAdj};NEWBIE_PROTECT=d.protect;SEASON_TICKS=SOLO_LENGTHS[s.len].ticks;try{FINALE_WINDOW=finaleWindowFor();ENDGAME_TICKS=FINALE_WINDOW;LATE_SEASON_TICKS=FINALE_WINDOW*2;}catch(e){}}
+function applySoloSettings(){const s=soloCfg();if(!s)return;const d=SOLO_DIFFS[s.diff];SOLO_DIFF={aiEcon:d.aiEcon,humBias:d.humBias,needAdj:d.needAdj,skill:d.skill||0};NEWBIE_PROTECT=d.protect;SEASON_TICKS=SOLO_LENGTHS[s.len].ticks;try{FINALE_WINDOW=finaleWindowFor();ENDGAME_TICKS=FINALE_WINDOW;LATE_SEASON_TICKS=FINALE_WINDOW*2;}catch(e){}}
 function soloTickMs(){const s=soloCfg();if(!s)return TICK_MS;return s.mode==='turn'?1e12:(SOLO_SPEEDS[s.speed]||TICK_MS);}
 // ---- v3.32 CAMPAIGN: six scenarios with a briefing, a fixed difficulty/length and a win/lose check per turn ----
 const SCENARIOS=[
@@ -1727,6 +1728,7 @@ const ACH=[
  {k:'army',n:'Standing Army',d:'Field 500+ units',test:c=>UNIT.reduce((s,u)=>s+(c.units[u.k]||0),0)>=500},
  {k:'treaty',n:'Diplomat',d:'Join an alliance',test:c=>c.clan!=null},
  {k:'capture',n:'Conqueror',d:'Capture a region',test:c=>regionsOf(c).length>=2},
+ {k:'banner',n:'Raise Your Banner',d:'Design your own standard (tap it in the top bar)',test:c=>!!(c&&c.flag)},
  {k:'commander',n:'Hall of Heroes',d:'Recruit a commander',test:c=>(c.commanders||[]).length>0},
  {k:'great',n:'Great Power',d:'Reach Great Power or higher',test:c=>['Hegemon','Imperator','Great Power'].includes(rankTitle(c.id).title)},
  {k:'empire',n:'Empire',d:'Control 5 regions',test:c=>regionsOf(c).length>=5},
@@ -3491,7 +3493,9 @@ function cmdDeleteMail(c,key){if(!c||typeof key!=='string'||!key||key.length>64)
   c.mail=key==='*'?[]:(c.mail||[]).filter(m=>keyOf(m)!==key);return ok();}
 function cmdSetTax(c,rate){rate=+rate;if(!TAX.includes(rate))return err('Invalid tax rate');c.tax=rate;return ok();}
 const PREF_KEYS=['refuseConvoys','autoBuild','autoResearch'];
-function cmdSetPref(c,key,on){on=!!on;
+function cmdSetPref(c,key,on){if(key==='standin'){const m=String(on);if(!['off','guard','full'].includes(m))return err('bad setting');c.standin=m;if(m==='off'&&c._standin)standinEnd(c,'off');return ok();}
+  if(key==='siSeen'){c._standinReport=null;return ok();}
+  on=!!on;
   if(key==='guideOff'){c._guideOff=on;return ok();}
   if(key==='away'){c.away=on;if(!on)c._act=G.tick;const cl=clanOf(c);if(cl)clanPost(cl,c.id,on?('🌙 '+c.name+' is now away/on vacation.'):('🟢 '+c.name+' is back and active.'),'general');return ok();}
   if(!PREF_KEYS.includes(key))return err('bad setting');c[key]=on;return ok();}
@@ -3827,12 +3831,12 @@ function aiNexusRace(cl){const nx=nexus();if(!nx||nx.owner==null||!(nx.commandCe
   if((G.acs||[]).some(op=>op.clan===cl.id&&op.target===nx.id))return;
   // The whole AI world weighs in together: every AI-led alliance not allied to the holder lands on ONE shared impact tick, so the
   // waves merge into a single engagement (one battle per region per tick). Threshold is on the COMBINED weight, not one alliance.
-  const racing=(G.clans||[]).filter(x=>{const l=G.countries[x.leader];return l&&l.isAI&&!l.retired&&x.id!==holder.clan&&!napActive(l,holder.id);});
+  const racing=(G.clans||[]).filter(x=>{const l=G.countries[x.leader];return l&&l.isAI&&!l.retired&&x.id!==holder.clan&&!napActive(l,holder.id)&&(x.id===cl.id||dipStatus(cl.id,x.id)==='allied');});
   const total=racing.reduce((s,x)=>s+clanMembers(x).filter(m=>m.isAI&&regionsOf(m).length).reduce((a,m)=>a+power(m,'atk')*0.6,0),0);
   if(total<regionDef(nx)*0.5){cl._raceAt=G.tick;return;}
   const home=homeFor(lead,nx);if(!home)return;const tv=travelFor(lead,home,nx);
   if(!G._raceImpact||G._raceImpact<=G.tick+1)G._raceImpact=G.tick+Math.max(tv+1,6);let off=G._raceImpact-G.tick;if(off<tv+1){G._raceImpact=G.tick+tv+1;off=tv+1;} // late clans push the window, everyone lands together
-  cl._raceAt=G.tick;lead.cp=Math.max(lead.cp,3);lead.res.influence=Math.max(lead.res.influence,1200);
+  cl._raceAt=G.tick;if((lead.cp||0)<3||(lead.res.influence||0)<1200)return;
   const com=aiStrikeForce(lead,nx,0.7,0.5)||{};if(!fleetSize(com)){UNIT.forEach(u=>{const n=lead.units[u.k]||0;if(n>0&&u.cls!=='sam')com[u.k]=Math.floor(n*0.6);});}
   if(!fleetSize(com))return;
   const r=cmdLaunchACS(lead,nx.id,com,off);if(r.ok){news('war',cl.name+' is massing a coordinated assault on Roma, impact in '+off+' ticks.');if(holder.isAI===false)sitrep(holder,'alert','⚔ '+cl.name+' ['+cl.tag+'] has launched a coordinated assault on Roma, lands in '+off+' ticks. Reinforce now.',{sev:3,go:'fleets'});}}
@@ -3865,9 +3869,9 @@ function clanTick(){(G.clans||[]).forEach(cl=>{
     // v3.15: AI-led alliances answer diplomacy offers and occasionally propose a NAP, so the diplomacy layer feels alive in solo.
     try{const lead=G.countries[cl.leader];if(lead&&lead.isAI&&!lead.retired){
       const inO=(G.dipOffers||[]).find(o=>o.to===cl.id);
-      if(inO&&G.tick-(cl._dipSeen||0)>=2){cl._dipSeen=G.tick;const A=(G.clans||[]).find(x=>x.id===inO.from);const disp=(lead.pers&&(lead.pers.diplomacy||50))||50;
+      if(inO&&!AI_BRAIN_ON&&G.tick-(cl._dipSeen||0)>=2){cl._dipSeen=G.tick;const A=(G.clans||[]).find(x=>x.id===inO.from);const disp=(lead.pers&&(lead.pers.diplomacy||50))||50;
         const accept=!!A&&!clanAtWar(cl.id,A.id)&&Math.random()<clamp(0.30+disp/200-(inO.kind==='allied'?0.10:0),0.15,0.8);cmdDipRespond(lead,inO.id,accept);}
-      else if(!inO&&G.tick-(cl._dipAt||0)>=18&&Math.random()<0.22){cl._dipAt=G.tick;
+      else if(!inO&&!AI_BRAIN_ON&&G.tick-(cl._dipAt||0)>=18&&Math.random()<0.22){cl._dipAt=G.tick;
         const cand=(G.clans||[]).filter(x=>x.id!==cl.id&&clanMembers(x).length>0&&dipStatus(cl.id,x.id)==='neutral'&&!clanAtWar(cl.id,x.id)&&!(G.dipOffers||[]).some(o=>o.from===cl.id&&o.to===x.id));
         const me=G.you!=null?G.countries[G.you]:null;const mine=me&&me.clan!=null?(G.clans||[]).find(x=>x.id===me.clan):null;
         const near=mine&&cand.some(x=>x.id===mine.id)&&homeCluster(lead)===homeCluster(me);
@@ -3886,16 +3890,16 @@ function clanTick(){(G.clans||[]).forEach(cl=>{
       if(aiMem.length>=2){const offs0=aiMem.filter(m=>['officer','commander','leader'].includes(cl.roles[m.id]||'member'));
         if(offs0.length<2)aiMem.slice().sort((a,b)=>scores(b).overall-scores(a).overall).some(m=>{if((cl.roles[m.id]||'member')==='member'){cl.roles[m.id]='officer';if((cl.members||[]).includes(G.you)){const yy=you();if(yy&&wantNotif(yy,'general'))sitrep(yy,'alliance','🏛 '+m.name+' ['+m.tag+'] was promoted to officer in your alliance.',{go:'clans'});}return true;}return false;});
         const officers=aiMem.filter(m=>['officer','commander','leader'].includes(cl.roles[m.id]||'member'));
-        if(officers.length&&G.tick-(cl._acsAt||0)>=14&&!clanMergeBusy(cl)&&Math.random()<0.18){const o=officers[Math.floor(Math.random()*officers.length)];
+        if(officers.length&&!(AI_BRAIN_ON&&brainLed(cl))&&G.tick-(cl._acsAt||0)>=14&&!clanMergeBusy(cl)&&Math.random()<0.18){const o=officers[Math.floor(Math.random()*officers.length)];
           // v3.14.1: the alliance plays to WIN — once the Command Center can be built, AI officers prioritise seizing the Nexus for the team (unless a member already holds it).
           let t=null;const _nx=nexus();if(_nx&&_nx.owner!=null&&G.tick>=ccUnlockTick()){const _no=G.countries[_nx.owner];if(!(_no&&_no.clan===cl.id)&&!napActive(o,_nx.owner)){const _hb=regionsOf(o)[0];if(_hb){const _tv=travelFor(o,_hb,_nx);if(_tv<=ACS_MAX_WINDOW-1)t={r:_nx,tv:_tv};}}}
           if(!t)t=aiPickACSTarget(o,cl);
-          if(t){cl._acsAt=G.tick;o.cp=Math.max(o.cp||0,3);o.res.influence=Math.max(o.res.influence||0,1200);const com=aiStrikeForce(o,t.r,0.6,0.5)||{};
+          if(t&&(o.cp||0)>=3&&(o.res.influence||0)>=1200){cl._acsAt=G.tick;const com=aiStrikeForce(o,t.r,0.6,0.5)||{};
             if(fleetSize(com)){const off=Math.min(ACS_MAX_WINDOW,t.tv+2);const r0=cmdLaunchACS(o,t.r.id,com,off);
               if(r0&&r0.ok){const yc=G.you!=null?G.countries[G.you]:null;if(yc&&yc.clan===cl.id&&wantNotif(yc,'combat'))sitrep(yc,'alliance','⚔ '+leaderName(o)+' ['+o.tag+'] is leading a coordinated assault on '+t.r.name+' ('+t.r.coord+'), impact in '+off+'t. Join it in Homeland.',{coord:t.r.coord,sev:1,go:'fleets'});
                 const hd=t.r.owner!=null?G.countries[t.r.owner]:null;if(hd&&hd.isAI===false&&hd.clan!==cl.id)sitrep(hd,'alert','⚔ '+cl.name+' ['+cl.tag+'] launched a coordinated assault on '+t.r.name+', lands in '+off+'t. Reinforce now.',{coord:t.r.coord,sev:3,go:'fleets'});}}}}}
     }catch(e){}
-    try{aiNexusRace(cl);}catch(e){}
+    try{if(!(AI_BRAIN_ON&&brainLed(cl)))aiNexusRace(cl);}catch(e){}
     // v3.16: an AI-led alliance picks a fitting goal when it has none, so the Goals layer is alive in solo.
     try{const lead=G.countries[cl.leader];if(lead&&lead.isAI&&!lead.retired&&!cl.goal&&G.tick-(cl._goalAt||0)>=8&&Math.random()<0.25){
       const atWar=clanAtWarAny(cl.id);const nx=nexus();const holdsNx=nx&&nx.owner!=null&&G.countries[nx.owner]&&G.countries[nx.owner].clan===cl.id;
@@ -3988,9 +3992,9 @@ function clanTick(){(G.clans||[]).forEach(cl=>{
          else clanPost(cl,cl.leader,'Peace denied, we are '+(mine>theirs?'ahead':'even')+' at '+(w.sa||0)+':'+(w.sb||0)+'. Press the advantage.');}}}
     // AI MEMBERS pool resources into the treasury, in ANY alliance, including a human-led one (so your
     // AI teammates actually contribute to the war chest, not only AI-founded clans).
-    if(Math.random()<0.15){const aim=clanMembers(cl).filter(x=>x.isAI);if(aim.length){const d=pick(aim);if(d.res.money>2e7){const amt=Math.floor(d.res.money*0.05);d.res.money-=amt;cl.treasury.money=(cl.treasury.money||0)+amt;
-      if(cl.members.includes(G.you)&&Math.random()<0.25)clanPost(cl,d.id,'💰 '+d.name+' donated to the alliance treasury.');
-      ['steel','electronics'].forEach(k=>{if((d.res[k]||0)>3e4){const a=Math.floor(d.res[k]*0.08);d.res[k]-=a;cl.treasury[k]=(cl.treasury[k]||0)+a;}});}}}
+    if(Math.random()<0.15){const aim=clanMembers(cl).filter(x=>x.isAI);if(aim.length){const d=pick(aim);if(d.res.money>2e7){const amt=Math.floor(d.res.money*0.05);const _dr=cmdDonate(d,'money',amt,false);
+      if(_dr&&_dr.ok&&cl.members.includes(G.you)&&Math.random()<0.25)clanPost(cl,d.id,'💰 '+d.name+' donated to the alliance treasury.');
+      ['steel','electronics'].forEach(k=>{if((d.res[k]||0)>3e4){try{cmdDonate(d,k,Math.floor(d.res[k]*0.08),true);}catch(e){}}});}}}
     // Wonders are commissioned by an AI leader/officer/commander. In an AI-led clan the leader builds;
     // in a human-led clan only an AI officer does, so a fresh player-founded alliance leaves wonders
     // to the player, but a funded alliance still progresses if the player promotes an AI officer.
@@ -4034,7 +4038,7 @@ function clanTick(){(G.clans||[]).forEach(cl=>{
     else if(Math.random()<0.012){const a=pick(mates);dm(a,pick(["Quiet in our sector this tick, good time to build up.","Holler if you're short on livestock, I'm running a surplus over here.","Solid work holding your ground, commander.","Scouts are clear on our side of the province. Stay sharp.","We hold this province together, glad you're on our side of the line."]),false);}
   })();
   // AI alliances form COALITIONS against a runaway leader; otherwise war a similar-strength rival.
-  if(Math.random()<0.08){const aiClans=(G.clans||[]).filter(cl=>cl.ai&&clanMembers(cl).length>0);
+  if(!AI_BRAIN_ON&&Math.random()<0.08){const aiClans=(G.clans||[]).filter(cl=>cl.ai&&clanMembers(cl).length>0);
     if(aiClans.length>1){
       const ranked=(G.clans||[]).filter(cl=>clanMembers(cl).length>0).map(cl=>({cl,s:clanScore(cl)})).sort((a,b)=>b.s-a.s);
       const runaway=ranked.length>1&&ranked[0].s>ranked[1].s*1.4?ranked[0].cl:null; // clearly ahead of #2
@@ -4051,14 +4055,14 @@ function clanTick(){(G.clans||[]).forEach(cl=>{
   activeWars().forEach(w=>{const A=(G.clans||[]).find(x=>x.id===w.a),B=(G.clans||[]).find(x=>x.id===w.b);
     if(G.tick-w.start>=WAR_DURATION){const sa=w.sa||0,sb=w.sb||0;endWar(w,sa===sb?null:(sa>sb?w.a:w.b));return;}
     const bothAI=A&&B&&A.ai&&B.ai;
-    if(bothAI&&G.tick-w.start>10){const sa=w.sa||0,sb=w.sb||0,margin=Math.abs(sa-sb),lead=sa>sb?w.a:w.b;
+    if(bothAI&&!AI_BRAIN_ON&&G.tick-w.start>10){const sa=w.sa||0,sb=w.sb||0,margin=Math.abs(sa-sb),lead=sa>sb?w.a:w.b;
       // A clearly losing side sues for peace, the leader takes the win (beta fix: wars used to end victorless).
       if(margin>=4&&Math.random()<0.22){endWar(w,lead);return;}
       // True stalemate only when neither side really fought after a long grind.
       if(margin<=1&&G.tick-w.start>28&&Math.random()<0.12){w.active=false;w.ended=G.tick;news('diplomacy',A.name+' and '+B.name+' signed a ceasefire, neither could break the other.');}}});
   if(Math.random()<0.06){const ai=pick(G.countries.filter(x=>x.isAI&&!x.retired&&regionsOf(x).length));if(ai){const clu=homeCluster(ai);if(clu!=null)clusterPost(clu,ai.id,chatFor('theater',clanOf(ai)));}}
   aiClanACS();}
-function aiClanACS(){if(Math.random()>0.05)return;if((G.acs||[]).some(op=>op.leader!==G.you))return; // at most one AI-led ACS in flight
+function aiClanACS(){if(AI_BRAIN_ON)return;if(Math.random()>0.05)return;if((G.acs||[]).some(op=>op.leader!==G.you))return; // at most one AI-led ACS in flight
   const you0=you();if(!you0||you0.retired)return;if(G.tick-((G.season&&G.season.startTick)||0)<30)return;const myR=regionsOf(you0);if(myR.length<2)return; // grace period + never target a capital-only player
   const clans=(G.clans||[]).filter(cl=>cl.ai&&clanMembers(cl).length>=3);
   for(const cl of clans){if(Math.random()>0.5)continue;const target=myR.slice().sort((a,b)=>regionDef(a)-regionDef(b))[0];const mem=clanMembers(cl);
@@ -4157,7 +4161,7 @@ function aiDecide(c){
     // War focus: a declared war means something, an at-war AI actively hunts the enemy alliance's
     // ground, which is what makes the war score move and the front form somewhere real.
     const myClan=clanOf(c);const warFoes=myClan?new Set((G.wars||[]).filter(w=>w.active&&(w.a===myClan.id||w.b===myClan.id)).map(w=>w.a===myClan.id?w.b:w.a)):null;
-    const isWarFoe=r=>{if(!warFoes||!warFoes.size||r.owner==null)return 0;const o=G.countries[r.owner];const oc=o&&clanOf(o);return oc&&warFoes.has(oc.id)?1:0;};
+    const isWarFoe=r=>{if(!warFoes||!warFoes.size||r.owner==null)return 0;const o=G.countries[r.owner];if(!o||o.clan==null||!warFoes.has(o.clan))return 0;return aiKnowsClan(c,o.id)?1:0;};
     // NEXUS RACE (v3.9.2): once a Command Center stands (or is being raised) the whole world hunts the holder, distance no longer matters.
     const nxR=nexus();const race=(r)=>{if(!nxR||!r.nexus||r.owner===c.id)return 0;
       // v3.30: once the Nexus UNLOCKS (Command Center buildable), ambitious nations push to TAKE and hold it so they can
@@ -4170,11 +4174,11 @@ function aiDecide(c){
       const nearWin=nxR.commandCenter&&(NEXUS_HOLD-(nxR.ccHeld||0))<=20;
       if(nearWin)return 2;
       return (p.aggression>25||(oc&&warFoes&&warFoes.has(oc.id))||nxR.commandCenter||nxR.ccBuild)?1:0;};
-    const targets=G.regions.filter(r=>r.owner!==c.id&&!sameTheaterAlly(c,r)&&!sameAllianceMember(c,r)&&!napActive(c,r.owner)&&!fledglingHuman(r.owner)&&(r.nexus||!regionOverwhelmed(r))).map(r=>{let d=1e9;rg.forEach(o=>d=Math.min(d,Math.hypot(r.x-o.x,r.y-o.y)));const rev=(grudge>0&&r.owner===G.you)?grudge:0;const over=!rev&&(res[r.id]||0)>=regionDef(r)*1.4;const war=isWarFoe(r);
+    const targets=G.regions.filter(r=>r.owner!==c.id&&!sameTheaterAlly(c,r)&&!sameAllianceMember(c,r)&&!napActive(c,r.owner)&&!aiPactBlocks(c,r)&&!fledglingHuman(r.owner)&&(r.nexus||!regionOverwhelmed(r))).map(r=>{let d=1e9;rg.forEach(o=>d=Math.min(d,Math.hypot(r.x-o.x,r.y-o.y)));const rev=(grudge>0&&r.owner===G.you)?grudge:0;const over=!rev&&(res[r.id]||0)>=regionDef(r)*1.4;const war=isWarFoe(r);
       // At war, a warring alliance hunts the enemy's ground first, distance matters far less, so wars are actually fought (beta finding: wars stalemated because members never met).
       const rc=race(r);const hum=(SOLO_DIFF.humBias&&r.owner===G.you&&G.countries[G.you]&&G.countries[G.you].isAI===false)?SOLO_DIFF.humBias:0; // v3.31 solo difficulty
-      return {r,d:war||rc?d*0.4:d,margin:power(c,'atk')/Math.max(1,regionDef(r)),rev,over:over&&!rc,foc:(foc!=null&&r.owner===foc)?1:0,war,rc,hum};})
-      .filter(t=>t.d<220||t.rev>0||t.foc||t.war||t.rc).sort((a,b)=>(b.margin*3+b.r.sv/20-b.d/80+b.rev*4+b.foc*40+b.war*90+b.rc*150+b.hum-(b.over?50:0))-(a.margin*3+a.r.sv/20-a.d/80+a.rev*4+a.foc*40+a.war*90+a.rc*150+a.hum-(a.over?50:0)));
+      const _kd=aiKnownDef(c,r);const bf=brainFocusBonus(c,r);return {r,d:war||rc||bf?d*0.4:d,margin:power(c,'atk')/Math.max(1,_kd==null?aiGuessDef(c,r):_kd),unk:_kd==null,rev,over:over&&!rc,foc:(foc!=null&&r.owner===foc)?1:0,war,rc,hum,bf};})
+      .filter(t=>t.d<220||t.rev>0||t.foc||t.war||t.rc||t.bf).sort((a,b)=>(b.margin*3+b.r.sv/20-b.d/80+b.rev*4+b.foc*40+b.war*90+b.rc*150+b.hum+b.bf-(b.over?50:0))-(a.margin*3+a.r.sv/20-a.d/80+a.rev*4+a.foc*40+a.war*90+a.rc*150+a.hum+a.bf-(a.over?50:0)));
     const best=targets[0];let need=(best&&best.rev>0?1.05:1.25)-p.risk/100*.25;
     // Believable imperfection, temperament, not a spreadsheet. Some bots gamble (and sometimes lose);
     // the cautious hold out for a surer thing. Bounded so nobody plays suicidally.
@@ -4187,8 +4191,8 @@ function aiDecide(c){
     // odds — a last-ditch coalition to break the hold beats letting them win the season unopposed. Only this rare moment.
     if(best&&best.r&&best.r.nexus&&nxR&&nxR.commandCenter&&nxR.ccHolder!=null&&nxR.ccHolder!==c.id&&(NEXUS_HOLD-(nxR.ccHeld||0))<=20)need=Math.min(need,0.55);
     // Scout first (v3.9): a careful bot buys the same scout report a human would before committing a big force to an owned region.
-    if(best&&best.r.owner!=null&&best.margin>=need&&!regionIntel(c,best.r.id)&&c.cp>=3&&c.res.influence>=SCOUT_COST+800&&(p.quality||0.5)>0.55&&Math.random()<0.5)cands.push({s:w.exp*1.5+best.r.sv/12+0.5,f:()=>{const rr=cmdScoutRegion(c,best.r.id);if(rr&&rr.ok&&best.r.owner===G.you)aiSay(c,'I looked at '+best.r.name+' ('+best.r.coord+') before I decide.','',8);return rr;}});
-    if(best&&best.margin>=need){const com=aiStrikeForce(c,best.r,.5+p.aggression/100*.4,need); // v3.9: composed by class + dry-run, not a flat slice
+    if(best&&best.r.owner!=null&&best.unk&&best.margin>=need*0.8&&c.cp>=1&&c.res.influence>=SCOUT_COST)cands.push({s:w.exp*1.5+best.r.sv/12+0.5+(best.bf?3:0),f:()=>{const rr=aiScoutAndShare(c,best.r.id);if(rr&&rr.ok&&best.r.owner===G.you)aiSay(c,'I looked at '+best.r.name+' ('+best.r.coord+') before I decide.','',8);return rr;}});
+    if(best&&!best.unk&&best.margin>=need){const com=aiStrikeForce(c,best.r,.5+p.aggression/100*.4,need); // v3.9: composed by class + dry-run, not a flat slice
       if(com&&Object.values(com).some(n=>n>0))cands.push({s:w.exp*1.5+best.r.sv/12,f:()=>{const useStealth=stealthCapable(c)&&(p.aggression>75||p.arch==='opportunistic')&&Math.random()<0.12;const r=cmdOp(c,best.r.id,com,{stealth:useStealth});if(r.ok){res[best.r.id]=(res[best.r.id]||0)+power(c,'atk',com);
         const tgtC=G.countries[best.r.owner];if(tgtC&&!tgtC.isAI){news('war',`${c.name} launched an operation toward ${best.r.name}.`);
           // FACT-BOUND: the AI names the real force it just committed (unless it slipped in under stealth).
@@ -4197,7 +4201,7 @@ function aiDecide(c){
   }
   // (individual nation-to-nation treaties removed, diplomacy is now alliance-level only)
   cands.sort((a,b)=>b.s-a.s);
-  let steps=0,guard=0;while(steps<3&&c.cp>=1&&cands.length&&guard<8){guard++;const r=Math.random();let idx=0;if(!(r<p.quality)){if(r<p.quality+.14&&cands.length>1)idx=1;else idx=Math.floor(Math.random()*Math.min(4,cands.length));}
+  let steps=0,guard=0;const _q=clamp((p.quality||0.7)+(SOLO_DIFF.skill||0),0.3,0.99);while(steps<3&&c.cp>=1&&cands.length&&guard<8){guard++;const r=Math.random();let idx=0;if(!(r<_q)){if(r<_q+.14&&cands.length>1)idx=1;else idx=Math.floor(Math.random()*Math.min(4,cands.length));}
     const res=cands[idx].f();cands.splice(idx,1);if(!res||!res.ok)continue;steps++;
     // regenerate cheaply: recompute a couple candidates would be costly; just re-run once
     if(c.cp<1)break;}
@@ -4364,7 +4368,7 @@ function aiRecruitOrder(c,budget){const want=aiWantMix(c);const owned=aiOwned(c)
   return spent>0?order:null;}
 // Defender shape the bot can legitimately assume: scout report → fought memory of the owner → default garrison shape, scaled to the public defence number.
 function aiDefShape(c,r){const it=regionIntel(c,r.id);if(it&&it.comp&&Object.keys(it.comp).length)return Object.assign({},it.comp);
-  const est=Math.round(regionDef(r));const s=r.owner!=null&&c._seen&&c._seen[r.owner]&&(G.tick-c._seen[r.owner].tick)<=AI_SEEN_TTL?c._seen[r.owner].sh:null;const dummy=GARRISON_DUMMY;
+  const est=Math.round(aiGuessDef(c,r));const s=r.owner!=null&&c._seen&&c._seen[r.owner]&&(G.tick-c._seen[r.owner].tick)<=AI_SEEN_TTL?c._seen[r.owner].sh:null;const dummy=GARRISON_DUMMY;
   let shape;if(s){shape={};for(const cls in s){const u=UNIT.filter(x=>x.cls===cls).sort((a,b)=>a.tier-b.tier)[Math.min(1,UNIT.filter(x=>x.cls===cls).length-1)];if(u&&s[cls]>0)shape[u.k]=Math.round(s[cls]*100);}if(!fleetSize(shape))shape=null;}
   if(!shape)shape=garrisonUnits(r);const gp=power(dummy,'def',shape)||1;const k=est/gp;const out={};for(const u in shape)out[u]=Math.max(0,Math.round(shape[u]*k));return out;}
 // Compose a strike force for ONE target: commit by class, not a flat slice. Hunters of what the defender fields go in force,
@@ -4575,6 +4579,290 @@ function finalizeBattle(c,f,r,defC,R,retreated){const prevOwner=f.prevOwner;
     f.status='done';return;}
   f.status='returning';f.rEta=G.tick+f.travel;}
 // ---- TICK ------------------------------------------------------------------
+// ===========================================================================
+//  AI 2.0 (Update 2): ALLIANCE BRAIN + STAND-IN COMMANDER + FAIR PLAY
+//  1. Alliance Brain: every AI-led alliance runs a strategy (phase, war target,
+//     pacts, joint strikes, Nexus plan) and plays to WIN the season.
+//  2. Stand-in: when a human is offline, an AI commander keeps their nation
+//     running (Guard: economy + defence; Full: also alliance strikes) and hands
+//     back a report the moment they return.
+//  3. Fair play: the AI only uses the same commands, costs and information a
+//     human has. No free command points, no free influence, no extra economy,
+//     no reading defences it has not scouted.
+// ===========================================================================
+const AI_BRAIN_ON=true;
+const BRAIN_EVERY=3;                                   // the alliance war council meets every 3 ticks
+function brainTS(){return Math.max(1,Math.round(LEADER_AFK/60));} // tick scale: 1 = hourly ticks, 4 = 15-minute ticks
+const STANDIN_IDLE=Math.max(4,Math.round(LEADER_AFK/10)); // offline this long, the stand-in takes over (6 h)
+const STANDIN_MAX=LEADER_AFK*2;                         // stand-in holds the nation at most this long (5 days), then the rebels come
+const BRAIN_MAX_PACTS=4;                                // anti-freeze: an AI alliance keeps at most 4 pacts, betrayal stays possible
+function aiNexusList(){try{if(typeof nexuses==='function'){const l=nexuses().filter(Boolean);if(l.length)return l;}}catch(e){}const n=nexus();return n?[n]:[];}
+function brainLed(cl){const l=cl&&G.countries[cl.leader];return !!(l&&l.isAI&&!l.retired);}
+function brainOf(cl){if(!cl)return null;return cl._brain||(cl._brain={v:2,hostile:{},met:{},intel:{},target:null,since:0,phase:'opening',log:[]});}
+
+// ---------- FAIR INFORMATION -------------------------------------------------
+// What does nation c really KNOW about the defence of region r? Same rules as the human map:
+// your own ground and your alliance-mates' ground are known; empty ground is known; anything else
+// needs a scout report (yours, or one an alliance-mate shared in the alliance chat). Unknown = null.
+function _aiCtx(c){let x=c._aiCtx;if(x&&x.t===G.tick)return x;const cl=clanOf(c);x={t:G.tick,cl,B:cl&&cl._brain||null,guess:null};
+  Object.defineProperty(c,'_aiCtx',{value:x,writable:true,configurable:true,enumerable:false});return x;} // per-tick cache, never saved
+function aiKnownDef(c,r){if(!c||!r)return null;if(r.owner==null||r.owner===c.id)return regionDef(r);
+  const o=G.countries[r.owner];if(o&&c.clan!=null&&o.clan===c.clan)return regionDef(r);
+  const it=regionIntel(c,r.id);if(it)return (it.lo+it.hi)/2*1.1;
+  const B=_aiCtx(c).B;const sh=B&&B.intel&&B.intel[r.id];if(sh&&G.tick-sh.tick<=SCOUT_TTL&&!sh.miss)return (sh.lo+sh.hi)/2*1.1;
+  return null;}
+// For RANKING unknown targets only (never to commit an army): reason from your own strength, like a human would.
+function aiGuessDef(c,r){const k=aiKnownDef(c,r);if(k!=null)return k;const x=_aiCtx(c);if(x.guess==null){const mine=regionsOf(c);
+  const avg=mine.length?mine.reduce((s,q)=>s+regionDef(q),0)/mine.length:1500;x.guess=Math.max(800,avg*1.2);}return x.guess;}
+// Does nation c know which alliance owner oid belongs to? (public roster, own alliance, identified, met in combat, or at war)
+function aiKnowsClan(c,oid){const o=G.countries[oid];if(!o||o.clan==null)return false;if(c&&c.clan===o.clan)return true;
+  try{if(allyKnown(c,oid))return true;}catch(e){}
+  const cl=clanOf(c);if(!cl)return false;const B=cl._brain;if(B&&B.met&&B.met[oid]!=null)return true;
+  return clanAtWar(cl.id,o.clan);}
+// Pacts are honoured. An AI only attacks a NAP/allied alliance when its leader DECIDED to betray (brain.betray).
+function aiPactBlocks(c,r){if(!r||r.owner==null||c.clan==null||!G.diplomacy||!G.diplomacy.length)return false;const o=G.countries[r.owner];if(!o||o.clan==null||o.clan===c.clan)return false;
+  const st=typeof allianceDipBlocks==='function'?allianceDipBlocks(c,o):null;if(!st)return false;
+  const B=_aiCtx(c).B;return !(B&&B.betray===o.clan&&st==='nap');}
+// Scout a region the honest way (influence + command point) and share the report with the alliance.
+function aiScoutAndShare(c,rid){const r0=cmdScoutRegion(c,rid);if(!r0||!r0.ok)return r0;const cl=clanOf(c);
+  if(cl&&!(r0.data&&r0.data.miss)){const it=regionIntel(c,rid);if(it){let shared=false;try{const s=cmdShareIntel(c,rid);shared=!!(s&&s.ok);}catch(e){}
+    if(shared){const B=brainOf(cl);B.intel[rid]={lo:it.lo,hi:it.hi,tick:it.tick,by:c.id};}}}
+  return r0;}
+// Brain focus for aiDecide: a big pull toward the alliance war target (only regions whose alliance the AI actually knows).
+function brainFocusBonus(c,r){if(r.owner==null||c.clan==null)return 0;const B=_aiCtx(c).B;if(!B||B.target==null)return 0;
+  const o=G.countries[r.owner];if(!o||o.clan!==B.target)return 0;if(!aiKnowsClan(c,o.id))return 0;
+  if(B.op&&B.op.rid===r.id)return 130;return 70;}
+
+// ---------- ALLIANCE BRAIN -----------------------------------------------------
+function _aiDbg(e){try{if(typeof global!=='undefined'&&global.__AIDBG)global.__AIDBG(e);}catch(x){}}
+function aiBrainTick(){if(!AI_BRAIN_ON)return;(G.clans||[]).forEach(cl=>{if(!brainLed(cl))return;if((G.tick+cl.id)%BRAIN_EVERY){try{brainDefend(cl);}catch(e){_aiDbg(e);}return;}try{allianceBrain(cl);}catch(e){_aiDbg(e);}});} // defence every tick, strategy every 3
+function brainSay(cl,B,key,text,ch){if(B._said&&B._said[key]&&G.tick-B._said[key]<12*brainTS())return;B._said=B._said||{};B._said[key]=G.tick;clanPost(cl,cl.leader,text,ch||'war');
+  B.log.unshift({t:G.tick,x:text});if(B.log.length>12)B.log.length=12;}
+function brainOfficer(cl,need){const ms=clanMembers(cl).filter(m=>m.isAI&&!m.retired&&regionsOf(m).length&&isClanOfficer(m));
+  return ms.filter(m=>(m.cp||0)>=(need.cp||0)&&(m.res.influence||0)>=(need.inf||0)).sort((a,b)=>fleetSize(b.units||{})-fleetSize(a.units||{}))[0]||null;}
+function brainDiplomat(cl){const l=G.countries[cl.leader];if(l&&l.isAI&&!l.retired)return l;return clanMembers(cl).find(m=>m.isAI&&isClanDiplomat(m))||null;}
+function brainTheatersOf(cl,x){const B=brainOf(cl);const th=new Set();clanMembers(x).forEach(m=>{if(!(B.met[m.id]!=null||clanMembers(cl).some(k=>{try{return allyKnown(k,m.id);}catch(e){return false;}})||clanAtWar(cl.id,x.id)||x.publicMembers))return;regionsOf(m).forEach(r=>th.add(r.cluster));});return th;}
+function brainDist(cl,x){const A=[...clanTheaters(cl)],T=[...brainTheatersOf(cl,x)];if(!A.length||!T.length)return 99;let b=99;A.forEach(a=>T.forEach(t=>{b=Math.min(b,Math.abs(a-t));}));return b;}
+function brainScore(cl){return clanMembers(cl).reduce((s,m)=>s+(m._lastScore!=null?m._lastScore:0),0);}
+// one pass per tick over every fleet: who is sending an assault at which nation (what each defender's radar shows)
+function brainInbound(){if(G._aiInb&&G._aiInb.t===G.tick)return G._aiInb.m;const m={};G.countries.forEach(a=>{if(!a||a.retired)return;(a.fleets||[]).forEach(f=>{if(f.status!=='outbound'||f.intent==='garrison'||f.intent==='reinforce')return;const r=G.regions[f.target]&&G.regions[f.target].id===f.target?G.regions[f.target]:G.regions.find(x=>x.id===f.target);if(!r||r.owner==null||r.owner===a.id)return;
+    const d=G.countries[r.owner];if(f.stealth&&d&&(f.eta-G.tick)>stealthRevealTicks(radarLevel(d))&&radarLevel(d)<f.stealth)return;(m[r.owner]=m[r.owner]||[]).push({from:a,big:fleetSize(f.units||{})>=300});});});
+  Object.defineProperty(G,'_aiInb',{value:{t:G.tick,m},writable:true,configurable:true,enumerable:false});return m;}
+function brainPacts(cl){return (G.clans||[]).filter(x=>x.id!==cl.id&&['nap','allied'].includes(dipStatus(cl.id,x.id))).length+(G.dipOffers||[]).filter(o=>o.from===cl.id).length;} // active pacts + our offers still on the table
+
+function brainDefend(cl){const B=brainOf(cl);const lead=G.countries[cl.leader];if(!lead||!lead.isAI)return;const P=lead.pers||{diplomacy:50};
+  const mem=clanMembers(cl).filter(m=>regionsOf(m).length);const INB=brainInbound();
+  // 1b. DEFENCE FIRST: a standing order with auto-Legion from the start, an S.O.S. for every member under a real attack,
+  // and the strongest safe members march to the threatened region (their own units, same rules as a human ally).
+  if(!cl.standingDef&&lead){try{cmdSetStandingOrder(lead,(P.diplomacy||50)<45?'territory':'home',0.4,true);}catch(e){}}
+  const under=mem.filter(m=>(INB[m.id]||[]).length);
+  under.forEach(m=>{let inc=[];try{inc=incomingTo(m.id).filter(x=>x.threat>=0.45&&x.eta>=1);}catch(e){}if(!inc.length)return;
+    const top=inc.slice().sort((a,b)=>b.threat-a.threat)[0];const r=top.region;
+    if(m.isAI&&G.tick-(m._sosAt||-99)>=4){m._sosAt=G.tick;try{cmdCallHelp(m,r.id);}catch(e){}}
+    const need=inc.filter(x=>x.region.id===r.id).reduce((s,x)=>s+(x.atkP||0),0)*1.15;let have=regionDef(r)+regionReinforce(r);
+    if(have>=need)return;
+    mem.filter(h=>h.isAI&&h.id!==m.id&&!(INB[h.id]||[]).length&&fleetSize(h.units||{})>=120&&G.tick-(h._helpAt||-99)>=3)
+      .map(h=>{const hm=homeFor(h,r);return {h,tv:hm?reinforceTravel(h,hm,r,h.units):99};}).filter(x=>x.tv<=top.eta)
+      .sort((a,b)=>power(b.h,'def')-power(a.h,'def')).slice(0,3).forEach(x=>{if(have>=need)return;const com={};for(const k in x.h.units){const n=Math.floor((x.h.units[k]||0)*0.35);if(n>0)com[k]=n;}
+        if(!fleetSize(com))return;const r0=cmdStation(x.h,r.id,com);if(r0&&r0.ok){x.h._helpAt=G.tick;have+=power(x.h,'def',com);B.defended=(B.defended||0)+1;}});
+    if(have<need)brainSay(cl,B,'sos_'+r.id,'🛡 '+m.name+' is under attack at '+r.name+' ('+r.coord+'), lands in '+top.eta+'t. Everyone who can reach it: reinforce now.');});}
+function allianceBrain(cl){const B=brainOf(cl);const TS=brainTS();const lead=G.countries[cl.leader];if(!lead||!lead.isAI)return;
+  const mem=clanMembers(cl).filter(m=>regionsOf(m).length);if(!mem.length)return;
+  const P=lead.pers||{aggression:50,diplomacy:50,risk:50,loyalty:50,arch:'balanced'};
+  // 1. INTEL: who is hitting us (an inbound attack reveals the attacker; combat reveals their colours)
+  for(const k in B.hostile){B.hostile[k]*=0.85;if(B.hostile[k]<0.2)delete B.hostile[k];}
+  const INB=brainInbound();mem.forEach(m=>{(INB[m.id]||[]).forEach(x=>{const a=x.from;B.met[a.id]=G.tick;
+    if(a.clan!=null&&a.clan!==cl.id)B.hostile[a.clan]=(B.hostile[a.clan]||0)+(x.big?2:1);});});
+  for(const id in B.intel){if(G.tick-B.intel[id].tick>SCOUT_TTL)delete B.intel[id];}
+  brainDefend(cl);
+
+  // 2. PHASE of the season
+  const st=(G.season&&G.season.startTick)||0,prog=(G.tick-st)/Math.max(1,SEASON_TICKS);
+  const NXL=aiNexusList();const _ours=NXL.filter(n=>n.owner!=null&&G.countries[n.owner]&&G.countries[n.owner].clan===cl.id);
+  const _hb=regionsOf(lead)[0];const _foe=NXL.filter(n=>!_ours.includes(n)).sort((a,b)=>(_hb?travelFor(lead,_hb,a):0)-(_hb?travelFor(lead,_hb,b):0))[0];
+  const nx=(NXL.length>1&&_ours.length&&!_foe)?_ours[0]:(_foe||_ours[0]||null);const unlocked=!!(nx&&G.tick>=ccUnlockTick());let fin=false;try{fin=finaleActive();}catch(e){}
+  const nxOwner=nx&&nx.owner!=null?G.countries[nx.owner]:null;const nxClan=nxOwner?nxOwner.clan:null;const weHold=NXL.length>1?(_ours.length>=Math.ceil(NXL.length/2)):nxClan===cl.id;
+  const phase=fin?'finale':(unlocked||prog>=0.62)?'nexus':prog<0.15?'opening':'conquest';
+  if(phase!==B.phase){B.phase=phase;const txt={opening:'📜 War council: we are in the opening. Build, grow, secure our flanks with pacts.',conquest:'📜 War council: the opening is over. We pick a rival and take ground. Watch the war goal.',nexus:'📜 War council: Roma decides this season. Everything we do now is about Roma.',finale:'📜 War council: THE LAST BATTLE. Every legion to Roma. Hold it longer than anyone.'}[phase];brainSay(cl,B,'ph_'+phase,txt,'general');}
+  // 3. THE BOARD: every other alliance, with public score and what we know of where they are
+  const myS=brainScore(cl);
+  const R=(G.clans||[]).filter(x=>x.id!==cl.id&&clanMembers(x).length).map(x=>({x,s:brainScore(x),d:brainDist(cl,x),st:dipStatus(cl.id,x.id),war:clanAtWar(cl.id,x.id),h:B.hostile[x.id]||0,nx:x.id===nxClan}));
+  const ranked=R.concat([{x:cl,s:myS}]).sort((a,b)=>b.s-a.s);
+  const runaway=ranked.length>1&&ranked[0].s>ranked[1].s*1.4?ranked[0].x:null;
+  // 4. CHOOSE THE TARGET (sticky: an alliance does not change its mind every council)
+  let tgt=B.target!=null?R.find(r=>r.x.id===B.target):null;
+  const lastEnd=Math.max(-999,...(G.wars||[]).filter(w=>!w.active&&(w.a===cl.id||w.b===cl.id)).map(w=>w.ended||0));
+  const resting=G.tick-lastEnd<10*TS&&!R.some(r=>r.h>=3)&&phase==='conquest';
+  if(resting&&tgt&&!tgt.war&&B.betray!==tgt.x.id){B.target=null;tgt=null;}
+  const keep=tgt&&G.tick-(B.since||0)<14*TS&&tgt.st!=='allied';
+  if(!keep&&!resting){let best=null,bv=-1e9;
+    R.forEach(r=>{if(r.st==='allied')return;let v=-1e9;
+      if(phase==='finale'||phase==='nexus'){if(r.nx&&!weHold)v=200+(myS/Math.max(1,r.s))*20;else if(weHold&&r.h>0)v=60+r.h*10;else if(r.d<=1&&r.s<myS*0.7)v=10;}
+      else if(phase==='conquest'){if(r.d>1&&!(runaway===r.x&&r.d<=3))return;const ratio=myS/Math.max(1,r.s);
+        if(ratio<0.75&&runaway!==r.x&&r.h<3)return;v=ratio*30+r.h*8+(runaway===r.x?35:0)-(r.st==='nap'?25:0)+(r.war?20:0)-r.d*6+(P.aggression-50)/5;}
+      else if(phase==='opening'){if(r.h>=4&&r.d<=1&&myS>=r.s*0.8)v=r.h*10;}
+      if(v>bv){bv=v;best=r;}});
+    const prev=B.target;if(best&&bv>0){B.target=best.x.id;if(prev!==best.x.id){B.since=G.tick;B.op=null;B.goalSet=null;
+        brainSay(cl,B,'tg_'+best.x.id,'🎯 Strategy: our target is '+best.x.name+' ['+best.x.tag+']'+(best.nx?', they hold Roma':runaway===best.x?', the runaway power, before they win it all':best.h>2?', they have been hitting us':'')+'. Strike their ground, defend ours.');}}
+    else if(phase!=='nexus'&&phase!=='finale'){B.target=null;}
+    tgt=B.target!=null?R.find(r=>r.x.id===B.target):null;}
+  // 5. DIPLOMACY: answer offers by the plan, then build the pacts we need
+  const dip=brainDiplomat(cl);
+  if(dip){(G.dipOffers||[]).filter(o=>o.to===cl.id).forEach(o=>{const r=R.find(z=>z.x.id===o.from);if(!r)return;
+      let yes;if(r.x.id===B.target)yes=false;else if(r.h>=3)yes=false;
+      else if(brainPacts(cl)>=BRAIN_MAX_PACTS)yes=false;
+      else if(o.kind==='allied')yes=!!(tgt&&(clanAtWar(r.x.id,tgt.x.id)||(runaway&&runaway.id===tgt.x.id)))||(r.s>myS*1.2&&r.d>=2);
+      else yes=brainPacts(cl)<BRAIN_MAX_PACTS&&(r.d<=1||r.s>=myS*0.8||phase==='nexus'||phase==='finale');
+      if(yes&&weHold===false&&r.nx&&(phase==='nexus'||phase==='finale'))yes=false; // never a NAP with the Nexus holder when the race is on
+      try{cmdDipRespond(dip,o.id,yes);}catch(e){}
+      brainSay(cl,B,'dr_'+o.id,(yes?'🤝 We accepted the ':'✖ We declined the ')+o.kind.toUpperCase()+' from '+r.x.tag+'.'+(yes?'':' It does not fit our plan.'),'officer');});
+    if(G.tick-(B.dipAt||-99)>=6*TS&&brainPacts(cl)<BRAIN_MAX_PACTS){B.dipAt=G.tick;
+      const pend=new Set((G.dipOffers||[]).filter(o=>o.from===cl.id).map(o=>o.to));
+      const free=R.filter(r=>r.st==='neutral'&&!r.war&&!pend.has(r.x.id)&&r.x.id!==B.target&&r.h<2&&!(r.nx&&!weHold&&(phase==='nexus'||phase==='finale')));
+      let pickR=null,kind='nap';
+      if(runaway&&runaway.id!==cl.id&&tgt&&tgt.x.id===runaway.id){pickR=free.filter(r=>r.x.id!==runaway.id&&r.s>=myS*0.4).sort((a,b)=>b.s-a.s)[0];kind='allied';} // coalition against the leader
+      if(!pickR&&tgt)pickR=free.filter(r=>r.d<=1).sort((a,b)=>b.s-a.s)[0];              // no second front while we fight
+      if(!pickR&&(phase==='opening'||weHold))pickR=free.filter(r=>r.d<=2).sort((a,b)=>b.s-a.s)[0]; // secure the flanks / hold the Nexus in peace
+      if(pickR&&(P.diplomacy>=35||kind==='allied'||weHold)){const r0=cmdDipOffer(dip,pickR.x.id,kind,null,kind==='allied'?'Same enemy, same banner. '+(tgt?tgt.x.tag+' must not win.':''):'Quiet between our banners.');
+        if(r0&&r0.ok)brainSay(cl,B,'do_'+pickR.x.id,'🕊 We offered '+(kind==='allied'?'an ALLIANCE':'a NAP')+' to '+pickR.x.tag+'. '+(kind==='allied'?'A coalition against the leader.':'One front at a time.'),'officer');}}}
+  // 6. WAR AND PEACE
+  if(lead&&tgt&&!tgt.war&&cl.leader===lead.id){const pact=tgt.st==='nap'||tgt.st==='allied';
+    const ready=G.tick-(B.since||0)>=1&&(cl.warCooldown||0)<=G.tick&&warRematchReady(cl.id,tgt.x.id);
+    const otherWars=R.filter(r=>r.war&&r.x.id!==tgt.x.id).length;
+    if(ready&&otherWars<1){
+      if(pact){const sly=(P.arch==='opportunistic'||P.arch==='aggressive')&&(P.loyalty||50)<50&&myS>=tgt.s*1.5&&tgt.st==='nap';
+        if(sly){if(B.betray!==tgt.x.id){B.betray=tgt.x.id;brainSay(cl,B,'bt_'+tgt.x.id,'🗡 The pact with '+tgt.x.tag+' has served its purpose. We strike first. Surprise is worth more than paper.');}}
+        else{const rec=dipRecord(cl.id,tgt.x.id);if(rec&&!rec.revokeAt&&dip){try{const r0=cmdDipRevoke(dip,tgt.x.id);if(r0&&r0.ok)brainSay(cl,B,'rv_'+tgt.x.id,'🕊 We are honourably ending our pact with '+tgt.x.tag+'. In '+DIP_GRACE+' ticks the war begins.');}catch(e){}}}}
+      else if(tgt.st==='neutral'){const r0=cmdDeclareWar(lead,tgt.x.id);if(r0&&r0.ok){B.betray=null;B.warStart=G.tick;}}}}
+  activeWars().forEach(w=>{if(w.a!==cl.id&&w.b!==cl.id)return;const oid=w.a===cl.id?w.b:w.a;const O=R.find(r=>r.x.id===oid);if(!O)return;
+    const mine=warScore(w,cl.id),theirs=(w.sa||0)+(w.sb||0)-mine;const age=G.tick-w.start;
+    const losing=theirs-mine>=3&&age>=8*TS;const distraction=(phase==='nexus'||phase==='finale')&&!O.nx&&B.target!==oid&&age>=6*TS;const twoFront=B.target!=null&&B.target!==oid&&O.h<1&&age>=10*TS&&mine>=theirs;
+    if((losing||distraction||twoFront)&&cl.leader===lead.id){const r0=cmdSuePeace(lead,oid);if(r0&&r0.ok){brainSay(cl,B,'pc_'+oid,'🕊 Peace with '+O.x.tag+'. '+(losing?'Bleeding for nothing is not strategy.':'We need every army for the real fight.'));if(B.target===oid)B.target=null;}}});
+  // 7. KNOW THE MAP: an officer identifies a strong neighbour whose alliance we do not know yet
+  if(G.tick-(B.idAt||-99)>=8*TS){const o=brainOfficer(cl,{cp:2,inf:800});if(o){B.idAt=G.tick;const myTh=clanTheaters(cl);
+      const cand=G.countries.filter(x=>x&&!x.retired&&x.clan!=null&&x.clan!==cl.id&&regionsOf(x).some(r=>myTh.has(r.cluster)||myTh.has(r.cluster+1)||myTh.has(r.cluster-1))&&!aiKnowsClan(o,x.id)).sort((a,b)=>(b._lastScore||0)-(a._lastScore||0))[0];
+      if(cand){try{const r0=cmdIdentifyAlly(o,cand.id);if(r0&&r0.ok&&r0.data&&r0.data.found)B.met[cand.id]=G.tick;}catch(e){}}}}
+  // 8. JOINT STRIKES on the target (scout first, then a coordinated assault the whole alliance joins)
+  const atWarTgt=tgt&&(tgt.war||B.betray===tgt.x.id);const nexusPush=(phase==='nexus'||phase==='finale')&&nx&&!weHold&&nx.owner!=null&&!(nxOwner&&allianceDipBlocks(lead,nxOwner)&&B.betray!==nxClan)&&nxClan!==cl.id;
+  if((atWarTgt||nexusPush)&&G.tick-(B.opAt||-99)>=(phase==='finale'?3:6)*TS&&!clanMergeBusy(cl)&&!(G.acs||[]).some(op=>op.clan===cl.id)){
+    let tr=null;
+    if(nexusPush&&(phase==='finale'||(nx.commandCenter||nx.ccBuild)||tgt&&tgt.nx))tr=nx;
+    else if(atWarTgt){const regs=[];clanMembers(tgt.x).forEach(m=>{if(!aiKnowsClan(lead,m.id)&&B.met[m.id]==null)return;regionsOf(m).forEach(r=>{if(!r.nexus)regs.push(r);});});
+      const homeR=regionsOf(lead)[0];regs.sort((a,b)=>(aiGuessDef(lead,a)-a.sv*20+(homeR?travelFor(lead,homeR,a):0)*300)-(aiGuessDef(lead,b)-b.sv*20+(homeR?travelFor(lead,homeR,b):0)*300));tr=regs[0]||null;}
+    if(tr){const known=aiKnownDef(lead,tr);
+      if(known==null){const sc=brainOfficer(cl,{cp:1,inf:SCOUT_COST});if(sc){const r0=aiScoutAndShare(sc,tr.id);if(r0&&r0.ok)B.op={rid:tr.id,stage:'scouted',t:G.tick};}}
+      else{const o=brainOfficer(cl,{cp:3,inf:1200});
+        if(o){const home=homeFor(o,tr);const tv=home?travelFor(o,home,tr):99;
+          const reach=clanMembers(cl).filter(m=>m.isAI&&regionsOf(m).length&&(()=>{const h=homeFor(m,tr);return h&&travelFor(m,h,tr)<=ACS_MAX_WINDOW;})());
+          const est=reach.reduce((s,m)=>s+power(m,'atk')*0.45,0);
+          if(tv<=ACS_MAX_WINDOW-1&&est>=known*(phase==='finale'?1.0:1.3)){const off=Math.min(ACS_MAX_WINDOW,tv+2);
+            const com=aiStrikeForce(o,tr,0.6,1.05)||(()=>{const c0={};UNIT.forEach(u=>{const n=o.units[u.k]||0;if(n>0&&u.cls!=='sam')c0[u.k]=Math.floor(n*0.55);});return c0;})();
+            if(fleetSize(com)){const r0=cmdLaunchACS(o,tr.id,com,off);
+              if(r0&&r0.ok){B.opAt=G.tick;B.op={rid:tr.id,stage:'launched',t:G.tick,land:G.tick+off};
+                try{cmdWarAlert(o,tr.id,off,'Joint strike, all hands. Join it in Homeland.');}catch(e){}
+                if(!B.goalSet||B.goalSet!==tr.id){try{cmdSetWarGoal(o,tr.id,Math.max(off+2,24*TS));B.goalSet=tr.id;}catch(e){}}
+                const hd=tr.owner!=null?G.countries[tr.owner]:null;if(hd&&hd.isAI===false&&hd.clan!==cl.id)sitrep(hd,'alert','⚔ '+cl.name+' ['+cl.tag+'] launched a coordinated assault on '+tr.name+', lands in '+off+'t. Reinforce now.',{coord:tr.coord,sev:3,go:'fleets'});
+                const me=G.you!=null?G.countries[G.you]:null;if(me&&me.clan===cl.id&&wantNotif(me,'combat'))sitrep(me,'alliance','⚔ '+leaderName(o)+' ['+o.tag+'] leads our joint strike on '+tr.name+' ('+tr.coord+'), impact in '+off+'t. Join it in Homeland.',{coord:tr.coord,sev:1,go:'fleets'});
+                if(tr.nexus)news('war',cl.name+' is massing a coordinated assault on Roma, impact in '+off+' ticks.');}}}}}}}
+  // 9. HOLD THE NEXUS: when one of us holds it, the alliance garrisons it and digs in
+  const _hold=_ours[0];if(_ours.length&&unlocked&&_hold){const nx=_hold;if(!cl.standingDef&&lead){try{cmdSetStandingOrder(lead,'territory',0.35,true);}catch(e){}}
+    mem.forEach(m=>{if(!m.isAI||m.id===nx.owner)return;if(G.tick-(m._nxGuard||-99)<12*TS)return;let busy=false;try{busy=incomingTo(m.id).some(x=>x.threat>=0.5);}catch(e){}if(busy)return;
+      const h=homeFor(m,nx);if(!h||travelFor(m,h,nx)>8)return;const com={};for(const k in m.units){const n=Math.floor((m.units[k]||0)*0.25);if(n>0)com[k]=n;}
+      if(fleetSize(com)>=40){const r0=cmdStation(m,nx.id,com);if(r0&&r0.ok){m._nxGuard=G.tick;}}});
+    brainSay(cl,B,'hold','👑 We hold Roma. Every member sends a quarter of their army to garrison it. Nobody takes it from us.');}
+  // 10. ALLIANCE GOAL fits the strategy
+  if(!cl.goal&&lead&&G.tick-(B.goalAt||-99)>=8*TS){B.goalAt=G.tick;const k=weHold&&unlocked?'hold_nexus':(atWarTgt?'war_footing':phase==='opening'?'supply_bank':'theater_push');try{cmdSetGoal(lead,k);}catch(e){}}}
+
+// ---------- STAND-IN COMMANDER -------------------------------------------------
+// A human who is offline for STANDIN_IDLE ticks (or switched on Away) gets an AI stand-in that plays
+// for them with THEIR resources and the normal rules. Guard = economy + defence + help allies.
+// Full = also joins alliance strikes and takes clearly winnable fights it has scouted. Never: leaving
+// the alliance, diplomacy, giving resources away, or raising taxes.
+function standinMode(c){return ['off','guard','full'].includes(c&&c.standin)?c.standin:'guard';}
+function standinIdle(c){const a=Math.max(c._act!=null?c._act:(c._born||0),c._online!=null?c._online:-1e9);return G.tick-a;}
+function standinActive(c){return !!(c&&c._standin);}
+function standinTick(){if(typeof isSoloGame==='function'&&isSoloGame())return; // solo: the world pauses while you are gone
+  G.countries.forEach(c=>{if(!c||c.isAI!==false||c.retired||c.id===G.you)return;
+    const mode=standinMode(c);if(mode==='off'||!regionsOf(c).length){if(c._standin)standinEnd(c,mode==='off'?'off':'lost');return;}
+    const idle=standinIdle(c);const cap=STANDIN_MAX*(c.away?2:1);const want=(c.away&&idle>=2)||idle>=STANDIN_IDLE;
+    if(want&&idle<=cap){if(!c._standin)standinStart(c,mode);c._standin.mode=mode;try{standinAct(c);}catch(e){_aiDbg(e);}}
+    else if(c._standin)standinEnd(c,idle>cap?'expired':'back');});}
+function standinStart(c,mode){c._standin={since:G.tick,mode,money0:c.res.money||0,log:{build:0,research:0,recruit:0,defend:0,assist:0,joined:0,attacks:0,fixed:0,shield:0,cc:0},notes:[]};
+  const cl=clanOf(c);if(cl)clanPost(cl,c.id,'🤖 '+c.name+' is offline. A stand-in commander ('+(mode==='full'?'Full':'Guard')+') runs the nation until they return.','general');
+  sitrep(c,'event','🤖 Your stand-in commander took over at tick #'+G.tick+' ('+(mode==='full'?'Full: economy, defence and alliance strikes':'Guard: economy and defence')+'). You get a report when you are back.',{go:'dashboard'});}
+function standinNote(c,k,txt){const S=c._standin;if(!S)return;S.log[k]=(S.log[k]||0)+1;if(txt){S.notes.unshift('t'+G.tick+': '+txt);if(S.notes.length>14)S.notes.length=14;}}
+function standinEnd(c,why){const S=c._standin;if(!S)return;delete c._standin;const n=G.tick-S.since;const L=S.log;
+  const bits=[];if(L.build)bits.push(L.build+' building'+(L.build>1?'s':''));if(L.research)bits.push(L.research+' research');if(L.recruit)bits.push(L.recruit+' recruit order'+(L.recruit>1?'s':''));
+  if(L.fixed)bits.push(L.fixed+' shortage'+(L.fixed>1?'s':'')+' fixed');if(L.defend)bits.push(L.defend+' defence move'+(L.defend>1?'s':''));if(L.assist)bits.push(L.assist+' ally helped');
+  if(L.joined)bits.push(L.joined+' joint strike'+(L.joined>1?'s':'')+' joined');if(L.attacks)bits.push(L.attacks+' attack'+(L.attacks>1?'s':''));if(L.shield)bits.push('emergency shield');if(L.cc)bits.push('Imperial Palace started');
+  const sum=bits.length?bits.join(', '):'kept watch, nothing needed doing';
+  c._standinReport={from:S.since,to:G.tick,ticks:n,mode:S.mode,why,sum,notes:S.notes.slice(0,10),money0:S.money0,money1:c.res.money||0};
+  if(n>=2)sitrep(c,'event','🤖 Stand-in report, '+n+' tick'+(n===1?'':'s')+(why==='expired'?' (time limit reached, it has stood down)':'')+': '+sum+'.',{sev:why==='expired'?2:1,go:'dashboard'});
+  const cl=clanOf(c);if(cl&&n>=2)clanPost(cl,c.id,why==='back'?'🟢 '+c.name+' is back. The stand-in handed over command.':why==='expired'?'⌛ '+c.name+' has been gone too long, the stand-in stood down.':'🤖 '+c.name+'\'s stand-in stood down.','general');}
+// Called by the server the moment a player is seen again (a command or a page load), so the report is ready at once.
+function standinWake(c){if(c&&c._standin&&!c.away){standinEnd(c,'back');return true;}if(c&&c._standin&&c.away&&standinIdle(c)<2){standinEnd(c,'back');return true;}return false;}
+const SI_PERS={arch:'balanced',aggression:45,risk:30,mil:55,eco:65,res:55,diplomacy:50,expand:45,patience:70,loyalty:80,quality:0.92};
+function standinAct(c){const S=c._standin;const isFull=S.mode==='full';const had=c.pers;if(!had)c.pers=Object.assign({},SI_PERS,isFull?{aggression:58,risk:40}:{});
+  try{let steps=0;const can=n=>(c.cp||0)>=n&&steps<3;const floor=S.money0*0.35; // never burn the treasury: keep 35% of what you left behind
+    const rg=regionsOf(c);if(!rg.length)return;const home=rg[0];
+    // 1. DEFENCE
+    let inc=[];try{inc=incomingTo(c.id).filter(x=>x.threat>=0.05);}catch(e){}
+    if(inc.length){const maxT=Math.max.apply(null,inc.map(x=>x.threat)),soon=Math.min.apply(null,inc.map(x=>x.eta));const order=['standby','ready','mobilized','full'];
+      if(maxT>=0.4&&order.indexOf(c.ready)<2){const r=cmdReady(c,'mobilized');if(r&&r.ok)standinNote(c,'defend','mobilised against an incoming attack');}
+      if(maxT>=0.75){(c.fleets||[]).filter(f=>f.status==='outbound'&&f.intent!=='garrison'&&f.intent!=='reinforce').forEach(f=>{const r=recallFleet(c,f.id);if(r&&r.ok)standinNote(c,'defend','recalled an attack to defend home');});}
+      const worst=inc.slice().sort((a,b)=>b.threat-a.threat)[0];
+      if(worst&&worst.threat>=0.5&&clanOf(c)&&G.tick-(S.sosAt||-99)>=4){S.sosAt=G.tick;try{const r=cmdCallHelp(c,worst.region.id);if(r&&r.ok)standinNote(c,'defend','called the alliance for help at '+worst.region.coord);}catch(e){}}
+      // move part of the home army onto the threatened region if it is not the home pool's own region
+      if(worst&&worst.region.owner===c.id&&worst.threat>=0.6&&rg.length>1){const com={};for(const k in c.units){const n=Math.floor((c.units[k]||0)*0.5);if(n>0)com[k]=n;}
+        if(fleetSize(com)>=30&&!(c.fleets||[]).some(f=>f.target===worst.region.id&&f.intent==='garrison')){const r=cmdStation(c,worst.region.id,com);if(r&&r.ok)standinNote(c,'defend','reinforced '+worst.region.name);}}
+      const roeShield=!(c.roe&&c.roe.shield===false);
+      if(roeShield&&maxT>=1.0&&soon<=3&&fleetsAllHome(c)&&!c.shield){const r=cmdShield(c,true);if(r&&r.ok)S.shieldBy=true;if(r&&r.ok)standinNote(c,'shield','engaged the emergency shield against an overwhelming assault');}}
+    // a shield the stand-in raised comes down again once the danger has passed (a player's own shield is left alone)
+    if(c.shield&&S.shieldBy){if(!inc.some(x=>x.threat>=0.3)){S.calm=(S.calm||0)+1;if(S.calm>=2){const r=cmdShield(c,false);if(r&&r.ok){S.shieldBy=false;S.calm=0;standinNote(c,'defend','lowered the shield, the threat has passed');}}}else S.calm=0;}
+    if(c.shield)return; // shielded: production is halved, don't spend
+    // 2. SHORTAGES (food, energy, fuel)
+    const pj=projection(c);const short=['food','energy','fuel'].find(k=>(pj.net[k]||0)<0&&(c.res[k]||0)/Math.max(1,-(pj.net[k]||0))<6);
+    if(short&&can(1)){const bk=short==='food'?'farm':short==='energy'?'power':null;let ok0=false;if(bk){const r=cmdBuild(c,home.id,bk);ok0=!!(r&&r.ok);if(ok0){steps++;standinNote(c,'fixed','built '+bk+' to end a '+short+' shortage');}}
+      if(!ok0&&MARKET.includes(short)){const q=Math.min(Math.floor(-(pj.net[short]||0)*4),Math.floor(capOf(c,short)-(c.res[short]||0)));const pr=(G.prices&&G.prices[short])||BASEP[short];if(q>0&&(c.res.money||0)-q*pr>floor){const r=cmdMarket(c,short,'buy',q);if(r&&r.ok)standinNote(c,'fixed','bought '+full(q)+' '+short);}}}
+    // 3. THE NEXUS: if we hold it and it can be built, start the Command Center (that is the player's season)
+    aiNexusList().forEach(nx=>{if(nx&&nx.owner===c.id&&!nx.commandCenter&&!nx.ccBuild&&G.tick>=ccUnlockTick()&&afford(c,CC_COST)&&can(2)){const r=cmdBuildCC(c,nx.id);if(r&&r.ok){steps++;standinNote(c,'cc','started the Imperial Palace at '+nx.name);}}});
+    // 4. ALLIANCE DEFENCE CALLS: help a mate we can reach (a slice of our army, only when we are safe)
+    const cl=clanOf(c);
+    if(cl&&!inc.some(x=>x.threat>=0.3)&&G.tick-(S.helpAt||-99)>=3){const calls=defenceCalls(cl).filter(k=>k.status!=='ASSIGNED'&&k.owner.id!==c.id&&k.eta>=1);
+      const call=calls.find(k=>{const h=homeFor(c,k.region)||home;return travelFor(c,h,k.region)<=k.eta;});
+      if(call&&fleetSize(c.units||{})>=150){const com={};for(const k in c.units){const n=Math.floor((c.units[k]||0)*0.3);if(n>0)com[k]=n;}
+        if(fleetSize(com)){const r=cmdStation(c,call.region.id,com);if(r&&r.ok){S.helpAt=G.tick;standinNote(c,'assist','sent help to '+call.owner.name+' at '+call.region.coord);}}}}
+    // 5. RESEARCH (one in the queue at a time)
+    if(!(c.rq||[]).length&&can(1)){const avail=TECH.filter(t=>!c.tech.includes(t.k)&&(t.req||[]).every(r=>c.tech.includes(r))&&!(t.excludes||[]).some(e=>c.tech.includes(e)));
+      let t=avail.sort((a,b)=>a.cost.money-b.cost.money)[0];try{const dp=aiDoctrinePick(c);if(t&&(t.k==='mil_asymmetric'||t.k==='mil_juggernaut')&&avail.some(x=>x.k===dp))t=avail.find(x=>x.k===dp);}catch(e){}
+      if(t&&(c.res.research||0)>=t.cost.research&&(c.res.money||0)-t.cost.money>floor){const r=cmdResearch(c,t.k);if(r&&r.ok){steps++;standinNote(c,'research','researched '+t.n);}}}
+    // 6. GROWTH: keep building what the player was building (their most-developed economy), lowest level first
+    if(can(1)&&!(c.queue||[]).length){const ks=['factory','lab','farm','power','base'].filter(k=>{try{return buildUnlocked(c,BUILD.find(b=>b.k===k)||{});}catch(e){return true;}});
+      const tot=k=>(c.buildings||[]).filter(b=>b.k===k).reduce((s,b)=>s+(b.lv||0),0);
+      const pref=ks.sort((a,b)=>tot(b)-tot(a)).slice(0,3).sort((a,b)=>blevel(c,home.id,a)-blevel(c,home.id,b));
+      for(const k of pref){const cost=bcost(k,blevel(c,home.id,k));if(afford(c,cost)&&(c.res.money||0)-(cost.money||0)>floor){const r=cmdBuild(c,home.id,k);if(r&&r.ok){steps++;standinNote(c,'build','built '+((BUILD.find(b=>b.k===k)||{}).n||k));break;}}}}
+    // 7. ARMY: keep a credible garrison; under threat, train with a defensive slice of the budget
+    const army=fleetSize(c.units||{});const threatened=inc.some(x=>x.threat>=0.3);
+    if(can(1)&&(army<200||threatened)){const budget=Math.max(0,(c.res.money||0)-floor)*(threatened?0.25:0.1);
+      if(budget>2e5){let r=null;try{const order=aiRecruitOrder(c,budget);if(order)r=cmdRecruitBatch(c,order);}catch(e){}
+        if(!(r&&r.ok)){const d=UBYK.infantry;const q=Math.floor(budget/((d&&d.cost&&d.cost.money)||1));if(q>0)r=cmdRecruit(c,'infantry',q);}
+        if(r&&r.ok){steps++;standinNote(c,'recruit',threatened?'trained troops against a threat':'kept the home garrison up');}}}
+    if(!isFull)return;
+    // 8. FULL MODE: join the alliance's joint strikes, and take only scouted, clearly winnable fights
+    if(cl&&!threatened&&can(2)&&(c.res.influence||0)>=600){const op=(G.acs||[]).find(o=>o.clan===cl.id&&!o.fleets.some(f=>f.owner===c.id)&&o.landTick>G.tick);
+      if(op){const r0=G.regions.find(x=>x.id===op.target);const h=r0&&homeFor(c,r0);if(r0&&h&&travelFor(c,h,r0)<=op.landTick-G.tick){const com=aiStrikeForce(c,r0,0.4,1.0)||{};
+        if(fleetSize(com)){const r=cmdJoinACS(c,op.id,com);if(r&&r.ok){steps++;standinNote(c,'joined','joined the alliance strike on '+r0.name+' ('+r0.coord+')');}}}}}
+    if(!threatened&&can(2)&&!(c.fleets||[]).some(f=>f.status==='outbound'&&f.intent!=='garrison'&&f.intent!=='reinforce')&&G.tick-(S.atkAt||-99)>=6){
+      const t=G.regions.filter(r=>r.owner!==c.id&&r.owner!=null&&!r.nexus&&!sameTheaterAlly(c,r)&&!sameAllianceMember(c,r)&&!aiPactBlocks(c,r)&&!napActive(c,r.owner)&&!fledglingHuman(r.owner)&&!bullyBlocked(c,r)&&aiKnownDef(c,r)!=null)
+        .map(r=>{const h=homeFor(c,r);return {r,tv:h?travelFor(c,h,r):99,m:power(c,'atk')/Math.max(1,aiKnownDef(c,r))};}).filter(x=>x.tv<=4&&x.m>=1.6).sort((a,b)=>b.m-a.m)[0];
+      if(t){const com=aiStrikeForce(c,t.r,0.45,1.4);if(com&&fleetSize(com)){const r=cmdOp(c,t.r.id,com,{});if(r&&r.ok){S.atkAt=G.tick;steps++;standinNote(c,'attacks','attacked '+t.r.name+' ('+t.r.coord+') with scouted odds');}}}}
+  }finally{if(!had)delete c.pers;}}
+function standinReportHTML(c){const R=c&&c._standinReport;if(!R)return '';const dm=Math.round((R.money1||0)-(R.money0||0));
+  return `<div class="card mb" id="siCard" style="border-left:3px solid #7fb2ff"><h3>🤖 Your stand-in commander <span class="muted small" style="text-transform:none;letter-spacing:0">tick #${R.from} to #${R.to} · ${R.mode==='full'?'Full':'Guard'}</span></h3>
+    <div class="small">${esc(R.sum)}.${R.why==='expired'?' <b style="color:var(--warn)">It stood down after the time limit.</b>':''} Treasury ${dm>=0?'+':''}${fmt(dm,true)}.</div>
+    ${(R.notes||[]).length?`<details class="mt"><summary class="small" style="cursor:pointer">What it did</summary><div class="small muted">${R.notes.map(esc).join('<br>')}</div></details>`:''}
+    <div class="row mt" style="gap:6px"><button class="btn ghost sm" id="siSeen">✓ Got it</button><span class="muted small">Change it in Homeland → Shield &amp; sleep-safe defence.</span></div></div>`;}
+
 function runTick(){
   G.tick++;
   G._spot0=Object.assign({},G.prices);
@@ -4601,7 +4889,7 @@ function runTick(){
     // in each tick (rising r.sv). As stability sinks the existing coup logic (stab<18) starts breaking regions away into anarchy
     // that active players can seize, so a dead account cleans itself up instead of feeding farmers. Solo & 'away' are exempt.
     if(c.isAI===false&&c.id!==G.you&&!c.away){const idle=G.tick-(c._act!=null?c._act:(c._born||0));
-      if(idle>REBEL_TICKS&&regionsOf(c).length){const sev=clamp((idle-REBEL_TICKS)/192,0.5,4);c.stab=clamp(c.stab-sev,0,100);
+      const _rb=REBEL_TICKS+(standinMode(c)==='off'?0:STANDIN_MAX);if(idle>_rb&&regionsOf(c).length){const sev=clamp((idle-_rb)/192,0.5,4);c.stab=clamp(c.stab-sev,0,100);
         const rr=pick(regionsOf(c).filter(r=>!r.nexus));if(rr&&rr.sv<95)rr.sv=Math.min(95,rr.sv+1);
         if(!c._rebelNoted||G.tick-c._rebelNoted>24){c._rebelNoted=G.tick;news('territory','🏴 Rebels are rising across '+c.name+"'s neglected provinces — its regions are digging in and its hold is slipping.");}}}
     // Coups & anarchy zones: a badly-run nation (very low stability) can lose an outlying
@@ -4766,7 +5054,7 @@ function runTick(){
   sc.sort((a,b)=>b.score-a.score);G._leader=sc[0];G._median=sc.length?sc[Math.floor(sc.length/2)].score:1;
   // AI decisions
   G._atkRes={}; // reset per-tick attack reservations (anti-chaos: spread bot attacks across targets)
-  _hcRebuild();_defCache=new Map();try{active.forEach(c=>{if(c.isAI)try{aiDecide(c);}catch(e){}});}finally{_defCache=null;}
+  _hcRebuild();_defCache=new Map();try{try{aiBrainTick();}catch(e){}active.forEach(c=>{if(c.isAI)try{aiDecide(c);}catch(e){}});try{standinTick();}catch(e){}}finally{_defCache=null;}
   active.forEach(pc=>{if(pc.isAI===false&&(pc.autoBuild||pc.autoResearch))try{playerAutopilot(pc);}catch(e){}}); // every delegated human, on the server too (was only you())
   try{clanTick();}catch(e){}
   try{allianceGoalsTick();}catch(e){}
@@ -4793,7 +5081,7 @@ function runTick(){
     const _no=nx.owner!=null?G.countries[nx.owner]:null;
     news('territory','🏛 THE ROMA HAS AWAKENED. The Imperial Palace can now be built at '+nx.name+' ('+nx.coord+'). '+(_no?_no.name+' holds the ground':'The ground is unclaimed')+'. Build it and hold '+NEXUS_HOLD+' ticks to win the season. The race for the world is on.');
     G.countries.forEach(hc=>{if(hc&&hc.isAI===false&&!hc.retired){sitrep(hc,'event','🏛 Roma has awakened: the Imperial Palace is now buildable at '+nx.name+' ('+nx.coord+'). '+(nx.owner===hc.id?'You hold Roma, start building to chase the win.':'Take Roma, build the Center and hold '+NEXUS_HOLD+' ticks to win the season.'),{coord:nx.coord,sev:2,go:'map'});if(hc.id===G.you&&typeof toast==='function')toast('🏛 Roma has awakened, the Imperial Palace can now be built.','warn');}});}
-  if(nx){ ccBuildTick(); if(nx.owner!=null&&!nx.commandCenter&&!nx.ccBuild&&G.tick>=ccUnlockTick()){const o=G.countries[nx.owner];if(o&&o.isAI&&afford(o,CC_COST)){o.cp=Math.max(o.cp,2);cmdBuildCC(o);}}
+  if(nx){ ccBuildTick(); if(nx.owner!=null&&!nx.commandCenter&&!nx.ccBuild&&G.tick>=ccUnlockTick()){const o=G.countries[nx.owner];if(o&&o.isAI&&afford(o,CC_COST)&&(o.cp||0)>=2){cmdBuildCC(o);}}
     if(nx.commandCenter&&nx.owner!=null&&nx.owner===nx.ccHolder){const hold=G.countries[nx.owner];if(!shieldActive(hold)){nx.ccHeld=Math.min(NEXUS_HOLD,(nx.ccHeld||0)+1);
         // v3.30: hold milestones are PUBLIC — the whole world sees the leader closing on the win and can rally to break it.
         const held=nx.ccHeld,left=NEXUS_HOLD-held;
@@ -4803,6 +5091,7 @@ function runTick(){
         if(nx.ccHeld>=NEXUS_HOLD&&G._winner==null)G._winner=nx.owner;}else if(hold&&hold.id===G.you)toast('🛡 The shield never covers Roma, the hold counter is paused while it is up.','warn');}
     else if(nx.commandCenter&&nx.owner!==nx.ccHolder){nx.ccHolder=nx.owner;nx.ccHeld=0;} }
   const pc=you();if(pc&&!pc.retired){G.powerHist.push({tick:G.tick,score:scores(pc).overall,regions:regionsOf(pc).length});if(G.powerHist.length>80)G.powerHist.shift();}
+  try{trackTick();}catch(e){}
   rankTick();
   G._capturesLastTick=G._capturesTick||0;G._capturesTick=0; // world-status: territories that changed hands this tick
   G.nextAt=Date.now()+soloTickMs();
@@ -4889,7 +5178,7 @@ return{c:function(a){return a==null?"":_c(a,15,function(a){return f(a+32);})+" "
 function save(fast){try{G.clientBuild=window.TT_CLIENT||'romaterra-1.0';}catch(e){}const _rnd=(k,v)=>(typeof v==='number'&&!Number.isInteger(v))?(Math.abs(v)>=1000?Math.round(v):Math.round(v*1000)/1000):v; /* A9: 3-decimal floats, the save was 30% long float tails */ if(G.you!=null&&G.countries[G.you])G.countries[G.you]._act=G.tick;
   try{const _json=JSON.stringify(G,_rnd);let _out;if(fast){_out=_json;}else{try{_out='LZ1'+_LZ.c(_json);if(_out.length>=_json.length+3)_out=_json;}catch(e){_out=_json;}}localStorage.setItem('romaterra',_out);window._saveFail=0;}catch(e){window._saveFail=(window._saveFail||0)+1;if(window._saveFail===1&&typeof toast==='function')toast('Save failed, browser storage is full. Download a back-up from Settings.','bad');}}
 // Activity indicator for an alliance member, green (active) / orange (idle) / red (dormant) / moon (away).
-function memberActivity(m){if(m.away)return{ic:'🌙',color:'#b8a68f',lbl:'away'};
+function memberActivity(m){if(m._standin)return{ic:'🤖',color:'#7fb2ff',lbl:'stand-in ('+(m._standin.mode||'guard')+')'};if(m.away)return{ic:'🌙',color:'#b8a68f',lbl:'away'};
   if(m.id===G.you)return{ic:'🟢',color:'var(--good)',lbl:'active now'};
   const age=G.tick-(m._act==null?-99:m._act);
   if(age<=5)return{ic:'🟢',color:'var(--good)',lbl:'active'};
@@ -4918,7 +5207,77 @@ function toast(msg,kind){if(typeof sfx==='function'){if(kind==='bad')sfx('bad');
   if(active>=4){_bundleN++;if(!_bundleEl){_bundleEl=h('<div class="toast bundle"></div>');box.appendChild(_bundleEl);}_bundleEl.textContent='+'+_bundleN+' more events';clearTimeout(_bundleTimer);_bundleTimer=setTimeout(()=>{if(_bundleEl)_bundleEl.remove();_bundleEl=null;_bundleN=0;},2500);return;}
   const t=h(`<div class="toast ${kind||''}">${esc(msg)}</div>`);box.appendChild(t);setTimeout(()=>t.remove(),4200);}
 const you=()=>G.countries[G.you];
-function emblem(c){return `<span class="tag">${esc(c.tag)}</span>`;}
+// ===========================================================================
+//  UPDATE 4 (proef): EIGEN VLAG + MEETPUNTEN
+//  Every nation has a flag. Yours you design (pattern, three colours, symbol); every AI nation gets a fixed one
+//  from its id, so no save space is used. Shown wherever a nation appears (rankings, alliance, Nexus, map sheet).
+//  Pure looks: no bonus, no balance change.
+// ===========================================================================
+const FLAG_COLORS=['#c8102e','#f2f2f2','#0a3d91','#ffcc00','#1b7f3b','#111111','#ff7a00','#5b2c83','#00a3e0','#8b5a2b','#7a0019','#9aa3ad'];
+const FLAG_PATTERNS=['Solid','Horizontal','Vertical','Nordic cross','Diagonal','Quarters','Chevron','Border'];
+const FLAG_SYMBOLS=['None','Star','Circle','Diamond','Cross','Triangle','Crescent','Sun'];
+function _flagHash(n){let x=(n+1)*2654435761>>>0;return ()=>{x^=x<<13;x>>>=0;x^=x>>17;x^=x<<5;x>>>=0;return x;};}
+function genFlag(id){const r=_flagHash(id||0);const a=r()%FLAG_COLORS.length;let b=r()%FLAG_COLORS.length;if(b===a)b=(b+5)%FLAG_COLORS.length;let c=r()%FLAG_COLORS.length;if(c===a||c===b)c=(a+3)%FLAG_COLORS.length;
+  return {p:r()%FLAG_PATTERNS.length,c:[a,b,c],s:r()%3===0?0:1+r()%(FLAG_SYMBOLS.length-1)};}
+function flagOf(c){if(!c)return genFlag(0);const f=c.flag;if(f&&Array.isArray(f.c)&&f.c.length===3)return f;return genFlag(c.id);}
+function _flagOk(f){if(!f||typeof f!=='object'||!Array.isArray(f.c)||f.c.length!==3)return false;const n=v=>Number.isInteger(v);
+  return n(f.p)&&f.p>=0&&f.p<FLAG_PATTERNS.length&&n(f.s)&&f.s>=0&&f.s<FLAG_SYMBOLS.length&&f.c.every(v=>n(v)&&v>=0&&v<FLAG_COLORS.length);}
+function flagSVG(c,w,fl){const f=fl||flagOf(c);const W=w||22,H=Math.round(W*2/3);const A=FLAG_COLORS[f.c[0]]||'#888',B=FLAG_COLORS[f.c[1]]||'#ccc',C=FLAG_COLORS[f.c[2]]||'#444';
+  let body='';switch(f.p){
+    case 1:body=`<rect width="30" height="20" fill="${A}"/><rect y="6.67" width="30" height="6.67" fill="${B}"/><rect y="13.33" width="30" height="6.67" fill="${C}"/>`;break;
+    case 2:body=`<rect width="30" height="20" fill="${A}"/><rect x="10" width="10" height="20" fill="${B}"/><rect x="20" width="10" height="20" fill="${C}"/>`;break;
+    case 3:body=`<rect width="30" height="20" fill="${A}"/><rect x="8" width="5" height="20" fill="${B}"/><rect y="7.5" width="30" height="5" fill="${B}"/><rect x="9.5" width="2" height="20" fill="${C}"/><rect y="9" width="30" height="2" fill="${C}"/>`;break;
+    case 4:body=`<rect width="30" height="20" fill="${A}"/><path d="M0 20L30 0V20Z" fill="${B}"/><path d="M0 18.5L27.8 0H30V1.5L2.2 20H0Z" fill="${C}"/>`;break;
+    case 5:body=`<rect width="30" height="20" fill="${A}"/><rect x="15" width="15" height="10" fill="${B}"/><rect y="10" width="15" height="10" fill="${B}"/>`;break;
+    case 6:body=`<rect width="30" height="20" fill="${A}"/><rect y="10" width="30" height="10" fill="${B}"/><path d="M0 0L12 10L0 20Z" fill="${C}"/>`;break;
+    case 7:body=`<rect width="30" height="20" fill="${C}"/><rect x="2.5" y="2.5" width="25" height="15" fill="${A}"/>`;break;
+    default:body=`<rect width="30" height="20" fill="${A}"/>`;}
+  const sc=f.p===0||f.p===7?B:C;const cx=f.p===6?5:15,cy=10;let sym='';
+  switch(f.s){
+    case 1:sym=`<path d="M${cx} ${cy-5}L${cx+1.2} ${cy-1.6}L${cx+4.8} ${cy-1.5}L${cx+1.9} ${cy+0.7}L${cx+2.9} ${cy+4.2}L${cx} ${cy+2.1}L${cx-2.9} ${cy+4.2}L${cx-1.9} ${cy+0.7}L${cx-4.8} ${cy-1.5}L${cx-1.2} ${cy-1.6}Z" fill="${sc}"/>`;break;
+    case 2:sym=`<circle cx="${cx}" cy="${cy}" r="4" fill="${sc}"/>`;break;
+    case 3:sym=`<path d="M${cx} ${cy-5}L${cx+4} ${cy}L${cx} ${cy+5}L${cx-4} ${cy}Z" fill="${sc}"/>`;break;
+    case 4:sym=`<rect x="${cx-1.2}" y="${cy-5}" width="2.4" height="10" fill="${sc}"/><rect x="${cx-5}" y="${cy-1.2}" width="10" height="2.4" fill="${sc}"/>`;break;
+    case 5:sym=`<path d="M${cx} ${cy-4.5}L${cx+4.5} ${cy+3.5}H${cx-4.5}Z" fill="${sc}"/>`;break;
+    case 6:sym=`<path d="M${cx+1.5} ${cy-5}A5 5 0 1 0 ${cx+1.5} ${cy+5}A4 4 0 1 1 ${cx+1.5} ${cy-5}Z" fill="${sc}"/>`;break;
+    case 7:sym=`<circle cx="${cx}" cy="${cy}" r="2.6" fill="${sc}"/><path d="M${cx} ${cy-5.5}V${cy-3.6}M${cx} ${cy+3.6}V${cy+5.5}M${cx-5.5} ${cy}H${cx-3.6}M${cx+3.6} ${cy}H${cx+5.5}M${cx-3.9} ${cy-3.9}L${cx-2.6} ${cy-2.6}M${cx+2.6} ${cy+2.6}L${cx+3.9} ${cy+3.9}M${cx+3.9} ${cy-3.9}L${cx+2.6} ${cy-2.6}M${cx-2.6} ${cy+2.6}L${cx-3.9} ${cy+3.9}" stroke="${sc}" stroke-width="1.2"/>`;break;}
+  return `<svg class="flagsvg" width="${W}" height="${H}" viewBox="0 0 30 20" aria-hidden="true">${body}${sym}<rect width="30" height="20" fill="none" stroke="rgba(0,0,0,.35)" stroke-width="0.8"/></svg>`;}
+function cmdSetFlag(c,f){if(!c)return err('No nation');if(!_flagOk(f))return err('That flag is not valid');c.flag={p:f.p,c:[f.c[0],f.c[1],f.c[2]],s:f.s};try{trackEvent('flag-set');}catch(e){}return ok();}
+// The flag editor (pattern, three colours, symbol). Opened from Settings or by tapping your flag in the top bar.
+function showFlagEditor(){const c=you();if(!c)return;let f=JSON.parse(JSON.stringify(flagOf(c)));
+  const bg=h(`<div class="modal-bg"><div class="modal" style="max-width:520px"><div class="row between"><h2 style="margin:0">🏳 Your standard</h2><button class="btn ghost sm" data-x>✕</button></div>
+    <div class="muted small">Your standard flies over your people on the map, in the rankings and in your alliance. Only looks, no bonus.</div>
+    <div id="flPrev" style="text-align:center;margin:14px 0"></div>
+    <b class="small">Pattern</b><div class="row wrap mt" style="gap:6px" id="flPat"></div>
+    <b class="small" style="display:block;margin-top:12px">Colours</b><div id="flCols"></div>
+    <b class="small" style="display:block;margin-top:12px">Symbol</b><div class="row wrap mt" style="gap:6px" id="flSym"></div>
+    <div class="row mt" style="gap:8px;margin-top:16px"><button class="btn" id="flSave">Raise this standard</button><button class="btn ghost" id="flRand">🎲 Surprise me</button></div></div></div>`);
+  document.body.appendChild(bg);const close=()=>bg.remove();bg.querySelector('[data-x]').onclick=close;bg.onclick=e=>{if(e.target===bg)close();};
+  const draw=()=>{bg.querySelector('#flPrev').innerHTML=flagSVG(c,150,f);
+    bg.querySelector('#flPat').innerHTML=FLAG_PATTERNS.map((n,i)=>`<button class="btn sm ${f.p===i?'':'ghost'}" data-p="${i}" title="${n}" style="padding:4px">${flagSVG(c,30,Object.assign({},f,{p:i,s:0}))}</button>`).join('');
+    bg.querySelector('#flSym').innerHTML=FLAG_SYMBOLS.map((n,i)=>`<button class="btn sm ${f.s===i?'':'ghost'}" data-s="${i}" title="${n}" style="padding:4px">${flagSVG(c,30,Object.assign({},f,{s:i}))}</button>`).join('');
+    bg.querySelector('#flCols').innerHTML=[0,1,2].map(slot=>`<div class="row wrap mt" style="gap:5px;align-items:center"><span class="muted small" style="width:58px">${['First','Second','Third'][slot]}</span>${FLAG_COLORS.map((col,i)=>`<button data-slot="${slot}" data-ci="${i}" title="${col}" style="width:24px;height:24px;border-radius:6px;cursor:pointer;background:${col};border:${f.c[slot]===i?'3px solid var(--accent)':'1px solid var(--border2)'}"></button>`).join('')}</div>`).join('');
+    bg.querySelectorAll('[data-p]').forEach(b=>b.onclick=()=>{f.p=+b.dataset.p;draw();});
+    bg.querySelectorAll('[data-s]').forEach(b=>b.onclick=()=>{f.s=+b.dataset.s;draw();});
+    bg.querySelectorAll('[data-slot]').forEach(b=>b.onclick=()=>{f.c[+b.dataset.slot]=+b.dataset.ci;draw();});};
+  draw();
+  bg.querySelector('#flRand').onclick=()=>{f=genFlag(Math.floor(Math.random()*1e6));draw();};
+  bg.querySelector('#flSave').onclick=async ()=>{const r=await cmdSetFlag(c,f);if(!r||!r.ok){toast((r&&r.error)||'Could not save the standard','bad');return;}close();toast('🏳 Your new standard is raised.');try{drawTop();}catch(e){}try{go(view);}catch(e){}save();};}
+if(typeof document!=='undefined'&&document.addEventListener){try{document.addEventListener('click',e=>{const t=e.target&&e.target.closest&&e.target.closest('#topNation .flagi');if(t)showFlagEditor();});}catch(e){}}
+
+// ---- MEETPUNTEN (anonymous, via the GoatCounter already on playterrastate.nl) ----
+// Only where the website loads GoatCounter; itch, the multiplayer client and the server send nothing.
+// Each event fires once per season per browser: start, tick-10, tick-50, first-battle, season-end, flag-set.
+function _trkGame(){try{return (String(document.title||'game').split(' ')[0]||'game').toLowerCase();}catch(e){return 'game';}}
+function trackEvent(name){try{if(typeof window==='undefined'||window.__MP__||!(typeof isSoloGame==='function'&&isSoloGame()))return;
+    const sn=(G.season&&G.season.num)||1,key=sn+':'+name;G._trk=G._trk||{};if(G._trk[key])return;G._trk[key]=1;
+    const s=(typeof soloCfg==='function'&&soloCfg())||{};const send=(n)=>{const gc=window.goatcounter;if(gc&&typeof gc.count==='function'){gc.count({path:'event/'+_trkGame()+'/'+name,title:_trkGame()+' · '+name+' · '+(s.diff||'?')+' · '+(s.len||'?'),event:true});return;}if(n<20)setTimeout(()=>send(n+1),1000);};
+    send(0);}catch(e){}}
+function trackTick(){try{if(typeof window==='undefined'||window.__MP__||!(typeof isSoloGame==='function'&&isSoloGame()))return;const me=you();if(!me)return;
+  const st=(G.season&&G.season.startTick)||0,t=G.tick-st;if(t>=1)trackEvent('start');if(t>=10)trackEvent('tick-10');if(t>=50)trackEvent('tick-50');
+  if((G.battles||[]).some(b=>b&&b.tick>st))trackEvent('first-battle');if(G._seasonEnd||G._winner!=null)trackEvent('season-end');}catch(e){}}
+
+function emblem(c){return `<span class="flagi" title="${esc((c&&c.name)||'')}">${flagSVG(c,22)}</span>`;}
 // Relationship-only colours (Planetarion-style): gold self, blue alliance,
 // green ally, red enemy, gray neutral.
 const RELCOL={self:'#e3b341',alliance:'#d9a441',ally:'#c98be0',enemy:'#d94b3a',neutral:'#8a7358',empty:'#5a4630'};
@@ -5212,9 +5571,9 @@ function renderLanding(){
       <a class="card" href="updates.html" target="_self" rel="noopener" style="display:block;text-decoration:none;color:inherit;margin:0 auto">
         <div class="row between wrap" style="gap:10px;align-items:center">
           <div style="min-width:0;flex:1">
-            <div><span class="mono" style="color:var(--gold);font-size:11px;letter-spacing:1px">VERSION 2.0 · UPDATE 2</span> <span class="muted small">28 September 2026</span></div>
-            <div style="font-weight:700;margin-top:3px">Romaterra 2.0: The Last Battle</div>
-            <div class="muted small mt">Every season now ends in a fight. Hold Roma the longest in the final ticks and the season is yours. Plus: see where every army is heading, pull out of a joint attack, and stronger air power.</div>
+            <div><span class="mono" style="color:var(--gold);font-size:11px;letter-spacing:1px">VERSION 3.0 · UPDATE 3</span> <span class="muted small">1 October 2026</span></div>
+            <div style="font-weight:700;margin-top:3px">Romaterra 3.0: Smarter Rivals</div>
+            <div class="muted small mt">Rival alliances now play to win: they pick targets, sign pacts, declare war, strike together, defend each other and fight for Roma. The computer never cheats. In the live world a stand-in runs your nation while you are away.</div>
           </div>
           <span class="btn ghost sm" style="flex:none;pointer-events:none">What is new</span>
         </div>
@@ -5282,7 +5641,7 @@ function renderLanding(){
   {const b=s.querySelector('#lpNews');if(b)b.onclick=()=>{const t=s.querySelector('#playerupdate');if(t)t.scrollIntoView({behavior:'smooth',block:'center'});};}
 }
 // ---- Legal identity: ONE place to change the operator / contact / copyright holder. Used by the Privacy, Terms and Credits tabs and the footer.
-const LEGAL={operator:'Wim Kamphorst',email:'earth2026game@gmail.com',author:'Wim Kamphorst',country:'the Netherlands',law:'Dutch law',dpa:'Autoriteit Persoonsgegevens (the Dutch data protection authority)',dpaUrl:'https://www.autoriteitpersoonsgegevens.nl',version:'1.0',updated:'September 2026',build:'Version 2.0 · 28 Sep 2026',minAge:16};
+const LEGAL={operator:'Wim Kamphorst',email:'earth2026game@gmail.com',author:'Wim Kamphorst',country:'the Netherlands',law:'Dutch law',dpa:'Autoriteit Persoonsgegevens (the Dutch data protection authority)',dpaUrl:'https://www.autoriteitpersoonsgegevens.nl',version:'1.0',updated:'September 2026',build:'Version 3.0 · 1 Oct 2026',minAge:16};
 LEGAL.contact=`<b>${LEGAL.operator}</b>, <a href="mailto:${LEGAL.email}">${LEGAL.email}</a>`;
 // ---- Landing-page manual: beginner's handbook + combat formulae -------------
 const MANUAL={
@@ -6877,6 +7236,8 @@ VIEWS.dashboard=v=>{const c=you();const pj=projection(c),sc=scores(c);const sp=c
     ao.querySelectorAll('[data-recallfleet]').forEach(b=>b.onclick=async ()=>{const r=await recallFleet(c,+b.dataset.recallfleet);if(r.ok){toast('↩ Recalled — your units are heading home');go('dashboard');drawTop();save();}else toast(r.error,'bad');});
     ao.querySelectorAll('[data-strikeback]').forEach(b=>b.onclick=()=>{if(typeof GOTO_NATION==='function')GOTO_NATION(+b.dataset.strikeback);});}catch(e){}
 
+  // ---- AI 2.0: report from your stand-in commander ----
+  try{if(c._standinReport){const si=h(standinReportHTML(c));z1.insertBefore(si,z1.children[1]||null);const b=si.querySelector('#siSeen');if(b)b.onclick=async ()=>{try{await cmdSetPref(c,'siSeen',true);}catch(e){}c._standinReport=null;go('dashboard');save();};}}catch(e){}
   // ---- WHILE YOU WERE AWAY, the payoff for "set orders, walk away, return to consequences" ----
   // The world moves each tick whether you watch or not; this is the one place that tells you what
   // happened since you last caught up, so nothing important is lost to a toast you never saw.
@@ -7660,9 +8021,11 @@ VIEWS.fleets=v=>{const c=you();const inc=incomingTo(c.id);const cl0=clanOf(c);
        <label class="row" style="gap:8px;margin:5px 0"><input type="checkbox" id="roeRec" ${roe.recall?'checked':''} style="width:auto"> <span class="small">Auto-<b>recall</b> attacking armies home when badly threatened</span></label>
        <label class="row" style="gap:8px;margin:5px 0"><input type="checkbox" id="roeShd" ${roe.shield?'checked':''} style="width:auto"> <span class="small">Emergency <b>shield</b> vs an overwhelming assault (all armies must be home; halves production)</span></label>
        <label class="row" style="gap:8px;margin:5px 0"><input type="checkbox" id="roeAssist" ${roe.assistAllies?'checked':''} style="width:auto"> <span class="small">Auto-<b>assist allies</b>: send a fast QRF (a slice of your army) to a clanmate under attack you can reach in time</span></label>
+       ${isSoloGame()?'':`<div class="mt" style="border-top:1px solid var(--border);padding-top:8px"><b class="small">🤖 Stand-in commander</b> <span class="muted small">when you are offline ${STANDIN_IDLE}+ ticks (or Away), an AI plays your nation with your resources and the normal rules, up to ${STANDIN_MAX} ticks. It hands back a report.</span><div class="row mt" style="gap:8px;align-items:center"><select id="siMode" style="width:auto"><option value="guard" ${standinMode(c)==='guard'?'selected':''}>Guard: economy + defence + help allies</option><option value="full" ${standinMode(c)==='full'?'selected':''}>Full: also joins alliance strikes</option><option value="off" ${standinMode(c)==='off'?'selected':''}>Off</option></select></div></div>`}
      </div></details>`));
    const setRoE=async ()=>{const r=await cmdSetRules(c,{mobilize:v.querySelector('#roeMob').checked,recall:v.querySelector('#roeRec').checked,shield:v.querySelector('#roeShd').checked,assistAllies:v.querySelector('#roeAssist').checked});if(!r.ok){toast(r.error,'bad');go('fleets');return;}toast('Standing orders saved');save();};
-   ['roeMob','roeRec','roeShd','roeAssist'].forEach(id=>{const el=v.querySelector('#'+id);if(el)el.onchange=setRoE;});}
+   ['roeMob','roeRec','roeShd','roeAssist'].forEach(id=>{const el=v.querySelector('#'+id);if(el)el.onchange=setRoE;});
+   {const siSel=v.querySelector('#siMode');if(siSel)siSel.onchange=async ()=>{const r=await cmdSetPref(c,'standin',siSel.value);if(!r.ok){toast(r.error,'bad');return;}toast(siSel.value==='off'?'Stand-in off, your nation waits for you':siSel.value==='full'?'Stand-in: Full (economy, defence, alliance strikes)':'Stand-in: Guard (economy and defence)');save();};}}
 
   // Launch panel (offence room)
   const tgt=selTarget!=null?G.regions.find(r=>r.id===selTarget):null;
@@ -8247,7 +8610,7 @@ function renderWorldMap(v,c,hostiles,incRegions,mode){
 // Region sheet: everything you can know and do about one hex, in one place.
 function regionSheetHTML(r,c,hostiles,incRegions){const o=r.owner!=null?G.countries[r.owner]:null;const rel=relationTo(r.owner,hostiles);const mine=o&&o.id===c.id;const clanMate=o&&c.clan!=null&&o.clan===c.clan;const theaterAlly=!mine&&o&&sameTheaterAlly(c,r);const nx=nexus();const isNx=nx&&nx.id===r.id;
   const it=regionIntel(c,r.id);const rk=o?activeRanked().find(x=>x.id===o.id):null;const rt=o?rankTitle(o.id):null;
-  const head=o?`<div class="row" style="gap:10px;align-items:center">${o.leader?portraitSVG(o,40):''}<div><div class="row" style="gap:8px;align-items:baseline"><strong>${esc(leaderName(o))}</strong><span class="tag">${esc(o.tag||'')}</span></div><div class="muted small">${esc(o.leader?o.leader.persona+' · ':'')}${esc(o.name)}</div></div></div>`:`<div><strong>Open territory</strong><div class="muted small">Unclaimed, send forces to claim it</div></div>`;
+  const head=o?`<div class="row" style="gap:10px;align-items:center">${o.leader?portraitSVG(o,40):''}<div><div class="row" style="gap:8px;align-items:baseline">${emblem(o)}<strong>${esc(leaderName(o))}</strong><span class="tag">${esc(o.tag||'')}</span></div><div class="muted small">${esc(o.leader?o.leader.persona+' · ':'')}${esc(o.name)}</div></div></div>`:`<div><strong>Open territory</strong><div class="muted small">Unclaimed, send forces to claim it</div></div>`;
   const rows=[['Region',esc(r.name)],['Province',esc(theaterName(r.cluster))+' <span class="muted mono">T'+r.cluster+'</span>'],['Relationship',`<span style="color:${rel.ring}">${mine?'Your territory':clanMate?'Alliance member':theaterAlly?'Sector-mate (your team)':rel.label}</span>`],
     o?['Rank',esc(rt.title)+(mine||regionsOf(o).some(rr=>regionIntel(c,rr.id))?' · #'+rt.pos:'')]:null,o?['Power',(mine||regionsOf(o).some(rr=>regionIntel(c,rr.id)))?full(rk?rk.s:0):'<span class="muted">Unknown until you scout</span>']:null,
     o&&o.clan!=null?['Alliance',(()=>{const st=shownAllyTag(c,o.id);if(clanMate)return '<span class="atag">'+esc(clanOf(o).tag)+'</span>';if(st)return `<span class="atag">${esc(st)}</span>`;const gs=allyGuess(c,o.id);return gs?`<span class="muted">❓ ${esc(gs)}</span>`:'<span class="muted">unknown</span>';})()]:null,
@@ -8595,7 +8958,7 @@ function renderMapBelow(v,c,hostiles,incRegions){v.innerHTML='';
   const card=wrap.querySelector('#mapcard2');
   wrap.querySelectorAll('[data-drill]').forEach(g=>g.onclick=()=>{const [k,id]=g.dataset.drill.split(':');if(k==='clu'){mapView.level=1;mapView.cluster=+id;WM.jump={kind:'theater',a:+id};}else{mapView.level=2;mapView.sector=+id;WM.jump={kind:'sector',a:mapView.cluster,b:+id};}go('map');});
   const fillCard=(m)=>{if(!m.owner){card.style.display='none';return;}const o=m.owner;const rt=rankTitle(o.id);const rk=activeRanked().find(x=>x.id===o.id);const known=o.id===c.id||!!regionIntel(c,m.r.id);
-      card.innerHTML=`<div class="row between" style="align-items:flex-start;gap:8px"><div class="row" style="gap:10px;align-items:center;margin-bottom:6px">${o.leader?portraitSVG(o,40):''}<div><div class="row" style="gap:8px;align-items:baseline"><strong>${esc(leaderName(o))}</strong><span class="tag">${o.tag}</span></div><div class="muted small">${esc(o.leader?o.leader.persona+' · ':'')}${esc(o.name)}</div></div></div><button class="btn ghost sm" data-cardclose style="flex-shrink:0">✕</button></div>
+      card.innerHTML=`<div class="row between" style="align-items:flex-start;gap:8px"><div class="row" style="gap:10px;align-items:center;margin-bottom:6px">${o.leader?portraitSVG(o,40):''}<div><div class="row" style="gap:8px;align-items:baseline">${emblem(o)}<strong>${esc(leaderName(o))}</strong><span class="tag">${o.tag}</span></div><div class="muted small">${esc(o.leader?o.leader.persona+' · ':'')}${esc(o.name)}</div></div></div><button class="btn ghost sm" data-cardclose style="flex-shrink:0">✕</button></div>
         <div class="muted small mb">${esc(m.r.coord)}</div>
         <div class="row between small"><span class="muted">Relationship</span><span style="color:${m.rel.ring}">${m.rel.label}</span></div>
         <div class="row between small"><span class="muted">Rank</span><span>${esc(rt.title)}${known?' · #'+rt.pos:''}</span></div>
@@ -9828,6 +10191,7 @@ function sfx(name){if(!SETTINGS.sound||!_actx)return;switch(name){
 if(typeof document!=='undefined'&&document.addEventListener)document.addEventListener('pointerdown',function _o(){audioInit();document.removeEventListener('pointerdown',_o);});
 function showSettings(){const bg=h(`<div class="modal-bg"><div class="modal"><div class="row between"><h2 style="margin:0">⚙ Settings</h2><button class="btn ghost sm" data-x>✕</button></div>
    <div class="setrow" style="border-bottom:1px solid var(--border);padding-bottom:10px"><div><b>🧘 Focused mode</b><div class="muted small">Show only what needs you; the world feed, rankings and extras stay tucked away until you open them. Recommended while you learn. Turn off for the full, dense view.</div></div><div class="toggle ${SETTINGS.focused?'on':''}" data-t="focused"></div></div>
+   ${you()?`<div class="setrow"><div><b>🏳 Your standard</b><div class="muted small">Pattern, colours and a symbol. Shown on the map, in rankings and your alliance.</div></div><button class="btn sec sm" id="setFlag" style="display:flex;gap:6px;align-items:center">${flagSVG(you(),22)} Design</button></div>`:''}
    <div class="setrow"><div><b>Sound effects</b><div class="muted small">Console blips, alerts &amp; tick</div></div><div class="toggle ${SETTINGS.sound?'on':''}" data-t="sound"></div></div>
    <div class="setrow"><div><b>Volume</b></div><input type="range" min="0" max="100" value="${Math.round(SETTINGS.vol*100)}" data-vol style="width:150px"></div>
    <div class="setrow"><div><b>Animations</b><div class="muted small">Watchtower sweep, pulses &amp; motion</div></div><div class="toggle ${SETTINGS.motion?'on':''}" data-t="motion"></div></div>
@@ -9844,6 +10208,7 @@ function showSettings(){const bg=h(`<div class="modal-bg"><div class="modal"><di
    <div class="muted small mt">Settings are saved on this device.</div></div></div>`);
   document.body.appendChild(bg);
   const close=()=>bg.remove();bg.querySelector('[data-x]').onclick=close;bg.onclick=e=>{if(e.target===bg)close();};
+  {const fb=bg.querySelector('#setFlag');if(fb)fb.onclick=()=>{bg.remove();showFlagEditor();};}
   // v3.17 back-up: export the live game to a portable .json file, and load one back. Solo only.
   {const cb=bg.querySelector('#setCamp');if(cb)cb.onclick=()=>{bg.remove();showCampaign();};}
   {const b1=bg.querySelector('#setSlots');if(b1)b1.onclick=()=>{bg.remove();showSlots('game');};const b2=bg.querySelector('#setAch');if(b2)b2.onclick=()=>{bg.remove();showAchievements();};}
