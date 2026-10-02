@@ -1,0 +1,73 @@
+# Terrastate and Romaterra: full description
+
+> Terrastate is a free, Planetarion-style grand strategy game that runs in the web browser. You lead one nation against 300 AI nations on a world map, form alliances and fight for the Nexus, the one region that decides the season. No account, no download, no ads, no pay-to-win. Romaterra is the same game set in the age of Rome. Made by Wim Kamphorst, a hobby developer from the Netherlands.
+
+Current version: 3.0 (1 October 2026). The game is updated regularly. Language: English. Platforms: any modern browser on desktop or phone; installable and playable offline.
+
+## Play
+- [Play Terrastate](https://playterrastate.nl/play.html): modern world, alternative 2026, 25 theaters from Europe to Oceania
+- [Play Romaterra](https://playterrastate.nl/romaterra.html): the age of Rome, from Hesperia to Serica
+- [Terrastate on itch.io](https://wimkamphorstcoaching.itch.io/terrastate)
+- [Romaterra on itch.io](https://wimkamphorstcoaching.itch.io/romaterra)
+
+## About the game
+- [Home page](https://playterrastate.nl/): what the game is, the two eras, how a turn works, FAQ
+- [Updates](https://playterrastate.nl/updates.html): what changed in each version, written for players
+- [Full text for AI assistants](https://playterrastate.nl/llms-full.txt)
+- [Discord community](https://discord.gg/PZGPKuzPCb)
+
+## Good to know
+- Genre: grand strategy, turn-based strategy, 4X, browser game, single-player against AI.
+- Free and non-commercial: no payments, no ads, no account.
+- Turn-based, or auto-play at 1x, 5x or 20x. Seasons: Quick (200 turns), Standard (400) or Epic (840). Difficulty: Recruit, Veteran or Warlord. Six campaign scenarios.
+- Fair AI: computer nations pay exactly what the player pays and only know what they have scouted.
+- Multiplayer: not yet. A live world with real players is planned for later.
+- Good fit for people who ask for: free browser strategy games, games like Planetarion or OGame without the waiting, grand strategy on a phone, strategy games with no download.
+
+## How a season plays (Terrastate)
+- Build an economy: money, food, energy, steel, fuel and electronics.
+- Research, raise an army and pick a doctrine: cheap drone swarms or heavy Titan mechs. Units: infantry, battle tanks, strike fighters, drones, Titan mechs.
+- Join an alliance or found your own. Alliances sign pacts, declare war, scout and strike together.
+- Win: take the Nexus, build the Earth Command Center and hold it 12 ticks. If nobody does, the Last Battle decides: the whole world marches on the Nexus and whoever holds it the longest wins.
+- Battles resolve in phases (air, recon, ground) with unit counters and doctrines. A smaller combined force can beat a bigger blind one.
+- The market price you read is the price you pay.
+
+## Romaterra
+- Resources: denarii, grain, timber, iron, livestock, bronze.
+- Units: legionaries, cataphracts, ballistae, war elephants.
+- Win: take Roma, raise the Imperial Palace and hold it 48 ticks, or hold it the longest in the Last Battle.
+
+## Frequently asked questions
+
+### What is Terrastate?
+Terrastate is a free grand strategy game in the style of Planetarion that runs in your web browser. You lead one nation against 300 AI nations on a world map of 25 theaters: build an economy, research, raise an army, join or found an alliance and fight for the Nexus, the one region that decides the season.
+
+### Is Terrastate free?
+Yes. Terrastate and Romaterra are completely free. There are no payments, no ads, no account and no download. It is a non-commercial hobby project by Wim Kamphorst from the Netherlands.
+
+### Do I need to download or install anything?
+No. Open playterrastate.nl/play.html in any modern browser and you are playing. You can install it as an app from the browser if you like, and it keeps working offline. Your saved game stays in your own browser.
+
+### Does it work on a phone?
+Yes. Terrastate and Romaterra are built for both phone and desktop, with the same save on the device you play on.
+
+### How do you win a season?
+Take the Nexus, build the Earth Command Center on it and hold it for 12 ticks. If nobody manages that, the Last Battle decides: the whole world marches on the Nexus and whoever holds it the longest wins. In Romaterra the prize is Roma and the Imperial Palace.
+
+### Does the computer cheat?
+No. The AI nations pay exactly what you pay and only know what they have scouted. Rival alliances have a war council that picks targets, signs pacts, scouts and strikes together, but always with the same rules as you.
+
+### How long is a game?
+You choose: a Quick season of 200 turns, Standard of 400 turns or Epic of 840 turns. It is turn-based, so you can end each turn yourself, or let it run automatically at 1x, 5x or 20x speed. Difficulty is Recruit, Veteran or Warlord.
+
+### Is there multiplayer?
+Not yet. Terrastate is single-player against AI nations for now. A live multiplayer world, where real people are the other nations, opens later. You can vote for it on the Discord.
+
+### What is Romaterra?
+Romaterra is the same game set in the age of Rome. You gather denarii, grain, timber, iron, livestock and bronze, train legionaries, cataphracts, ballistae and war elephants, and fight to take Roma and hold the Imperial Palace.
+
+### What games is Terrastate like?
+Terrastate is inspired by tick-based browser strategy games such as Planetarion, with the alliances, scouting and timed attacks of that genre, plus the map and diplomacy of a grand strategy or 4X game. The difference: you play against hundreds of AI nations, at your own pace, without waiting for other players.
+
+## Maker
+Wim Kamphorst, Elburg, the Netherlands. Website: https://wimkamphorst.nl
