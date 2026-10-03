@@ -5581,7 +5581,7 @@ function renderLanding(){
       <p style="max-width:600px;margin:0 auto;font-size:clamp(15px,3.6vw,17px);color:var(--text)">A grand-strategy <b>solo</b> season against AI nations. The world advances every <b>tick</b> — set orders, wait for the tick, deal with what happened. Same rules the live world will use.</p>
       <div class="row" style="gap:12px;justify-content:center;margin-top:30px;flex-wrap:wrap">${hasSave?'<button class="btn sec" id="lc2" style="font-size:16px;padding:15px 24px">▶ Resume your nation</button>':''}<button class="btn" id="lp2" style="font-size:16px;padding:15px 30px">🦅 Start, create your nation →</button><button class="btn sec" id="lcamp" style="font-size:16px;padding:15px 24px">🎯 Campaign, 6 scenarios</button>${anySlot()?'<button class="btn ghost" id="lslots" style="font-size:16px;padding:15px 20px">🏺 Saved games</button>':''}</div>
       <div class="row" style="gap:8px;justify-content:center;margin-top:14px;flex-wrap:wrap"><button class="btn ghost sm" id="lpSee">👁 See it in action</button><button class="btn ghost sm" id="lpNews">📄 What's new</button><button class="btn ghost sm" id="lmCombat">⚔ Combat &amp; formulae</button></div>
-      <div class="muted small mt">Free · browser only · you vs AI · later multiplayer will use this same engine</div><div class="small mt" style="border:1px solid var(--border2);border-radius:10px;padding:8px 12px;display:inline-block;max-width:560px"><b>How you win a season:</b> capture <b>Roma</b>, build the <b>Imperial Palace</b> there and hold it for ${NEXUS_HOLD} ticks. If nobody does, the Last Battle decides: whoever holds Roma the most ticks at the end of the season wins, together with their alliance. Then the world resets. <b>Campaign</b> is practice. <b>Start</b> asks you to pick Quick (200 turns), Standard (400) or Epic (840).</div>
+      <div class="muted small mt">Free · browser only · you vs AI · Season 0: the live world opens at 100 commanders</div><div class="small mt" style="border:1px solid var(--border2);border-radius:10px;padding:8px 12px;display:inline-block;max-width:560px"><b>How you win a season:</b> capture <b>Roma</b>, build the <b>Imperial Palace</b> there and hold it for ${NEXUS_HOLD} ticks. If nobody does, the Last Battle decides: whoever holds Roma the most ticks at the end of the season wins, together with their alliance. Then the world resets. <b>Campaign</b> is practice. <b>Start</b> asks you to pick Quick (200 turns), Standard (400) or Epic (840).</div>
     </section>
     <section id="playerupdate" style="max-width:680px;margin:0 auto 14px">
       <a class="card" href="updates.html" target="_self" rel="noopener" style="display:block;text-decoration:none;color:inherit;margin:0 auto">
@@ -6411,7 +6411,7 @@ function seasonFinaleHTML(c,rt,won){const L=slog(c);const lt=legacyTitle(c,rt,wo
     ${stat('💔',L.betrayals,'pacts broken')}${stat('🎖',full(L.biggest||0),'biggest battle')}</div>`;
   const histHTML=hist.length?`<div class="mt" style="border-top:1px solid var(--border);padding-top:10px"><div class="clabel" style="text-align:left">Your history</div>${hist.map(hh=>`<div class="row between small" style="padding:3px 0"><span>Season ${hh.season} · <b>${esc(hh.title)}</b></span><span class="muted">#${hh.rank||'?'}${hh.won?' 🏆':''}</span></div>`).join('')}</div>`:'';
   const achBtn=(typeof isSoloGame==='function'&&isSoloGame())?`<div class="row wrap" style="gap:6px;margin:6px 0"><button class="btn ghost sm" onclick="showAchievements()">🏅 Achievements (${(c._ach||[]).length}/${ACH.length})</button><button class="btn ghost sm" onclick="showSlots('game')">🏺 Save this world</button></div>`:'';
-    const discordBtn=(typeof isSoloGame==='function'&&isSoloGame())?`<div class="card mb" style="border-left:3px solid #5865F2;margin:10px 0"><div class="row between wrap" style="align-items:center;gap:8px"><div><b>💬 Join the community</b><div class="muted small">Share how your season went, ask for tips, tell us if you want online multiplayer.</div></div><a class="btn sec sm" href="https://discord.gg/PZGPKuzPCb" target="_blank" rel="noopener">💬 Join the Discord</a></div></div>`:'';
+    const discordBtn=(typeof isSoloGame==='function'&&isSoloGame())?`<div class="card mb" style="border-left:3px solid #5865F2;margin:10px 0"><div class="row between wrap" style="align-items:center;gap:8px"><div><b>💬 Join the community</b><div class="muted small">Share how your season went, ask for tips, join the waitlist for the live world (opens at 100 commanders).</div></div><a class="btn sec sm" href="https://discord.gg/PZGPKuzPCb" target="_blank" rel="noopener">💬 Join the Discord</a></div></div>`:'';
 return `<div style="font-family:var(--mono);font-size:11px;letter-spacing:2px;color:var(--gold)">🏁 SEASON ${G.season.num} COMPLETE, HISTORY IS WRITTEN</div>${achBtn}${discordBtn}
     <h2 style="margin:.2em 0">${esc(medal)}</h2>
     <div class="card" style="border:1px solid var(--gold);background:linear-gradient(180deg,rgba(224,165,42,.10),transparent);margin:10px 0">
@@ -6434,11 +6434,21 @@ const DONATE={
   site:'https://fluisternederland.nl',
   iban:'NL07 INGB 0102 3512 87',
   bic:'INGBNL2A',
-  bank:'M3 21h18M4 9h16M5 9v9M10 9v9M14 9v9M19 9v9M12 3l9 6H3z',
+  bank:'ING Bank N.V.',
   addr:'Bijlmerplein 888, 1102 MG Amsterdam, Nederland'
 };
 // v3.35 (solo): "the live world" support popup. Shown once per world when you first take the Nexus, and at the end of a
 // season (instead of the foundation popup, which stays in multiplayer). "Don't show again" is remembered in this browser.
+
+// Season 0 (2026-10-03): the single-player game is the training ground for the live world, which opens at S0_GOAL
+// commanders on the Discord waitlist. Count = public member count of the invite; below S0_SHOW we show no number.
+const S0_GOAL=100,S0_SHOW=15,S0_INVITE='https://discord.gg/PZGPKuzPCb';
+function s0Fetch(cb){try{const c=sessionStorage.getItem('s0count');if(c){cb(+c);return;}}catch(e){}
+  try{fetch('https://discord.com/api/v9/invites/PZGPKuzPCb?with_counts=true').then(r=>r.json()).then(j=>{const n=+j.approximate_member_count||0;try{sessionStorage.setItem('s0count',n);}catch(e){}cb(n);}).catch(()=>cb(0));}catch(e){cb(0);}}
+function s0Line(n){return n>=S0_SHOW?`<b>${n} of ${S0_GOAL}</b> commanders are on the waitlist.`:`Be one of the first ${S0_GOAL} commanders on the waitlist.`;}
+function s0Fill(root){const el=root&&root.querySelector('[data-s0]');if(!el)return;s0Fetch(n=>{el.innerHTML=s0Line(n);const bar=root.querySelector('[data-s0bar]');if(bar)bar.style.width=(n>=S0_SHOW?Math.min(100,Math.round(n/S0_GOAL*100)):0)+'%';});}
+function s0Badge(){try{localStorage.setItem('romaterra_founding','1');}catch(e){}
+  return `<div class="small mt" style="border:1px solid rgba(227,179,65,.4);background:rgba(227,179,65,.08);border-radius:9px;padding:9px 11px;line-height:1.5"><b style="color:var(--gold)">🎖 Founding Commander · Season 0</b><br><span class="muted">You played before the live world opened. Founding Commanders will be marked as such when it does.</span></div>`;}
 const MP_SUPPORT_URL='https://www.paypal.com/donate?business=info%40fluisternederland.nl&currency_code=EUR&item_name=Support%20for%20Terrastate%20multiplayer%20(gift%20to%20Stichting%20Fluister%20Nederland)';
 function mpSupportMuted(){try{return localStorage.getItem('romaterra_mpsupport_off')==='1';}catch(e){return false;}}
 function showMpSupport(onClose,reason){
@@ -6446,24 +6456,25 @@ function showMpSupport(onClose,reason){
   const done=()=>{const el=document.querySelector('#donatebg');if(el)el.remove();if(onClose)onClose();};
   const lead=reason==='nexus'?'You hold Roma. In the live world, that is the moment the whole planet turns on you.':reason==='season'?'The season is over. In the live world, the next one starts with real rivals.':'';
   const bg=h(`<div class="modal-bg" id="donatebg"><div class="modal" style="max-width:480px;max-height:90vh;overflow:auto">
-    <div style="font-family:var(--mono);font-size:11px;letter-spacing:2px;color:var(--gold)">🏛 THE LIVE WORLD</div>
-    <h2 style="margin:.2em 0 8px;font-size:22px">Multiplayer, one shared season with real people</h2>
+    <div style="font-family:var(--mono);font-size:11px;letter-spacing:2px;color:var(--gold)">🏛 SEASON 0 · THE LIVE WORLD</div>
+    <h2 style="margin:.2em 0 8px;font-size:22px">You are playing Season 0</h2>
     <div class="small" style="color:var(--text);line-height:1.65">
       ${lead?`<p style="margin:0 0 8px;color:var(--muted)">${lead}</p>`:''}
-      <p style="margin:0 0 8px"><b>Multiplayer will be developed once enough players show their support through a voluntary donation.</b></p>
-      <p style="margin:0 0 8px">Please note: donations are not for hosting or server costs. They are simply a way to show interest and support the development of this feature. Romaterra stays free, with no paid advantages and no pay-to-win, for everyone.</p>
-      <p style="margin:0 0 8px">Multiplayer will run at a pace of <b>1 tick every 15 minutes</b>: real alliances, real betrayals, one world that never stops. Perfect for long-term strategy and progression. Planned home: <b>playterrastate.nl</b>.</p>
+      <p style="margin:0 0 8px">This single-player game is the <b>training ground for the live world</b>: the same game, one shared season, with real people as the other nations, at <b>1 tick every 15 minutes</b>.</p>
+      <p style="margin:0 0 8px"><b>The live world opens when 100 commanders have joined the waitlist.</b> The waitlist is our Discord: join, and you count.</p>
+      <div style="height:8px;border-radius:99px;background:rgba(255,255,255,.08);overflow:hidden;margin:4px 0 6px"><div data-s0bar style="height:100%;width:0;background:linear-gradient(90deg,#4f8cff,#37d9a9)"></div></div>
+      <p style="margin:0 0 8px" data-s0>Be one of the first 100 commanders on the waitlist.</p>
     </div>
-    <div class="small mt" style="background:rgba(201,139,224,.08);border:1px solid rgba(201,139,224,.28);border-radius:9px;padding:9px 11px;color:var(--ok)">✔ Entirely voluntary, not a payment for the game, and no effect on your gameplay, ranking or chances. Gifts go to ${esc(DONATE.org)}, the foundation behind the game.</div>
     <div class="mt" style="display:flex;flex-direction:column;gap:8px">
-      <a href="${esc(MP_SUPPORT_URL)}" target="_blank" rel="noopener" class="opt" style="display:block;text-align:center;background:linear-gradient(90deg,#d9a441,#c98be0);color:#1a1208;font-weight:800;text-decoration:none;border:0">❤️ Count me in, show support (PayPal)</a>
+      <a href="https://discord.gg/PZGPKuzPCb" target="_blank" rel="noopener" class="opt" style="display:block;text-align:center;background:linear-gradient(90deg,#4f8cff,#37d9a9);color:#04121c;font-weight:800;text-decoration:none;border:0">💬 Join the waitlist (Discord)</a>
+      <a href="${esc(MP_SUPPORT_URL)}" target="_blank" rel="noopener" class="btn ghost sm" style="display:block;text-align:center">❤️ Want to support it? A voluntary gift (PayPal)</a>
+      <div class="small muted" style="text-align:center">A gift is entirely voluntary, goes to ${esc(DONATE.org)}, and has no effect on your game, ranking or place in the live world.</div>
       <div class="small muted" style="text-align:center">or by bank transfer: ${esc(DONATE.org)} · IBAN ${esc(DONATE.iban)}</div>
-      ${reason==='nexus'?`<a href="https://discord.gg/PZGPKuzPCb" target="_blank" rel="noopener" class="btn sec sm" style="display:block;text-align:center;margin-top:2px">💬 First to Roma? Brag about it on Discord</a>`:''}
       <div class="row between wrap" style="gap:8px;align-items:center"><label class="small muted" style="display:flex;gap:6px;align-items:center;cursor:pointer"><input type="checkbox" id="mpSupOff"> Don't show this again</label><button class="btn ghost" id="mpSupLater">Maybe later →</button></div>
     </div></div></div>`);
   bg.querySelector('#mpSupLater').onclick=()=>{try{if(bg.querySelector('#mpSupOff').checked)localStorage.setItem('romaterra_mpsupport_off','1');}catch(e){}done();};
   bg.onclick=e=>{if(e.target===bg)bg.querySelector('#mpSupLater').click();};
-  document.body.appendChild(bg);}
+  document.body.appendChild(bg);s0Fill(bg);}
 // after each solo tick: the first time you hold the Nexus in this world, queue the popup (maybeModal shows it when nothing else is open)
 function mpSupportCheck(){if(!isSoloGame()||mpSupportMuted()||G._mpNexusShown)return;const c=you();const nx=nexus();if(c&&nx&&nx.owner===c.id){G._mpNexusShown=true;G._mpSupportDue='nexus';}}
 function showSeasonDonation(onClose){
@@ -6505,7 +6516,7 @@ function showSeasonDonation(onClose){
 }
 function showSeasonEnd(){const c=you();const rt=rankTitle(c.id);archiveSeason('timeout',(G._finale&&G._finale.winner!=null)?G._finale.winner:null);
   const bg=h(`<div class="modal-bg"><div class="modal" style="max-width:520px;max-height:88vh;overflow:auto">${lastBattleHTML(c)}${seasonFinaleHTML(c,rt,(typeof finaleWonBy==='function'&&finaleWonBy(c)))}
-    <button class="opt mt" id="ns">▶ New world. Same commander. →</button></div></div>`);
+    ${isSoloGame()?s0Badge():''}<button class="opt mt" id="ns">▶ New world. Same commander. →</button></div></div>`);
   bg.querySelector('#ns').onclick=()=>{bg.remove();showSeasonDonation(()=>openLobby(G.season.num+1));};document.body.appendChild(bg);}
 
 const NAV=[['dashboard','','Home'],['map','','Map'],['economy','','Economy'],['production','','Production'],['research','','Research'],['military','','Military'],['fleets','','War Room'],['covert','','Covert Ops'],['self','','Homeland'],['around','','Nearby'],['clans','','Clans'],['diplomacy','','Diplomacy'],['market','','Market'],['rankings','','Rankings'],['reports','','Reports'],['codex','','Codex']];
@@ -6730,7 +6741,7 @@ function showVictory(){sfx('victory');const w=G._winner;const c=G.countries[w];c
     <p class="muted">${msg}</p>
     ${me?seasonFinaleHTML(me,rt,youWin):''}
     <p class="muted small">${wcl?'Alliance victories are <b>shared across every member</b>, no need to backstab your allies in the finale. ':''}</p>
-    <button class="opt mt" id="ns">▶ New world. Same commander. →</button></div></div>`);
+    ${isSoloGame()?s0Badge():''}<button class="opt mt" id="ns">▶ New world. Same commander. →</button></div></div>`);
   bg.querySelector('#ns').onclick=()=>{bg.remove();showSeasonDonation(()=>openLobby(G.season.num+1));};document.body.appendChild(bg);}
 // Actionable alert bar, surfaces urgent, clickable calls-to-action on every screen
 // (inspired by classic tick-game "you have incoming fleets, CLICK HERE" banners).
@@ -10219,7 +10230,7 @@ function showSettings(){const bg=h(`<div class="modal-bg"><div class="modal"><di
      <div class="row wrap mt" style="gap:6px" id="setLens">${Object.entries(SOLO_LENGTHS).map(([k,v])=>`<button class="btn sm ${G.solo.len===k?'':'ghost'}" data-slen="${k}" title="${esc(v.d)}">${v.n} · ${v.ticks}</button>`).join('')}</div></div>`:''}
    ${window.__MP__?'':`<div class="row wrap mt" style="gap:6px;border-top:1px solid var(--border);padding-top:10px"><div style="flex:1;min-width:180px"><b>🏺 Back-up your game</b><div class="muted small">Your game lives in this browser. Download a back-up JSON and keep this HTML file together — an old HTML + new save can look wrong.</div></div><button class="btn sec sm" id="setExport">⬇ Download back-up</button><button class="btn ghost sm" id="setImport">⬆ Load back-up</button><input type="file" id="setImportFile" accept="application/json,.json" style="display:none"></div>`}
    <div class="row wrap mt" style="gap:6px;border-top:1px solid var(--border);padding-top:10px"><button class="btn sec sm" onclick="reportProblem('bug','')">🛟 Report a problem</button><span class="muted small" style="align-self:center">${window.__MP__?'Private ticket to the game admin, bug, cheat or account.':'Copies a diagnostic block to paste in Discord / e-mail.'}</span></div>
-   ${isSoloGame()?`<div class="row wrap mt" style="gap:6px;border-top:1px solid var(--border);padding-top:10px"><div style="flex:1;min-width:180px"><b>💬 Community</b><div class="muted small">Questions, tips, screenshots, bug reports and news. Tell us there if you want online multiplayer.</div></div><a class="btn sec sm" href="https://discord.gg/PZGPKuzPCb" target="_blank" rel="noopener">💬 Join the Discord</a></div>`:''}
+   ${isSoloGame()?`<div class="row wrap mt" style="gap:6px;border-top:1px solid var(--border);padding-top:10px"><div style="flex:1;min-width:180px"><b>💬 Community</b><div class="muted small">Questions, tips, screenshots, bug reports and news. It is also the waitlist for the live world: it opens at 100 commanders.</div></div><a class="btn sec sm" href="https://discord.gg/PZGPKuzPCb" target="_blank" rel="noopener">💬 Join the Discord</a></div>`:''}
    ${isSoloGame()?`<div class="row wrap mt" style="gap:6px;border-top:1px solid var(--border);padding-top:10px"><div style="flex:1;min-width:180px"><b>Tips & uitleg</b><div class="muted small">Kaarten die je hebt weggeklikt blijven weg. Reset of verberg alles.</div></div><button class="btn ghost sm" id="setTipReset">Toon tips weer</button><button class="btn ghost sm" id="setTipHide">Verberg alle tips</button></div>`:''}
    <div class="muted small mt">Settings are saved on this device.</div></div></div>`);
   document.body.appendChild(bg);

@@ -21,5 +21,5 @@ Current version: 3.0 (1 October 2026). The game is updated regularly. Language: 
 - Free and non-commercial: no payments, no ads, no account.
 - Turn-based, or auto-play at 1x, 5x or 20x. Seasons: Quick (200 turns), Standard (400) or Epic (840). Difficulty: Recruit, Veteran or Warlord. Six campaign scenarios.
 - Fair AI: computer nations pay exactly what the player pays and only know what they have scouted.
-- Multiplayer: not yet. A live world with real players is planned for later.
+- Season 0: the single-player game is the training ground for the live multiplayer world. The live world opens when 100 commanders have joined the waitlist on Discord (https://discord.gg/PZGPKuzPCb). Season 0 players are marked as Founding Commanders.
 - Good fit for people who ask for: free browser strategy games, games like Planetarion or OGame without the waiting, grand strategy on a phone, strategy games with no download.
