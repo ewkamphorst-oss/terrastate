@@ -2,7 +2,7 @@
 
 > Terrastate is a free, Planetarion-style grand strategy game that runs in the web browser. You lead one nation against 300 AI nations on a world map, form alliances and fight for the Nexus, the one region that decides the season. No account, no download, no ads, no pay-to-win. Romaterra is the same game set in the age of Rome. Made by Wim Kamphorst, a hobby developer from the Netherlands.
 
-Current version: 4.0. The game is updated regularly. Language: English. Platforms: any modern browser on desktop or phone; installable and playable offline.
+Current version: 5.0. The game is updated regularly. Language: English. Platforms: any modern browser on desktop or phone; installable and playable offline.
 
 ## Play
 - [Play Terrastate](https://playterrastate.nl/play.html): modern world, alternative 2026, 25 theaters from Europe to Oceania
@@ -10,13 +10,20 @@ Current version: 4.0. The game is updated regularly. Language: English. Platform
 - [Terrastate on itch.io](https://wimkamphorstcoaching.itch.io/terrastate)
 - [Romaterra on itch.io](https://wimkamphorstcoaching.itch.io/romaterra)
 
+## Guides
+- [How to play](https://playterrastate.nl/how-to-play.html): a beginner's guide to your first season
+- [Games like Planetarion](https://playterrastate.nl/games-like-planetarion.html): for players looking for games like Planetarion or OGame
+- [Gratis strategiespel (Nederlands)](https://playterrastate.nl/gratis-strategiespel.html): Dutch introduction to the game
+
 ## About the game
 - [Home page](https://playterrastate.nl/): what the game is, the two eras, how a turn works, FAQ
 - [Updates](https://playterrastate.nl/updates.html): what changed in each version, written for players
+- [Press kit](https://playterrastate.nl/presskit.html): facts, descriptions, screenshots and logos
 - [Full text for AI assistants](https://playterrastate.nl/llms-full.txt)
 - [Discord community and live-world waitlist](https://discord.gg/PZGPKuzPCb)
 
 ## Good to know
+- Update 5.0 (October 2026), Every Turn Counts: AI allies defend commanders who play, a fair defender's bounty, prestige projects for a full treasury (influence only, no military power), a sharper Warlord with the same resources, one clear comeback bonus capped at +150% production, a shorter Home and a calmer phone screen.
 - Genre: grand strategy, turn-based strategy, 4X, browser game, single-player against AI.
 - Free and non-commercial: no payments, no ads, no account.
 - Turn-based, or auto-play at 1x, 5x or 20x. Seasons: Quick (200 turns), Standard (400) or Epic (840). Difficulty: Recruit, Veteran or Warlord. Six campaign scenarios plus a Veteran round.

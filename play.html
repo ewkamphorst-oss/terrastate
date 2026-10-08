@@ -16,7 +16,7 @@
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="https://playterrastate.nl/img/v4/terrastate-share.jpg">
 <meta name="author" content="Wim Kamphorst">
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"VideoGame","@id":"https://playterrastate.nl/play.html#game","name":"Terrastate","url":"https://playterrastate.nl/play.html","description":"Free Planetarion-style grand strategy in your browser. Lead one nation against 300 AI nations on a world map, form alliances and fight for the Nexus. No account, no download, no pay-to-win.","image":"https://playterrastate.nl/img/v4/terrastate-share.jpg","genre":["Strategy","Grand strategy","Turn-based strategy","4X","Browser game"],"gamePlatform":["Web browser","Windows","macOS","Linux","Android","iOS"],"applicationCategory":"Game","operatingSystem":"Any (web browser)","playMode":"SinglePlayer","inLanguage":"en","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"EUR","availability":"https://schema.org/InStock"},"author":{"@type":"Person","@id":"https://playterrastate.nl/#wim","name":"Wim Kamphorst","url":"https://wimkamphorst.nl"},"publisher":{"@type":"Person","@id":"https://playterrastate.nl/#wim","name":"Wim Kamphorst","url":"https://wimkamphorst.nl"},"softwareVersion":"4.0","sameAs":["https://wimkamphorstcoaching.itch.io/terrastate"]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"VideoGame","@id":"https://playterrastate.nl/play.html#game","name":"Terrastate","url":"https://playterrastate.nl/play.html","description":"Free Planetarion-style grand strategy in your browser. Lead one nation against 300 AI nations on a world map, form alliances and fight for the Nexus. No account, no download, no pay-to-win.","image":"https://playterrastate.nl/img/v4/terrastate-share.jpg","genre":["Strategy","Grand strategy","Turn-based strategy","4X","Browser game"],"gamePlatform":["Web browser","Windows","macOS","Linux","Android","iOS"],"applicationCategory":"Game","operatingSystem":"Any (web browser)","playMode":"SinglePlayer","inLanguage":"en","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"EUR","availability":"https://schema.org/InStock"},"author":{"@type":"Person","@id":"https://playterrastate.nl/#wim","name":"Wim Kamphorst","url":"https://wimkamphorst.nl"},"publisher":{"@type":"Person","@id":"https://playterrastate.nl/#wim","name":"Wim Kamphorst","url":"https://wimkamphorst.nl"},"softwareVersion":"5.0","sameAs":["https://wimkamphorstcoaching.itch.io/terrastate"]}</script>
 <link rel="manifest" href="terrastate.webmanifest"><meta name="theme-color" content="#0d1420"><link rel="icon" href="icons/terrastate-64.png"><link rel="apple-touch-icon" href="icons/terrastate-180.png">
 <script>window.__MP_URL__=''; /* '' = live multiplayer not open yet */ if('serviceWorker' in navigator)addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));</script>
 <script data-goatcounter="https://playterrastate.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
@@ -1209,15 +1209,15 @@ const NEXUS_HOLD=12;            // hold the Nexus with a built Command Center th
 // Single-player only. In multiplayer (window.__MP__) and on the headless server every function here is inert and every
 // tunable keeps its default, so the live world is untouched. Settings live in G.solo and travel with the save.
 const SOLO_DIFFS={
-  recruit:{n:'Recruit',ic:'🌱',d:'Learn the ropes. AI economies run at 85%, rivals rarely single you out, 48 ticks of beginner protection.',aiEcon:0.85,humBias:-30,needAdj:0.20,protect:48,skill:-0.1},
+  recruit:{n:'Recruit',ic:'🌱',d:'Learn the ropes. AI economies run at 85%, rivals rarely single you out, 48 ticks of beginner protection.',aiEcon:0.85,humBias:-30,needAdj:0.20,protect:48,skill:-0.1,opPace:1.3},
   veteran:{n:'Veteran',ic:'⚔',d:'The standard game, exactly the live-world balance. Fair AI, 24 ticks of protection.',aiEcon:1,humBias:0,needAdj:0,protect:24},
-  warlord:{n:'Warlord',ic:'💀',d:'The AI never gets extra resources, it just plays sharper: better choices, tighter alliance strikes, rivals actively hunt you, only 8 ticks of protection. For veterans.',aiEcon:1,humBias:25,needAdj:-0.08,protect:8,skill:0.12}};
+  warlord:{n:'Warlord',ic:'💀',d:'The AI never gets extra resources, it just plays sharper: better choices, faster joint strikes, scouts that remember your army, rivals actively hunt you, only 8 ticks of protection. For veterans.',aiEcon:1,humBias:25,needAdj:-0.08,protect:8,skill:0.12,opPace:0.7,scoutMem:1}};
 const SOLO_LENGTHS={quick:{n:'Quick',ticks:200,d:'≈200 turns, a session or two'},standard:{n:'Standard',ticks:400,d:'≈400 turns, the sweet spot'},epic:{n:'Epic',ticks:840,d:'840 turns, the full live-world season'}};
 const SOLO_SPEEDS={1:20000,5:4000,20:500}; // auto-play: ms per tick at 1x / 5x / 20x (20x ≈ 1 tick/s in practice: the 1 s loop plus tick time)
 let SOLO_DIFF={aiEcon:1,humBias:0,needAdj:0,skill:0}; // live multipliers read by the engine; identity outside solo
 function isSoloGame(){return typeof window!=='undefined'&&!window.__MP__&&!(typeof process!=='undefined'&&process.versions&&process.versions.node);} // browser + not the MP client (the headless server shims `window`, hence the Node check)
 function soloCfg(){if(!isSoloGame())return null;G.solo=G.solo||{};const s=G.solo;if(!SOLO_DIFFS[s.diff])s.diff='veteran';if(!SOLO_LENGTHS[s.len])s.len=s.len||'epic';if(!SOLO_LENGTHS[s.len])s.len='epic';if(s.mode!=='turn'&&s.mode!=='auto')s.mode='turn';if(!SOLO_SPEEDS[s.speed])s.speed=1;return s;}
-function applySoloSettings(){const s=soloCfg();if(!s)return;const d=SOLO_DIFFS[s.diff];SOLO_DIFF={aiEcon:d.aiEcon,humBias:d.humBias,needAdj:d.needAdj,skill:d.skill||0};NEWBIE_PROTECT=d.protect;SEASON_TICKS=SOLO_LENGTHS[s.len].ticks;}
+function applySoloSettings(){const s=soloCfg();if(!s)return;const d=SOLO_DIFFS[s.diff];SOLO_DIFF={aiEcon:d.aiEcon,humBias:d.humBias,needAdj:d.needAdj,skill:d.skill||0,opPace:d.opPace||1,scoutMem:d.scoutMem||0};NEWBIE_PROTECT=d.protect;SEASON_TICKS=SOLO_LENGTHS[s.len].ticks;}
 function soloTickMs(){const s=soloCfg();if(!s)return TICK_MS;return s.mode==='turn'?1e12:(SOLO_SPEEDS[s.speed]||TICK_MS);}
 // ---- v3.32 CAMPAIGN: six scenarios with a briefing, a fixed difficulty/length and a win/lose check per turn ----
 const SCENARIOS=[
@@ -2200,16 +2200,16 @@ function projection(c){
   prod.influence+=INF_REGEN*(1+(M.inf||0));
   // Catch-up (Rising Power): nations well behind the map leader get an economic boost so a setback or a late
   // start isn't terminal, the gap compresses, leaders still lead. Off in the opening; scales with how far behind.
-  {const cm=catchupMult(c)+rebuildBonus(c);if(cm!==1)['money','steel','electronics','research','fuel'].forEach(k=>{prod[k]*=cm;});}
+  const _cm5=catchupMult(c)+rebuildBonus(c);if(_cm5!==1)['money','steel','electronics','research','fuel'].forEach(k=>{prod[k]*=_cm5;});
   const rd=READY[c.ready]||READY.standby,upM=(1+(M.up||0))*rd.u;
   // Upkeep is paid on your WHOLE army, home AND deployed (fleets, staged, ACS). Parking an army on a
   // permanent mission used to dodge food/fuel/money upkeep entirely; it no longer does.
   const deployed={};(c.fleets||[]).forEach(f=>{const fu=f.units||{};for(const k in fu)deployed[k]=(deployed[k]||0)+(fu[k]||0);});
   (G.acs||[]).forEach(op=>op.fleets.forEach(f=>{if(f.owner!==c.id)return;const fu=f.units||{};for(const k in fu)deployed[k]=(deployed[k]||0)+(fu[k]||0);}));
   UNIT.forEach(u=>{const nn=(c.units[u.k]||0)+(deployed[u.k]||0);if(!nn)return;for(const k in u.up)cons[k]+=u.up[k]*nn*upM;});
-  const cmd=commanderMods(c);prod.money*=1+cmd.money;prod.research*=1+cmd.research;prod.influence*=1+cmd.inf;
+  const cmd=commanderMods(c);prod.money*=1+cmd.money;prod.research*=1+cmd.research;prod.influence*=1+cmd.inf;if(c._prest)prod.influence*=p5PrestMult(c);
   const cw=clanWonderMods(c);if(cw.research)prod.research*=1+cw.research;if(cw.ind){prod.steel*=1+cw.ind;prod.electronics*=1+cw.ind;}if(cw.inf)prod.influence*=1+cw.inf; // alliance wonders
-  const cu=catchup(c);if(cu>1.001){['money','steel','electronics','food','energy','research'].forEach(k=>prod[k]*=cu);}
+  let cu=catchup(c);if(c.isAI===false&&_p5on()){const _lim=COMEBACK_MAX/Math.max(1,_cm5);if(cu>_lim)cu=Math.max(1,_lim);c._comeback=Math.max(0,Math.round((Math.max(1,_cm5)*Math.max(1,cu)-1)*100));}if(cu>1.001){['money','steel','electronics','food','energy','research'].forEach(k=>prod[k]*=cu);}
   if(debuffed(c,'power'))prod.energy*=0.5; // Covert-ops sabotage: crippled power grid
   if(c.shield){RES.forEach(k=>{if(k!=='influence')prod[k]*=0.5;});warn.push('Shield mode, production at 50%.');} // sleep/shield: economy idles
   const net={};RES.forEach(k=>net[k]=prod[k]-cons[k]);
@@ -4025,7 +4025,7 @@ function clanTick(){(G.clans||[]).forEach(cl=>{
       // don't strip a member who is themselves under major attack
       if(incomingTo(m.id).some(x=>x.threat>=0.5))return;
       // only help a clanmate whose region we can actually reach before impact (speed matters, per the combat design)
-      const call=calls.find(k=>k.owner.id!==m.id&&travelFor(m,homeFor(m,k.region)||regionsOf(m)[0],k.region)<=k.eta);
+      const call=calls.find(k=>k.owner.id!==m.id&&p5CallOk(k)&&travelFor(m,homeFor(m,k.region)||regionsOf(m)[0],k.region)<=k.eta);
       if(call&&Math.random()<0.8){const com={};for(const u in m.units){const n=Math.floor((m.units[u]||0)*0.4);if(n>0)com[u]=n;}
         if(Object.keys(com).length){const r=cmdStation(m,call.region.id,com);if(r&&r.ok&&clanMembers(cl).some(x=>x.id===G.you))clanPost(cl,m.id,'🛡 '+m.name+' sent reinforcements to '+call.region.name+' ('+call.region.coord+').');}}});});
   // ---- Your theater is your team: theater-mates defend YOU, politics permitting ----
@@ -4040,6 +4040,7 @@ function clanTick(){(G.clans||[]).forEach(cl=>{
     const attacker=top&&top.from&&top.from.id!=null?top.from:null;
     const atkClan=attacker&&attacker.clan!=null?attacker.clan:null;const myClan=me.clan;
     const dm=(a,line,good)=>{if(G.tick-(a._dmTick||-99)<4)return false;a._dmTick=G.tick;chronicle('💬 '+leaderName(a)+' of '+a.name+': "'+line+'"','msg');if(good)toast(leaderName(a)+': "'+line+'"');return true;};
+    if(top&&_p5on()&&!p5Engaged(me,top.region,p5AtkOn(G.you,top.region.id))){p5IdleNote(me);return;}
     if(top){mates.slice().sort((a,b)=>fleetSize(b.units)-fleetSize(a.units)).forEach(a=>{
       const v=a.vsYou||{};const isAttacker=attacker&&a.id===attacker.id;if(isAttacker)return;
       const sameAsAttacker=atkClan!=null&&a.clan===atkClan;
@@ -4541,7 +4542,7 @@ function finalizeBattle(c,f,r,defC,R,retreated){const prevOwner=f.prevOwner;
   {const atkLostN=fleetSize(f.bStart||{})-fleetSize(f.units),defLostN=fleetSize(f.bDefLost||{});
    const grant=(w,kills)=>{if(!w||kills<=0)return null;const infl=Math.round(clamp(kills/30,5,200)),cash=Math.round(Math.min(1.5e6,kills*800));w.res.influence=(w.res.influence||0)+infl;w.res.money=Math.min(capOf(w,'money'),(w.res.money||0)+cash);return {infl,cash};};
    if(!retreated&&success){const g=grant(c,defLostN);if(g&&c.isAI===false)sitrep(c,'battle','🎖 Spoils of war at '+r.name+': +'+g.infl+' influence, +'+fmt(g.cash,true)+' ('+full(defLostN)+' enemy units destroyed)',{coord:r.coord,sev:0,go:'fleets'});}
-   else if(defC){const g=grant(defC,atkLostN);if(g&&defC.isAI===false)sitrep(defC,'battle','🎖 Defender\'s bounty at '+r.name+': +'+g.infl+' influence, +'+fmt(g.cash,true)+' ('+full(atkLostN)+' attackers destroyed)',{coord:r.coord,sev:0,go:'fleets'});}}
+   else if(defC){const _sh5=p5DefShare(defC,r);const g=grant(defC,Math.round(atkLostN*_sh5));try{p5HelperBounty(defC,r,atkLostN,_sh5,grant);}catch(e){}if(g&&defC.isAI===false)sitrep(defC,'battle','🎖 Defender\'s bounty at '+r.name+': +'+g.infl+' influence, +'+fmt(g.cash,true)+' ('+full(atkLostN)+' attackers destroyed)',{coord:r.coord,sev:0,go:'fleets'});}}
   // v3.30 NEXUS GLORY (renown only, NEVER combat power): fighting for the Nexus in the endgame pays extra INFLUENCE to
   // both sides that actually engaged, so the middle and the underdogs have a public reason to join instead of watching.
   // Capped, no same-alliance farming, real clashes only (both sides had units) — anti-snowball safe.
@@ -4644,7 +4645,7 @@ function aiPactBlocks(c,r){if(!r||r.owner==null||c.clan==null||!G.diplomacy||!G.
   const st=typeof allianceDipBlocks==='function'?allianceDipBlocks(c,o):null;if(!st)return false;
   const B=_aiCtx(c).B;return !(B&&B.betray===o.clan&&st==='nap');}
 // Scout a region the honest way (influence + command point) and share the report with the alliance.
-function aiScoutAndShare(c,rid){const r0=cmdScoutRegion(c,rid);if(!r0||!r0.ok)return r0;const cl=clanOf(c);
+function aiScoutAndShare(c,rid){const r0=cmdScoutRegion(c,rid);if(!r0||!r0.ok)return r0;p5ScoutMem(c,rid,r0);const cl=clanOf(c);
   if(cl&&!(r0.data&&r0.data.miss)){const it=regionIntel(c,rid);if(it){let shared=false;try{const s=cmdShareIntel(c,rid);shared=!!(s&&s.ok);}catch(e){}
     if(shared){const B=brainOf(cl);B.intel[rid]={lo:it.lo,hi:it.hi,tick:it.tick,by:c.id};}}}
   return r0;}
@@ -4678,6 +4679,7 @@ function brainDefend(cl){const B=brainOf(cl);const lead=G.countries[cl.leader];i
   const under=mem.filter(m=>(INB[m.id]||[]).length);
   under.forEach(m=>{let inc=[];try{inc=incomingTo(m.id).filter(x=>x.threat>=0.45&&x.eta>=1);}catch(e){}if(!inc.length)return;
     const top=inc.slice().sort((a,b)=>b.threat-a.threat)[0];const r=top.region;
+    if(m.isAI===false&&!p5Engaged(m,r)){p5IdleNote(m);return;}
     if(m.isAI&&G.tick-(m._sosAt||-99)>=4){m._sosAt=G.tick;try{cmdCallHelp(m,r.id);}catch(e){}}
     const need=inc.filter(x=>x.region.id===r.id).reduce((s,x)=>s+(x.atkP||0),0)*1.15;let have=regionDef(r)+regionReinforce(r);
     if(have>=need)return;
@@ -4764,7 +4766,7 @@ function allianceBrain(cl){const B=brainOf(cl);const TS=brainTS();const lead=G.c
       if(cand){try{const r0=cmdIdentifyAlly(o,cand.id);if(r0&&r0.ok&&r0.data&&r0.data.found)B.met[cand.id]=G.tick;}catch(e){}}}}
   // 8. JOINT STRIKES on the target (scout first, then a coordinated assault the whole alliance joins)
   const atWarTgt=tgt&&(tgt.war||B.betray===tgt.x.id);const nexusPush=(phase==='nexus'||phase==='finale')&&nx&&!weHold&&nx.owner!=null&&!(nxOwner&&allianceDipBlocks(lead,nxOwner)&&B.betray!==nxClan)&&nxClan!==cl.id;
-  if((atWarTgt||nexusPush)&&G.tick-(B.opAt||-99)>=(phase==='finale'?3:6)*TS&&!clanMergeBusy(cl)&&!(G.acs||[]).some(op=>op.clan===cl.id)){
+  if((atWarTgt||nexusPush)&&G.tick-(B.opAt||-99)>=(phase==='finale'?3:6)*TS*(SOLO_DIFF.opPace||1)&&!clanMergeBusy(cl)&&!(G.acs||[]).some(op=>op.clan===cl.id)){
     let tr=null;
     if(nexusPush&&(phase==='finale'||(nx.commandCenter||nx.ccBuild)||tgt&&tgt.nx))tr=nx;
     else if(atWarTgt){const regs=[];clanMembers(tgt.x).forEach(m=>{if(!aiKnowsClan(lead,m.id)&&B.met[m.id]==null)return;regionsOf(m).forEach(r=>{if(!r.nexus)regs.push(r);});});
@@ -5288,7 +5290,7 @@ if(typeof document!=='undefined'&&document.addEventListener){try{document.addEve
 // ---- MEETPUNTEN (anonymous, via the GoatCounter already on playterrastate.nl) ----
 // Only where the website loads GoatCounter; itch, the multiplayer client and the server send nothing.
 // Each event fires once per season per browser: start, tick-10, tick-50, first-battle, season-end, flag-set.
-function _trkGame(){try{return (String(document.title||'game').split(' ')[0]||'game').toLowerCase();}catch(e){return 'game';}}
+function _trkGame(){try{return (String(document.title||'game').split(/[ :]/)[0]||'game').toLowerCase();}catch(e){return 'game';}}
 function trackEvent(name){try{if(typeof window==='undefined'||window.__MP__||!(typeof isSoloGame==='function'&&isSoloGame()))return;
     const sn=(G.season&&G.season.num)||1,key=sn+':'+name;G._trk=G._trk||{};if(G._trk[key])return;G._trk[key]=1;
     const s=(typeof soloCfg==='function'&&soloCfg())||{};const send=(n)=>{const gc=window.goatcounter;if(gc&&typeof gc.count==='function'){gc.count({path:'event/'+_trkGame()+'/'+name,title:_trkGame()+' · '+name+' · '+(s.diff||'?')+' · '+(s.len||'?'),event:true});return;}if(n<20)setTimeout(()=>send(n+1),1000);};
@@ -5416,7 +5418,7 @@ function foldHowto(){try{const v=document.getElementById('view');if(!v||view==='
   const keep=HOWTO_SEL.flatMap(s=>[...v.querySelectorAll(s)]).filter(e=>e.isConnected&&!e.closest('.howfold'));if(!keep.length)return;
   let f=v.querySelector('.howfold');if(!f){f=h('<details class="card mb howfold"><summary>ℹ How does this screen work?</summary><div class="howbody mt"></div></details>');v.appendChild(f);}
   const body=f.querySelector('.howbody');keep.forEach(e=>{e.classList.remove('mb');body.appendChild(e);});if(f!==v.lastElementChild)v.appendChild(f);}catch(e){}}
-function phase2After(){trainRender();foldHowto();try{phase3Home();}catch(e){}}
+function phase2After(){trainRender();foldHowto();try{phase3Home();}catch(e){}try{phase5Home();}catch(e){}try{p5MinText();}catch(e){}}
 if(typeof window!=='undefined'&&!(typeof process!=='undefined'&&process.versions&&process.versions.node)&&!window.__MP__&&typeof go==='function'&&!window.__p2go){window.__p2go=1;const _g=window.go||go;
   const wrapped=function(){const r=_g.apply(this,arguments);try{phase2After();setTimeout(phase2After,0);setTimeout(phase2After,120);setTimeout(foldHowto,450);setTimeout(foldHowto,1000);}catch(e){}return r;};
   try{window.go=wrapped;}catch(e){}try{go=wrapped;}catch(e){}
@@ -5482,7 +5484,7 @@ function rivalTurn(r){const me=G.countries[G.you];if(!me||me.isAI!==false||G._ri
   if(typeof fledglingHuman==='function'&&fledglingHuman(me.id)){G._rivalNext=G.tick+5;return;}
   const mine=regionsOf(me);if(!mine.length)return;let best=null,bd=1e18,unk=null;
   mine.forEach(t=>{let k=null;try{k=aiKnownDef(r,t);}catch(e){}if(k==null){if(!unk)unk=t;}else if(k<bd){bd=k;best=t;}});
-  if(!best&&unk){const sc=cmdScoutRegion(r,unk.id);if(!sc||!sc.ok){G._rivalNext=G.tick+3;return;}let k=null;try{k=aiKnownDef(r,unk);}catch(e){}if(k==null){G._rivalNext=G.tick+6;return;}best=unk;bd=k;}
+  if(!best&&unk){const sc=cmdScoutRegion(r,unk.id);if(!sc||!sc.ok){G._rivalNext=G.tick+3;return;}p5ScoutMem(r,unk.id,sc);let k=null;try{k=aiKnownDef(r,unk);}catch(e){}if(k==null){G._rivalNext=G.tick+6;return;}best=unk;bd=k;}
   const home=r.units||{};const keys=Object.keys(home).filter(k=>home[k]>0&&UBYK[k]&&UBYK[k].cls!=='support');let com=null;
   for(const f of [0.03,0.05,0.08,0.12,0.18,0.25,0.35,0.45,0.6]){const c2={};keys.forEach(k=>{const n=Math.floor(home[k]*f);if(n>0)c2[k]=n;});if(Object.keys(c2).length&&power(r,'atk',c2)>=bd*1.3){com=c2;break;}}
   G._rivalNext=G.tick+35+Math.floor(Math.random()*16);
@@ -5658,6 +5660,135 @@ function renderSeasonSetup(){const L=G._lobby;if(!L)return;try{stopLobbyTimer();
   q('ssGo').onclick=()=>{const nm=(q('ssAl').value||'').trim(),tg=(q('ssTag').value||'').trim().toUpperCase().replace(/[^A-Z0-9]/g,'').slice(0,4);
     L.alliance=nm?{name:nm.slice(0,28),tag:tg||'ALY',code:genInviteCode(tg||'ALY'),joined:false}:null;
     const sc=soloCfg();if(sc){sc.diff=L.diff;sc.len=L.len;sc.scenario=null;}applySoloSettings();G._nextRule=L.rule||null;try{trackEvent('season-setup'+(L.rule?'-'+L.rule:''));}catch(e){}beginSeasonFromLobby();};}
+
+// ---- UPDATE 5.0 "Every Turn Counts" (solo only; the live-world engine is untouched) ----
+// 1. Idle is not rewarded: AI neighbours and alliance mates only march for a commander who is playing, and the
+//    defender's bounty follows who actually defended. 2. Prestige projects give idle money a goal (renown only, never
+//    combat power). 3. Warlord: faster joint strikes and scouts that remember your army. 4. One visible comeback bonus.
+// 5. A shorter Home and a calmer phone screen.
+const COMEBACK_MAX=2.5; // the two catch-up bonuses together never go above +150% production
+function _p5on(){try{return typeof _p3solo==='function'&&_p3solo();}catch(e){return false;}}
+
+// ---------- 1. who is playing? ----------
+// Any order the human gives (every cmdXxx call) marks the commander as active. Wrapped once, solo only.
+function p5Track(){if(window._p5wrapped||!_p5on())return;window._p5wrapped=1;
+  Object.getOwnPropertyNames(window).forEach(n=>{if(!/^cmd[A-Z]/.test(n))return;let f;try{f=window[n];}catch(e){return;}if(typeof f!=='function'||f._p5)return;
+    const w=function(c){try{if(!window._p5inTick&&c&&c.isAI===false&&typeof G!=='undefined'&&G)c._p5act=G.tick;}catch(e){}return f.apply(this,arguments);};w._p5=1;try{window[n]=w;}catch(e){}});
+  // orders the autopilot gives during a turn (auto-build, auto-research) do not count as playing
+  try{const rt=window.runTick;if(typeof rt==='function'&&!rt._p5){const w=function(){window._p5inTick=1;try{return rt.apply(this,arguments);}finally{window._p5inTick=0;}};w._p5=1;window.runTick=w;}}catch(e){}}
+function p5AtkOn(cid,rid){try{return incomingTo(cid).filter(x=>x.region&&x.region.id===rid).reduce((s,x)=>s+(x.atkP||0),0);}catch(e){return 0;}}
+// Engaged = gave an order in the last 12 turns, or keeps at least a quarter of the attacking force at the threatened region.
+function p5Engaged(c,r,atkP){if(!c||c.isAI!==false||!_p5on())return true;
+  if(G.tick-((G.season&&G.season.startTick)||0)<30)return true; // the opening is always covered
+  if(c._p5act!=null&&G.tick-c._p5act<=12)return true;
+  try{if(r){const a=atkP!=null?atkP:p5AtkOn(c.id,r.id);if(a<=0||regionDef(r)>=0.25*a)return true;}}catch(e){return true;}
+  return false;}
+function p5IdleNote(c){if(!c||c.isAI!==false)return;if(G.tick-(c._p5idleAt||-999)<60)return;c._p5idleAt=G.tick;
+  const t='🤝 Your neighbours kept their armies home. They saw no orders from your capital. Give an order (build, research, train or move troops), or keep at least a quarter of the attacking force at home, and they march for you again.';
+  try{sitrep(c,'tip',t,{sev:1});}catch(e){}try{toast(t,'warn');}catch(e){}}
+function p5CallOk(k){try{const o=k&&k.owner;if(!o||o.isAI!==false)return true;if(p5Engaged(o,k.region))return true;p5IdleNote(o);return false;}catch(e){return true;}}
+// Defender's bounty: your share of the defence (your own forces vs garrisons others sent). Helpers get their part.
+function p5DefShare(defC,r){if(!_p5on()||!defC||defC.isAI!==false)return 1;try{let foreign=0;defenderContribs(r).forEach(x=>{if(x.owner!==defC.id)foreign+=power(G.countries[x.owner],'def',x.fleet.units||{});});
+  if(foreign<=0)return 1;const own=Math.max(0,regionDef(r)-foreign);return clamp(own/(own+foreign),0.1,1);}catch(e){return 1;}}
+function p5HelperBounty(defC,r,kills,share,grant){if(share>=1||kills<=0)return;const by={};let tot=0;
+  defenderContribs(r).forEach(x=>{if(x.owner===defC.id)return;const p=power(G.countries[x.owner],'def',x.fleet.units||{});by[x.owner]=(by[x.owner]||0)+p;tot+=p;});
+  if(tot<=0)return;for(const id in by){const w=G.countries[id];if(w)grant(w,Math.round(kills*(1-share)*by[id]/tot));}}
+
+// ---------- 2. prestige projects: renown for idle money, never military power ----------
+const PRESTIGE={
+  earth2026:[{k:'expo',n:'World Expo',ic:'🎡',cost:3e8,infl:400,d:'The world comes to visit your capital.'},
+             {k:'space',n:'National Space Program',ic:'🚀',cost:8e8,infl:900,d:'A rocket with your flag on it.'},
+             {k:'monument',n:'Grand Monument',ic:'🗽',cost:2e9,infl:2000,d:'Built to be remembered.'}],
+  romaterra:[{k:'library',n:'Great Library',ic:'📜',cost:3e8,infl:400,d:'Scholars from every province come to read.'},
+             {k:'arch',n:'Triumphal Arch',ic:'🏛',cost:8e8,infl:900,d:'Your victories, carved in stone.'},
+             {k:'colosseum',n:'Colosseum',ic:'🏟',cost:2e9,infl:2000,d:'Games for the people, glory for you.'}]};
+const PRESTIGE_TURNS=8,PRESTIGE_REGEN=0.05;
+function p5Projects(){let g='';try{g=_p3pfx();}catch(e){}if(g!=='romaterra'){try{if(/^romaterra/i.test(String(document.title||'')))g='romaterra';}catch(e){}}return g==='romaterra'?PRESTIGE.romaterra:PRESTIGE.earth2026;}
+function p5Prest(c){c._prest=c._prest||{done:[],build:null};return c._prest;}
+function p5NextProject(c){const P=p5Prest(c);if(P.build)return null;return p5Projects().find(p=>!P.done.includes(p.k))||null;}
+function cmdPrestige(c,k){if(!c||c.isAI!==false)return err('Only a commander can commission this');const p=p5Projects().find(x=>x.k===k);if(!p)return err('Unknown project');
+  const P=p5Prest(c);if(P.done.includes(k))return err(p.n+' is already built');if(P.build)return err('Another prestige project is under construction');
+  if((c.res.money||0)<p.cost)return err('Not enough money: '+p.n+' costs '+fmt(p.cost,true));
+  c.res.money-=p.cost;P.build={k,at:G.tick+PRESTIGE_TURNS};chronicle(p.ic+' '+leaderName(c)+' of '+c.name+' commissioned the '+p.n+'.','news',{who:c.id});return {ok:true};}
+function p5PrestTick(c){const P=c&&c._prest;if(!P||!P.build||G.tick<P.build.at)return;const p=p5Projects().find(x=>x.k===P.build.k);P.build=null;if(!p)return;P.done.push(p.k);
+  c.res.influence=Math.min(capOf(c,'influence'),(c.res.influence||0)+p.infl);
+  const t=p.ic+' The '+p.n+' is complete: +'+p.infl+' influence, and +'+Math.round(PRESTIGE_REGEN*100)+'% influence every turn for the rest of the season.';
+  try{sitrep(c,'tip',t,{sev:0});}catch(e){}try{toast(t,'good');}catch(e){}chronicle(p.ic+' '+c.name+' completed the '+p.n+'. The whole world talks about it.','news',{who:c.id});
+  try{trackEvent('prestige-'+p.k);}catch(e){}}
+function p5PrestMult(c){const P=c&&c._prest;return (P&&P.done&&P.done.length)?1+PRESTIGE_REGEN*P.done.length:1;}
+function p5PrestHTML(c){const P=p5Prest(c);
+  return `<div class="card mb p5prest"><h3 style="margin:0 0 4px">Prestige projects</h3><div class="muted small mb">Renown for your treasury. Each one gives influence once and +${Math.round(PRESTIGE_REGEN*100)}% influence production for the rest of the season. No military power. Built in ${PRESTIGE_TURNS} turns.</div>`+
+   p5Projects().map(p=>{const done=P.done.includes(p.k),bld=P.build&&P.build.k===p.k;const can=!done&&!P.build&&(c.res.money||0)>=p.cost;
+    return `<div class="row between wrap" style="gap:6px;padding:5px 0;border-top:1px solid var(--border)"><div class="small">${p.ic} <b>${esc(p.n)}</b> <span class="muted">· ${esc(p.d)} +${p.infl} influence</span></div><div>${done?'<span class="small" style="color:var(--gold)">🎖 Built</span>':bld?'<span class="small mono">ready turn '+P.build.at+'</span>':`<button class="btn sm ${can?'':'ghost'}" data-prest="${p.k}" ${can?'':'disabled'}>${fmt(p.cost,true)}</button>`}</div></div>`;}).join('')+`</div>`;}
+function p5BindPrest(root){root.querySelectorAll('[data-prest]').forEach(b=>b.onclick=e=>{e.stopPropagation();const r=cmdPrestige(you(),b.dataset.prest);if(r&&r.ok){toast('🏗 Construction started. Ready in '+PRESTIGE_TURNS+' turns.','good');try{save();}catch(e){}try{render();}catch(e){}}else if(r&&r.error)toast(r.error,'bad');});}
+// Money with nothing to do: a full treasury and empty build and research queues.
+function p5IdleMoney(c){const p=p5NextProject(c);if(!p)return null;if((c.res.money||0)<p.cost*1.2)return null;if((c.queue||[]).length&&(c.rq||[]).length)return null;return p;}
+try{ACH.push(
+ {k:'patron',n:'Patron',d:'Complete a prestige project',test:c=>c.isAI===false&&!!(c._prest&&c._prest.done&&c._prest.done.length)},
+ {k:'golden',n:'Golden Age',d:'Complete all three prestige projects in one season',test:c=>c.isAI===false&&!!(c._prest&&c._prest.done&&c._prest.done.length>=3)});}catch(e){}
+
+// ---------- 3. Warlord: scouts remember what they saw of your army ----------
+function p5ScoutMem(c,rid,res){try{if(!SOLO_DIFF.scoutMem||!c||!c.isAI)return;if(res&&res.data&&res.data.miss)return; // a scan that bounced teaches nothing
+  const r=G.regions.find(x=>x.id===rid);if(!r||r.owner==null)return;const o=G.countries[r.owner];
+  if(!o||o.isAI!==false)return;const seen=o.units||{}; // what the scan shows: the army at home, nothing that is away
+  aiRemember(c,o.id,seen);const cl=clanOf(c);if(cl)clanMembers(cl).forEach(m=>{if(m.isAI&&m.id!==c.id)aiRemember(m,o.id,seen);});}catch(e){}}
+
+// ---------- 5. Home: one "what now" card, the rest folded ----------
+function p5Pulse(){try{if(!_p5on())return;p5Track();const c=you();if(!c||c.isAI!==false)return;p5PrestTick(c);
+  try{if(typeof ALLOW!=='undefined'&&ALLOW.dashboard)ALLOW.dashboard=ALLOW.dashboard.filter(x=>x!=='.combat-home');}catch(e){}}catch(e){}}
+function p5SumHTML(c){let inc=[];try{inc=incomingTo(c.id).filter(x=>(x.threat||0)>=0.25);}catch(e){}
+  const home=fleetSize(c.units||{}),away=(c.fleets||[]).reduce((n,f)=>n+fleetSize(f.units||{}),0);
+  const bits=['🪖 '+full(home)+' home'+(away?' · '+full(away)+' away':''),'Atk '+full(Math.round(power(c,'atk')))+' · Def '+full(Math.round(power(c,'def'))),inc.length?'<b style="color:var(--bad)">⚠ '+inc.length+' attack'+(inc.length===1?'':'s')+' incoming</b>':'nothing incoming'];
+  let out=`<div class="small p5sum" style="border-top:1px solid var(--border);margin-top:8px;padding-top:6px">${bits.join(' · ')} · <span class="lk" data-p5go="self">units on Homeland →</span></div>`;
+  if((c._comeback||0)>=5)out+=`<div class="small p5cb" style="margin-top:4px">📈 <b>Comeback bonus +${c._comeback}%</b> <span class="muted">production, because you are behind the leaders. It shrinks as you catch up.</span></div>`;
+  const im=p5IdleMoney(c);if(im)out+=`<div class="small p5idle" style="margin-top:4px">💰 Your treasury is full and idle. Invest it: <button class="btn sm" data-prest="${im.k}">${im.ic} ${esc(im.n)} · ${fmt(im.cost,true)}</button></div>`;
+  return out;}
+// tablets (761-880 px): the map ends above the bottom menu instead of under it
+function p5FitMap(){try{if(view!=='map'||window.innerWidth<=760||window.innerWidth>880)return;const m=document.querySelector('#view .wmap');if(!m)return;const n=document.getElementById('bottomnav');const nr=n&&n.getBoundingClientRect();
+  const limit=(nr&&nr.height>0)?nr.top:window.innerHeight;const h=Math.max(300,Math.round(limit-m.getBoundingClientRect().top-8));if(Math.abs(m.getBoundingClientRect().height-h)>2)m.style.setProperty('height',h+'px','important');}catch(e){}}
+try{if(typeof window!=='undefined'&&!window.__MP__&&typeof setInterval==='function'&&!(typeof process!=='undefined'&&process.versions&&process.versions.node))setInterval(()=>{try{if(typeof view!=='undefined'&&view==='map')p5FitMap();}catch(e){}},700);}catch(e){}
+function phase5Home(){try{
+  const solo=_p5on();const phone=typeof window!=='undefined'&&p5Small();
+  document.body.classList.toggle('p5home',solo&&view==='dashboard');
+  document.body.classList.toggle('p5mapfull',solo&&phone&&view==='map');
+  if(solo&&phone&&view==='map'&&!window._p5me){window._p5me=1;setTimeout(()=>{try{const b=document.querySelector('[data-z="me"]');if(b)b.click();}catch(e){}},300);}
+  if(solo&&view==='map')setTimeout(p5FitMap,60);
+  if(!solo||view!=='dashboard')return;const v=document.getElementById('view');if(!v)return;const me=you();if(!me)return;
+  if(typeof trainOn==='function'&&trainOn(me))return;
+  const z1=v.querySelector('.dash-zone');if(!z1)return;const zh=z1.querySelector(':scope > .zone-h');
+  // the one "what now" card first, with a short summary of your forces
+  const nx=z1.querySelector(':scope > .solo-next');
+  if(nx){const ps=z1.querySelector(':scope > .p5solo');if(ps)ps.remove();if(zh&&zh.nextElementSibling!==nx)zh.after(nx);const html=p5SumHTML(me);if(nx._p5!==html){nx.querySelectorAll('.p5sum,.p5cb,.p5idle').forEach(e=>e.remove());nx.insertAdjacentHTML('beforeend',html);nx._p5=html;
+      nx.querySelectorAll('[data-p5go]').forEach(b=>b.onclick=e=>{e.stopPropagation();go(b.dataset.p5go);});p5BindPrest(nx);}}
+  else{let s=z1.querySelector(':scope > .p5solo');const html=p5SumHTML(me);if(!s||s._p5!==html){if(s)s.remove();s=h(`<div class="card mb p5solo"><div class="mono small" style="color:var(--gold);letter-spacing:1px">YOUR NATION</div>${html}</div>`);s._p5=html;
+      if(zh)zh.after(s);else z1.prepend(s);s.querySelectorAll('[data-p5go]').forEach(b=>b.onclick=e=>{e.stopPropagation();go(b.dataset.p5go);});p5BindPrest(s);}}
+  // fold the background cards into one "More on Home"
+  const cards=[...z1.querySelectorAll(':scope > .card')].filter(c=>{const t=c.querySelector(':scope > h3');return t&&/around you|watch|while you were away/i.test(t.textContent||'');});
+  let more=z1.querySelector(':scope > details.p5more');
+  if(!more){more=document.createElement('details');more.className='p5more card mb';more.open=!!window._p5moreOpen;more.addEventListener('toggle',()=>{window._p5moreOpen=more.open;});z1.appendChild(more);}
+  else if(more.nextElementSibling)z1.appendChild(more);
+  cards.forEach(c=>more.appendChild(c));
+  if(!more.querySelector('.p5prest')||more._p5k!==JSON.stringify([me._prest,Math.floor((me.res.money||0)/1e8)])){const old=more.querySelector('.p5prest');const el=h(p5PrestHTML(me));if(old)old.replaceWith(el);else more.appendChild(el);more._p5k=JSON.stringify([me._prest,Math.floor((me.res.money||0)/1e8)]);p5BindPrest(el);}
+  const names=[...more.querySelectorAll(':scope > .card > h3')].map(t=>{const x=t.textContent||'';const w=x.match(/([A-Za-z]+ watch)/i);return /around you/i.test(x)?'around you':/while you were away/i.test(x)?'while you were away':w?w[1]:'';}).filter(Boolean);
+  const sumTxt='More on Home: '+names.concat(['prestige projects']).join(', ');let sm=more.querySelector(':scope > summary');
+  if(!sm){sm=document.createElement('summary');sm.className='mono small';sm.style.cssText='cursor:pointer;letter-spacing:1px;color:var(--muted)';more.prepend(sm);}if(sm.textContent!==sumTxt)sm.textContent=sumTxt;
+  }catch(e){}}
+// phone: a calmer header while you scroll, readable text, the map gets the room
+(function(){try{if(typeof document==='undefined'||window.__MP__)return;const st=document.createElement('style');st.textContent=
+ 'body.p5home #view .dash-zone .combat-home{display:none!important}'+
+ // map fixes: the map never shrinks to nothing on tablets (761-880 px), and the legend sits right of the map buttons on laptops
+ '#view .wmap{flex-shrink:0}@media(min-width:761px){.wm-legend{left:64px;max-width:min(560px,calc(100% - 80px))}}'+
+ 'details.p5more>summary{list-style:none;padding:2px 0}details.p5more>summary::-webkit-details-marker{display:none}details.p5more>summary:before{content:"▸ "}details.p5more[open]>summary:before{content:"▾ "}details.p5more>.card{margin:10px 0 0;border-left:none;border-right:none;border-bottom:none;border-radius:0;padding-left:0;padding-right:0;background:transparent}'+
+ '@media(max-width:600px),(max-height:500px){body.solo.p5hdrmin header.top #opsalert,body.solo.p5hdrmin header.top .tspeed,body.solo.p5hdrmin header.top #helpbtn,body.solo.p5hdrmin header.top #mutebtn,body.solo.p5hdrmin header.top #settingsbtn,body.solo.p5mapfull header.top #opsalert,body.solo.p5mapfull header.top .tspeed,body.solo.p5mapfull header.top #helpbtn,body.solo.p5mapfull header.top #mutebtn,body.solo.p5mapfull header.top #settingsbtn{display:none!important}'+
+ 'body.solo #view .small,body.solo #view .muted.small,body.solo .modal .small,body.solo #view .atag,body.solo #view .mono.small,body.solo #view h3,body.solo #view .rh,body.solo #view .zone-h{font-size:12px!important}'+
+ 'body.solo #view [style*="font-size:8px"],body.solo #view [style*="font-size:9px"],body.solo #view [style*="font-size:10px"],body.solo #view [style*="font-size:10.5px"],body.solo #view [style*="font-size:11px"],body.solo #view [style*="font-size:11.5px"],body.solo .modal [style*="font-size:9px"],body.solo .modal [style*="font-size:10px"],body.solo .modal [style*="font-size:11px"]{font-size:12px!important}}';
+ document.head.appendChild(st);
+ let lastY=0;document.addEventListener('scroll',ev=>{try{if(!p5Small())return;const t=ev.target;const el=(t&&t.id==='view')?t:(t===document||t===document.documentElement)?document.scrollingElement:null;if(!el)return;const y=el.scrollTop||0;const b=document.body;if(y<40){b.classList.remove('p5hdrmin');}else if(y>lastY+12){b.classList.add('p5hdrmin');}else if(y<lastY-40){b.classList.remove('p5hdrmin');}else return;lastY=y;}catch(e){}},{passive:true,capture:true});
+ }catch(e){}})();
+// small text on phones: whatever CSS missed (inline sizes set by code), lifted to 12px after each render
+function p5Small(){try{return window.innerWidth<=600||window.innerHeight<=500;}catch(e){return false;}} // phone, upright or sideways
+function p5MinText(){try{if(!_p5on()||!p5Small())return;const now=Date.now();if(now-(window._p5mtAt||0)<1500)return;window._p5mtAt=now;const v=document.getElementById('view');if(!v)return;
+  v.querySelectorAll('span,div,b,small,td,th,label,a,button,i,em,strong,p,li').forEach(e=>{if(!e.firstChild||e.firstChild.nodeType!==3&&!e.childElementCount)return;const fs=parseFloat(getComputedStyle(e).fontSize);if(fs>0&&fs<12)e.style.setProperty('font-size','12px','important');});}catch(e){}}
 
 function emblem(c){return `<span class="flagi" title="${esc((c&&c.name)||'')}">${flagSVG(c,22)}</span>`;}
 // Relationship-only colours (Planetarion-style): gold self, blue alliance,
@@ -5953,9 +6084,9 @@ function renderLanding(){
       <a class="card" href="updates.html" target="_self" rel="noopener" style="display:block;text-decoration:none;color:inherit;margin:0 auto">
         <div class="row between wrap" style="gap:10px;align-items:center">
           <div style="min-width:0;flex:1">
-            <div><span class="mono" style="color:var(--gold);font-size:11px;letter-spacing:1px">VERSION 4.0 · UPDATE 4</span> <span class="muted small">1 October 2026</span></div>
-            <div style="font-weight:700;margin-top:3px">Terrastate 4.0: Ready for Players</div>
-            <div class="muted small mt">A save that will not open is never lost. A big END TURN under your thumb on phones. Share your season with one tap. Smarter AI army choices and fairer heavy units. New players learn by doing, with a first battle that explains itself. A personal rival, phase goals, new events and rivals who come back next season.</div>
+            <div><span class="mono" style="color:var(--gold);font-size:11px;letter-spacing:1px">VERSION 5.0 · UPDATE 5</span> <span class="muted small">October 2026</span></div>
+            <div style="font-weight:700;margin-top:3px">Terrastate 5.0: Every Turn Counts</div>
+            <div class="muted small mt">Allies march for commanders who play, not for empty capitals. Prestige projects give a full treasury a goal. Warlord plays sharper, with the same resources. One clear comeback bonus. A shorter Home and a calmer phone screen.</div>
           </div>
           <span class="btn ghost sm" style="flex:none;pointer-events:none">What is new</span>
         </div>
@@ -6023,7 +6154,7 @@ function renderLanding(){
   {const b=s.querySelector('#lpNews');if(b)b.onclick=()=>{const t=s.querySelector('#playerupdate');if(t)t.scrollIntoView({behavior:'smooth',block:'center'});};}
 }
 // ---- Legal identity: ONE place to change the operator / contact / copyright holder. Used by the Privacy, Terms and Credits tabs and the footer.
-const LEGAL={operator:'Wim Kamphorst',email:'earth2026game@gmail.com',author:'Wim Kamphorst',country:'the Netherlands',law:'Dutch law',dpa:'Autoriteit Persoonsgegevens (the Dutch data protection authority)',dpaUrl:'https://www.autoriteitpersoonsgegevens.nl',version:'1.0',updated:'September 2026',build:'Version 4.0 · 1 Oct 2026',minAge:16};
+const LEGAL={operator:'Wim Kamphorst',email:'earth2026game@gmail.com',author:'Wim Kamphorst',country:'the Netherlands',law:'Dutch law',dpa:'Autoriteit Persoonsgegevens (the Dutch data protection authority)',dpaUrl:'https://www.autoriteitpersoonsgegevens.nl',version:'1.0',updated:'September 2026',build:'Version 5.0 · Oct 2026',minAge:16};
 LEGAL.contact=`<b>${LEGAL.operator}</b>, <a href="mailto:${LEGAL.email}">${LEGAL.email}</a>`;
 // ---- Landing-page manual: beginner's handbook + combat formulae -------------
 const MANUAL={
@@ -7017,7 +7148,7 @@ function openingProbe(){if(typeof window!=='undefined'&&window.__MP__)return;if(
   const sizeFor=foe=>{let defU={};try{defU=(defenderPool(home,youC).units)||{};}catch(e){defU=Object.assign({},youC.units||{});}let pick=80;for(const n of [80,120,180,260,360]){pick=n;try{const R=resolveBattle(foe,{infantry:n},home,youC,1,defU);if(R&&R.ratio>=1.25)return n;}catch(e){return pick;}}return pick;};
   const launch=(foe,n)=>{foe.units=foe.units||{};const have=foe.units.infantry||0,cp0=foe.cp||0;foe.units.infantry=have+n;if((foe.cp||0)<2)foe.cp=2;const r=cmdOp(foe,home.id,{infantry:n});if(!(r&&r.ok)){foe.units.infantry=have;foe.cp=cp0;return r;}const f=foe.fleets&&foe.fleets[foe.fleets.length-1];if(f&&f.target===home.id)f._shieldTest=1;return r;};
   for(let i=0;i<Math.min(8,foes.length);i++){const foe=foes[i];const n=sizeFor(foe);const r=launch(foe,n);if(r&&r.ok){youC._openingProbe=G.tick;G._probeWho=foe.id;const eta=(r.data&&r.data.land!=null)?Math.max(0,r.data.land-G.tick):((r.data&&r.data.eta)||'a few');showPulse('A neighbour is coming',leaderName(foe)+' of '+foe.name+' launched a fleet at '+home.name+'. It lands in '+eta+' ticks. While your beginner shield is up, they cannot take the ground.');return;}}}
-function playerPulse(){if(typeof window!=='undefined'&&window.__MP__)return;const c=you();if(!c||c.isAI!==false)return;try{rivalPulse();}catch(e){}try{phaseGoalPulse();}catch(e){}try{applyStanding(c);}catch(e){}try{openingProbe();}catch(e){}try{c._ritual=airLines(c);}catch(e){}
+function playerPulse(){if(typeof window!=='undefined'&&window.__MP__)return;const c=you();if(!c||c.isAI!==false)return;try{p5Pulse();}catch(e){}try{rivalPulse();}catch(e){}try{phaseGoalPulse();}catch(e){}try{applyStanding(c);}catch(e){}try{openingProbe();}catch(e){}try{c._ritual=airLines(c);}catch(e){}
   if(newbieLeft(c)===3&&!c._shieldWarn){c._shieldWarn=1;if(!showPulse('The shield is almost gone','Three ticks left on your beginner shield. After that, a landing can take ground. Recruit before it drops.'))sitrep(c,'intel','Three ticks left on your beginner shield.',{go:'dashboard'});}
   if(G.tick>0&&G.tick%20===0&&c._reckon!==G.tick){c._reckon=G.tick;const rt=rankTitle(c.id);const line='Tick '+G.tick+'. You are '+rt.title+', rank #'+rt.pos+'. '+((c._ritual||[]).join(' '));if(!showPulse('A small reckoning',line))sitrep(c,'world',line,{go:'dashboard'});}}
 function loop(){const ms=G.nextAt-Date.now();const el=$('tickv');const s=Math.max(0,Math.floor(ms/1000));const _turn=isSoloGame()&&G.solo&&G.solo.mode==='turn';try{document.body.classList.toggle('turnmode',!!_turn);}catch(e){}if(el)el.textContent=_turn?'END TURN ▶':`${String(Math.floor(s/60)).padStart(2,'0')}:${String(s%60).padStart(2,'0')}`;

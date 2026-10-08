@@ -166,3 +166,10 @@ footer{padding:36px 0 56px;border-top:1px solid var(--border);text-align:center}
 .cta{flex-wrap:wrap}
 a:focus-visible,button:focus-visible,.endturn:focus-visible{outline:2px solid #4f8cff;outline-offset:3px;border-radius:6px}
 .prose{max-width:720px}.prose h2{margin-top:1.6em}.prose p,.prose li{line-height:1.7}
+
+/* 5.0: real screenshot in the hero, example HUD under How it plays, press kit */
+.hero-shot{margin:0}.hero-shot img{display:block;width:100%;height:auto;border-radius:14px;border:1px solid var(--border2);box-shadow:0 24px 60px rgba(0,0,0,.5)}.hero-shot figcaption{font:500 11px var(--mono);letter-spacing:1px;color:var(--muted);margin-top:8px}
+.turn-hud{max-width:460px;margin:28px auto 0}
+.pk-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:14px;margin-top:16px}.pk-grid figure{margin:0}.pk-grid img{display:block;width:100%;height:auto;border-radius:10px;border:1px solid var(--border2)}.pk-grid figcaption{font-size:13px;color:var(--muted);margin-top:6px}
+.pk-facts{display:grid;grid-template-columns:160px 1fr;gap:6px 18px;margin-top:14px}.pk-facts dt{color:var(--muted);font:500 12px var(--mono);letter-spacing:1px;text-transform:uppercase;padding-top:3px}.pk-facts dd{margin:0}
+@media(max-width:640px){.pk-facts{grid-template-columns:1fr}.pk-facts dt{padding-top:10px}}
