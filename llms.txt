@@ -1,12 +1,13 @@
 # Terrastate
 
-> Terrastate is a free, Planetarion-style grand strategy game that runs in the web browser. You lead one nation against 300 AI nations on a world map, form alliances and fight for the Nexus, the one region that decides the season. No account, no download, no ads, no pay-to-win. Romaterra is the same game set in the age of Rome. Made by Wim Kamphorst, a hobby developer from the Netherlands.
+> Terrastate is a free, Planetarion-style grand strategy game that runs in the web browser. You lead one nation against 300 AI nations on a world map, form alliances and fight for the Nexus, the one region that decides the season. No account, no download, no ads, no pay-to-win. Romaterra is the same game set in the age of Rome, and Ironfront in a 1940s world at war. Made by Wim Kamphorst, a hobby developer from the Netherlands.
 
-Current version: 5.0. The game is updated regularly. Language: English. Platforms: any modern browser on desktop or phone; installable and playable offline.
+Current version: 6.0. The game is updated regularly. Language: English. Platforms: any modern browser on desktop or phone; installable and playable offline.
 
 ## Play
 - [Play Terrastate](https://playterrastate.nl/play.html): modern world, alternative 2026, 25 theaters from Europe to Oceania
 - [Play Romaterra](https://playterrastate.nl/romaterra.html): the age of Rome, from Hesperia to Serica
+- [Play Ironfront](https://playterrastate.nl/ironfront.html): a 1940s world at war with invented nations; hold 2 of the 3 Capital Sectors
 - [Terrastate on itch.io](https://wimkamphorstcoaching.itch.io/terrastate)
 - [Romaterra on itch.io](https://wimkamphorstcoaching.itch.io/romaterra)
 
@@ -14,15 +15,18 @@ Current version: 5.0. The game is updated regularly. Language: English. Platform
 - [How to play](https://playterrastate.nl/how-to-play.html): a beginner's guide to your first season
 - [Games like Planetarion](https://playterrastate.nl/games-like-planetarion.html): for players looking for games like Planetarion or OGame
 - [Gratis strategiespel (Nederlands)](https://playterrastate.nl/gratis-strategiespel.html): Dutch introduction to the game
+- [Ironfront, WW2-style strategy](https://playterrastate.nl/ww2-strategy-game.html): what makes the third era different
 
 ## About the game
-- [Home page](https://playterrastate.nl/): what the game is, the two eras, how a turn works, FAQ
+- [Home page](https://playterrastate.nl/): what the game is, the three eras, how a turn works, FAQ
 - [Updates](https://playterrastate.nl/updates.html): what changed in each version, written for players
 - [Press kit](https://playterrastate.nl/presskit.html): facts, descriptions, screenshots and logos
 - [Full text for AI assistants](https://playterrastate.nl/llms-full.txt)
 - [Discord community and live-world waitlist](https://discord.gg/PZGPKuzPCb)
 
 ## Good to know
+- Ironfront (October 2026), the third era: a 1940s world at war with invented nations, leaders and flags. Win by holding 2 of the 3 Capital Sectors with a GHQ Bunker for 12 ticks. Its own battle layer: battle orders every tick (Assault, Barrage or Flank against Dig in, Counter-attack or Ambush; the side that guesses right gets +25% that tick), field works (trenches 1 tick, minefield 2, bunker 3) on a threatened region, incoming armies shown as radio traffic with a size estimate, feints that look three times bigger on weaker radar and turn back before landing, and allied help that counts half when it arrives after the battle started.
+- Update 6.0 (October 2026), Solid Ground: saves in a much larger browser store (moved over by itself, the old copy kept as a reserve), no slow compression after every order, faster turns, and a "Calculating turn" bar on END TURN.
 - Update 5.0 (October 2026), Every Turn Counts: AI allies defend commanders who play, a fair defender's bounty, prestige projects for a full treasury (influence only, no military power), a sharper Warlord with the same resources, one clear comeback bonus capped at +150% production, a shorter Home and a calmer phone screen.
 - Genre: grand strategy, turn-based strategy, 4X, browser game, single-player against AI.
 - Free and non-commercial: no payments, no ads, no account.

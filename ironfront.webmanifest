@@ -1,0 +1,17 @@
+{
+  "id": "ironfront",
+  "name": "Ironfront",
+  "short_name": "Ironfront",
+  "description": "A 1940s world at war. Every tick a decision. Strategy in your browser.",
+  "start_url": "ironfront.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#14160c",
+  "theme_color": "#14160c",
+  "icons": [
+    {"src": "icons/ironfront-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any"},
+    {"src": "icons/ironfront-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any"},
+    {"src": "icons/ironfront-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable"}
+  ]
+}

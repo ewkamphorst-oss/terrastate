@@ -1,9 +1,10 @@
-// Terrastate / Romaterra service worker: makes the site installable and playable offline.
+// Terrastate / Romaterra / Ironfront service worker: makes the site installable and playable offline.
 // Bump VERSION whenever a page changes, so players get the new build.
-const VERSION='terrastate-v5.0.0';
-const FILES=['./','index.html','updates.html','site.css?v=105','play.html','romaterra.html','privacy.html','presskit.html','terrastate.webmanifest','romaterra.webmanifest',
+const VERSION='terrastate-v6.1.0-ironfront';
+const FILES=['./','index.html','updates.html','site.css?v=107','play.html','romaterra.html','ironfront.html','ww2-strategy-game.html','privacy.html','presskit.html','terrastate.webmanifest','romaterra.webmanifest','ironfront.webmanifest',
   'icons/terrastate-64.png','icons/terrastate-180.png','icons/terrastate-192.png','icons/terrastate-512.png',
   'icons/romaterra-64.png','icons/romaterra-180.png','icons/romaterra-192.png','icons/romaterra-512.png',
+  'icons/ironfront-64.png','icons/ironfront-180.png','icons/ironfront-192.png','icons/ironfront-512.png',
   'fonts/Archivo-500.woff2','fonts/Archivo-600.woff2','fonts/Archivo-700.woff2','fonts/Archivo-800.woff2',
   'fonts/IBMPlexMono-400.woff2','fonts/IBMPlexMono-500.woff2','fonts/IBMPlexMono-600.woff2',
   'fonts/Cinzel-600.woff2','fonts/Cinzel-700.woff2','fonts/Cinzel-800.woff2',

@@ -16,7 +16,7 @@
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="https://playterrastate.nl/img/v4/terrastate-share.jpg">
 <meta name="author" content="Wim Kamphorst">
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"VideoGame","@id":"https://playterrastate.nl/play.html#game","name":"Terrastate","url":"https://playterrastate.nl/play.html","description":"Free Planetarion-style grand strategy in your browser. Lead one nation against 300 AI nations on a world map, form alliances and fight for the Nexus. No account, no download, no pay-to-win.","image":"https://playterrastate.nl/img/v4/terrastate-share.jpg","genre":["Strategy","Grand strategy","Turn-based strategy","4X","Browser game"],"gamePlatform":["Web browser","Windows","macOS","Linux","Android","iOS"],"applicationCategory":"Game","operatingSystem":"Any (web browser)","playMode":"SinglePlayer","inLanguage":"en","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"EUR","availability":"https://schema.org/InStock"},"author":{"@type":"Person","@id":"https://playterrastate.nl/#wim","name":"Wim Kamphorst","url":"https://wimkamphorst.nl"},"publisher":{"@type":"Person","@id":"https://playterrastate.nl/#wim","name":"Wim Kamphorst","url":"https://wimkamphorst.nl"},"softwareVersion":"5.0","sameAs":["https://wimkamphorstcoaching.itch.io/terrastate"]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"VideoGame","@id":"https://playterrastate.nl/play.html#game","name":"Terrastate","url":"https://playterrastate.nl/play.html","description":"Free Planetarion-style grand strategy in your browser. Lead one nation against 300 AI nations on a world map, form alliances and fight for the Nexus. No account, no download, no pay-to-win.","image":"https://playterrastate.nl/img/v4/terrastate-share.jpg","genre":["Strategy","Grand strategy","Turn-based strategy","4X","Browser game"],"gamePlatform":["Web browser","Windows","macOS","Linux","Android","iOS"],"applicationCategory":"Game","operatingSystem":"Any (web browser)","playMode":"SinglePlayer","inLanguage":"en","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"EUR","availability":"https://schema.org/InStock"},"author":{"@type":"Person","@id":"https://playterrastate.nl/#wim","name":"Wim Kamphorst","url":"https://wimkamphorst.nl"},"publisher":{"@type":"Person","@id":"https://playterrastate.nl/#wim","name":"Wim Kamphorst","url":"https://wimkamphorst.nl"},"softwareVersion":"6.0","sameAs":["https://wimkamphorstcoaching.itch.io/terrastate"]}</script>
 <link rel="manifest" href="terrastate.webmanifest"><meta name="theme-color" content="#0d1420"><link rel="icon" href="icons/terrastate-64.png"><link rel="apple-touch-icon" href="icons/terrastate-180.png">
 <script>window.__MP_URL__=''; /* '' = live multiplayer not open yet */ if('serviceWorker' in navigator)addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));</script>
 <script data-goatcounter="https://playterrastate.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
@@ -1275,7 +1275,7 @@ const SLOT_NAMES={earth2026_auto:'Autosave',earth2026_slot1:'Slot 1',earth2026_s
 function slotMetaNow(){const me=you();const sc=curScenario();return {name:me?me.name:'?',tag:me?me.tag:'',tick:G.tick,season:(G.season&&G.season.num)||1,scenario:sc?sc.n:null,diff:G.solo&&G.solo.diff,len:G.solo&&G.solo.len,at:Date.now()};}
 function slotRead(key){try{const raw=localStorage.getItem(key);if(!raw)return null;let meta=null;try{meta=JSON.parse(localStorage.getItem(key+'_meta')||'null');}catch(e){}return {raw,meta};}catch(e){return null;}}
 function slotWrite(key){if(!isSoloGame())return false;try{save();const raw=localStorage.getItem('earth2026');if(!raw)return false;localStorage.setItem(key,raw);localStorage.setItem(key+'_meta',JSON.stringify(slotMetaNow()));return true;}catch(e){toast('Could not save: browser storage is full. Delete a slot or download a back-up.','bad');return false;}}
-function slotLoad(key){const sl=slotRead(key);if(!sl)return false;try{localStorage.setItem('earth2026',sl.raw);}catch(e){return false;}location.reload();return true;}
+function slotLoad(key){const sl=slotRead(key);if(!sl)return false;try{localStorage.setItem('earth2026',sl.raw);}catch(e){return false;}p6Reload();return true;}
 function slotDelete(key){try{localStorage.removeItem(key);localStorage.removeItem(key+'_meta');}catch(e){}}
 function slotExport(key){const sl=slotRead(key);if(!sl)return;let json=sl.raw;try{if(json.slice(0,3)==='LZ1')json=_LZ.d(json.slice(3));}catch(e){}const blob=new Blob([json],{type:'application/json'});const url=URL.createObjectURL(blob);const a=document.createElement('a');const m=sl.meta||{};a.href=url;a.download='terrastate-'+(SLOT_NAMES[key]||key).toLowerCase().replace(/\s+/g,'')+'-'+(m.name||'save').replace(/[^a-z0-9]+/gi,'-').toLowerCase()+'-t'+(m.tick||0)+'.json';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),2000);}
 function slotLabel(key){const sl=slotRead(key);if(!sl)return '<span class="muted">empty</span>';const m=sl.meta||{};const d=m.at?new Date(m.at):null;const when=d?d.toLocaleDateString()+' '+d.toLocaleTimeString().slice(0,5):'';return '<b>'+esc(m.name||'?')+'</b> · turn '+(m.tick||0)+' · season '+(m.season||1)+(m.scenario?' · 🎯 '+esc(m.scenario):'')+(m.diff&&SOLO_DIFFS[m.diff]?' · '+SOLO_DIFFS[m.diff].ic+' '+SOLO_DIFFS[m.diff].n:'')+(when?' <span class="muted">'+when+'</span>':'');}
@@ -1538,7 +1538,7 @@ function mailTick(){G.countries.forEach(ai=>{if(!ai._mailQ||!ai._mailQ.length)re
 function mailRecipients(c){const seen={},list=[],add=(o,grp)=>{if(o&&o.id!==c.id&&!o.retired&&o.leader&&!seen[o.id]){seen[o.id]=1;list.push({id:o.id,name:leaderName(o)+' ['+o.tag+']',grp});}};
   const cl=clanOf(c);if(cl)clanMembers(cl).forEach(m=>add(m,'Alliance'));
   // Your sector first (they can't attack you), then the rest of your theater, the natural people to talk to.
-  const hc=homeCluster(c);if(hc!=null){const mates=G.countries.filter(o=>o&&o.id!==c.id&&!o.retired&&o.leader&&regionsOf(o).length&&homeCluster(o)===hc).sort((a,b)=>scores(b).overall-scores(a).overall);mates.forEach(o=>add(o,(homeSector(o)===homeSector(c)?'Your sector, ':'Your theater, ')+theaterName(hc)));}
+  const hc=homeCluster(c);if(hc!=null){const mates=G.countries.filter(o=>o&&o.id!==c.id&&!o.retired&&o.leader&&regionsOf(o).length&&homeCluster(o)===hc).sort(p6by(x=>scores(x).overall));mates.forEach(o=>add(o,(homeSector(o)===homeSector(c)?'Your sector, ':'Your theater, ')+theaterName(hc)));}
   const rv=computeRival();if(rv)add(rv,'Rival');
   (c._allyKnown||[]).forEach(id=>add(G.countries[id],'Known contacts'));
   activeRanked().slice(0,10).forEach(o=>add(G.countries[o.id],'Top powers'));
@@ -1662,7 +1662,7 @@ function generateNewspaper(){
   const topBattle=battles.slice().sort((a,b)=>((b.atkUnits||0)+(b.defUnits||0))-((a.atkUnits||0)+(a.defUnits||0)))[0]||battles[0];
   // World leader by overall score
   const ranked=G.countries.filter(c=>!c.retired&&regionsOf(c).length>0);
-  ranked.sort((a,b)=>scores(b).overall-scores(a).overall);
+  ranked.sort(p6by(x=>scores(x).overall));
   const leader=ranked[0];
   // Most active aggressor this period
   const atkCount={};battles.forEach(b=>{if(b.atkName)atkCount[b.atkName]=(atkCount[b.atkName]||0)+1;});
@@ -3207,7 +3207,7 @@ function warBonus(atkC,defC){if(!atkC||!defC)return 1;const ca=clanOf(atkC),cb=c
 // Casus belli, derived from real state, so a war always has a stated reason.
 function casusBelli(cl,tc){
   if(cl._grudge&&Object.keys(cl._grudge).length&&clanMembers(tc).some(m=>cl._grudge[m.id]))return 'Retaliation for raids on our ground';
-  const top=(G.clans||[]).filter(x=>clanMembers(x).length).sort((a,b)=>clanScore(b)-clanScore(a))[0];
+  const top=(G.clans||[]).filter(x=>clanMembers(x).length).sort(p6by(x=>clanScore(x)))[0];
   if(top&&top.id===tc.id)return 'Coalition war to break the leading power';
   const ct={};clanMembers(cl).forEach(m=>regionsOf(m).forEach(r=>ct[r.cluster]=(ct[r.cluster]||0)+1));
   const mine=Object.keys(ct).map(Number);
@@ -3739,7 +3739,7 @@ function shownAllyTag(viewer,targetId){if(!allyKnown(viewer,targetId))return nul
 // and how many members are still hidden behind the fog. Powers the war-target list so a declared war is actionable.
 function warTargetIntel(viewer,foeClan){const mem=(clanMembers(foeClan)||[]).filter(m=>m&&!m.retired);const known=[],hidden=[];
   mem.forEach(m=>{(allyKnown(viewer,m.id)?known:hidden).push(m);});
-  known.sort((a,b)=>scores(b).overall-scores(a).overall);
+  known.sort(p6by(x=>scores(x).overall));
   return {known,hidden:hidden.length,total:mem.length};}
 function allyGuess(viewer,targetId){return (viewer&&viewer._allyGuess&&viewer._allyGuess[targetId])||'';}
 function cmdTagAlly(c,targetId,text){c._allyGuess=c._allyGuess||{};if(text&&String(text).trim())c._allyGuess[targetId]=String(text).trim().slice(0,16);else delete c._allyGuess[targetId];return ok();}
@@ -3904,7 +3904,7 @@ function clanTick(){(G.clans||[]).forEach(cl=>{
     // v3.14.1: the alliance runs its OWN joint operations — AI officers pin a target (cmdLaunchACS auto-pins) and launch a coordinated assault that members AND the player can join.
     try{const aiMem=clanMembers(cl).filter(m=>m.isAI&&!m.retired&&regionsOf(m).length);
       if(aiMem.length>=2){const offs0=aiMem.filter(m=>['officer','commander','leader'].includes(cl.roles[m.id]||'member'));
-        if(offs0.length<2)aiMem.slice().sort((a,b)=>scores(b).overall-scores(a).overall).some(m=>{if((cl.roles[m.id]||'member')==='member'){cl.roles[m.id]='officer';if((cl.members||[]).includes(G.you)){const yy=you();if(yy&&wantNotif(yy,'general'))sitrep(yy,'alliance','🎖 '+m.name+' ['+m.tag+'] was promoted to officer in your alliance.',{go:'clans'});}return true;}return false;});
+        if(offs0.length<2)aiMem.slice().sort(p6by(x=>scores(x).overall)).some(m=>{if((cl.roles[m.id]||'member')==='member'){cl.roles[m.id]='officer';if((cl.members||[]).includes(G.you)){const yy=you();if(yy&&wantNotif(yy,'general'))sitrep(yy,'alliance','🎖 '+m.name+' ['+m.tag+'] was promoted to officer in your alliance.',{go:'clans'});}return true;}return false;});
         const officers=aiMem.filter(m=>['officer','commander','leader'].includes(cl.roles[m.id]||'member'));
         if(officers.length&&!(AI_BRAIN_ON&&brainLed(cl))&&G.tick-(cl._acsAt||0)>=14&&!clanMergeBusy(cl)&&Math.random()<0.18){const o=officers[Math.floor(Math.random()*officers.length)];
           // v3.14.1: the alliance plays to WIN — once the Command Center can be built, AI officers prioritise seizing the Nexus for the team (unless a member already holds it).
@@ -4192,10 +4192,10 @@ function aiDecide(c){
       const nearWin=nxR.commandCenter&&(NEXUS_HOLD-(nxR.ccHeld||0))<=5;
       if(nearWin)return 2;
       return (p.aggression>25||(oc&&warFoes&&warFoes.has(oc.id))||nxR.commandCenter||nxR.ccBuild)?1:0;};
-    const targets=G.regions.filter(r=>r.owner!==c.id&&!(typeof coldPeaceBlocks==='function'&&coldPeaceBlocks(c,r))&&!sameTheaterAlly(c,r)&&!sameAllianceMember(c,r)&&!napActive(c,r.owner)&&!aiPactBlocks(c,r)&&!fledglingHuman(r.owner)&&(r.nexus||!regionOverwhelmed(r))).map(r=>{let d=1e9;rg.forEach(o=>d=Math.min(d,Math.hypot(r.x-o.x,r.y-o.y)));const rev=(grudge>0&&r.owner===G.you)?grudge:0;const over=!rev&&(res[r.id]||0)>=regionDef(r)*1.4;const war=isWarFoe(r);
+    let _p6pa;const targets=G.regions.filter(r=>r.owner!==c.id&&!(typeof coldPeaceBlocks==='function'&&coldPeaceBlocks(c,r))&&!sameTheaterAlly(c,r)&&!sameAllianceMember(c,r)&&!napActive(c,r.owner)&&!aiPactBlocks(c,r)&&!fledglingHuman(r.owner)&&(r.nexus||!regionOverwhelmed(r))).map(r=>{let d=1e9;rg.forEach(o=>d=Math.min(d,Math.hypot(r.x-o.x,r.y-o.y)));const rev=(grudge>0&&r.owner===G.you)?grudge:0;const over=!rev&&(res[r.id]||0)>=regionDef(r)*1.4;const war=isWarFoe(r);
       // At war, a warring alliance hunts the enemy's ground first, distance matters far less, so wars are actually fought (beta finding: wars stalemated because members never met).
       const rc=race(r);const hum=((SOLO_DIFF.humBias&&r.owner===G.you&&G.countries[G.you]&&G.countries[G.you].isAI===false)?SOLO_DIFF.humBias:0)+(typeof rivalBias==='function'?rivalBias(c,r):0); // v3.31 solo difficulty
-      const _kd=aiKnownDef(c,r);const bf=brainFocusBonus(c,r);return {r,d:war||rc||bf?d*0.4:d,margin:power(c,'atk')/Math.max(1,_kd==null?aiGuessDef(c,r):_kd),unk:_kd==null,rev,over:over&&!rc,foc:(foc!=null&&r.owner===foc)?1:0,war,rc,hum,bf};})
+      const _kd=aiKnownDef(c,r);const bf=brainFocusBonus(c,r);return {r,d:war||rc||bf?d*0.4:d,margin:(_p6pa===undefined?(_p6pa=power(c,'atk')):_p6pa)/Math.max(1,_kd==null?aiGuessDef(c,r):_kd),unk:_kd==null,rev,over:over&&!rc,foc:(foc!=null&&r.owner===foc)?1:0,war,rc,hum,bf};})
       .filter(t=>t.d<220||t.rev>0||t.foc||t.war||t.rc||t.bf||(t.hum>=30&&t.d<420)).sort((a,b)=>(b.margin*3+b.r.sv/20-b.d/80+b.rev*4+b.foc*40+b.war*90+b.rc*150+b.hum+b.bf-(b.over?50:0))-(a.margin*3+a.r.sv/20-a.d/80+a.rev*4+a.foc*40+a.war*90+a.rc*150+a.hum+a.bf-(a.over?50:0)));
     const best=targets[0];let need=(best&&best.rev>0?1.05:1.25)-p.risk/100*.25;
     // Believable imperfection, temperament, not a spreadsheet. Some bots gamble (and sometimes lose);
@@ -4685,7 +4685,7 @@ function brainDefend(cl){const B=brainOf(cl);const lead=G.countries[cl.leader];i
     if(have>=need)return;
     mem.filter(h=>h.isAI&&h.id!==m.id&&!(INB[h.id]||[]).length&&fleetSize(h.units||{})>=120&&G.tick-(h._helpAt||-99)>=3)
       .map(h=>{const hm=homeFor(h,r);return {h,tv:hm?reinforceTravel(h,hm,r,h.units):99};}).filter(x=>x.tv<=top.eta)
-      .sort((a,b)=>power(b.h,'def')-power(a.h,'def')).slice(0,3).forEach(x=>{if(have>=need)return;const com={};for(const k in x.h.units){const n=Math.floor((x.h.units[k]||0)*0.35);if(n>0)com[k]=n;}
+      .sort(p6by(o=>power(o.h,'def'))).slice(0,3).forEach(x=>{if(have>=need)return;const com={};for(const k in x.h.units){const n=Math.floor((x.h.units[k]||0)*0.35);if(n>0)com[k]=n;}
         if(!fleetSize(com))return;const r0=cmdStation(x.h,r.id,com);if(r0&&r0.ok){x.h._helpAt=G.tick;have+=power(x.h,'def',com);B.defended=(B.defended||0)+1;}});
     if(have<need)brainSay(cl,B,'sos_'+r.id,'🛡 '+m.name+' is under attack at '+r.name+' ('+r.coord+'), lands in '+top.eta+'t. Everyone who can reach it: reinforce now.');});}
 function allianceBrain(cl){const B=brainOf(cl);const TS=brainTS();const lead=G.countries[cl.leader];if(!lead||!lead.isAI)return;
@@ -5198,7 +5198,7 @@ return{c:function(a){return a==null?"":_c(a,15,function(a){return f(a+32);})+" "
 // formats, so a fast save is fully valid; it is just larger. The per-tick safety save uses fast; manual orders and the
 // periodic housekeeping tick use the compact compressed form.
 function save(fast){try{G.clientBuild=window.TT_CLIENT||'terrastate-1.0';}catch(e){}const _rnd=(k,v)=>(typeof v==='number'&&!Number.isInteger(v))?(Math.abs(v)>=1000?Math.round(v):Math.round(v*1000)/1000):v; /* A9: 3-decimal floats, the save was 30% long float tails */ if(G.you!=null&&G.countries[G.you])G.countries[G.you]._act=G.tick;
-  try{const _json=JSON.stringify(G,_rnd);let _out;if(fast){_out=_json;}else{try{_out='LZ1'+_LZ.c(_json);if(_out.length>=_json.length+3)_out=_json;}catch(e){_out=_json;}}localStorage.setItem('earth2026',_out);window._saveFail=0;}catch(e){window._saveFail=(window._saveFail||0)+1;if(window._saveFail===1&&typeof toast==='function')toast('Save failed, browser storage is full. Download a back-up from Settings.','bad');}}
+  try{const _json=JSON.stringify(G,_rnd);let _out;if(fast||(typeof P6!=='undefined'&&P6.on)){_out=_json;}else{try{_out='LZ1'+_LZ.c(_json);if(_out.length>=_json.length+3)_out=_json;}catch(e){_out=_json;}}localStorage.setItem('earth2026',_out);window._saveFail=0;}catch(e){window._saveFail=(window._saveFail||0)+1;if(window._saveFail===1&&typeof toast==='function')toast('Save failed, browser storage is full. Download a back-up from Settings.','bad');}}
 // Activity indicator for an alliance member, green (active) / orange (idle) / red (dormant) / moon (away).
 function memberActivity(m){if(m._standin)return{ic:'🤖',color:'#7fb2ff',lbl:'stand-in ('+(m._standin.mode||'guard')+')'};if(m.away)return{ic:'🌙',color:'#8aa0b8',lbl:'away'};
   if(m.id===G.you)return{ic:'🟢',color:'var(--good)',lbl:'active now'};
@@ -5219,7 +5219,7 @@ function load(){try{const s=localStorage.getItem('earth2026');if(!s)return false
     else if(c.roe==null)c.roe={};});
   try{if(G.clientBuild&&window.TT_CLIENT&&G.clientBuild!==window.TT_CLIENT){G._buildMismatch=G.clientBuild;}}catch(e){}
   return G.countries&&G.countries.length>0&&G.you!=null&&G.countries[G.you];}catch(e){return false;}}
-function reset(){try{localStorage.removeItem('earth2026');}catch(e){}location.reload();}
+function reset(){try{localStorage.removeItem('earth2026');}catch(e){}p6Reload();}
 
 // ===========================================================================
 //  UI
@@ -5290,7 +5290,7 @@ if(typeof document!=='undefined'&&document.addEventListener){try{document.addEve
 // ---- MEETPUNTEN (anonymous, via the GoatCounter already on playterrastate.nl) ----
 // Only where the website loads GoatCounter; itch, the multiplayer client and the server send nothing.
 // Each event fires once per season per browser: start, tick-10, tick-50, first-battle, season-end, flag-set.
-function _trkGame(){try{return (String(document.title||'game').split(/[ :]/)[0]||'game').toLowerCase();}catch(e){return 'game';}}
+function _trkGame(){try{if(typeof GAME_CFG!=='undefined'&&GAME_CFG.track)return GAME_CFG.track;return (String(document.title||'game').split(/[ :]/)[0]||'game').toLowerCase();}catch(e){return 'game';}}
 function trackEvent(name){try{if(typeof window==='undefined'||window.__MP__||!(typeof isSoloGame==='function'&&isSoloGame()))return;
     const sn=(G.season&&G.season.num)||1,key=sn+':'+name;G._trk=G._trk||{};if(G._trk[key])return;G._trk[key]=1;
     const s=(typeof soloCfg==='function'&&soloCfg())||{};const send=(n)=>{const gc=window.goatcounter;if(gc&&typeof gc.count==='function'){gc.count({path:'event/'+_trkGame()+'/'+name,title:_trkGame()+' · '+name+' · '+(s.diff||'?')+' · '+(s.len||'?'),event:true});return;}if(n<20)setTimeout(()=>send(n+1),1000);};
@@ -5312,7 +5312,7 @@ if(typeof window!=='undefined'&&!window.__MP__&&window.addEventListener){
 function bootRescue(KEY,err){
   let raw=null;try{raw=localStorage.getItem(KEY);}catch(e){}
   const slots=(typeof SLOT_KEYS!=='undefined'?SLOT_KEYS:[]).map(k=>{let r=null,m=null;try{r=localStorage.getItem(k);m=JSON.parse(localStorage.getItem(k+'_meta')||'null');}catch(e){}return r&&r!==raw?{k,r,m}:null;}).filter(Boolean);
-  if(!raw&&!slots.length){try{location.reload();}catch(e){}return;}
+  if(!raw&&!slots.length){try{p6Reload();}catch(e){}return;}
   const lbl=s=>{const m=s.m||{};const name=s.k.split('_').pop();return (name==='auto'?'Auto-save':'Slot '+name.replace('slot',''))+(m.tick!=null?' · tick '+m.tick:'')+(m.season?' · season '+m.season:'');};
   const box=document.createElement('div');box.id='bootRescue';
   box.style.cssText='position:fixed;inset:0;z-index:999;background:#0b1220;color:#e6edf6;font:15px/1.55 system-ui,sans-serif;display:flex;align-items:center;justify-content:center;padding:18px';
@@ -5324,9 +5324,9 @@ function bootRescue(KEY,err){
     +'<button data-new="1" style="display:block;width:100%;min-height:48px;margin:0;border-radius:10px;border:1px solid #2a3a55;background:none;color:#9fb0c8;font-size:15px;cursor:pointer">Start a new game (the old save is kept aside)</button>'
     +'<p style="margin:14px 0 0;font-size:12.5px;color:#7f90a8">Tip: Settings → Back-up lets you download your world at any time.</p></div>';
   document.body.appendChild(box);
-  box.querySelectorAll('[data-slot]').forEach(b=>b.onclick=()=>{const s=slots[+b.dataset.slot];try{if(raw)localStorage.setItem(KEY+'_broken',raw);}catch(e){}try{localStorage.setItem(KEY,s.r);}catch(e){alert('Browser storage is full.');return;}trackRaw('boot-restore');location.reload();});
+  box.querySelectorAll('[data-slot]').forEach(b=>b.onclick=()=>{const s=slots[+b.dataset.slot];try{if(raw)localStorage.setItem(KEY+'_broken',raw);}catch(e){}try{localStorage.setItem(KEY,s.r);}catch(e){alert('Browser storage is full.');return;}trackRaw('boot-restore');p6Reload();});
   const dl=box.querySelector('[data-dl]');if(dl)dl.onclick=()=>{try{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([raw],{type:'application/octet-stream'}));a.download=KEY+'-save-'+new Date().toISOString().slice(0,10)+'.txt';document.body.appendChild(a);a.click();a.remove();}catch(e){}};
-  box.querySelector('[data-new]').onclick=()=>{try{if(raw)localStorage.setItem(KEY+'_broken',raw);}catch(e){}try{localStorage.removeItem(KEY);}catch(e){}trackRaw('boot-fresh');location.reload();};
+  box.querySelector('[data-new]').onclick=()=>{try{if(raw)localStorage.setItem(KEY+'_broken',raw);}catch(e){}try{localStorage.removeItem(KEY);}catch(e){}trackRaw('boot-fresh');p6Reload();};
   trackRaw('boot-error');try{console.error('boot failed',err);}catch(e){}}
 // Big END TURN under the thumb on phones (solo, turn mode). "Working…" shows while the world resolves.
 function wireMobileEndTurn(){if(typeof window==='undefined'||window.__MP__||document.getElementById('mEnd'))return;
@@ -5442,7 +5442,7 @@ const SEASON_RULES={
 function seasonRule(){try{const k=G&&G.season&&G.season.rule;return k&&SEASON_RULES[k]?k:null;}catch(e){return null;}}
 function coldPeaceBlocks(c,r){return seasonRule()==='coldpeace'&&!!r&&r.owner!=null&&r.owner!==c.id&&G.tick-((G.season&&G.season.startTick)||0)<60;}
 function _p3solo(){try{return typeof isSoloGame==='function'&&isSoloGame()&&!(typeof window!=='undefined'&&window.__MP__);}catch(e){return false;}}
-function _p3pfx(){try{return (typeof SLOT_KEYS!=='undefined'&&SLOT_KEYS[0])?SLOT_KEYS[0].split('_')[0]:'earth2026';}catch(e){return 'earth2026';}}
+function _p3pfx(){try{if(typeof GAME_CFG!=='undefined'&&GAME_CFG.save)return GAME_CFG.save;return (typeof SLOT_KEYS!=='undefined'&&SLOT_KEYS[0])?SLOT_KEYS[0].split('_')[0]:'earth2026';}catch(e){return 'earth2026';}}
 function prizeName(){return _trkGame()==='romaterra'?'Roma':_trkGame()==='ironfront'?'the Capital Sectors':'the Nexus';}
 function prizeIds(){return (G.nexusIds&&G.nexusIds.length)?G.nexusIds:[G.nexusId];}
 
@@ -5701,9 +5701,12 @@ const PRESTIGE={
              {k:'monument',n:'Grand Monument',ic:'🗽',cost:2e9,infl:2000,d:'Built to be remembered.'}],
   romaterra:[{k:'library',n:'Great Library',ic:'📜',cost:3e8,infl:400,d:'Scholars from every province come to read.'},
              {k:'arch',n:'Triumphal Arch',ic:'🏛',cost:8e8,infl:900,d:'Your victories, carved in stone.'},
-             {k:'colosseum',n:'Colosseum',ic:'🏟',cost:2e9,infl:2000,d:'Games for the people, glory for you.'}]};
+             {k:'colosseum',n:'Colosseum',ic:'🏟',cost:2e9,infl:2000,d:'Games for the people, glory for you.'}],
+  ironfront:[{k:'parade',n:'Victory Parade',ic:'🎖',cost:3e8,infl:400,d:'Bands, flags and the whole capital in the streets.'},
+             {k:'broadcast',n:'National Broadcasting House',ic:'📻',cost:8e8,infl:900,d:'Your voice on every radio in the world.'},
+             {k:'memorial',n:'Liberation Memorial',ic:'🕊',cost:2e9,infl:2000,d:'Built to remember those who held the line.'}]};
 const PRESTIGE_TURNS=8,PRESTIGE_REGEN=0.05;
-function p5Projects(){let g='';try{g=_p3pfx();}catch(e){}if(g!=='romaterra'){try{if(/^romaterra/i.test(String(document.title||'')))g='romaterra';}catch(e){}}return g==='romaterra'?PRESTIGE.romaterra:PRESTIGE.earth2026;}
+function p5Projects(){let g='';try{g=_p3pfx();}catch(e){}if(g!=='romaterra'){try{if(/^romaterra/i.test(String(document.title||'')))g='romaterra';}catch(e){}}return g==='romaterra'?PRESTIGE.romaterra:g==='ironfront'?PRESTIGE.ironfront:PRESTIGE.earth2026;}
 function p5Prest(c){c._prest=c._prest||{done:[],build:null};return c._prest;}
 function p5NextProject(c){const P=p5Prest(c);if(P.build)return null;return p5Projects().find(p=>!P.done.includes(p.k))||null;}
 function cmdPrestige(c,k){if(!c||c.isAI!==false)return err('Only a commander can commission this');const p=p5Projects().find(x=>x.k===k);if(!p)return err('Unknown project');
@@ -5744,7 +5747,7 @@ function p5SumHTML(c){let inc=[];try{inc=incomingTo(c.id).filter(x=>(x.threat||0
   const im=p5IdleMoney(c);if(im)out+=`<div class="small p5idle" style="margin-top:4px">💰 Your treasury is full and idle. Invest it: <button class="btn sm" data-prest="${im.k}">${im.ic} ${esc(im.n)} · ${fmt(im.cost,true)}</button></div>`;
   return out;}
 // tablets (761-880 px): the map ends above the bottom menu instead of under it
-function p5FitMap(){try{if(view!=='map'||window.innerWidth<=760||window.innerWidth>880)return;const m=document.querySelector('#view .wmap');if(!m)return;const n=document.getElementById('bottomnav');const nr=n&&n.getBoundingClientRect();
+function p5FitMap(){try{if(view!=='map'||window.innerWidth<=760||window.innerWidth>880||window.innerHeight<=500)return;const m=document.querySelector('#view .wmap');if(!m)return;const n=document.getElementById('bottomnav');const nr=n&&n.getBoundingClientRect();
   const limit=(nr&&nr.height>0)?nr.top:window.innerHeight;const h=Math.max(300,Math.round(limit-m.getBoundingClientRect().top-8));if(Math.abs(m.getBoundingClientRect().height-h)>2)m.style.setProperty('height',h+'px','important');}catch(e){}}
 try{if(typeof window!=='undefined'&&!window.__MP__&&typeof setInterval==='function'&&!(typeof process!=='undefined'&&process.versions&&process.versions.node))setInterval(()=>{try{if(typeof view!=='undefined'&&view==='map')p5FitMap();}catch(e){}},700);}catch(e){}
 function phase5Home(){try{
@@ -5789,6 +5792,77 @@ function phase5Home(){try{
 function p5Small(){try{return window.innerWidth<=600||window.innerHeight<=500;}catch(e){return false;}} // phone, upright or sideways
 function p5MinText(){try{if(!_p5on()||!p5Small())return;const now=Date.now();if(now-(window._p5mtAt||0)<1500)return;window._p5mtAt=now;const v=document.getElementById('view');if(!v)return;
   v.querySelectorAll('span,div,b,small,td,th,label,a,button,i,em,strong,p,li').forEach(e=>{if(!e.firstChild||e.firstChild.nodeType!==3&&!e.childElementCount)return;const fs=parseFloat(getComputedStyle(e).fontSize);if(fs>0&&fs<12)e.style.setProperty('font-size','12px','important');});}catch(e){}}
+
+var GAME_CFG={"track": "terrastate", "save": "earth2026", "prize": "the Nexus", "currency": "€", "name": "Terrastate"};
+// ---- UPDATE 6.0 "Solid Ground" (solo only; the live-world engine and the Node server are untouched) ----
+// 1. Saves live in IndexedDB: far more room than localStorage (~5 MB shared by every game on the site), and no slow
+//    compression on every click. The old localStorage save is copied over once and kept as a reserve. If IndexedDB is
+//    missing or blocked (some private windows), everything keeps working the old way.
+// 2. Faster turns: sorts that recomputed every nation's score inside the comparator now compute it once per nation.
+const P6={on:false,mem:Object.create(null),db:null,queue:Object.create(null),flushT:0,why:''};
+const P6_DB='terrastate-saves',P6_STORE='kv';
+// Only the big game saves move: the main save, the auto-save and the save slots of every game on the site.
+function p6Big(k){return typeof k==='string'&&/^(earth2026|romaterra|ironfront)(_auto|_slot\d|_broken)?$/.test(k);}
+function p6Applies(){try{if(typeof window==='undefined'||window.__MP__)return false;if(typeof process!=='undefined'&&process.versions&&process.versions.node)return false;return !!window.indexedDB;}catch(e){return false;}}
+// Runs the boot right away where IndexedDB does not apply (server, multiplayer client, old browsers), otherwise after the saves are loaded.
+function p6Run(boot){if(!p6Applies()){boot();return;}let done=false;const go=()=>{if(done)return;done=true;try{boot();}catch(e){console.error(e);}};
+  const t=setTimeout(()=>{P6.why='timeout';P6.late=true;go();},2500); // never let a stuck database keep the game from starting
+  p6Preload().then(ok=>{clearTimeout(t);if(ok&&!P6.late)p6Install();go();},()=>{clearTimeout(t);go();});} // if it came too late, this session stays on the old storage; the next visit picks up what it saved
+function p6Open(){return new Promise((res,rej)=>{let rq;try{rq=indexedDB.open(P6_DB,1);}catch(e){rej(e);return;}
+  rq.onupgradeneeded=()=>{try{rq.result.createObjectStore(P6_STORE);}catch(e){}};rq.onsuccess=()=>res(rq.result);rq.onerror=()=>rej(rq.error);rq.onblocked=()=>rej(new Error('blocked'));});}
+function p6Preload(){return p6Open().then(db=>new Promise((res,rej)=>{P6.db=db;const mem=Object.create(null);
+    const tx=db.transaction(P6_STORE,'readonly');const cur=tx.objectStore(P6_STORE).openCursor();
+    cur.onsuccess=()=>{const c=cur.result;if(c){if(typeof c.value==='string')mem[c.key]=c.value;c.continue();}};
+    tx.oncomplete=()=>{P6.mem=mem;res(true);};tx.onerror=()=>rej(tx.error);}))
+  .then(()=>{ // the old storage is checked every visit: a save written there outside the database (an older tab, a fallback
+    // save, a visit where the database answered too late) is newer than the database copy and is taken over. The old copy stays as a reserve.
+    const ls=window.localStorage;const put=[];
+    for(let i=0;i<ls.length;i++){const k=ls.key(i);if(!p6Big(k))continue;const v=ls.getItem(k);if(!v)continue;const sg=p6Sig(v);
+      if(!(k in P6.mem)||ls.getItem('p6_seen_'+k)!==sg){P6.mem[k]=v;put.push(k);try{ls.setItem('p6_seen_'+k,sg);}catch(e){}}}
+    put.forEach(k=>p6Queue(k,P6.mem[k]));if(put.length)p6Flush();
+    try{if(navigator.storage&&navigator.storage.persist)navigator.storage.persist().catch(()=>{});}catch(e){}
+    return true;}).catch(e=>{P6.why=String(e&&e.message||e);return false;});}
+// a cheap fingerprint of a save string (length plus every 97th character)
+function p6Sig(v){let h=2166136261>>>0;for(let i=0;i<v.length;i+=97){h^=v.charCodeAt(i);h=Math.imul(h,16777619)>>>0;}return v.length+'.'+h.toString(36);}
+function p6Queue(k,v){P6.queue[k]=v;if(!P6.flushT)P6.flushT=setTimeout(p6Flush,0);}
+function p6Flush(){P6.flushT=0;const q=P6.queue;P6.queue=Object.create(null);const ks=Object.keys(q);if(!ks.length||!P6.db)return Promise.resolve();let done;const pr=new Promise(r=>done=r);
+  try{const tx=P6.db.transaction(P6_STORE,'readwrite');const st=tx.objectStore(P6_STORE);ks.forEach(k=>{if(q[k]===null)st.delete(k);else st.put(q[k],k);});
+    tx.oncomplete=()=>done();tx.onerror=()=>{p6Fallback(q);done();};tx.onabort=()=>{p6Fallback(q);done();};}catch(e){p6Fallback(q);done();}return pr;}
+// A reload right after a save change waits until the database has the new save.
+function p6Reload(){try{if(!P6.on){location.reload();return;}if(P6.flushT){clearTimeout(P6.flushT);}let gone=false;const go=()=>{if(gone)return;gone=true;location.reload();};p6Flush().then(go,go);setTimeout(go,2000);}catch(e){location.reload();}}
+// If the database refuses a write, the old storage takes it, so a save is never silently lost.
+function p6Fallback(q){let fail=false;try{for(const k in q){try{if(q[k]===null)P6.oRem(k);else{let v=q[k];if(v.charAt(0)==='{'){try{v='LZ1'+_LZ.c(v);}catch(e){}}P6.oSet(k,v);}}catch(e){fail=true;}}}catch(e){fail=true;}
+  if(fail){try{toast('Save failed, browser storage is full. Download a back-up from Settings.','bad');}catch(e){}return;}
+  try{if(!window._p6warn){window._p6warn=1;toast('Saving fell back to the browser\'s small storage. If saving fails, download a back-up from Settings.','warn');}}catch(e){}}
+// The game keeps calling localStorage as before; the big save keys are served from memory and written to IndexedDB.
+function p6Install(){const SP=Storage.prototype,ls=window.localStorage;const g0=SP.getItem,s0=SP.setItem,r0=SP.removeItem,c0=SP.clear;
+  P6.oGet=k=>g0.call(ls,k);P6.oSet=(k,v)=>s0.call(ls,k,v);P6.oRem=k=>r0.call(ls,k);
+  try{SP.getItem=function(k){if(this===ls){k=String(k);if(p6Big(k)&&(k in P6.mem))return P6.mem[k];}return g0.call(this,k);};
+    SP.setItem=function(k,v){if(this===ls){k=String(k);if(p6Big(k)){P6.mem[k]=String(v);p6Queue(k,P6.mem[k]);return;}}return s0.call(this,k,v);};
+    SP.removeItem=function(k){if(this===ls){k=String(k);if(p6Big(k)){delete P6.mem[k];p6Queue(k,null);try{r0.call(this,'p6_seen_'+k);}catch(e){}}}return r0.call(this,k);};
+    SP.clear=function(){if(this===ls)p6ClearAll();return c0.call(this);};
+    P6.on=true;}catch(e){P6.on=false;P6.why='shim';}
+  try{window.addEventListener('pagehide',()=>{try{p6Flush();}catch(e){}});document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden'){try{p6Flush();}catch(e){}}});}catch(e){}}
+// Clearing everything (Settings > start fresh, and the tests) must also clear the database.
+function p6ClearAll(){P6.mem=Object.create(null);P6.queue=Object.create(null);try{if(P6.db){const tx=P6.db.transaction(P6_STORE,'readwrite');tx.objectStore(P6_STORE).clear();}}catch(e){}}
+function p6GuardDue(){try{if(!P6.on)return true;if(G.tick===P6.gTick||G.tick%5!==0)return false;P6.gTick=G.tick;return true;}catch(e){return true;}}
+function p6Info(){let bytes=0,n=0;for(const k in P6.mem){bytes+=P6.mem[k].length;n++;}return {on:P6.on,why:P6.why,keys:n,mb:Math.round(bytes/1048576*10)/10};}
+
+// ---------- faster turns: compute a sort key once per item ----------
+function p6by(f){const m=new Map();const g=x=>{let v=m.get(x);if(v===undefined){v=f(x);m.set(x,v);}return v;};return (a,b)=>g(b)-g(a);}
+
+// ---------- END TURN never looks frozen: a "Calculating turn…" bar is painted before the turn runs ----------
+function p6EndTurn(){try{if(window.__MP__||document.body.classList.contains('p6busy'))return;if(document.querySelector('.modal-bg')){soloAdvance();return;}
+  document.body.classList.add('p6busy');const tk=document.querySelector('header.top .tick');if(tk)tk.classList.add('busy');
+  const done=()=>{document.body.classList.remove('p6busy');if(tk)tk.classList.remove('busy');};
+  requestAnimationFrame(()=>requestAnimationFrame(()=>setTimeout(()=>{try{soloAdvance();}finally{done();}},0)));}catch(e){try{document.body.classList.remove('p6busy');}catch(_){}soloAdvance();}}
+(function(){try{if(typeof document==='undefined'||(typeof window!=='undefined'&&window.__MP__))return;const st=document.createElement('style');
+  st.textContent='#p6bar{display:none}body.p6busy #p6bar{display:flex;position:fixed;left:0;right:0;top:0;z-index:200;justify-content:center;pointer-events:none}'+
+  'body.p6busy #p6bar span{margin-top:6px;padding:6px 14px;border-radius:999px;background:rgba(8,18,30,.92);border:1px solid var(--border2,#2a4666);color:var(--text,#e6edf6);font:600 13px var(--mono,monospace);letter-spacing:1px;box-shadow:0 6px 20px rgba(0,0,0,.4)}'+
+  'body.p6busy #p6bar:before{content:"";position:fixed;left:0;top:0;height:3px;width:40%;background:var(--accent,#4f8cff);animation:p6run 1s linear infinite}'+
+  '@keyframes p6run{from{transform:translateX(-100%)}to{transform:translateX(250%)}}body.p6busy header.top .tick{opacity:.6}';
+  document.head.appendChild(st);const add=()=>{if(document.getElementById('p6bar'))return;const d=document.createElement('div');d.id='p6bar';d.innerHTML='<span>Calculating turn…</span>';document.body.appendChild(d);};
+  if(document.body)add();else document.addEventListener('DOMContentLoaded',add);}catch(e){}})();
 
 function emblem(c){return `<span class="flagi" title="${esc((c&&c.name)||'')}">${flagSVG(c,22)}</span>`;}
 // Relationship-only colours (Planetarion-style): gold self, blue alliance,
@@ -6084,9 +6158,9 @@ function renderLanding(){
       <a class="card" href="updates.html" target="_self" rel="noopener" style="display:block;text-decoration:none;color:inherit;margin:0 auto">
         <div class="row between wrap" style="gap:10px;align-items:center">
           <div style="min-width:0;flex:1">
-            <div><span class="mono" style="color:var(--gold);font-size:11px;letter-spacing:1px">VERSION 5.0 · UPDATE 5</span> <span class="muted small">October 2026</span></div>
-            <div style="font-weight:700;margin-top:3px">Terrastate 5.0: Every Turn Counts</div>
-            <div class="muted small mt">Allies march for commanders who play, not for empty capitals. Prestige projects give a full treasury a goal. Warlord plays sharper, with the same resources. One clear comeback bonus. A shorter Home and a calmer phone screen.</div>
+            <div><span class="mono" style="color:var(--gold);font-size:11px;letter-spacing:1px">VERSION 6.0 · UPDATE 6</span> <span class="muted small">October 2026</span></div>
+            <div style="font-weight:700;margin-top:3px">Terrastate 6.0: Solid Ground</div>
+            <div class="muted small mt">Saves move to a much larger browser store and no longer slow down every click. Turns are faster. Your saved game is copied over by itself and the old copy is kept as a reserve.</div>
           </div>
           <span class="btn ghost sm" style="flex:none;pointer-events:none">What is new</span>
         </div>
@@ -6154,7 +6228,7 @@ function renderLanding(){
   {const b=s.querySelector('#lpNews');if(b)b.onclick=()=>{const t=s.querySelector('#playerupdate');if(t)t.scrollIntoView({behavior:'smooth',block:'center'});};}
 }
 // ---- Legal identity: ONE place to change the operator / contact / copyright holder. Used by the Privacy, Terms and Credits tabs and the footer.
-const LEGAL={operator:'Wim Kamphorst',email:'earth2026game@gmail.com',author:'Wim Kamphorst',country:'the Netherlands',law:'Dutch law',dpa:'Autoriteit Persoonsgegevens (the Dutch data protection authority)',dpaUrl:'https://www.autoriteitpersoonsgegevens.nl',version:'1.0',updated:'September 2026',build:'Version 5.0 · Oct 2026',minAge:16};
+const LEGAL={operator:'Wim Kamphorst',email:'earth2026game@gmail.com',author:'Wim Kamphorst',country:'the Netherlands',law:'Dutch law',dpa:'Autoriteit Persoonsgegevens (the Dutch data protection authority)',dpaUrl:'https://www.autoriteitpersoonsgegevens.nl',version:'1.0',updated:'September 2026',build:'Version 6.0 · Oct 2026',minAge:16};
 LEGAL.contact=`<b>${LEGAL.operator}</b>, <a href="mailto:${LEGAL.email}">${LEGAL.email}</a>`;
 // ---- Landing-page manual: beginner's handbook + combat formulae -------------
 const MANUAL={
@@ -7167,11 +7241,11 @@ function loop(){const ms=G.nextAt-Date.now();const el=$('tickv');const s=Math.ma
 function soloAdvance(){if(window.__MP__)return;if(document.querySelector('.modal-bg'))return;G.nextAt=Date.now();loop();}
 function wireSoloFF(){if(window.__MP__)return;const tb=document.querySelector('header .tick');if(!tb||tb._ff)return;tb._ff=1;
   try{if(window.matchMedia&&window.matchMedia('(pointer:coarse)').matches){const s=soloCfg();if(s&&s.mode!=='turn'&&!s._mobTurn){s.mode='turn';s._mobTurn=1;G.nextAt=Date.now()+soloTickMs();try{save(true);}catch(e){}}}}catch(e){}
-tb.style.cursor='pointer';tb.title='End the turn: run the next tick now (Space)';tb.onclick=soloAdvance;try{wireMobileEndTurn();}catch(e){}
+tb.style.cursor='pointer';tb.title='End the turn: run the next tick now (Space)';tb.onclick=p6EndTurn;try{wireMobileEndTurn();}catch(e){}
   // v3.31 tempo: Turn (you end each turn) or auto-play at 1x / 5x / 20x. Solo only; the server owns the clock in multiplayer.
   const sp=document.createElement('div');sp.className='tspeed';sp.innerHTML='<button data-t="turn" title="Turn-based: the world waits for you">⏸</button><button data-t="1" title="Auto-play, 1 tick per 20 s">▶</button><button data-t="5" title="Auto-play, 1 tick per 4 s">▶▶</button><button data-t="20" title="Auto-play, 1 tick per second">▶▶▶</button><button data-t="until" title="Run turns until something happens (stops at events, battles, finished builds; at most 20)">⏩</button><button data-t="cycle" class="cyc" title="Tempo: turn-based → 1x → 5x → 20x (click to cycle)">⏸</button>';
   sp.querySelectorAll('button').forEach(b=>b.onclick=e=>{e.stopPropagation();if(b.dataset.t==='until'){runUntil();return;}if(b.dataset.t==='cycle'){const s=soloCfg();const cur=s.mode==='turn'?'turn':String(s.speed);const order=['turn','1','5','20'];setSoloTempo(order[(order.indexOf(cur)+1)%order.length]);}else setSoloTempo(b.dataset.t);});tb.insertAdjacentElement('afterend',sp);
-  if(!window._soloKeys){window._soloKeys=1;document.addEventListener('keydown',e=>{if(window.__MP__)return;if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='s'){e.preventDefault();if(slotWrite('earth2026_slot1'))toast('💾 Quick-saved to Slot 1 (Ctrl+S)','info');return;}if(e.code!=='Space')return;const t=e.target;if(t&&(t.tagName==='INPUT'||t.tagName==='TEXTAREA'||t.tagName==='SELECT'||t.isContentEditable))return;if(!document.getElementById('app')?.classList.contains('on'))return;e.preventDefault();soloAdvance();});}}
+  if(!window._soloKeys){window._soloKeys=1;document.addEventListener('keydown',e=>{if(window.__MP__)return;if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='s'){e.preventDefault();if(slotWrite('earth2026_slot1'))toast('💾 Quick-saved to Slot 1 (Ctrl+S)','info');return;}if(e.code!=='Space')return;const t=e.target;if(t&&(t.tagName==='INPUT'||t.tagName==='TEXTAREA'||t.tagName==='SELECT'||t.isContentEditable))return;if(!document.getElementById('app')?.classList.contains('on'))return;e.preventDefault();p6EndTurn();});}}
 // ---- v3.32 campaign UI (solo only) ----
 function showCampaign(){const d=campaignLoad();const nx=campaignNext();
   const cards=SCENARIOS.map((sc,i)=>{const done=!!d.done[sc.k];const isNext=nx&&nx.k===sc.k;const df=SOLO_DIFFS[sc.diff],ln=SOLO_LENGTHS[sc.len];
@@ -9324,7 +9398,7 @@ VIEWS.map=v=>{const c=you();const hostiles=hostileSet(c.id);const incRegions=new
     const co=q.match(/^(\d+)\s*:\s*(\d+)(?:\s*:\s*(\d+))?$/);
     if(co){GOTO_COORD(co[1]+':'+co[2]+':'+(co[3]||1));return;}
     const lq=q.toLowerCase();
-    const nation=G.countries.filter(x=>!x.retired&&regionsOf(x).length&&(x.name.toLowerCase().includes(lq)||(x.tag||'').toLowerCase()===lq)).sort((a,b)=>scores(b).overall-scores(a).overall)[0];
+    const nation=G.countries.filter(x=>!x.retired&&regionsOf(x).length&&(x.name.toLowerCase().includes(lq)||(x.tag||'').toLowerCase()===lq)).sort(p6by(x=>scores(x).overall))[0];
     if(nation){mapFocus=nation.id;GOTO_NATION(nation.id);return;}
     const clan=(G.clans||[]).filter(x=>clanMembers(x).length&&(x.name.toLowerCase().includes(lq)||(x.tag||'').toLowerCase()===lq))[0];
     if(clan){GOTO_CLAN(clan.id);toast('Jumped to '+clan.name+' heartland');return;}
@@ -9364,7 +9438,7 @@ function renderMapBelow(v,c,hostiles,incRegions){v.innerHTML='';
      </div>${hotClusters.length?`<div class="small mt" style="color:var(--muted)">🔥 Fighting in: ${hotClusters.slice(0,6).map(clu=>`<span class="lk" onclick="GOTO_SECTOR(${clu},1)">${theaterName(clu)}</span>`).join(' · ')}</div>`:'<div class="small mt" style="color:var(--ok)">The world is quiet, no active fronts.</div>'}</div>`));}
   // ---- QUICK ACTIONS, jump straight to the decision, don't make the player hunt ----
   {const me=c;const myClu=homeCluster(me);const hostiles2=hostiles;
-   const findEnemy=()=>{const e=G.countries.filter(x=>!x.retired&&x.id!==me.id&&regionsOf(x).length&&hostiles2.has(x.id)).sort((a,b)=>scores(b).overall-scores(a).overall)[0]||G.countries.filter(x=>!x.retired&&x.id!==me.id&&regionsOf(x).length&&x.cluster!==myClu).sort((a,b)=>scores(b).military-scores(a).military)[0];if(e)GOTO_NATION(e.id);else toast('No obvious enemy, you\'re at peace.','warn');};
+   const findEnemy=()=>{const e=G.countries.filter(x=>!x.retired&&x.id!==me.id&&regionsOf(x).length&&hostiles2.has(x.id)).sort(p6by(x=>scores(x).overall))[0]||G.countries.filter(x=>!x.retired&&x.id!==me.id&&regionsOf(x).length&&x.cluster!==myClu).sort(p6by(x=>scores(x).military))[0];if(e)GOTO_NATION(e.id);else toast('No obvious enemy, you\'re at peace.','warn');};
    const findAlly=()=>{const cl=clanOf(me);let a=null;if(cl)a=clanMembers(cl).filter(m=>m.id!==me.id&&regionsOf(m).length)[0];if(a)GOTO_NATION(a.id);else toast(cl?'No allied territory to show.':'Join an alliance to have allies.','warn');};
    const findConflict=()=>{const hot=clusterList().map(clu=>({clu,b:areaBattles(G.regions.filter(r=>r.cluster===clu))+G.regions.filter(r=>r.cluster===clu&&regionHeat(r)>0).length})).sort((a,b)=>b.b-a.b)[0];if(hot&&hot.b>0)GOTO_SECTOR(hot.clu,1);else toast('No active fighting anywhere right now.','warn');};
    const findRich=()=>{const clu=clusterList().map(cl2=>({cl2,e:areaEco(G.regions.filter(r=>r.cluster===cl2))})).sort((a,b)=>b.e-a.e)[0];if(clu)GOTO_SECTOR(clu.cl2,1);};
@@ -9533,7 +9607,7 @@ function covertRender(v,embedded){const c=you();
        <button class="btn sm" id="sweepgo" ${(cdl>0||(c.agents||0)<SWEEP_MIN)?'disabled':''}>Intel sweep · ${SWEEP_INFL} infl · ${SWEEP_MIN}+ agents · 1 CP</button></div>
      ${sr&&G.tick-sr.tick<=SWEEP_LOOK?`<div class="small mt" style="border-top:1px solid var(--border);padding-top:6px"><b>Last sweep (t${sr.tick}):</b> ${sr.lines.length?sr.lines.map(l=>'<div>'+esc(l)+'</div>').join(''):'clean, nothing found'}</div>`:''}</div>`);
    v.appendChild(sw);const sg=sw.querySelector('#sweepgo');if(sg)sg.onclick=async ()=>{const r=await cmdSweep(c);if(r.ok){sfx('ok');toast(r.data.traced?'🛡 Sweep done, '+r.data.traced+' hostile service(s) traced':'🛡 Sweep done, your ministries are clean','good');save();go('covert');}else toast(r.error,'bad');};}
-  const foes=G.regions.filter(r=>r.owner!=null&&r.owner!==c.id&&!sameTheaterAlly(c,r)&&!(c.clan!=null&&G.countries[r.owner]&&G.countries[r.owner].clan===c.clan)).map(r=>G.countries[r.owner]).filter((x,i,a)=>x&&a.indexOf(x)===i).sort((a,b)=>scores(b).overall-scores(a).overall).slice(0,14);
+  const foes=G.regions.filter(r=>r.owner!=null&&r.owner!==c.id&&!sameTheaterAlly(c,r)&&!(c.clan!=null&&G.countries[r.owner]&&G.countries[r.owner].clan===c.clan)).map(r=>G.countries[r.owner]).filter((x,i,a)=>x&&a.indexOf(x)===i).sort(p6by(x=>scores(x).overall)).slice(0,14);
   v.appendChild(h(`<div class="card mb"><h3>Launch an operation</h3>
     <div class="row wrap" style="gap:6px;align-items:center"><select id="opT" style="width:auto">${foes.slice().sort((a,b)=>alertLevel(a)-alertLevel(b)).map(f=>`<option value="${f.id}">${esc(f.name)} (${f.tag}), alert ${alertLevel(f)}${alertLevel(f)<=2?' · soft target':alertLevel(f)>=6?' · hard target':''}</option>`).join('')}</select>
       <select id="opK" style="width:auto">${COVERT_OPS.map(o=>`<option value="${o.k}">${o.n}, min ${o.min} agents · ${o.infl} infl</option>`).join('')}</select>
@@ -9980,7 +10054,7 @@ VIEWS.clans=v=>{const c=you();const cl=clanOf(c);
     const collectTOpts=()=>{const o={};v.querySelectorAll('.topt').forEach(x=>o[x.dataset.k]=x.checked);return o;};
     const tss=v.querySelector('#tgsave');if(tss)tss.onclick=async ()=>{const r=await cmdSetTelegram(c,$('tgtoken').value,$('tgchat').value,collectTOpts());if(r.ok){toast(r.data&&r.data.cleared?'Telegram disconnected':'\u2705 Telegram bot saved');go('clans');save();}else toast(r.error,'bad');};
     const tclb=v.querySelector('#tgclear');if(tclb)tclb.onclick=async ()=>{const r=await cmdSetTelegram(c,'','',null);if(r.ok){toast('Telegram disconnected');go('clans');save();}else toast(r.error,'bad');};}
-  const mrows=mem.slice().sort((a,b)=>scores(b).overall-scores(a).overall).map(m=>{const role=cl.roles[m.id]||'member';const me=m.id===c.id;const pj=projection(m);const short=pj.net.food<0||pj.net.energy<0;const rd=READY[m.ready]||READY.standby;const inc=incomingTo(m.id).filter(x=>x.threat>=0.02).length;
+  const mrows=mem.slice().sort(p6by(x=>scores(x).overall)).map(m=>{const role=cl.roles[m.id]||'member';const me=m.id===c.id;const pj=projection(m);const short=pj.net.food<0||pj.net.energy<0;const rd=READY[m.ready]||READY.standby;const inc=incomingTo(m.id).filter(x=>x.threat>=0.02).length;
     let act='';if(isLead&&!me)act=`<select class="btn ghost sm rolesel" data-roleid="${m.id}" style="width:auto;padding:3px 5px" title="Set alliance role">${['member','officer','diplomat','recruiter'].map(rk=>`<option value="${rk}" ${role===rk?'selected':''}>${ROLE[rk]}</option>`).join('')}</select> ${m.isAI?'':`<button class="btn ghost sm" data-lead="${m.id}">Lead</button> `}<button class="btn ghost sm" data-kick="${m.id}">Kick</button>`;
     else if(isOff&&!me&&role==='member')act=`<button class="btn ghost sm" data-kick="${m.id}">Kick</button>`;
     if(!me){const eq=(m.queue||[]).find(x=>x.ticks>1&&!x._eng);if(eq){const ed=BUILD.find(b=>b.k===eq.k);act+=` <button class="btn sec sm" data-eng="${m.id}" title="Spend 1 CP: their ${esc(ed?ed.n:eq.k)} finishes 1 tick sooner (once per building)">🔧 Engineers</button>`;}}
@@ -10037,7 +10111,7 @@ VIEWS.clans=v=>{const c=you();const cl=clanOf(c);
   const remainCap=Math.max(0,donationCap(c)-(c._donated||0));
   const near=(typeof soloNeighborPicks==='function'&&_soloLive)?soloNeighborPicks(c,3):[];
   const nearIds=new Set(near.map(p=>p.m.id));
-  const cands=G.countries.filter(x=>x.isAI&&!x.retired&&x.clan==null&&regionsOf(x).length&&!nearIds.has(x.id)).sort((a,b)=>scores(b).overall-scores(a).overall).slice(0,5);
+  const cands=G.countries.filter(x=>x.isAI&&!x.retired&&x.clan==null&&regionsOf(x).length&&!nearIds.has(x.id)).sort(p6by(x=>scores(x).overall)).slice(0,5);
   const nearRows=near.map(p=>`<div class="row between small" style="padding:4px 0;gap:8px"><span><b>${esc(leaderName(p.m))}</b> of ${esc(p.m.name)} <span class="tag">${p.m.tag}</span> <span class="muted">${esc(p.rel)} · ${esc(p.size)}</span></span><button class="btn sm" data-invite="${p.m.id}">Ask</button></div>`).join('');
   const farRows=cands.map(m=>`<div class="row between small" style="padding:4px 0"><span>${emblem(m)} ${esc(m.name)} <span class="tag">${m.tag}</span></span><button class="btn ghost sm" data-invite="${m.id}">Ask</button></div>`).join('');
   const invHtml=isOff?(nearRows||farRows?(nearRows+(farRows?`<div class="muted small mt">Farther away</div>${farRows}`:'')):'<div class="muted small">No free neighbor this tick.</div>'):'<div class="muted small">Officers and the leader can invite nations.</div>';
@@ -10189,12 +10263,12 @@ VIEWS.diplomacy=v=>{const c=you();
     v.appendChild(h(`<div class="card mb" style="border-left:3px solid var(--bad)"><h3>⚔ Your alliance's wars <span class="muted small" style="text-transform:none;letter-spacing:0">${esc(myCl.name)} [${myCl.tag}] · score: capture +3 · push +1 · repelled assault +1 to the defender</span></h3>${wcards}</div>`));
     // Declare war on another listed alliance
     if(isLead){
-      const targets=(G.clans||[]).map(x=>({x,n:clanMembers(x).length})).filter(o=>o.n>0&&o.x.id!==myCl.id&&(o.x.listed)).map(o=>{const atWar=clanAtWar(myCl.id,o.x.id);const capped=!warRematchReady(myCl.id,o.x.id);return {o,atWar,capped};}).sort((a,b)=>clanScore(b.o.x)-clanScore(a.o.x)).slice(0,20);
+      const targets=(G.clans||[]).map(x=>({x,n:clanMembers(x).length})).filter(o=>o.n>0&&o.x.id!==myCl.id&&(o.x.listed)).map(o=>{const atWar=clanAtWar(myCl.id,o.x.id);const capped=!warRematchReady(myCl.id,o.x.id);return {o,atWar,capped};}).sort(p6by(o=>clanScore(o.o.x))).slice(0,20);
       const trows=targets.map(({o,atWar,capped})=>`<tr><td>${clanLink(o.x.id,esc(o.x.name))} <span class="tag">${o.x.tag}</span></td><td class="r">${o.n}</td><td class="r">${full(Math.round(clanScore(o.x)))}</td><td class="r">${atWar?'<span class="pill w">at war</span>':capped?`<span class="muted small" title="rematch cooldown after your last war">cooldown ${warRematchLeft(myCl.id,o.x.id)}t</span>`:`<button class="btn sm" data-war="${o.x.id}">Declare war</button>`}</td></tr>`).join('');
       v.appendChild(h(`<div class="card mb"><h3>Declare war <span class="muted small" style="text-transform:none;letter-spacing:0">once per rival/season · alliance shares the war bonus</span></h3><div class="scroll"><table><thead><tr><th>Alliance</th><th class="r">Members</th><th class="r">Power</th><th class="r">Action</th></tr></thead><tbody>${trows||'<tr><td colspan="4" class="muted small">No rival alliances are listed yet.</td></tr>'}</tbody></table></div></div>`));
     } else {
       // Members are not spectators, they petition the leadership, and an AI leader really answers.
-      const targets=(G.clans||[]).map(x=>({x,n:clanMembers(x).length})).filter(o=>o.n>0&&o.x.id!==myCl.id&&o.x.listed&&!clanAtWar(myCl.id,o.x.id)).sort((a,b)=>clanScore(b.x)-clanScore(a.x)).slice(0,8);
+      const targets=(G.clans||[]).map(x=>({x,n:clanMembers(x).length})).filter(o=>o.n>0&&o.x.id!==myCl.id&&o.x.listed&&!clanAtWar(myCl.id,o.x.id)).sort(p6by(o=>clanScore(o.x))).slice(0,8);
       const trows=targets.map(o=>{const rel=clanScore(o.x)/Math.max(1,clanScore(myCl));return `<tr><td>${clanLink(o.x.id,esc(o.x.name))} <span class="tag">${o.x.tag}</span></td><td class="r">${o.n}</td><td class="r"><span class="pill ${rel>1.4?'b':rel>0.8?'w':'g'}">${rel>1.4?'stronger':rel>0.8?'even':'weaker'}</span></td><td class="r"><button class="btn ghost sm" data-reqwar="${o.x.id}">📣 Petition</button></td></tr>`;}).join('');
       const pend=myCl._warRequest?`<div class="small" style="color:var(--alert)">⏳ A war petition is on the leader's desk, they answer within 2 ticks.</div>`:'';
       const pend2=myCl._peaceRequest?`<div class="small" style="color:var(--alert)">⏳ A peace petition is pending with the leadership.</div>`:'';
@@ -10743,7 +10817,7 @@ function showSettings(){const bg=h(`<div class="modal-bg"><div class="modal"><di
   bg.querySelectorAll('[data-slen]').forEach(b=>b.onclick=()=>{G.solo.len=b.dataset.slen;applySoloSettings();save(true);bg.querySelectorAll('[data-slen]').forEach(x=>x.classList.toggle('ghost',x!==b));toast('Game length: '+SOLO_LENGTHS[G.solo.len].n+', '+SEASON_TICKS+' turns per season','info');try{drawTop();}catch(e){}});
   {const ex=bg.querySelector('#setExport');if(ex)ex.onclick=()=>{try{try{save();}catch(e){}const data=JSON.stringify(G);const blob=new Blob([data],{type:'application/json'});const url=URL.createObjectURL(blob);const a=document.createElement('a');const d=new Date();const stamp=d.getFullYear()+String(d.getMonth()+1).padStart(2,'0')+String(d.getDate()).padStart(2,'0');a.href=url;a.download='terrastate-backup-s'+((G.season&&G.season.num)||1)+'-t'+G.tick+'-'+stamp+'.json';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),2000);toast('💾 Back-up downloaded, keep it safe','good');}catch(e){toast('Could not create the back-up file','bad');}};}
    const imp=bg.querySelector('#setImport'),impF=bg.querySelector('#setImportFile');
-   if(imp&&impF){imp.onclick=()=>impF.click();impF.onchange=()=>{const f=impF.files&&impF.files[0];if(!f)return;const rd=new FileReader();rd.onload=()=>{try{const obj=JSON.parse(rd.result);if(!obj||!Array.isArray(obj.countries)||obj.you==null||!obj.countries[obj.you])throw new Error('not a valid save');if(!confirm('Load this back-up? It replaces your current game in this browser (Season '+((obj.season&&obj.season.num)||'?')+', tick '+(obj.tick!=null?obj.tick:'?')+').'))return;localStorage.setItem('earth2026',JSON.stringify(obj));toast('✅ Back-up loaded, restarting…','good');setTimeout(()=>location.reload(),400);}catch(e){toast('That file is not a valid Terrastate back-up','bad');}};rd.onerror=()=>toast('Could not read that file','bad');rd.readAsText(f);};}
+   if(imp&&impF){imp.onclick=()=>impF.click();impF.onchange=()=>{const f=impF.files&&impF.files[0];if(!f)return;const rd=new FileReader();rd.onload=()=>{try{const obj=JSON.parse(rd.result);if(!obj||!Array.isArray(obj.countries)||obj.you==null||!obj.countries[obj.you])throw new Error('not a valid save');if(!confirm('Load this back-up? It replaces your current game in this browser (Season '+((obj.season&&obj.season.num)||'?')+', tick '+(obj.tick!=null?obj.tick:'?')+').'))return;localStorage.setItem('earth2026',JSON.stringify(obj));toast('✅ Back-up loaded, restarting…','good');setTimeout(()=>p6Reload(),400);}catch(e){toast('That file is not a valid Terrastate back-up','bad');}};rd.onerror=()=>toast('Could not read that file','bad');rd.readAsText(f);};}
   bg.querySelectorAll('.toggle[data-t]').forEach(tg=>tg.onclick=()=>{const k=tg.dataset.t;if(k==='density')SETTINGS.density=SETTINGS.density==='compact'?'normal':'compact';else SETTINGS[k]=!SETTINGS[k];tg.classList.toggle('on');saveSettings();applySettings();if(k==='sound'){updateMuteBtn();if(SETTINGS.sound){audioInit();sfx('ok');}}if(k==='focused'){try{window._worldShow=null;go(view);}catch(e){}}});
   const vol=bg.querySelector('[data-vol]');if(vol)vol.oninput=()=>{SETTINGS.vol=vol.value/100;if(_master)_master.gain.value=SETTINGS.vol;saveSettings();};
   {const a=bg.querySelector('#setTipReset');if(a)a.onclick=()=>{try{localStorage.removeItem('tt_dismissed');}catch(e){}toast('Tips weer zichtbaar','info');bg.remove();if(typeof go==='function')go(view);};
@@ -10985,7 +11059,7 @@ function nexusTestSetup(mode){try{if(typeof window!=='undefined'&&window.__MP__)
     // A rival AI holds the Nexus, part-way to a win — you (and the world) strike back to break it. The holder gets a
     // solid but BEATABLE garrison so an assault is a real fight, not a brick wall, and a converging assault is already
     // in the air so you see the world reacting immediately.
-    let foe=G.countries.filter(o=>o&&o.id!==c.id&&!o.retired&&regionsOf(o).length).sort((a,b)=>scores(b).overall-scores(a).overall)[0];
+    let foe=G.countries.filter(o=>o&&o.id!==c.id&&!o.retired&&regionsOf(o).length).sort(p6by(x=>scores(x).overall))[0];
     if(!foe)foe=G.countries.find(o=>o&&o.id!==c.id&&!o.retired);
     nx.owner=foe?foe.id:null;nx.commandCenter=true;nx.ccHolder=foe?foe.id:null;nx.ccHeld=4; // ~8 ticks to break it
     if(foe){foe.units={infantry:240,tank:80,sam:80,interceptor:70,cyber_cell:40};} // light garrison: beatable by you + the coalition (the Nexus base + FINALE 2x still make it a real fight)
@@ -11057,6 +11131,7 @@ function openPlayFile(){
   return true;
 }
 
+p6Run(function(){
 try{
   iconInit();
   uiPrefLoad();
@@ -11066,8 +11141,9 @@ try{
   if(typeof window!=='undefined'&&!window.__MP__){try{bootRescue('earth2026',e);}catch(_){try{renderSetup();}catch(__){}}}
   else{console.error('boot failed, clearing stale save and restarting fresh',e);
   try{localStorage.removeItem('earth2026');}catch(_){}
-  try{location.reload();}catch(_){try{renderSetup();}catch(__){}}}
+  try{p6Reload();}catch(_){try{renderSetup();}catch(__){}}}
 }
+});
 if(typeof window!=='undefined'&&window.__NEXUSTEST__)try{nexusTestInit();}catch(e){}
 
 /* =====================================================================
@@ -11170,7 +11246,7 @@ if(PATCH_ON.savePrune&&typeof save==='function'){
       // This runs the extra serialisations solely in the rare near-cap case, and guarantees the save never fails and loses progress.
       try{const _rnd2=(k,v)=>(typeof v==='number'&&!Number.isInteger(v))?(Math.abs(v)>=1000?Math.round(v):Math.round(v*1000)/1000):v;
         const CAP=Math.round(1.85*1024*1024);const sz=()=>{try{return JSON.stringify(G,_rnd2).length;}catch(e){return 0;}};
-        if(sz()>CAP){const steps=[
+        if(p6GuardDue()&&sz()>CAP){const steps=[
           ()=>{if(Array.isArray(G.news))G.news=G.news.slice(-60);},
           ()=>{if(Array.isArray(G.battles))G.battles=G.battles.slice(0,25);},
           ()=>{if(Array.isArray(G.chronicle))G.chronicle=G.chronicle.slice(0,25);},
