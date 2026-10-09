@@ -8,6 +8,7 @@ Current version: 6.0. The game is updated regularly. Language: English. Platform
 - [Play Terrastate](https://playterrastate.nl/play.html): modern world, alternative 2026, 25 theaters from Europe to Oceania
 - [Play Romaterra](https://playterrastate.nl/romaterra.html): the age of Rome, from Hesperia to Serica
 - [Play Ironfront](https://playterrastate.nl/ironfront.html): a 1940s world at war with invented nations; hold 2 of the 3 Capital Sectors
+- [Ironfront on itch.io](https://wimkamphorstcoaching.itch.io/ironfront)
 - [Terrastate on itch.io](https://wimkamphorstcoaching.itch.io/terrastate)
 - [Romaterra on itch.io](https://wimkamphorstcoaching.itch.io/romaterra)
 
