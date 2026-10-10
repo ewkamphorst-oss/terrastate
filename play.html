@@ -16,7 +16,7 @@
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="https://playterrastate.nl/img/v4/terrastate-share.jpg">
 <meta name="author" content="Wim Kamphorst">
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"VideoGame","@id":"https://playterrastate.nl/play.html#game","name":"Terrastate","url":"https://playterrastate.nl/play.html","description":"Free Planetarion-style grand strategy in your browser. Lead one nation against 300 AI nations on a world map, form alliances and fight for the Nexus. No account, no download, no pay-to-win.","image":"https://playterrastate.nl/img/v4/terrastate-share.jpg","genre":["Strategy","Grand strategy","Turn-based strategy","4X","Browser game"],"gamePlatform":["Web browser","Windows","macOS","Linux","Android","iOS"],"applicationCategory":"Game","operatingSystem":"Any (web browser)","playMode":"SinglePlayer","inLanguage":"en","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"EUR","availability":"https://schema.org/InStock"},"author":{"@type":"Person","@id":"https://playterrastate.nl/#wim","name":"Wim Kamphorst","url":"https://wimkamphorst.nl"},"publisher":{"@type":"Person","@id":"https://playterrastate.nl/#wim","name":"Wim Kamphorst","url":"https://wimkamphorst.nl"},"softwareVersion":"6.0","sameAs":["https://wimkamphorstcoaching.itch.io/terrastate"]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"VideoGame","@id":"https://playterrastate.nl/play.html#game","name":"Terrastate","url":"https://playterrastate.nl/play.html","description":"Free Planetarion-style grand strategy in your browser. Lead one nation against 300 AI nations on a world map, form alliances and fight for the Nexus. No account, no download, no pay-to-win.","image":"https://playterrastate.nl/img/v4/terrastate-share.jpg","genre":["Strategy","Grand strategy","Turn-based strategy","4X","Browser game"],"gamePlatform":["Web browser","Windows","macOS","Linux","Android","iOS"],"applicationCategory":"Game","operatingSystem":"Any (web browser)","playMode":"SinglePlayer","inLanguage":"en","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"EUR","availability":"https://schema.org/InStock"},"author":{"@type":"Person","@id":"https://playterrastate.nl/#wim","name":"Wim Kamphorst","url":"https://wimkamphorst.nl"},"publisher":{"@type":"Person","@id":"https://playterrastate.nl/#wim","name":"Wim Kamphorst","url":"https://wimkamphorst.nl"},"softwareVersion":"6.1","sameAs":["https://wimkamphorstcoaching.itch.io/terrastate"]}</script>
 <link rel="manifest" href="terrastate.webmanifest"><meta name="theme-color" content="#0d1420"><link rel="icon" href="icons/terrastate-64.png"><link rel="apple-touch-icon" href="icons/terrastate-180.png">
 <script>window.__MP_URL__=''; /* '' = live multiplayer not open yet */ if('serviceWorker' in navigator)addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));</script>
 <script data-goatcounter="https://playterrastate.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
@@ -972,7 +972,7 @@ function cpRegen(c){if(!c&&typeof you==='function'){try{c=you();}catch(e){}}if(_
 function cpNote(c,need){const have=Math.floor((c&&c.cp)||0);const reg=cpRegen()||1;const ticks=Math.max(1,Math.ceil(Math.max(0,need-have)/reg));
   return 'Need '+need+' Command Point'+(need>1?'s':'')+' (you have '+have+'). CP is NOT sold on the market — it is your action budget and refills +'+reg+' each tick (cap '+cpCap()+'). Wait ~'+ticks+' tick'+(ticks===1?'':'s')+', or finish fewer orders this tick.';}
 // Same idea for influence: say how much you have and where it comes from, instead of a bare "Need N influence".
-function infNote(c,need){const have=Math.floor((c&&c.res&&c.res.influence)||0);const reg=(typeof INF_REGEN!=='undefined'?INF_REGEN:40)||1;const ticks=Math.max(1,Math.ceil(Math.max(0,need-have)/reg));
+function infNote(c,need){const have=Math.floor((c&&c.res&&c.res.influence)||0);const reg=Math.round(((typeof INF_REGEN!=='undefined'?INF_REGEN:40)||1)*(c&&typeof p7InfMult==='function'?p7InfMult(c):1));const ticks=Math.max(1,Math.ceil(Math.max(0,need-have)/reg));
   return 'Need '+fmt(need)+' influence, you have '+fmt(have)+'. Influence is your diplomatic and command capital: it builds +'+reg+' each tick, and you earn more by winning battles and holding regions. About '+ticks+' more tick'+(ticks===1?'':'s')+' at rest.';}
 const BUILD_SLOTS=2; // max simultaneous active build slots PER REGION (rest wait in queue, FIFO)
 const ARCH={
@@ -2197,7 +2197,7 @@ function projection(c){
   if((G._doubleResearchUntil||0)>G.tick)prod.research*=2; // admin "double research" event
   const eff=Math.max(.4,1-c.over/200)*densityMult(c);if(densityMult(c)<1)warn.push('Theater crowded, '+theaterHumans(homeCluster(c))+' nations share your continent, output −'+Math.round((1-densityMult(c))*100)+'%. Room to grow lies in emptier theaters.');
   RES.forEach(k=>{if(k==='money'||k==='influence'||k==='research')return;prod[k]*=eff;});
-  prod.influence+=INF_REGEN*(1+(M.inf||0));
+  prod.influence+=INF_REGEN*(1+(M.inf||0))*p7InfMult(c);
   // Catch-up (Rising Power): nations well behind the map leader get an economic boost so a setback or a late
   // start isn't terminal, the gap compresses, leaders still lead. Off in the opening; scales with how far behind.
   const _cm5=catchupMult(c)+rebuildBonus(c);if(_cm5!==1)['money','steel','electronics','research','fuel'].forEach(k=>{prod[k]*=_cm5;});
@@ -2449,7 +2449,7 @@ function starterDefencePlan(c){
 }
 // Batch recruitment, queue a whole army composition in one confirmation instead of unit-by-unit.
 // One command point for the whole order (planning is rewarded); every unit type still costs its own resources.
-function cmdRecruitBatch(c,order){const items=[];let total={};
+function _p7Rec0(c,order){const items=[];let total={};
   for(const k in order){const n=Math.floor(order[k]);if(!(n>0))continue;const d=UNIT.find(x=>x.k===k);if(!d)return err('Unknown unit');
     if(!unitUnlocked(c,d)){const t=TECH.find(x=>x.k===d.req);return err((d.n)+' needs '+(t?t.n:'a military technology'));}
     items.push({k,n,d});for(const r in d.cost)total[r]=(total[r]||0)+d.cost[r]*n;}
@@ -2666,7 +2666,7 @@ function recallFleet(c,fid){const f=(c.fleets||[]).find(x=>x.id===fid&&(x.status
 function canDefend(c,r){if(!r||r.owner==null)return false;if(r.owner===c.id)return true;const o=G.countries[r.owner];if(!o)return false;if(c.clan!=null&&o.clan===c.clan)return true;const hc=homeCluster(c);return hc!=null&&hc===homeCluster(o);/* your theater is your team, theater-mates can reinforce each other */}
 // Station a defensive fleet on your own or an allied region (pre-emptive garrison OR
 // mid-battle reinforcement, on arrival it joins that region's defensive pool).
-function cmdStation(c,rid,committed){const r=G.regions.find(x=>x.id===rid);if(!canDefend(c,r))return err('You can only station on your own or an allied region');
+function cmdStation(c,rid,committed){const r=G.regions.find(x=>x.id===rid);if(!canDefend(c,r))return err('You can only station on your own or an allied region');{const _g=p7HomeGuard(c,r);if(_g)return _g;}
   // v3.19 anti-clog (mirrors the 6-wave assault cap): one nation may hold at most 6 defensive fleets committed to a
   // single region. Effective defence is already limited by the garrison cap; this just stops an object-flood grief
   // (hundreds of tiny garrison fleets) that would bloat the roster UI and slow tick resolution. Consolidate instead.
@@ -2720,8 +2720,8 @@ function debuffUntil(c,type){const d=(c._debuffs||[]).filter(x=>x.type===type&&x
 function radarLevel(c){let r=Math.round(2*Math.sqrt(Math.max(0,bTotal(c,'radar'))));if(debuffed(c,'radar'))r=Math.floor(r*0.25);return r;}
 function findFleet(fid){let out=null;G.countries.forEach(x=>{(x.fleets||[]).forEach(f=>{if(f.id===fid)out={f,owner:x};});});return out;}
 function cmdScan(c,fid){const hit=findFleet(fid);if(!hit)return err('Fleet not found');
-  if(c.res.influence<400)return err(infNote(c,400));if(c.cp<1)return err(cpNote(c,1));
-  c.res.influence-=400;c.cp--;
+  if(c.res.influence<P7_SCAN)return err(infNote(c,P7_SCAN));if(c.cp<1)return err(cpNote(c,1));
+  c.res.influence-=P7_SCAN;c.cp--;
   const chance=clamp(.5+reconLevel(c)*.09-radarLevel(hit.owner)*.07,.1,.95);
   const _tr=G.regions.find(x=>x.id===hit.f.target);
   if(Math.random()<chance){hit.f.seen=true;(hit.f._seenBy=hit.f._seenBy||{})[c.id]=true; // v3.13: record WHO scouted, so on the server the reveal is per-viewer — a target's throwaway alts can't crowdsource free intel for it (see redactState)
@@ -2732,7 +2732,7 @@ function cmdScan(c,fid){const hit=findFleet(fid);if(!hit)return err('Fleet not f
   sitrep(c,'intel','🔍 Recon failed against '+hit.owner.name+'\'s fleet, their radar held',{go:'fleets'});return ok({seen:false});}
 // ---- Regional reconnaissance: scout a target BEFORE you commit. You never get exact numbers —
 // you get a range and a confidence, so strong recon (and weak enemy radar) means a tighter estimate.
-const SCOUT_COST=300,SCOUT_TTL=12; // intel goes stale after SCOUT_TTL ticks
+const SCOUT_COST=200,SCOUT_TTL=12; // intel goes stale after SCOUT_TTL ticks
 function regionIntel(c,rid){const it=(c&&c._regionIntel||{})[rid];if(!it||it.miss)return null;return (G.tick-it.tick>SCOUT_TTL)?null:it;}
 function scanMissed(c,rid){const it=(c&&c._regionIntel||{})[rid];return !!(it&&it.miss&&(G.tick-it.tick)<=4);}
 function cmdScoutRegion(c,rid){const r=G.regions.find(x=>x.id===rid);if(!r)return err('Region not found');
@@ -2788,7 +2788,7 @@ function victoryChampions(){const alive=G.countries.filter(x=>!x.retired&&region
   return VICTORY.map(v=>{const ranked=alive.map(x=>({x,s:scores(x)[v.k]||0})).sort((a,b)=>b.s-a.s);
     const champ=ranked[0]?ranked[0].x:null;const myPos=ranked.findIndex(o=>o.x.id===G.you)+1;
     return {v,champ,myPos,total:ranked.length,champScore:ranked[0]?ranked[0].s:0};});}
-function cmdMarket(c,resr,side,qty,price){if(!MARKET.includes(resr))return err('Not tradeable');qty=Math.floor(qty);if(!isFinite(qty)||qty<=0)return err('Invalid qty');if(c.cp<1)return err(cpNote(c,1));
+function cmdMarket(c,resr,side,qty,price){if(!MARKET.includes(resr))return err('Not tradeable');qty=Math.floor(qty);if(!isFinite(qty)||qty<=0)return err('Invalid qty');if(side!=='buy'&&c.cp<1)return err(cpNote(c,1));
   const p=G.prices[resr];
   // Dynamic tax (anti-cornering): the higher the price already is and the bigger the buy,
   // the steeper the tax, so pumping a resource to the cap to farm bounties bleeds money.
@@ -2804,7 +2804,7 @@ function cmdMarket(c,resr,side,qty,price){if(!MARKET.includes(resr))return err('
   else{if((c.res[resr]||0)<qty)return err('Not enough '+resr);c.res[resr]-=qty;const gross=qty*p;const net=gross*(1-TAX);c.res.money+=net;G._taxSink=(G._taxSink||0)+gross*TAX;_paid=Math.round(net);
     // Realise P&L against average basis; reduce the tracked lot.
     const bs=(c._basis=c._basis||{});const b=bs[resr];if(b&&b.qty>0){const avg=b.cost/b.qty,sold=Math.min(qty,b.qty);c._realizedPnl=(c._realizedPnl||0)+(net/qty-avg)*sold;b.qty-=sold;b.cost-=avg*sold;if(b.qty<=0){b.qty=0;b.cost=0;}}}
-  c.cp--;c._traded=G.tick;c._tradeVol=(c._tradeVol||0)+qty*(p||0);
+  if(side!=='buy')c.cp--;c._traded=G.tick;c._tradeVol=(c._tradeVol||0)+qty*(p||0);
   const before=p;
   {let np=p*(1+(side==='buy'?1:-1)*Math.min(.04,qty/40000));const spot0=(G._spot0&&G._spot0[resr])||BASEP[resr];
    np=clamp(np,spot0*0.85,spot0*1.15);G.prices[resr]=clamp(np,BASEP[resr]*.3,BASEP[resr]*3);}
@@ -4983,7 +4983,7 @@ function runTick(){
     f.status='outbound';f.eta=G.tick+f.travel;
     {const r=G.regions.find(x=>x.id===f.target);if(c.isAI===false)sitrep(c,'fleet','🚀 Scheduled fleet departed → '+(r?r.name:'target')+', '+full(fleetSize(f.units))+' units, lands tick #'+f.eta,{coord:r?r.coord:null,go:'fleets'});if(c.id===G.you)toast('🚀 Scheduled fleet launched'+(r?' → '+r.name:'')+', lands in '+f.travel+'t.','warn');}}});});
   // fleets: outbound arrive & fight, survivors return home after travel time
-  G.countries.forEach(c=>{if(c.retired)return;c.fleets=(c.fleets||[]).filter(f=>{
+  try{p7Tick();}catch(e){}G.countries.forEach(c=>{if(c.retired)return;c.fleets=(c.fleets||[]).filter(f=>{
     // Defensive fleets (pre-stationed garrison or mid-battle reinforcement) take station on arrival.
     if(f.status==='outbound'&&(f.intent==='garrison'||f.intent==='reinforce')&&G.tick>=f.eta){
       const r=G.regions.find(x=>x.id===f.target);
@@ -5418,7 +5418,7 @@ function foldHowto(){try{const v=document.getElementById('view');if(!v||view==='
   const keep=HOWTO_SEL.flatMap(s=>[...v.querySelectorAll(s)]).filter(e=>e.isConnected&&!e.closest('.howfold'));if(!keep.length)return;
   let f=v.querySelector('.howfold');if(!f){f=h('<details class="card mb howfold"><summary>ℹ How does this screen work?</summary><div class="howbody mt"></div></details>');v.appendChild(f);}
   const body=f.querySelector('.howbody');keep.forEach(e=>{e.classList.remove('mb');body.appendChild(e);});if(f!==v.lastElementChild)v.appendChild(f);}catch(e){}}
-function phase2After(){trainRender();foldHowto();try{phase3Home();}catch(e){}try{phase5Home();}catch(e){}try{p5MinText();}catch(e){}}
+function phase2After(){trainRender();foldHowto();try{phase3Home();}catch(e){}try{phase5Home();}catch(e){}try{p5MinText();}catch(e){}try{p7After();}catch(e){}}
 if(typeof window!=='undefined'&&!(typeof process!=='undefined'&&process.versions&&process.versions.node)&&!window.__MP__&&typeof go==='function'&&!window.__p2go){window.__p2go=1;const _g=window.go||go;
   const wrapped=function(){const r=_g.apply(this,arguments);try{phase2After();setTimeout(phase2After,0);setTimeout(phase2After,120);setTimeout(foldHowto,450);setTimeout(foldHowto,1000);}catch(e){}return r;};
   try{window.go=wrapped;}catch(e){}try{go=wrapped;}catch(e){}
@@ -5864,6 +5864,236 @@ function p6EndTurn(){try{if(window.__MP__||document.body.classList.contains('p6b
   document.head.appendChild(st);const add=()=>{if(document.getElementById('p6bar'))return;const d=document.createElement('div');d.id='p6bar';d.innerHTML='<span>Calculating turn…</span>';document.body.appendChild(d);};
   if(document.body)add();else document.addEventListener('DOMContentLoaded',add);}catch(e){}})();
 
+// ================= Update 7.0 "Act where you read" (shared: Terrastate, Romaterra, Ironfront) =================
+// A. fixes: no home-army trip to its own region, recall + shield in one press, start with full command points.
+// B. a button in every warning, report and incoming row; one-press defend; market quick buy without CP; recruit repeat.
+// C. standing orders (off by default): return garrisons, auto-scan, retreat line, auto-pacify, keep army at N, research plan.
+// D. top actions with "later", a tick digest, influence that grows, border probes in solo, pacts you can propose.
+// Solo only for every button and every automatic step: the live world keeps its own server rules.
+const P7_SCAN=250,P7_INF_RESERVE=100,P7_PROBE={recruit:{every:30,share:0.05},veteran:{every:18,share:0.08},warlord:{every:12,share:0.12}};
+function p7Solo(){try{return typeof isSoloGame==='function'&&isSoloGame()&&!(typeof window!=='undefined'&&window.__MP__);}catch(e){return false;}}
+function p7Region(id){return G.regions.find(x=>x.id===id);}
+function p7Seen(f,c){try{if(typeof ifrScanned==='function')return !!ifrScanned(f,c.id);}catch(e){}return !!(f&&(f.seen||(f._seenBy&&f._seenBy[c.id])));}
+function p7Battle(r){return G.countries.some(o=>o&&!o.retired&&(o.fleets||[]).some(f=>f.status==='battle'&&f.target===r.id&&o.id!==r.owner));}
+function p7Threatened(c,r){if(!c||!r)return false;try{if(incomingTo(c.id).some(x=>x.region&&x.region.id===r.id))return true;}catch(e){}return p7Battle(r);}
+function p7HomeUnits(c){let n=0;for(const k in (c.units||{}))n+=c.units[k]||0;return n;}
+// A1. Your home army already defends every region you own. Sending it to your own region under threat only takes it
+// off the field for the trip, so that order is refused with the moves that do help.
+function p7HomeGuard(c,r){if(!c||!r||r.owner!==c.id||!p7Threatened(c,r))return null;
+  return err('Your home army already defends '+r.name+'. Sending it there takes it off the field for the trip. Scan the attacker, recruit, or call your alliance instead'+(typeof IFR_WORKS!=='undefined'?', or dig in field works':'')+'.');}
+// A2. Recall and shield in one press. What can come home is recalled; the shield engages by itself once all are home.
+function cmdRecallShield(c){if(c.shield)return err('Your shield is already up or arming');
+  if((G.acs||[]).some(op=>op.fleets.some(f=>f.owner===c.id)))return err('Cancel your coordinated assaults first');
+  let n=0;(c.fleets||[]).slice().forEach(f=>{if(f.status==='outbound'||f.status==='staged'||f.status==='garrison'){const r=recallFleet(c,f.id);if(r&&r.ok)n++;}});
+  if(fleetsAllHome(c)){const r=cmdShield(c,true);if(!r.ok)return r;delete c._p7sh;return ok({now:true,n});}
+  c._p7sh=G.tick+20;c._p7shF=G._fid;return ok({now:false,n});}
+function p7ShieldWhenHome(c){if(!c._p7sh)return;if(c.shield){delete c._p7sh;return;}
+  if((c.fleets||[]).some(f=>f.id>=(c._p7shF||0)&&(f.status==='outbound'||f.status==='staged')&&f.intent!=='garrison'&&f.intent!=='reinforce')){delete c._p7sh;sitrep(c,'system','🛡 You sent a new attack, so the shield will not engage by itself.',{sev:1,go:'dashboard'});return;}
+  if(G.tick>c._p7sh){delete c._p7sh;sitrep(c,'system','🛡 Not all armies came home in time, the shield stays down. Try again from Home.',{sev:1,go:'dashboard'});return;}
+  if(fleetsAllHome(c)){const r=cmdShield(c,true);delete c._p7sh;if(r&&r.ok)sitrep(c,'system','🛡 All armies are home: your shield is arming now.',{sev:1,go:'dashboard'});}}
+async function RECALL_STRIKES(){const c=you();if(!c)return;let n=0;for(const f of (c.fleets||[]).slice()){if(f.intent==='garrison'||f.intent==='reinforce')continue;if(f.status!=='outbound'&&f.status!=='staged')continue;const r=await recallFleet(c,f.id);if(r&&r.ok)n++;}
+  p7Done(n?'↩ '+n+' attack'+(n>1?'s':'')+' called back':'No attacks on the way to call back',n?'warn':'');}
+async function WITHDRAW_IDLE(){const c=you();if(!c)return;let n=0;for(const f of (c.fleets||[]).slice()){if(f.status!=='garrison')continue;const r=await recallFleet(c,f.id);if(r&&r.ok)n++;}
+  p7Done(n?'↩ '+n+' garrison'+(n>1?'s':'')+' on the way home':'No garrisons to bring home',n?'warn':'');}
+function p7Done(msg,kind){try{if(msg)toast(msg,kind);}catch(e){}try{save();}catch(e){}try{drawTop();}catch(e){}try{go(view);}catch(e){}}
+
+// D20. Influence: scans cost 250 (was 400), scouting 200 (was 300); influence income grows by 5% per region past 3, up to +75%.
+function p7InfMult(c){try{if(!c._p7rc||c._p7rc.t!==G.tick){let n=0;for(const r of G.regions)if(r.owner===c.id)n++;c._p7rc={t:G.tick,n};}return 1+Math.min(0.75,Math.max(0,c._p7rc.n-3)*0.05);}catch(e){return 1;}}
+
+// ---------- buttons ----------
+function p7B(label,attrs,cls,title){return `<button class="btn sm ${cls||'ghost'}" data-p7a ${attrs}${title?' title="'+esc(title)+'"':''} style="margin:2px 4px 2px 0">${label}</button>`;}
+function p7Key(t){return String(t||'').replace(/[0-9]+/g,'#').slice(0,60);}
+function p7Snoozed(c,k){return !!(c&&c._p7sn&&c._p7sn[k]>G.tick);}
+function p7CheapTech(c){try{return TECH.filter(d=>!c.tech.includes(d.k)&&!(d.excludes&&d.excludes.length)&&!d.path&&!(c.rq||[]).some(q=>q.k===d.k)&&!(d.req||[]).some(r=>!c.tech.includes(r))&&d.cost&&(c.res.research||0)>=d.cost.research&&(c.res.money||0)>=d.cost.money)
+  .sort((a,b)=>a.cost.research-b.cost.research)[0]||null;}catch(e){return null;}}
+function p7ResLabel(k){return (typeof RMETA!=='undefined'&&RMETA[k]&&RMETA[k].l)||k;}
+function p7BuyQty(c,k,ticks){try{const net=projection(c).net[k]||0;if(net<0)return Math.max(1,Math.floor(-net*ticks));}catch(e){}return Math.max(100,Math.ceil((c.res[k]||0)*0.1));}
+function p7HotRegion(c){try{return regionsOf(c).filter(r=>!regionIsCore(c,r)&&(r.unrest||0)>0).sort((a,b)=>(b.unrest||0)-(a.unrest||0))[0]||null;}catch(e){return null;}}
+function p7ScanBtn(c,r){try{const un=incomingTo(c.id).filter(x=>x.region&&x.region.id===r.id&&x.fleet&&!x.fleet.acs&&!p7Seen(x.fleet,c));if(!un.length)return '';
+  return p7B('📡 Scan'+(un.length>1?' '+un.length:''),`data-p7="scan" data-r="${r.id}"`,'ghost','Reveal what is coming: '+P7_SCAN+' influence + 1 command point per army');}catch(e){return '';}}
+// The action buttons for a warning (priority list on Home, the alert bar on every other screen, the next-action card).
+function p7Actions(a){const c=you();if(!c||!p7Solo()||!a)return '';const out=[];const t=String(a.title||a.what||'');
+  if(a.p7rs)out.push(p7B('🛡 Recall all + shield','data-p7="rs"','','Calls every army home; the shield engages by itself once all are home'));
+  const rid=a.reinforce!=null?a.reinforce:(a.p7rid!=null?a.p7rid:null);
+  if(rid!=null){const r=p7Region(rid);if(r&&r.owner===c.id){out.push(p7B('🛡 Defend','data-p7="def" data-r="'+rid+'"','','Scans what is coming and prepares the ground. Your home army already defends this region.'));out.push(p7ScanBtn(c,r));}}
+  if(/unrest|revolt|uprising|riot/i.test(t)){const r=p7HotRegion(c);if(r)out.push(p7B('🕊 Pacify '+esc(r.name),'data-p7="pac" data-r="'+r.id+'"','','Costs '+PACIFY_COST+' influence + 1 command point'));}
+  if(/research/i.test(t)&&/idle|unused|sitting/i.test(t+String(a.why||a.detail||''))){const d=p7CheapTech(c);if(d)out.push(p7B('▶ Start '+esc(d.n),'data-p7="res" data-k="'+d.k+'"'));}
+  if(/runs out|running out|shortage/i.test(t)){const k=(typeof MARKET!=='undefined'?MARKET:[]).find(k=>t.toLowerCase().indexOf(String(p7ResLabel(k)).toLowerCase())>=0);if(k){const q=p7BuyQty(c,k,8);out.push(p7B('🛒 Buy '+fmt(q,false),'data-p7="buy" data-k="'+k+'" data-q="'+q+'"','','About 8 ticks of what you are short. No command point.'));}}
+  if(a.sev!==0&&a.sev!=null)out.push(p7B('⏱ Later','data-p7="snz" data-k="'+esc(p7Key(t))+'"','ghost','Hide this for 12 ticks'));
+  return out.join('');}
+// The priority list and the next-action card read through these wrappers: snoozed items wait, besieged gets one button.
+function priorityItems(){let out=_p7Prio0();try{const c=you();if(!c||!p7Solo())return out;
+  out=out.filter(a=>a.sev===0||!p7Snoozed(c,p7Key(a.title)));
+  out.forEach(a=>{if(/besieged/i.test(a.title||'')&&a.shield===false&&!c.shield&&!fleetsAllHome(c)){a.p7rs=true;a.cta='Homeland';}
+    if(a.reinforce!=null){const r=p7Region(a.reinforce);if(r&&r.owner===c.id){a.p7rid=a.reinforce;delete a.reinforce;}}});}catch(e){}return out;}
+function soloNextAction(c){const act=(typeof _p7Next0==='function')?_p7Next0(c):null;try{if(!act||!p7Solo())return act;const k=p7Key(act.what);
+  if(act.sev>0&&p7Snoozed(c,k))return {sev:2,what:'All quiet for now',why:'"'+act.what+'" is snoozed and comes back in '+Math.max(1,c._p7sn[k]-G.tick)+' ticks.',go:act.go,btn:act.btn};
+  if(/^Incoming attack on |attacks on /.test(act.what)){const nm=act.what.replace(/^.*?(attack on |attacks on )/,'');const r=regionsOf(c).find(x=>x.name===nm);if(r)act.p7rid=r.id;}}catch(e){}return act;}
+function p7NextBtns(act){try{return act?p7Actions(act):'';}catch(e){return '';}}
+function p7OwnR(rid){try{const r=p7Region(rid);return p7Solo()&&!!r&&r.owner===G.you;}catch(e){return false;}}
+
+// B6. Reports with an action in them.
+function p7EvBtn(e){try{if(!p7Solo()||!e||!e.coord)return '';const c=you();const r=G.regions.find(x=>x.coord===e.coord);if(!r)return '';const out=[];
+  if(r.owner===c.id&&!regionIsCore(c,r)&&(r.unrest||0)>=30)out.push(p7B('🕊 Pacify','data-p7="pac" data-r="'+r.id+'"','','Costs '+PACIFY_COST+' influence + 1 command point'));
+  if(r.owner===c.id&&e.tick>=G.tick-1){const s=p7ScanBtn(c,r);if(s)out.push(s);}
+  out.push(p7B('📍 '+esc(r.name),'data-p7="coord" data-c="'+esc(r.coord)+'"','ghost','Show this region on the map'));
+  return '<span style="flex-shrink:0">'+out.join('')+'</span>';}catch(err){return '';}}
+// B7. Quick buttons on every incoming attack against your own region.
+function p7IncBtns(r,homeUnits){const c=you();const out=[];
+  out.push(homeUnits>0?p7B('🛡 Defend','data-p7="def" data-r="'+r.id+'"','','Scans what is coming and prepares the ground. Your home army already defends this region.'):`<button class="btn ghost sm" onclick="go('military')" title="No army home, recruit first">🎖 Recruit</button>`);
+  out.push(p7ScanBtn(c,r));
+  if(c&&c.clan!=null)out.push(p7B('🆘 Help','data-p7="sos" data-r="'+r.id+'"','ghost','Ask your alliance to reinforce'));
+  return out.join('');}
+// B8. One press "Defend this region": scan what is coming, dig in (Ironfront), and say plainly what defends it.
+async function p7Defend(c,rid){const r=p7Region(rid);if(!r)return;
+  if(r.owner!==c.id){if(typeof window.BR_DEFEND==='function')window.BR_DEFEND(rid);return;}
+  const done=[];let sc=0;
+  try{for(const x of incomingTo(c.id).filter(x=>x.region&&x.region.id===rid&&x.fleet&&!x.fleet.acs&&!p7Seen(x.fleet,c))){if((c.res.influence||0)<P7_SCAN||c.cp<1)break;const s=await cmdScan(c,x.fleet.id);if(s&&s.ok)sc++;}}catch(e){}
+  if(sc)done.push(sc+' scan'+(sc>1?'s':'')+' sent');
+  try{if(typeof cmdFieldWork==='function'&&typeof IFR_WORKS!=='undefined'){for(const k of ['trench','mines','bunker']){if(r._ifrW&&r._ifrW[k]!=null)continue;const w=cmdFieldWork(c,rid,k);if(w&&w.ok){done.push(IFR_WORKS[k].n+' started');break;}if(w&&/busy|treasury/i.test(w.error||''))break;}}}catch(e){}
+  const n=p7HomeUnits(c);
+  p7Done('🛡 '+r.name+': your home army of '+full(n)+' defends it'+(done.length?'. '+done.join(', '):'')+(n<1?'. You have no army at home, recruit now.':'.'),n<1?'bad':'warn');}
+
+// B10. Market quick buy (no command point for buying).
+function p7MarketHTML(c){const pj=projection(c);const rows=MARKET.map(k=>{const net=pj.net[k]||0;const have=c.res[k]||0;
+  const b=[];if(net<0)b.push(p7B('+5 ticks','data-p7="buy" data-k="'+k+'" data-q="'+Math.max(1,Math.floor(-net*5))+'"','ghost','Buys about 5 ticks of what you use'));
+  b.push(p7B('+10%','data-p7="buy" data-k="'+k+'" data-q="'+Math.max(100,Math.ceil(have*0.10))+'"'));b.push(p7B('+25%','data-p7="buy" data-k="'+k+'" data-q="'+Math.max(100,Math.ceil(have*0.25))+'"'));
+  return `<div class="row between wrap" style="gap:6px;padding:5px 0;border-top:1px solid var(--border)"><span class="small"><b>${esc(p7ResLabel(k))}</b> <span class="muted">${fmt(have,false)} · ${net>=0?'+':''}${fmt(net,false)}/tick · ${fmt(G.prices[k]||0,true)} each</span></span><span>${b.join('')}</span></div>`;}).join('');
+  return `<div class="card mb p7market" style="border-left:3px solid var(--accent2)"><h3 style="margin:0 0 4px">🛒 Quick buy</h3><div class="muted small">One press, the price you see plus the market tax. Buying costs no command point.</div>${rows}</div>`;}
+// B11. What blocks an attack, shown before you start planning one.
+function p7AttackHTML(c){const out=[];
+  if(c.shield)out.push('🛡 Your shield is '+(c.shield.status==='active'?'up':'arming')+': you cannot attack while it is on. '+p7B('Lower shield','data-p7="lower"'));
+  if((c.cp||0)<1)out.push('⌛ No command points left: +'+cpRegen(c)+' next tick.');
+  try{if(seasonRule()==='coldpeace'&&G.tick-((G.season&&G.season.startTick)||0)<60)out.push('🕊 Cold Peace: no attacks on nations before turn '+(((G.season&&G.season.startTick)||0)+60)+'. Empty land is fair game.');}catch(e){}
+  if(!p7HomeUnits(c))out.push('🎖 No army at home to send. '+p7B('Recruit','data-p7="go" data-v="military"'));
+  return out.length?`<div class="card mb p7block" style="border-left:3px solid var(--alert)"><div class="small"><b>Before you attack</b></div>${out.map(x=>'<div class="small" style="margin-top:4px">'+x+'</div>').join('')}</div>`:'';}
+// B9. Recruit: repeat the last order.
+function cmdRecruitBatch(c,order){const r=_p7Rec0(c,order);try{if(r&&r.ok&&c&&c.isAI===false){const o={};for(const k in order){const n=Math.floor(order[k]);if(n>0)o[k]=n;}c._p7last=o;}}catch(e){}return r;}
+function p7OrderText(o){return Object.keys(o||{}).map(k=>full(o[k])+' '+((UBYK[k]||{n:k}).n)).join(', ');}
+
+// ---------- C. standing orders ----------
+function p7A(c){return c.p7a=c.p7a||{on:false,ret:true,scan:true,retreat:0,pac:true,keep:[],plan:[]};}
+function p7Auto(c){const A=p7A(c);const notes=[];
+  // research plan and keep-army rules run when you have set them up; the switch covers the rest
+  try{if((!c.rq||!c.rq.length)&&A.plan.length){A.plan=A.plan.filter(k=>!c.tech.includes(k));for(const k of A.plan.slice()){const r=cmdResearch(c,k);if(r&&r.ok){A.plan=A.plan.filter(x=>x!==k);const d=TECH.find(x=>x.k===k);notes.push('research '+(d?d.n:k)+' started');break;}}}}catch(e){}
+  try{(A.keep||[]).forEach(rule=>{const d=UNIT.find(x=>x.k===rule.k);if(!d||!unitUnlocked(c,d))return;let have=c.units[rule.k]||0;(c.mq||[]).forEach(q=>{if(q.k===rule.k)have+=q.count||0;});(c.fleets||[]).forEach(f=>{if(f.status!=='returning'||!f._cancel)have+=(f.units&&f.units[rule.k])||0;});
+    const need=Math.floor(rule.n-have);if(need<=0)return;let n=need;const cost={};for(const r in d.cost)cost[r]=d.cost[r]*n;
+    if(!afford(c,cost)){let lo=0;for(const r in d.cost){if(d.cost[r]>0)n=Math.min(n,Math.floor((c.res[r]||0)/d.cost[r]));}}
+    if(n>0&&c.cp>=1){const r=_p7Rec0(c,{[rule.k]:n});if(r&&r.ok)notes.push(full(n)+' '+d.n+' queued');}});}catch(e){}
+  if(A.on){
+    try{if(A.ret)(c.fleets||[]).forEach(f=>{if(f.status!=='garrison')return;const r=p7Region(f.target);if(!r)return;const own=r.owner!=null?G.countries[r.owner]:null;
+      const thr=own?p7Threatened(own,r):false;if(thr){f._p7thr=G.tick;return;}if(f._p7thr&&G.tick-f._p7thr>=2){delete f._p7thr;const x=recallFleet(c,f.id);if(x&&x.ok)notes.push('garrison from '+r.name+' coming home');}});}catch(e){}
+    try{if(A.scan){let n=0;incomingTo(c.id).forEach(x=>{if(n>=2||!x.fleet||!x.region||x.fleet.acs||p7Seen(x.fleet,c))return;const f=x.fleet;f._p7sc=f._p7sc||{};if(f._p7sc[c.id])return;
+      if((c.res.influence||0)<P7_SCAN+P7_INF_RESERVE||c.cp<1)return;f._p7sc[c.id]=1;const r=cmdScan(c,f.id);if(r&&r.ok){n++;notes.push('scan sent on the army heading for '+x.region.name);}});}}catch(e){}
+    try{if(A.retreat>0)(c.fleets||[]).forEach(f=>{if(f.status!=='battle'||f.order==='retreat'||!f._lastR)return;if((f._lastR.ratio||1)<A.retreat){f.order='retreat';const r=p7Region(f.target);notes.push('pulled back from '+(r?r.name:'the battle')+' (ratio '+(+f._lastR.ratio).toFixed(2)+')');}});}catch(e){}
+    try{if(A.pac){const r=regionsOf(c).filter(r=>!regionIsCore(c,r)&&(r.unrest||0)>=55).sort((a,b)=>(b.unrest||0)-(a.unrest||0))[0];
+      if(r&&(c.res.influence||0)>=PACIFY_COST+P7_INF_RESERVE&&c.cp>=1){const x=cmdPacify(c,r.id);if(x&&x.ok)notes.push('pacified '+r.name);}}}catch(e){}}
+  if(notes.length)sitrep(c,'system','⚙ Standing orders: '+notes.join(' · '),{sev:0,go:'military'});}
+function p7AutoHTML(c){const A=p7A(c);const tg=(k,lab,tip)=>`<div class="row between" style="gap:8px;padding:5px 0;border-top:1px solid var(--border)"><span class="small" title="${esc(tip)}">${lab}</span>${p7B(A[k]?'On':'Off','data-p7="tog" data-k="'+k+'"',A[k]?'':'ghost')}</div>`;
+  const units=UNIT.filter(d=>unitUnlocked(c,d));
+  const keep=(A.keep||[]).map((r,i)=>`<div class="small" style="padding:3px 0">Keep <b>${full(r.n)}</b> ${esc((UBYK[r.k]||{n:r.k}).n)} ${p7B('✕','data-p7="keep-" data-i="'+i+'"')}</div>`).join('');
+  return `<details class="card mb p7auto" ${A.on||A._open||(A.keep||[]).length?'open':''}><summary style="cursor:pointer;font-weight:700">⚙ Standing orders <span class="muted small" style="font-weight:400">${A.on?'on':'off'} · the chores the computer nations do by themselves</span></summary>
+   <div class="row between" style="gap:8px;padding:8px 0"><span class="small"><b>Automation</b>: does the jobs below at the start of every tick and reports them in your reports.</span>${p7B(A.on?'✓ On':'Off','data-p7="tog" data-k="on"',A.on?'':'sec')}</div>
+   ${tg('ret','↩ Bring garrisons home when the threat is over','Two ticks after the last attack on that region')}
+   ${tg('scan','📡 Scan every new attack while you have influence','Keeps '+P7_INF_RESERVE+' influence in reserve, at most 2 scans per tick')}
+   ${tg('pac','🕊 Pacify a conquered region when unrest reaches 55','Keeps '+P7_INF_RESERVE+' influence in reserve')}
+   <div class="row between" style="gap:8px;padding:5px 0;border-top:1px solid var(--border)"><span class="small">⚑ Pull back an attack when the battle ratio drops below</span><select data-p7s="retreat" style="max-width:110px">${[[0,'never'],[0.9,'0.9'],[0.75,'0.75'],[0.6,'0.6'],[0.45,'0.45']].map(([v,l])=>`<option value="${v}" ${(+A.retreat===v)?'selected':''}>${l}</option>`).join('')}</select></div>
+   <div style="padding:6px 0;border-top:1px solid var(--border)"><div class="small"><b>🎖 Keep my army at</b> <span class="muted">refills losses by itself when you can pay. Works even with automation off.</span></div>${keep}
+   ${(A.keep||[]).length<3&&units.length?`<div class="row wrap" style="gap:6px;margin-top:4px"><input type="number" min="1" step="10" value="100" data-p7n style="width:90px"><select data-p7u>${units.map(d=>`<option value="${d.k}">${esc(d.n)}</option>`).join('')}</select>${p7B('Add','data-p7="keep+"')}</div>`:''}</div>
+   <div class="muted small" style="padding-top:6px;border-top:1px solid var(--border)">Research plan: set it on the research screen.</div></details>`;}
+function p7PlanHTML(c){const A=p7A(c);const left=TECH.filter(d=>!c.tech.includes(d.k)&&!A.plan.includes(d.k)&&!(d.excludes||[]).some(e=>c.tech.includes(e)));
+  const list=A.plan.map((k,i)=>{const d=TECH.find(x=>x.k===k);return `<div class="small" style="padding:3px 0">${i+1}. ${esc(d?d.n:k)} ${p7B('✕','data-p7="plan-" data-i="'+i+'"')}</div>`;}).join('');
+  return `<div class="card mb p7plan" style="border-left:3px solid var(--tech)"><h3 style="margin:0 0 4px">📋 Research plan</h3><div class="muted small">When your research slot is free, the next one in this list starts by itself (if you can pay). Prerequisites first.</div>${list||'<div class="small muted mt">Empty.</div>'}
+   <div class="row wrap mt" style="gap:6px"><select data-p7t style="max-width:260px">${left.map(d=>`<option value="${d.k}">${esc(d.n)}</option>`).join('')}</select>${p7B('Add to plan','data-p7="plan+"','sec')}</div></div>`;}
+
+// ---------- D21. border probes (solo): a computer neighbour tests a quiet border now and then ----------
+function p7Probes(c){if(!G.solo)return;const P=P7_PROBE[G.solo.diff]||P7_PROBE.veteran;const prot=((typeof SOLO_DIFFS!=='undefined'&&SOLO_DIFFS[G.solo.diff])||{}).protect||24;
+  try{if(incomingTo(c.id).length||(c.fleets||[]).some(f=>f.status==='battle')){c._p7q=G.tick;return;}}catch(e){return;}
+  if(G.tick<prot+10||newbieProtected(c)||c.shield)return;if(typeof fledglingHuman==='function'&&fledglingHuman(c.id))return;if(G.tick-(c._p7q||0)<P.every||G.tick-(G._p7pr||0)<P.every)return;
+  const mine=regionsOf(c);if(!mine.length)return;const cands=[];
+  // only nations outside an alliance probe: a probe by an alliance member would drag the whole alliance into a war with you
+  G.countries.forEach(ai=>{if(!ai||ai.retired||!ai.isAI||ai.id===c.id||napActive(ai,c.id)||ai.clan!=null||ai.shield)return;const home=regionsOf(ai);if(!home.length)return;
+    mine.forEach(t=>{const near=home.filter(h=>h.cluster===t.cluster);if(!near.length)return;const sameSec=near.some(h=>h.sector===t.sector);cands.push({ai,t,w:(sameSec?1:2)+Math.random()});});});
+  const retry=()=>{G._p7pr=G.tick-P.every+3;}; // nobody could go: look again in 3 ticks
+  if(!cands.length){retry();return;}cands.sort((a,b)=>b.w-a.w);const noCp={};
+  for(const x of cands.slice(0,20)){if(noCp[x.ai.id])continue;const com={};let tot=0;for(const k in x.ai.units){const n=Math.floor((x.ai.units[k]||0)*P.share);if(n>0){com[k]=n;tot+=n;}}if(tot<5)continue;
+    const r=cmdOp(x.ai,x.t.id,com,{});if(r&&r.ok){G._p7pr=G.tick;c._p7q=G.tick;const f=(x.ai.fleets||[]).slice(-1)[0];if(f)f._p7probe=true;return;}if(r&&/Command Point/i.test(r.error||''))noCp[x.ai.id]=1;}
+  retry();}
+// ---------- D23. pacts in solo ----------
+function cmdP7Nap(c,aiId){const ai=G.countries[aiId];if(!ai||ai.retired||!ai.isAI)return err('They are not reachable');const v=ai.vsYou||{};const p=ai.pers||{};
+  if((v.grudge||0)>1)return err(ai.name+' does not trust you after what happened');if(ai._p7ask&&ai._p7ask>G.tick)return err(ai.name+' answers again on tick '+ai._p7ask);
+  const renew=napActive(ai,c.id);const cost=renew?100:150;if((c.res.influence||0)<cost)return err(infNote(c,cost));c.res.influence-=cost;ai._p7ask=G.tick+6;
+  const chance=clamp(0.35+((p.diplomacy||50)-50)/200-(v.threat||0)/100+(renew?0.30:0),0.1,0.9);
+  if(Math.random()<chance){const until=Math.max((ai._nap&&ai._nap[c.id])||0,G.tick)+NAP_TICKS;ai._nap=ai._nap||{};ai._nap[c.id]=until;c._nap=c._nap||{};c._nap[ai.id]=until;
+    try{chronicle('🕊 '+c.name+' and '+ai.name+' sign a non-aggression pact until tick '+until+'.');}catch(e){}return ok({accepted:true,until});}
+  return ok({accepted:false});}
+function p7NapWatch(c){(G.countries||[]).forEach(ai=>{if(!ai||!ai.isAI||!c._nap||!c._nap[ai.id])return;const left=c._nap[ai.id]-G.tick;
+  if(left===3)sitrep(c,'alliance','🕊 Your pact with '+ai.name+' ends in 3 ticks. Renew it on the Diplomacy screen.',{sev:1,go:'diplomacy'});
+  if(left===0)sitrep(c,'alliance','🕊 Your pact with '+ai.name+' has ended.',{sev:1,go:'diplomacy'});});}
+function p7DipHTML(c){const mine=regionsOf(c);const cl=new Set(mine.map(r=>r.cluster));
+  const ais=G.countries.filter(a=>a&&a.isAI&&!a.retired&&a.id!==c.id&&regionsOf(a).some(r=>cl.has(r.cluster))).slice(0,8);if(!ais.length)return '';
+  const rows=ais.map(a=>{const on=napActive(a,c.id);const left=on?a._nap[c.id]-G.tick:0;const wait=a._p7ask&&a._p7ask>G.tick;
+    const btn=wait?`<span class="muted small">answers again on tick ${a._p7ask}</span>`:on?(left<=6?p7B('Renew (100)','data-p7="nap" data-i="'+a.id+'"','sec','Costs 100 influence'):''):p7B('Propose pact (150)','data-p7="nap" data-i="'+a.id+'"','ghost','Costs 150 influence. They may say no.');
+    return `<div class="row between wrap" style="gap:6px;padding:5px 0;border-top:1px solid var(--border)"><span class="small"><b>${esc(a.name)}</b> ${on?`<span class="pill g" style="text-transform:none">🕊 pact ${left}t</span>`:'<span class="muted">no pact</span>'}</span>${btn}</div>`;}).join('');
+  return `<div class="card mb p7dip" style="border-left:3px solid var(--gold)"><h3 style="margin:0 0 4px">🕊 Pacts with your neighbours</h3><div class="muted small">A non-aggression pact lasts ${NAP_TICKS} ticks. A nation that trusts you says yes more often; renewing is cheaper.</div>${rows}</div>`;}
+
+// ---------- D22. the tick digest on Home ----------
+function p7DigestHTML(c){const last=(c.sitrep||[]).filter(e=>e.tick===G.tick||e.tick===G.tick-1);const by={};last.forEach(e=>{by[e.cls]=(by[e.cls]||0)+1;});
+  let inc=[];try{inc=incomingTo(c.id);}catch(e){}const first=inc.length?Math.min.apply(null,inc.map(x=>x.eta)):null;
+  const parts=Object.keys(by).map(k=>(SITREP_CLS[k]?SITREP_CLS[k].ic+' '+SITREP_CLS[k].n.toLowerCase():k)+' '+by[k]);
+  const now=inc.length?'<b style="color:var(--bad)">'+inc.length+' attack'+(inc.length>1?'s':'')+' coming, first lands in '+Math.max(0,first)+'</b>':'nothing coming at you';
+  return `<div class="p7digest small" style="padding:6px 10px;margin:0 0 10px;border:1px solid var(--border);border-radius:8px;cursor:pointer" data-p7a data-p7="go" data-v="reports">Last tick: ${parts.length?parts.join(' · '):'quiet'} · Now: ${now}${(c.p7a&&c.p7a.on)?' · ⚙ standing orders on':''}</div>`;}
+
+// ---------- the tick hook (runs once per tick, before armies move) ----------
+function p7Tick(){if(!p7Solo())return;const c=G.countries[G.you];if(!c||c.retired)return;
+  try{p7ShieldWhenHome(c);}catch(e){}try{p7Auto(c);}catch(e){}try{p7Probes(c);}catch(e){}try{p7NapWatch(c);}catch(e){}}
+
+// ---------- after every render ----------
+function p7Put(v,cls,html,where){let el=v.querySelector('.'+cls);if(!html){if(el)el.remove();return null;}if(el&&el._k===html)return el;const n=h(html);n._k=html;if(el)el.replaceWith(n);else where(n);return n;}
+function p7After(){if(!p7Solo())return;const v=document.getElementById('view');const c=you();if(!v||!c)return;
+  if(!window._p7brd&&typeof window.BR_DEFEND==='function'){const o=window.BR_DEFEND;window.BR_DEFEND=function(rid){if(p7OwnR(rid))return p7Defend(you(),rid);return o.apply(this,arguments);};window._p7brd=1;}
+  if(G.tick<=1&&!c._p7cp){c._p7cp=1;c.cp=Math.max(c.cp||0,cpCap(c));try{drawTop();}catch(e){}}
+  const top=n=>{const t=v.querySelector('.ptitle');if(t)t.after(n);else v.prepend(n);};
+  if(view==='dashboard'){p7Put(v,'p7digest',p7DigestHTML(c),top);
+    // E25: in a crisis on a phone, the battle orders card comes first
+    try{const ic=v.querySelector('.ifrcard');if(ic&&window.innerWidth<=720&&incomingTo(c.id).some(x=>x.eta<=2)){const z=v.querySelector('.dash-zone');const zh=z&&z.querySelector('.zone-h');if(zh&&zh.nextSibling!==ic)zh.after(ic);}}catch(e){}}
+  if(view==='market')p7Put(v,'p7market',p7MarketHTML(c),top);
+  if(view==='around')p7Put(v,'p7block',p7AttackHTML(c),top);
+  if(view==='diplomacy')p7Put(v,'p7dip',p7DipHTML(c),top);
+  if(view==='research')p7Put(v,'p7plan',p7PlanHTML(c),top);
+  if(view==='military'){p7Put(v,'p7auto',p7AutoHTML(c),top);
+    p7Put(v,'p7rep',c._p7last&&Object.keys(c._p7last).length?`<div class="card mb p7rep"><div class="row between wrap" style="gap:8px"><span class="small">↻ Last order: <b>${esc(p7OrderText(c._p7last))}</b></span>${p7B('↻ Repeat','data-p7="rec"','sec')}</div></div>`:'',top);
+    try{const q=v.querySelector('#queuearmy');const ft=v.querySelector('#recapfoot');const row=q&&q.parentElement;if(row&&!row.classList.contains('p7sticky')){row.classList.add('p7sticky');if(ft&&ft.parentElement!==row)row.prepend(ft);}}catch(e){}}}
+
+// ---------- one click handler for every 7.0 button ----------
+async function p7Click(b){const c=you();if(!c)return;const a=b.dataset.p7;const rid=b.dataset.r!=null?+b.dataset.r:null;let r=null,msg='',kind='';
+  try{
+  if(a==='rs'){r=cmdRecallShield(c);if(r.ok)msg=r.data.now?'🛡 Shield arming now':'↩ '+r.data.n+' armies called home. The shield engages by itself once all are home.';kind='warn';}
+  else if(a==='lower'){r=await cmdShield(c,false);if(r.ok)msg='Shield lowered';}
+  else if(a==='def'){await p7Defend(c,rid);return;}
+  else if(a==='scan'){let n=0,fail='';for(const x of incomingTo(c.id).filter(x=>x.region&&x.region.id===rid&&x.fleet&&!x.fleet.acs&&!p7Seen(x.fleet,c))){const s=await cmdScan(c,x.fleet.id);if(s&&s.ok)n++;else{fail=s&&s.error;break;}}
+    r=n?ok():err(fail||'Nothing to scan');msg=n+' scan'+(n>1?'s':'')+' sent';}
+  else if(a==='sos'){if(typeof window.SOS_HELP==='function')await window.SOS_HELP(rid);return;}
+  else if(a==='pac'){r=await cmdPacify(c,rid);msg='🕊 Pacified';}
+  else if(a==='res'){r=await cmdResearch(c,b.dataset.k);const d=TECH.find(x=>x.k===b.dataset.k);msg='🔬 Research started'+(d?': '+d.n:'');}
+  else if(a==='buy'){r=await cmdMarket(c,b.dataset.k,'buy',+b.dataset.q);msg='🛒 Bought '+fmt(+b.dataset.q,false)+' '+p7ResLabel(b.dataset.k);}
+  else if(a==='snz'){c._p7sn=c._p7sn||{};c._p7sn[b.dataset.k]=G.tick+12;r=ok();msg='⏱ Hidden for 12 ticks';}
+  else if(a==='coord'){if(typeof window.GOTO_COORD==='function')window.GOTO_COORD(b.dataset.c);return;}
+  else if(a==='go'){go(b.dataset.v);return;}
+  else if(a==='rec'){r=await cmdRecruitBatch(c,c._p7last||{});if(r.ok)msg='🎖 Repeated: '+full(r.data.units)+' units queued';}
+  else if(a==='tog'){const A=p7A(c);A._open=true;A[b.dataset.k]=!A[b.dataset.k];r=ok();msg=b.dataset.k==='on'?(A.on?'⚙ Standing orders on':'Standing orders off'):'';}
+  else if(a==='keep+'){const box=b.closest('.p7auto');const n=Math.floor(+(box.querySelector('[data-p7n]')||{}).value||0);const k=(box.querySelector('[data-p7u]')||{}).value;if(!(n>0)||!k)return;const A=p7A(c);A._open=true;A.keep=(A.keep||[]).filter(x=>x.k!==k);A.keep.push({k,n});r=ok();msg='🎖 Keeping '+full(n)+' '+((UBYK[k]||{n:k}).n);}
+  else if(a==='keep-'){const A=p7A(c);A._open=true;A.keep.splice(+b.dataset.i,1);r=ok();}
+  else if(a==='plan+'){const k=(b.closest('.p7plan').querySelector('[data-p7t]')||{}).value;if(!k)return;const A=p7A(c);const add=[];const need=kk=>{const d=TECH.find(x=>x.k===kk);if(!d||c.tech.includes(kk)||A.plan.includes(kk)||add.includes(kk))return;(d.req||[]).forEach(need);add.push(kk);};need(k);A.plan=A.plan.concat(add);r=ok();msg='📋 Added '+add.length+' to the plan';}
+  else if(a==='plan-'){const A=p7A(c);A.plan.splice(+b.dataset.i,1);r=ok();}
+  else if(a==='nap'){r=cmdP7Nap(c,+b.dataset.i);if(r.ok){const ai=G.countries[+b.dataset.i];msg=r.data.accepted?'🕊 '+ai.name+' agrees: pact until tick '+r.data.until:'✖ '+ai.name+' says no for now';kind=r.data.accepted?'':'warn';}}
+  }catch(e){r=err('That did not work: '+(e&&e.message||e));}
+  if(r&&!r.ok){toast(r.error,'bad');return;}p7Done(msg,kind);}
+if(typeof document!=='undefined'&&document&&document.addEventListener&&!(typeof window!=='undefined'&&window._p7h)){try{window._p7h=1;
+  document.addEventListener('click',e=>{const b=e.target&&e.target.closest&&e.target.closest('[data-p7a]');if(!b||!b.dataset.p7)return;e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();p7Click(b);},true);
+  document.addEventListener('change',e=>{const s=e.target&&e.target.closest&&e.target.closest('[data-p7s]');if(!s)return;const c=you();if(!c)return;p7A(c)[s.dataset.p7s]=+s.value;try{save();}catch(_){}},true);
+  const st=document.createElement('style');st.textContent='.p7sticky{position:sticky;bottom:calc(var(--bottomnav-h,0px) + 4px);z-index:6;background:var(--panel,#1a1d14);padding:8px 10px;border:1px solid var(--border);border-radius:10px;box-shadow:0 -6px 18px rgba(0,0,0,.35)}@media(min-width:900px){.p7sticky{bottom:6px}}.p7sticky #recapfoot{width:100%;border-top:0!important;padding-top:0!important;margin:0 0 6px}';document.head.appendChild(st);}catch(e){}}
+
 function emblem(c){return `<span class="flagi" title="${esc((c&&c.name)||'')}">${flagSVG(c,22)}</span>`;}
 // Relationship-only colours (Planetarion-style): gold self, blue alliance,
 // green ally, red enemy, gray neutral.
@@ -5933,7 +6163,7 @@ function battleForecast(c,tgt,units){const n=fleetSize(units);if(!tgt||n<=0)retu
   const req=ratio>=1.25?'':`<div class="small" style="color:var(--warn)">Short ~<b>${full(Math.max(0,Math.round(R.detail.needCapture-R.detail.aRaw)))}</b> attack power for a capture, add units, win the air, or scout first.</div>`;
   // Four levels, like the battle report: verdict → the three numbers that matter → how to improve → details (collapsed).
   const yLostN=fleetSize(SIM.aLost),fLostN=fleetSize(SIM.dLost);const covertCmp=(()=>{try{if(!defC||defC._fog||!bTotal(c,'covert'))return '';const raid=Math.min((defC.res.money||0)*0.12,4e6)*0.8;const ch=clamp(0.45+0.05*(stealthLevel(c)-alertLevel(defC)),0.08,0.95);const thisAtk=spoilsM+(trucks?capS*0.5:0);return `A Raid the Treasury instead would net ~${fmt(raid,true)} at ${Math.round(ch*100)}% with no units at risk; this attack ≈ ${fmt(thisAtk,true)} in spoils + loot${ratio>=1.25?', plus the region':''}.`;}catch(e){return '';}})();
-  const improve=[];if(ratio<1.25)improve.push(`Short ~<b>${full(Math.max(0,Math.round(R.detail.needCapture-R.detail.aRaw)))}</b> attack power for a capture, add units, win the air, or scout first.`);if(escort&&hunters.length)improve.push(escort);if(!it)improve.push('Unscouted, a scout report (300 influence) turns this guess into a real forecast.');if(covertCmp)improve.push(covertCmp);
+  const improve=[];if(ratio<1.25)improve.push(`Short ~<b>${full(Math.max(0,Math.round(R.detail.needCapture-R.detail.aRaw)))}</b> attack power for a capture, add units, win the air, or scout first.`);if(escort&&hunters.length)improve.push(escort);if(!it)improve.push('Unscouted, a scout report (200 influence) turns this guess into a real forecast.');if(covertCmp)improve.push(covertCmp);
   const story=ratio>=1.25?`You take the region and lose ~${full(yLostN)} units (${Math.round(aF*100)}%); they lose ~${full(fLostN)} (${Math.round(dF*100)}%).`:ratio>=1?`You win the ground but not the region: ~${full(yLostN)} of yours (${Math.round(aF*100)}%) for ~${full(fLostN)} of theirs.`:`You are repelled and lose ~${full(yLostN)} units (${Math.round(aF*100)}%) for ~${full(fLostN)} of theirs.`;
   return `<div class="br-sec" style="max-width:none">
     <div class="br-h">🔮 BATTLE FORECAST <span class="muted" style="letter-spacing:0;text-transform:none">${esc(src)}</span></div>
@@ -6041,7 +6271,7 @@ function movementsBoard(c,inc,title){const now=G.tick;const rows=[];const HEAD=t
     const whoStr=whoList.slice(0,4).map(([nm,k])=>esc(nm.length>18?nm.slice(0,18)+'…':nm)+(k>1?' <span class="mono" style="color:var(--accent2)">×'+k+'</span>':'')).join(' · ')+(whoList.length>4?' · +'+(whoList.length-4)+' more':'');
     const verdict=(_shielded||_newbie)?'<span style="color:var(--ok);font-weight:600">capture blocked</span>':g.maxThreat>=1?'<span style="color:var(--danger);font-weight:600">overwhelming</span>':g.maxThreat>=0.5?'<span style="color:var(--alert);font-weight:600">major</span>':g.maxThreat>=0.02?'<span class="muted">minor</span>':'<span class="muted">skirmish</span>';
     const mine=g.region.owner===c.id;
-    const defBtn=mine?(homeUnits>0?`<button class="btn sm" onclick="BR_DEFEND(${g.region.id})" title="Send your units to defend">🛡 Defend</button>`:`<button class="btn ghost sm" onclick="go('military')" title="No army home — recruit first">🎖 Recruit</button>`):'';
+    const defBtn=mine?p7Solo()?p7IncBtns(g.region,homeUnits):(homeUnits>0?`<button class="btn sm" onclick="BR_DEFEND(${g.region.id})" title="Send your units to defend">🛡 Defend</button>`:`<button class="btn ghost sm" onclick="go('military')" title="No army home — recruit first">🎖 Recruit</button>`):'';
     // Per-attacker detail (Strike back only when you actually have an army home to strike with).
     const detail=g.items.slice().sort((a,b)=>a.eta-b.eta).map(x=>{const fid=(x.from&&!x.stealth)?x.from.id:null;const who=x.from?(x.from.name+(x.from.tag?' ['+x.from.tag+']':'')):'Unknown'+(x.stealth?' (stealth)':'');
       return `<div class="row between small" style="gap:8px;padding:3px 0;border-top:1px solid var(--border)"><span>${(fid!=null)?`<span class="lk" onclick="GOTO_NATION(${fid})">${esc(who)}</span>`:esc(who)}</span><span class="muted">${full(x.size||0)} units · ${x.eta<=0?'now':x.eta+'t'}${(fid!=null&&homeUnits>0)?` · <span class="lk" onclick="GOTO_NATION(${fid})" title="Show them on the map to strike back">⚔ strike back</span>`:''}</span></div>`;}).join('');
@@ -6158,9 +6388,9 @@ function renderLanding(){
       <a class="card" href="updates.html" target="_self" rel="noopener" style="display:block;text-decoration:none;color:inherit;margin:0 auto">
         <div class="row between wrap" style="gap:10px;align-items:center">
           <div style="min-width:0;flex:1">
-            <div><span class="mono" style="color:var(--gold);font-size:11px;letter-spacing:1px">VERSION 6.0 · UPDATE 6</span> <span class="muted small">October 2026</span></div>
-            <div style="font-weight:700;margin-top:3px">Terrastate 6.0: Solid Ground</div>
-            <div class="muted small mt">Saves move to a much larger browser store and no longer slow down every click. Turns are faster. Your saved game is copied over by itself and the old copy is kept as a reserve.</div>
+            <div><span class="mono" style="color:var(--gold);font-size:11px;letter-spacing:1px">VERSION 6.1 · PATCH</span> <span class="muted small">October 2026</span></div>
+            <div style="font-weight:700;margin-top:3px">Terrastate 6.1: Act where you read</div>
+            <div class="muted small mt">Every warning and report now has the button that fixes it. Defend in one press, recall and shield in one press, quick buy on the market, standing orders for the chores, pacts with your neighbours.</div>
           </div>
           <span class="btn ghost sm" style="flex:none;pointer-events:none">What is new</span>
         </div>
@@ -6228,7 +6458,7 @@ function renderLanding(){
   {const b=s.querySelector('#lpNews');if(b)b.onclick=()=>{const t=s.querySelector('#playerupdate');if(t)t.scrollIntoView({behavior:'smooth',block:'center'});};}
 }
 // ---- Legal identity: ONE place to change the operator / contact / copyright holder. Used by the Privacy, Terms and Credits tabs and the footer.
-const LEGAL={operator:'Wim Kamphorst',email:'earth2026game@gmail.com',author:'Wim Kamphorst',country:'the Netherlands',law:'Dutch law',dpa:'Autoriteit Persoonsgegevens (the Dutch data protection authority)',dpaUrl:'https://www.autoriteitpersoonsgegevens.nl',version:'1.0',updated:'September 2026',build:'Version 6.0 · Oct 2026',minAge:16};
+const LEGAL={operator:'Wim Kamphorst',email:'earth2026game@gmail.com',author:'Wim Kamphorst',country:'the Netherlands',law:'Dutch law',dpa:'Autoriteit Persoonsgegevens (the Dutch data protection authority)',dpaUrl:'https://www.autoriteitpersoonsgegevens.nl',version:'1.0',updated:'September 2026',build:'Version 6.1 · Oct 2026',minAge:16};
 LEGAL.contact=`<b>${LEGAL.operator}</b>, <a href="mailto:${LEGAL.email}">${LEGAL.email}</a>`;
 // ---- Landing-page manual: beginner's handbook + combat formulae -------------
 const MANUAL={
@@ -7118,7 +7348,7 @@ const ICONS={
  codex:_sv('<path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2Z"/><path d="M9 7h7M9 11h7"/>')};
 // Mobile navigation: 4 primary destinations + a "More" sheet grouping the rest.
 const MENUICON=_sv('<line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>');
-const BOTTOMNAV=[['dashboard','Home'],['map','Map'],['self','Homeland'],['around','Nearby'],['__more','More']];
+const BOTTOMNAV=[['dashboard','Home'],['military','Forces'],['self','Homeland'],['around','Nearby'],['__more','More']];
 const MOREGROUPS=[['World',['map']],['Economy',['economy','production','research','market']],['Military',['military','covert']],['Diplomacy',['diplomacy','clans','mail']],['Standings',['rankings','reports']],['Help',['codex']]];
 const PRIMARY_NAV=BOTTOMNAV.filter(x=>x[0]!=='__more').map(x=>x[0]);
 const EARLY_NAV=[['dashboard','Home'],['production','Build'],['military','Recruit'],['map','Map'],['__more','More']];
@@ -7134,7 +7364,7 @@ function buildMobileNav(){const bn=$('bottomnav');if(!bn)return;
     el.onclick=()=>{if(isMore)openMore();else{closeMore();go(k);}};bn.appendChild(el);});}
 function openMore(){const ms=$('moresheet');if(!ms)return;
   const groups=MOREGROUPS.map(([title,keys])=>`<h4>${title}</h4>`+keys.map(k=>`<div class="mrow ${k===view?'on':''}" data-mk="${k}"><span class="i">${ICONS[k]||''}</span><span>${navLabel(k)}</span></div>`).join('')).join('');
-  ms.innerHTML=`<div class="sheet"><div style="position:sticky;top:-16px;background:var(--panel);border-bottom:1px solid var(--border2);display:flex;justify-content:space-between;align-items:center;z-index:2;margin:-16px -18px 8px;padding:14px 18px"><strong style="font-size:15px">Menu</strong><button class="gearbtn" id="moreclose" title="Sluiten" style="font-size:18px;width:40px;height:40px;min-height:40px">✕</button></div>${groups}<div style="padding:14px 0 2px"><button class="btn ghost" style="width:100%;min-height:50px;font-size:14px" id="moreclose2">✕ Sluiten</button></div></div>`;
+  ms.innerHTML=`<div class="sheet"><div style="position:sticky;top:-16px;background:var(--panel);border-bottom:1px solid var(--border2);display:flex;justify-content:space-between;align-items:center;z-index:2;margin:-16px -18px 8px;padding:14px 18px"><strong style="font-size:15px">Menu</strong><button class="gearbtn" id="moreclose" title="Close" style="font-size:18px;width:40px;height:40px;min-height:40px">✕</button></div>${groups}<div style="padding:14px 0 2px"><button class="btn ghost" style="width:100%;min-height:50px;font-size:14px" id="moreclose2">✕ Close</button></div></div>`;
   ms.classList.add('on');ms.onclick=e=>{if(e.target===ms)closeMore();};
   ms.querySelector('#moreclose').onclick=closeMore;
   ms.querySelector('#moreclose2').onclick=closeMore;
@@ -7324,7 +7554,7 @@ function showVictory(){sfx('victory');const w=G._winner;const c=G.countries[w];c
 function matesUnderAttack(c){const out=[];const seen={};G.countries.forEach(o=>{if(o.id===c.id||o.retired)return;if(!(c.clan!=null&&o.clan===c.clan)&&homeCluster(o)!==homeCluster(c))return;
   incomingTo(o.id).forEach(x=>{if(x.threat<0.02||seen[x.region.id])return;seen[x.region.id]=1;const dp=Math.round(regionDef(x.region));const ap=incomingTo(o.id).filter(y=>y.region.id===x.region.id).reduce((s,y)=>s+(y.atkP||0),0);out.push({o,r:x.region,eta:x.eta,ap:Math.round(ap),dp,ally:c.clan!=null&&o.clan===c.clan});});});
   return out.sort((a,b)=>a.eta-b.eta);}
-function priorityItems(){const c=you();if(!c)return [];const out=[];const pj=projection(c);
+function _p7Prio0(){const c=you();if(!c)return [];const out=[];const pj=projection(c);
   const inc=incomingTo(c.id).filter(x=>x.threat>=0.02);
   if(inc.length){const eta=Math.min.apply(null,inc.map(x=>x.eta));const shielded=newbieProtected(c)||shieldActive(c);const sl=newbieProtected(c)?newbieLeft(c):null;
     // Besieged: many attacks and/or force that dwarfs your defence AND you have almost nothing to fight with.
@@ -7388,7 +7618,7 @@ function renderAlerts(v){try{const c=you();const cl=c&&clanOf(c);const a=cl&&act
     v.appendChild(bar);bar.querySelectorAll('[data-wa]').forEach(b=>b.onclick=async e=>{e.stopPropagation();const k=b.dataset.wa;if(k==='view'){go('clans');return;}const res=await cmdAckAlert(c,k);if(res.ok){toast(k==='in'?'⚔ Acknowledged, you are in':'Noted, marked as unavailable');save();go(view);}else toast(res.error,'bad');});}}catch(e){}
   try{const eg=endgameLine();if(eg){const eb=h(eg);eb.querySelector('[data-go]').onclick=()=>go('rankings');v.appendChild(eb);}}catch(e){}
   if(view==='dashboard')return;const items=priorityItems().filter(a=>a.sev===0);if(!items.length)return;
-  const bar=h(`<div class="alertbar">${items.map(a=>`<div class="alertrow ${a.cls}" data-go="${a.go}"${a.reinforce!=null?' data-rr="'+a.reinforce+'"':''}><span>${a.icon} ${esc(a.title)}. ${esc(a.detail)}</span><span class="arr">${a.qa?qaHTML(quickFixes(you(),a.qa)):''}${a.reinforce!=null?'<button class="btn sm" data-reinf="'+a.reinforce+'" style="font-size:11px;padding:4px 8px;margin-right:6px" onclick="event.stopPropagation()">🛡 Reinforce</button>':''}${a.sos?'<button class="btn sm" data-sos="1" style="font-size:11px;padding:4px 8px;margin-right:6px" onclick="event.stopPropagation()">🆘 SOS</button>':''}GO →</span></div>`).join('')}</div>`);
+  const bar=h(`<div class="alertbar">${items.map(a=>`<div class="alertrow ${a.cls}" data-go="${a.go}"${a.reinforce!=null?' data-rr="'+a.reinforce+'"':''}><span>${a.icon} ${esc(a.title)}. ${esc(a.detail)}</span><span class="arr">${a.qa?qaHTML(quickFixes(you(),a.qa)):''}${p7Actions(a)}${a.reinforce!=null&&!p7OwnR(a.reinforce)?'<button class="btn sm" data-reinf="'+a.reinforce+'" style="font-size:11px;padding:4px 8px;margin-right:6px" onclick="event.stopPropagation()">🛡 Reinforce</button>':''}${a.sos?'<button class="btn sm" data-sos="1" style="font-size:11px;padding:4px 8px;margin-right:6px" onclick="event.stopPropagation()">🆘 SOS</button>':''}GO →</span></div>`).join('')}</div>`);
   v.appendChild(bar);
   // For an incoming-attack bar, GO (and the whole row) opens the defend flow for that region — otherwise, on Homeland
   // itself, GO just re-opened the same screen and looked dead. Alerts without a region still navigate to their target.
@@ -7922,7 +8152,7 @@ VIEWS.dashboard=v=>{const c=you();const pj=projection(c),sc=scores(c);const sp=c
   // ---- PRIORITY CENTER : what needs attention, right now ----
   const pri=priorityItems();
   const priShown=pri.slice(0,3); // top 3 most-critical only, the rest wait until these are handled
-  const priHTML=pri.length?priShown.map(a=>`<div class="prow"><span class="pico">${a.icon}</span><div style="flex:1;min-width:0"><div class="small" style="font-weight:700;color:var(--${a.cls==='bad'?'bad':a.cls==='good'?'good':'text'})">${esc(a.title)}</div><div class="muted small">${esc(a.detail)}</div>${a.qa?'<div class="mt" style="margin-top:6px">'+qaHTML(quickFixes(c,a.qa))+'</div>':''}</div><button class="btn sm ${a.cls==='bad'?'':'sec'}" data-pgo="${a.go}"${a.shield?' data-pshield="1"':''}${a.recallStrikes?' data-precall="1"':''}${a.withdrawIdle?' data-pwithdraw="1"':''}${a.reinforce!=null?' data-preinf="'+a.reinforce+'"':''}>${esc(a.cta)} →</button></div>`).join('')+(pri.length>3?`<div class="muted small mt">+${pri.length-3} more, handle these first.</div>`:''):'<div class="muted small">✓ All clear, no urgent actions. Press your advantage or plan your next move.</div>';
+  const priHTML=pri.length?priShown.map(a=>`<div class="prow"><span class="pico">${a.icon}</span><div style="flex:1;min-width:0"><div class="small" style="font-weight:700;color:var(--${a.cls==='bad'?'bad':a.cls==='good'?'good':'text'})">${esc(a.title)}</div><div class="muted small">${esc(a.detail)}</div>${a.qa?'<div class="mt" style="margin-top:6px">'+qaHTML(quickFixes(c,a.qa))+'</div>':''}${(()=>{const _s=p7Actions(a);return _s?'<div style="margin-top:6px">'+_s+'</div>':'';})()}</div><button class="btn sm ${a.cls==='bad'?'':'sec'}" data-pgo="${a.go}"${a.shield?' data-pshield="1"':''}${a.recallStrikes?' data-precall="1"':''}${a.withdrawIdle?' data-pwithdraw="1"':''}${a.reinforce!=null?' data-preinf="'+a.reinforce+'"':''}>${esc(a.cta)} →</button></div>`).join('')+(pri.length>3?`<div class="muted small mt">+${pri.length-3} more, handle these first.</div>`:''):'<div class="muted small">✓ All clear, no urgent actions. Press your advantage or plan your next move.</div>';
   const pc=h(`<div class="card mb" ${pri.some(a=>a.sev===0)?'style="border-left:3px solid var(--bad)"':pri.length?'style="border-left:3px solid var(--warn)"':''}><h3>${pri.length?'⚠ '+pri.length+' thing'+(pri.length>1?'s':'')+' need attention':'✓ Priority center, all clear'}</h3>${priHTML}</div>`);
   z1.appendChild(pc);
   pc.querySelectorAll('[data-pgo]').forEach(el=>el.onclick=async ()=>{const g=el.dataset.pgo;if(el.dataset.precall){if(typeof RECALL_STRIKES==='function')RECALL_STRIKES();return;}if(el.dataset.pwithdraw){if(typeof WITHDRAW_IDLE==='function')WITHDRAW_IDLE();return;}if(el.dataset.pshield){const r=await cmdShield(c,true);if(r.ok){toast('🛡 Planetary Shield engaging, arms in '+SHIELD_ARM+' tick'+(SHIELD_ARM===1?'':'s')+'. Your regions can\'t be captured once it\'s up.','warn');go('fleets');drawTop();save();}else toast(r.error,'bad');return;}if(el.dataset.preinf){selDefend=+el.dataset.preinf;warTab='defence';go('fleets');setTimeout(()=>{const d=document.getElementById('dui');if(d)d.scrollIntoView({block:'center'});},80);return;}if(g==='dashboard'){const r=await cmdBuildCC(c);if(r.ok){toast('🏛 Earth Command Center under construction!');go('dashboard');drawTop();save();}else toast(r.error,'bad');}else go(g);});
@@ -8584,14 +8814,14 @@ VIEWS.fleets=v=>{const c=you();const inc=incomingTo(c.id);const cl0=clanOf(c);
     const nCrit=regs.filter(r=>r.sev===0).length;
     const verdictOf=r=>r.sev===0?{t:'⚠ Likely loss',c:'var(--danger)'}:r.sev===1?{t:'⚔ Contested',c:'var(--alert)'}:{t:'✅ Should hold',c:'var(--ok)'};
     const rows=regs.map(r=>{const v=verdictOf(r);
-      const fleetRows=r.fleets.slice().sort((a,b)=>a.eta-b.eta).map(x=>{const seen=!!(x.fleet&&(x.fleet.seen||x.fleet.acs));const who=seen?(x.from&&x.from.leader?leaderName(x.from):(x.from?x.from.name:'Unknown')):'Unidentified';const scan=(!seen&&x.fleet&&!x.fleet.acs)?`<button class="btn ghost sm" data-scan="${x.fleet.id}" title="Reveal this fleet's composition: 400 influence + 1 command point">🔍 Reveal (400 · 1 CP)</button>`:'';return `<tr><td>${esc(who)} ${seen?'<span class="tag">'+esc((x.from&&x.from.tag)||'')+'</span>':'<span class="pill n">?</span>'}${seen&&x.fleet&&x.fleet.units?'<div class="small muted">'+esc(fleetMixText(x.fleet.units,4))+'</div>':''}</td><td class="r mono" style="color:var(--danger)">${full(Math.round(x.atkP))}</td><td class="r"><span class="eta">${x.eta}t</span></td><td class="r">${scan}</td></tr>`;}).join('');
+      const fleetRows=r.fleets.slice().sort((a,b)=>a.eta-b.eta).map(x=>{const seen=!!(x.fleet&&(x.fleet.seen||x.fleet.acs));const who=seen?(x.from&&x.from.leader?leaderName(x.from):(x.from?x.from.name:'Unknown')):'Unidentified';const scan=(!seen&&x.fleet&&!x.fleet.acs)?`<button class="btn ghost sm" data-scan="${x.fleet.id}" title="Reveal this fleet's composition: 250 influence + 1 command point">🔍 Reveal (250 · 1 CP)</button>`:'';return `<tr><td>${esc(who)} ${seen?'<span class="tag">'+esc((x.from&&x.from.tag)||'')+'</span>':'<span class="pill n">?</span>'}${seen&&x.fleet&&x.fleet.units?'<div class="small muted">'+esc(fleetMixText(x.fleet.units,4))+'</div>':''}</td><td class="r mono" style="color:var(--danger)">${full(Math.round(x.atkP))}</td><td class="r"><span class="eta">${x.eta}t</span></td><td class="r">${scan}</td></tr>`;}).join('');
       const pct=Math.min(100,Math.round(r.dp/Math.max(1,r.ap*1.25)*100));
       return `<div style="padding:11px 0;border-top:1px solid var(--border)">
         <div class="row between wrap" style="gap:8px;align-items:center"><span style="min-width:0"><span style="white-space:nowrap"><b>${esc(r.region.name)}</b> ${coordChip(r.region.coord)}</span> · <span style="color:${v.c};font-weight:700">${v.t}</span></span>
           <span class="row wrap" style="gap:6px"><button class="btn sm" data-defend="${r.region.id}">🛡 Reinforce</button>${clanOf(c)?`<button class="btn sec sm" data-sos="${r.region.id}">🆘 Call alliance</button>`:''}${clanOf(c)&&r.nUnid?`<button class="btn ghost sm" data-scanreq="${r.region.id}" title="Ask an alliance-mate with recon to reveal the ${r.nUnid} unidentified fleet(s) for you">🔍 Ask alliance to scan</button>`:''}</span></div>
         <div class="small mt" style="color:var(--muted)"><b>${r.fleets.length}</b> fleet(s) inbound · enemy power <b style="color:var(--danger)">${full(r.ap)}</b> vs your power <b style="color:var(--ok)">${full(r.dp)}</b><span class="muted" title="These are combat-power totals, not unit counts. Power depends on unit type and tech, so a small force can carry big power.">&nbsp;ⓘ</span>${r.short>0?` · short <b style="color:var(--danger)">${full(r.short)}</b>`:''} · soonest lands in <b>${r.eta}t</b>${(()=>{try{const pl=defenderPool(r.region,c);return pl.excess&&pl.excess.length?` · <span style="color:var(--warn)">${pl.excess.length} allied fleet(s) overcrowded, garrison cap ${full(Math.round(pl.capP))} (2× your own defence)</span>`:'';}catch(e){return '';}})()}${r.nUnid?` · <span style="color:var(--warn)">${r.nUnid} unidentified, reveal for a real forecast</span>`:r.simRatio!=null?` · forecast ratio <b class="mono">${r.simRatio.toFixed(2)}</b> (engine simulation)`:' · power estimate only'}</div>
         <div class="bar mt" style="height:6px"><span style="width:${pct}%;background:${r.short>0?'var(--danger)':'var(--ok)'}"></span></div>
-        <details class="mt"><summary class="small muted" style="cursor:pointer">Show the ${r.fleets.length} individual fleet(s)${r.fleets.some(x=>x.fleet&&x.fleet.seen&&x.fleet.units)?' · defence plan':''}</summary><div class="scroll mt"><table><thead><tr><th>Attacker</th><th class="r">Power</th><th class="r">ETA</th><th></th></tr></thead><tbody>${fleetRows}</tbody></table></div>${(()=>{const seenF=r.fleets.filter(x=>x.fleet&&x.fleet.seen&&x.fleet.units&&r.region.owner===c.id);return seenF.length?defencePlanHTML(c,r.region,seenF):'<div class="muted small mt">Reveal a fleet (400 influence + 1 CP) to see its composition and a defence plan: what holds, what stops their trucks, and your counter-attack window.</div>';})()}</details>
+        <details class="mt"><summary class="small muted" style="cursor:pointer">Show the ${r.fleets.length} individual fleet(s)${r.fleets.some(x=>x.fleet&&x.fleet.seen&&x.fleet.units)?' · defence plan':''}</summary><div class="scroll mt"><table><thead><tr><th>Attacker</th><th class="r">Power</th><th class="r">ETA</th><th></th></tr></thead><tbody>${fleetRows}</tbody></table></div>${(()=>{const seenF=r.fleets.filter(x=>x.fleet&&x.fleet.seen&&x.fleet.units&&r.region.owner===c.id);return seenF.length?defencePlanHTML(c,r.region,seenF):'<div class="muted small mt">Reveal a fleet (250 influence + 1 CP) to see its composition and a defence plan: what holds, what stops their trucks, and your counter-attack window.</div>';})()}</details>
       </div>`;}).join('');
     const card=h(`<div class="card mb" style="border-left:3px solid ${nCrit?'var(--danger)':'var(--alert)'}"><h3>🔴 Your regions under attack <span class="muted small" style="text-transform:none;letter-spacing:0">${regs.length} region${regs.length===1?'':'s'} · one decision per region, not per fleet</span></h3>${rows}
       ${c.ready==='standby'?'<button class="btn sm mt" id="incMob">⚡ Mobilise forces (raise readiness)</button>':'<div class="muted small mt">Forces mobilised, defenders fight at full readiness.</div>'}</div>`);
@@ -8712,10 +8942,10 @@ VIEWS.fleets=v=>{const c=you();const inc=incomingTo(c.id);const cl0=clanOf(c);
         // Planetarion-style: incomings, scans, defence-calc and reinforce all in ONE panel. Each row expands
         // into the individual inbound fleets (with Reveal/scan) plus the defence plan, so you never leave to scan.
         const open=warDetailOpen.has(r.id);
-        const fleetRows=inc2.slice().sort((a,b)=>a.eta-b.eta).map(x=>{const seen=!!(x.fleet&&(x.fleet.seen||x.fleet.acs));const who=seen?(x.from&&x.from.leader?leaderName(x.from):(x.from?x.from.name:'Unknown')):'Unidentified';const scan=(!seen&&x.fleet&&!x.fleet.acs)?`<button class="btn ghost sm" data-scan="${x.fleet.id}" title="Reveal this fleet's composition: 400 influence + 1 command point">🔍 Reveal (400 · 1 CP)</button>`:'';return `<tr><td>${esc(who)} ${seen?'<span class="tag">'+esc((x.from&&x.from.tag)||'')+'</span>':'<span class="pill n">?</span>'}${seen&&x.fleet&&x.fleet.units?'<div class="small muted">'+esc(fleetMixText(x.fleet.units,4))+'</div>':''}</td><td class="r mono" style="color:var(--danger)">${full(Math.round(x.atkP))}</td><td class="r"><span class="eta">${x.eta}t</span></td><td class="r">${scan}</td></tr>`;}).join('');
+        const fleetRows=inc2.slice().sort((a,b)=>a.eta-b.eta).map(x=>{const seen=!!(x.fleet&&(x.fleet.seen||x.fleet.acs));const who=seen?(x.from&&x.from.leader?leaderName(x.from):(x.from?x.from.name:'Unknown')):'Unidentified';const scan=(!seen&&x.fleet&&!x.fleet.acs)?`<button class="btn ghost sm" data-scan="${x.fleet.id}" title="Reveal this fleet's composition: 250 influence + 1 command point">🔍 Reveal (250 · 1 CP)</button>`:'';return `<tr><td>${esc(who)} ${seen?'<span class="tag">'+esc((x.from&&x.from.tag)||'')+'</span>':'<span class="pill n">?</span>'}${seen&&x.fleet&&x.fleet.units?'<div class="small muted">'+esc(fleetMixText(x.fleet.units,4))+'</div>':''}</td><td class="r mono" style="color:var(--danger)">${full(Math.round(x.atkP))}</td><td class="r"><span class="eta">${x.eta}t</span></td><td class="r">${scan}</td></tr>`;}).join('');
         const seenF=inc2.filter(x=>x.fleet&&x.fleet.seen&&x.fleet.units&&r.owner===c.id);
-        const planHTML=seenF.length?defencePlanHTML(c,r,seenF):'<div class="muted small mt">Reveal a fleet (400 influence + 1 CP) above to see its composition and a defence plan: what holds, what stops their trucks, and your counter-attack window.</div>';
-        const nUnid=inc2.filter(x=>x.fleet&&!x.fleet.seen&&!x.fleet.acs).length;const revealAll=nUnid>1?`<div class="mt"><button class="btn ghost sm" data-scanall="${inc2.filter(x=>x.fleet&&!x.fleet.seen&&!x.fleet.acs).map(x=>x.fleet.id).join(',')}" title="400 influence + 1 command point per fleet">🔍 Reveal all ${nUnid} (${nUnid*400} · ${nUnid} CP)</button></div>`:'';
+        const planHTML=seenF.length?defencePlanHTML(c,r,seenF):'<div class="muted small mt">Reveal a fleet (250 influence + 1 CP) above to see its composition and a defence plan: what holds, what stops their trucks, and your counter-attack window.</div>';
+        const nUnid=inc2.filter(x=>x.fleet&&!x.fleet.seen&&!x.fleet.acs).length;const revealAll=nUnid>1?`<div class="mt"><button class="btn ghost sm" data-scanall="${inc2.filter(x=>x.fleet&&!x.fleet.seen&&!x.fleet.acs).map(x=>x.fleet.id).join(',')}" title="250 influence + 1 command point per fleet">🔍 Reveal all ${nUnid} (${nUnid*250} · ${nUnid} CP)</button></div>`:'';
         const askScan=(mine&&clanOf(c)&&nUnid)?`<div class="mt"><button class="btn ghost sm" data-scanreq="${r.id}" title="Ask an alliance-mate with recon to reveal the ${nUnid} unidentified fleet(s) for you">🔍 Ask alliance to scan (${nUnid} unidentified)</button></div>`:'';
         const detail=`<div class="scroll"><table><thead><tr><th>Attacker</th><th class="r">Power</th><th class="r">ETA</th><th></th></tr></thead><tbody>${fleetRows}</tbody></table></div>${revealAll}${askScan}${planHTML}`;
         // v3.29: FULL defender breakdown under the row — WHO is defending this region, how many units each sent,
@@ -10068,7 +10298,7 @@ VIEWS.clans=v=>{const c=you();const cl=clanOf(c);
   {const calls=defenceCalls(cl);
    if(calls.length){const SB={ASSIGNED:{p:'g',t:'✓ ASSIGNED'},OPEN:{p:'w',t:'⚠ OPEN'},CRITICAL:{p:'b',t:'⚠⚠ CRITICAL'}};
      const rows=calls.slice(0,16).map(call=>{const isMe=call.owner.id===c.id;const sb=SB[call.status];const pct=Math.min(100,Math.round(call.assigned/Math.max(1,call.required)*100));
-       const unseen=call.threats.filter(x=>!x.fleet.seen&&!x.fleet.acs);const scanBtn=unseen.length?`<button class="btn ghost sm" data-ascan="${unseen.map(x=>x.fleet.id).join(',')}" title="Reveal every unidentified fleet on this call: 400 influence + 1 CP each">Scan ${unseen.length>1?'all '+unseen.length+' ('+(unseen.length*400)+')':'(400)'}</button>`:'';const seenMix=call.threats.filter(x=>x.fleet&&(x.fleet.seen||x.fleet.acs)).map(x=>`<div class="small muted" style="margin-top:4px">🔍 <b>${esc((x.from&&x.from.tag)||'?')}</b>, ${full(fleetSize(x.fleet.units||{}))} units, lands in ${x.eta}t: ${esc(fleetMixText(x.fleet.units,4))}</div>`).join('');
+       const unseen=call.threats.filter(x=>!x.fleet.seen&&!x.fleet.acs);const scanBtn=unseen.length?`<button class="btn ghost sm" data-ascan="${unseen.map(x=>x.fleet.id).join(',')}" title="Reveal every unidentified fleet on this call: 250 influence + 1 CP each">Scan ${unseen.length>1?'all '+unseen.length+' ('+(unseen.length*250)+')':'(400)'}</button>`:'';const seenMix=call.threats.filter(x=>x.fleet&&(x.fleet.seen||x.fleet.acs)).map(x=>`<div class="small muted" style="margin-top:4px">🔍 <b>${esc((x.from&&x.from.tag)||'?')}</b>, ${full(fleetSize(x.fleet.units||{}))} units, lands in ${x.eta}t: ${esc(fleetMixText(x.fleet.units,4))}</div>`).join('');
        const seenFleet=call.threats.find(x=>x.fleet.seen);const defBtn=seenFleet?`<button class="btn ghost sm" data-plandef="${seenFleet.fleet.id}">Plan</button>`:'';
        const assignBtn=`<button class="btn sm" data-defend="${call.region.id}">Assign my army</button>`;
        return `<div class="warnrow" style="${call.status==='CRITICAL'?'border-color:rgba(240,98,95,.6)':''}">
@@ -10618,7 +10848,7 @@ VIEWS.reports=v=>{const c=you();
     const byTick=[];items.slice(0,160).forEach(e=>{let g=byTick[byTick.length-1];if(!g||g.tick!==e.tick){g={tick:e.tick,rows:[]};byTick.push(g);}g.rows.push(e);});
     const sevCol=e=>e.sev>=3?'var(--bad)':e.sev===2?'var(--warn)':e.sev===1?'var(--accent2)':'inherit';
     window._sitShow=window._sitShow||8;const _hidden=Math.max(0,byTick.length-window._sitShow);
-    const evRow=e=>`<div class="row small" style="gap:8px;padding:4px 0;align-items:flex-start"><span class="pill n" style="text-transform:none;flex-shrink:0;min-width:92px;justify-content:center">${SITREP_CLS[e.cls].ic} ${SITREP_CLS[e.cls].n}</span><span style="flex:1;color:${sevCol(e)}">${wrapCoords(esc(e.head))}</span>${e.cls==='battle'&&(G.battles||[]).some(b=>b.tick===e.tick&&b.coord===e.coord)?`<span class="lk small" style="flex-shrink:0;color:var(--accent2);cursor:pointer" onclick="window._openBat={tick:${e.tick},coord:'${esc(e.coord||'')}'};go('reports')">Report →</span>`:e.go&&e.go!=='reports'?`<span class="lk small" style="flex-shrink:0;color:var(--accent2);cursor:pointer" onclick="go('${e.go}')">Open →</span>`:''}</div>`;
+    const evRow=e=>`<div class="row small" style="gap:8px;padding:4px 0;align-items:flex-start"><span class="pill n" style="text-transform:none;flex-shrink:0;min-width:92px;justify-content:center">${SITREP_CLS[e.cls].ic} ${SITREP_CLS[e.cls].n}</span><span style="flex:1;color:${sevCol(e)}">${wrapCoords(esc(e.head))}</span>${e.cls==='battle'&&(G.battles||[]).some(b=>b.tick===e.tick&&b.coord===e.coord)?`<span class="lk small" style="flex-shrink:0;color:var(--accent2);cursor:pointer" onclick="window._openBat={tick:${e.tick},coord:'${esc(e.coord||'')}'};go('reports')">Report →</span>`:e.go&&e.go!=='reports'?`<span class="lk small" style="flex-shrink:0;color:var(--accent2);cursor:pointer" onclick="go('${e.go}')">Open →</span>`:''}${p7EvBtn(e)}</div>`;
     const tickBody=g=>{const br=summariseTickBattles(g.rows);if(!br.groups)return g.rows.map(evRow).join('');
       const summaries=br.groups.map(gr=>{const bits=[];if(gr.blocked)bits.push('<span style="color:var(--ok)">'+gr.blocked+' blocked (shield)</span>');if(gr.held)bits.push(gr.held+' held');if(gr.landed)bits.push(gr.landed+' landed');if(gr.lost)bits.push('<span style="color:var(--bad)">'+gr.lost+' lost</span>');
         return `<details class="brep" style="border-top:1px solid var(--border)"><summary class="row small" style="gap:8px;padding:4px 0"><span class="pill n" style="text-transform:none;flex-shrink:0;min-width:92px;justify-content:center">⚔ Battles</span><span style="flex:1">${wrapCoords(esc(gr.coord))} · ${bits.join(' · ')} <span class="muted">(${gr.rows.length} events)</span></span><span class="chev">▸</span></summary><div style="padding-left:6px">${gr.rows.map(evRow).join('')}</div></details>`;}).join('');
@@ -15288,7 +15518,7 @@ function growLesson(c){try{if(!c||c.isAI!==false||c._guideOff)return null;if(G.t
   const out=(c.fleets||[]).some(f=>f&&(f.status==='outbound'||f.status==='staged'||f.status==='battle')&&f.intent!=='garrison'&&f.intent!=='reinforce')||(G.acs||[]).some(op=>(op.fleets||[]).some(f=>f.owner===c.id));
   if(out)return null; // an attack is already under way: let it land
   if(n===1&&!scouted)return {sev:2,what:'Lesson 1 of 3: scout a neighbour',
-    why:'You only grow by taking ground. First see what a neighbour holds: open Nearby and press Scout on a region close to you (300 influence, 1 command point).',go:'around',btn:'Open Nearby'};
+    why:'You only grow by taking ground. First see what a neighbour holds: open Nearby and press Scout on a region close to you (200 influence, 1 command point).',go:'around',btn:'Open Nearby'};
   if(n===1&&a.n<400)return {sev:2,what:'Lesson 2 of 3: build a strike force',
     why:'Your scout report shows their defence. Recruit enough to send about one and a half times that, and still keep some army at home.',go:'military',btn:'Recruit'};
   if(n===1)return {sev:2,what:'Lesson 2 of 3: take your first region',
@@ -15296,7 +15526,7 @@ function growLesson(c){try{if(!c||c.isAI!==false||c._guideOff)return null;if(G.t
   return {sev:2,what:'Lesson 3 of 3: hold three regions',
     why:'Every region adds income and score. New ground is weak at first and the old owner often strikes back, so keep a reserve. Then take one more.',go:'around',btn:'Open Nearby'};
 }catch(e){return null;}}
-function soloNextAction(c){
+function _p7Next0(c){
   try{
     if(!c)return null;
     const inc=(typeof incomingTo==='function'?incomingTo(c.id):[]).filter(x=>(x.threat||0)>=0.25);
@@ -15374,7 +15604,7 @@ function injectSoloNext(){
       '<div style="font-weight:800;font-size:18px;margin:4px 0 2px">'+(typeof esc==='function'?esc(act.what):act.what)+'</div>'+
       '<div class="small muted">'+(typeof esc==='function'?esc(act.why):act.why)+'</div>'+
       '<div class="row mt" style="gap:8px;margin-top:8px">'+
-      '<button class="btn sm" data-solo-go="'+act.go+'">'+(typeof esc==='function'?esc(act.btn):act.btn)+'</button></div>';
+      '<button class="btn sm" data-solo-go="'+act.go+'">'+(typeof esc==='function'?esc(act.btn):act.btn)+'</button>'+(typeof p7NextBtns==='function'?p7NextBtns(act):'')+'</div>';
     if(!el){
       el=document.createElement('div');
       el.className='card mb solo-next';
@@ -15482,7 +15712,7 @@ if(typeof runTick==='function'){
 }
 
 setTimeout(soloRun,1600);
-window.soloNextAction=soloNextAction;
+window._p7Next0=_p7Next0;window.soloNextAction=soloNextAction;
 })();
 
 

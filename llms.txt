@@ -2,7 +2,7 @@
 
 > Terrastate is a free, Planetarion-style grand strategy game that runs in the web browser. You lead one nation against 300 AI nations on a world map, form alliances and fight for the Nexus, the one region that decides the season. No account, no download, no ads, no pay-to-win. Romaterra is the same game set in the age of Rome, and Ironfront in a 1940s world at war. Made by Wim Kamphorst, a hobby developer from the Netherlands.
 
-Current version: 6.0. The game is updated regularly. Language: English. Platforms: any modern browser on desktop or phone; installable and playable offline.
+Current version: 6.1. The game is updated regularly. Language: English. Platforms: any modern browser on desktop or phone; installable and playable offline.
 
 ## Play
 - [Play Terrastate](https://playterrastate.nl/play.html): modern world, alternative 2026, 25 theaters from Europe to Oceania
@@ -26,6 +26,7 @@ Current version: 6.0. The game is updated regularly. Language: English. Platform
 - [Discord community and live-world waitlist](https://discord.gg/PZGPKuzPCb)
 
 ## Good to know
+- Patch 6.1 (October 2026), Act Where You Read, for all three games: action buttons in warnings, the alert bar and reports; Defend in one press (scan, and field works in Ironfront); recall plus shield in one press; standing orders, off until switched on (return garrisons, auto-scan, retreat line, pacify, keep army at a size, research plan); market buying without command points; scans 250 and scouting 200 influence, influence income grows with regions; non-aggression pacts with computer neighbours in solo; small border probes from computer neighbours in solo.
 - Ironfront (October 2026), the third era: a 1940s world at war with invented nations, leaders and flags. Win by holding 2 of the 3 Capital Sectors with a GHQ Bunker for 12 ticks. Its own battle layer: battle orders every tick (Assault, Barrage or Flank against Dig in, Counter-attack or Ambush; the side that guesses right gets +25% that tick), field works (trenches 1 tick, minefield 2, bunker 3) on a threatened region, incoming armies shown as radio traffic with a size estimate, feints that look three times bigger on weaker radar and turn back before landing, and allied help that counts half when it arrives after the battle started.
 - Update 6.0 (October 2026), Solid Ground: saves in a much larger browser store (moved over by itself, the old copy kept as a reserve), no slow compression after every order, faster turns, and a "Calculating turn" bar on END TURN.
 - Update 5.0 (October 2026), Every Turn Counts: AI allies defend commanders who play, a fair defender's bounty, prestige projects for a full treasury (influence only, no military power), a sharper Warlord with the same resources, one clear comeback bonus capped at +150% production, a shorter Home and a calmer phone screen.
