@@ -16,7 +16,7 @@
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="https://playterrastate.nl/img/v4/romaterra-share.jpg">
 <meta name="author" content="Wim Kamphorst">
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"VideoGame","@id":"https://playterrastate.nl/romaterra.html#game","name":"Romaterra","url":"https://playterrastate.nl/romaterra.html","description":"Free Roman grand strategy in your browser. Rule a people of the ancient world against hundreds of AI rivals, take Roma, raise the Imperial Palace and hold it. No account, no download.","image":"https://playterrastate.nl/img/v4/romaterra-share.jpg","genre":["Strategy","Grand strategy","Turn-based strategy","4X","Browser game"],"gamePlatform":["Web browser","Windows","macOS","Linux","Android","iOS"],"applicationCategory":"Game","operatingSystem":"Any (web browser)","playMode":"SinglePlayer","inLanguage":"en","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"EUR","availability":"https://schema.org/InStock"},"author":{"@type":"Person","@id":"https://playterrastate.nl/#wim","name":"Wim Kamphorst","url":"https://wimkamphorst.nl"},"publisher":{"@type":"Person","@id":"https://playterrastate.nl/#wim","name":"Wim Kamphorst","url":"https://wimkamphorst.nl"},"softwareVersion":"6.1","sameAs":["https://wimkamphorstcoaching.itch.io/romaterra"]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"VideoGame","@id":"https://playterrastate.nl/romaterra.html#game","name":"Romaterra","url":"https://playterrastate.nl/romaterra.html","description":"Free Roman grand strategy in your browser. Rule a people of the ancient world against hundreds of AI rivals, take Roma, raise the Imperial Palace and hold it. No account, no download.","image":"https://playterrastate.nl/img/v4/romaterra-share.jpg","genre":["Strategy","Grand strategy","Turn-based strategy","4X","Browser game"],"gamePlatform":["Web browser","Windows","macOS","Linux","Android","iOS"],"applicationCategory":"Game","operatingSystem":"Any (web browser)","playMode":"SinglePlayer","inLanguage":"en","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"EUR","availability":"https://schema.org/InStock"},"author":{"@type":"Person","@id":"https://playterrastate.nl/#wim","name":"Wim Kamphorst","url":"https://wimkamphorst.nl"},"publisher":{"@type":"Person","@id":"https://playterrastate.nl/#wim","name":"Wim Kamphorst","url":"https://wimkamphorst.nl"},"softwareVersion":"7.0","sameAs":["https://wimkamphorstcoaching.itch.io/romaterra"]}</script>
 <link rel="manifest" href="romaterra.webmanifest"><meta name="theme-color" content="#1a1410"><link rel="icon" href="icons/romaterra-64.png"><link rel="apple-touch-icon" href="icons/romaterra-180.png">
 <script>window.__MP_URL__=''; /* '' = live multiplayer not open yet */ if('serviceWorker' in navigator)addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));</script>
 <script data-goatcounter="https://playterrastate.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
@@ -942,7 +942,7 @@ function fmtR(k,v){return (RMETA[k]&&RMETA[k].money)?fmt(v,true):((RMETA[k]?RMET
 // costTok: a cost figure wrapped so hovering the icon shows the resource name (€ = Money, ⛓ = Steel, 💾 = Electronics, …).
 function costTok(k,v,cls){return `<span class="ctok${cls?' '+cls:''}" title="${RMETA[k]?RMETA[k].l:k}">${fmtR(k,v)}</span>`;}
 function fmt(n,money){const neg=n<0;n=Math.abs(n);let o;if(n>=1e9)o=(n/1e9).toFixed(2)+'B';else if(n>=1e6)o=(n/1e6).toFixed(2)+'M';else if(n>=1e3)o=(n/1e3).toFixed(1)+'K';else o=Math.round(n).toString();return (money?'Ð':'')+(neg?'-':'')+o;}
-const signed=(n,m)=>(n>=0?'+':'')+fmt(n,m);
+const signed=(n,m)=>{const f=fmt(n,m);if(n<0&&!/[1-9]/.test(String(f)))return '+'+fmt(0,m);return (n>=0?'+':'')+f;};
 const full=n=>Math.round(n).toLocaleString();
 function sparkline(vals,marks){if(!vals||vals.length<2)return '<div class="muted small" style="height:28px;margin-top:6px;display:flex;align-items:center">no price history yet</div>';
   const min=Math.min(...vals),max=Math.max(...vals),rng=max-min||1;
@@ -1437,7 +1437,7 @@ function cmdAskWithdraw(c,onlyOwner){const cl=clanOf(c);
 function cmdShareIntel(c,rid){const cl=clanOf(c);if(!cl)return err('Join an alliance to share intel');const r=G.regions.find(x=>x.id===rid);if(!r)return err('Region not found');
   if(!rateOk(c,'clan',5,2))return err('Slow down, too many alliance messages.');
   const it=regionIntel(c,rid);const o=r.owner!=null?G.countries[r.owner]:null;
-  const line=it?'🔍 Intel on '+r.name+' ('+r.coord+')'+(o?' ['+o.tag+']':'')+': est. defence '+full(it.lo)+'–'+full(it.hi)+' ('+it.conf+'% conf)'+(it.comp&&Object.keys(it.comp).length?' · '+Object.keys(it.comp).slice(0,4).map(k=>(UBYK[k]?UBYK[k].n:k)+' ~'+full(it.comp[k])).join(', '):''):'🔍 '+r.name+' ('+r.coord+')'+(o?' ['+o.tag+']':'')+', est. defence ~'+full(Math.round(regionDef(r)))+' (unscouted).';
+  const line=it?'🔍 Intel on '+r.name+' ('+r.coord+')'+(o?' ['+o.tag+']':'')+': est. defence '+full(it.lo)+'–'+full(it.hi)+' ('+it.conf+'% conf)'+(it.comp&&Object.keys(it.comp).length?' · '+Object.keys(it.comp).slice(0,4).map(k=>(UBYK[k]?UBYK[k].n:k)+' ~'+full(it.comp[k])).join(', '):''):'🔍 '+r.name+' ('+r.coord+')'+(o?' ['+o.tag+']':'')+', not scouted yet. Scout it for a defence estimate.';
   clanPost(cl,c.id,line);return ok();}
 // v3.29: ask your alliance to reveal the UNIDENTIFIED fleets inbound to one of your regions. Posts a scan request to the
 // war channel (real teammates answer with a normal Reveal, which is now shared with you — see cmdScan). Solo/AI: a clan-mate
@@ -1490,14 +1490,16 @@ function renderDefRoster(cl,rid){const list=allianceDefenders(cl,rid);
   return '<div style="background:rgba(201,139,224,.06);border:1px solid rgba(201,139,224,.22);border-radius:8px;padding:7px 9px">'
     +'<div class="small" style="color:var(--ok);font-weight:600;margin-bottom:2px">🛡 Defence response · '+list.length+' responder'+(list.length===1?'':'s')+(totU?' · '+full(totU)+' units inbound':'')+'</div>'
     +rows+(more>0?'<div class="small muted" style="padding-top:2px">+'+more+' more responding</div>':'')+'</div>';}
-function cmdShareReport(c,idx){const cl=clanOf(c);if(!cl)return err('Join an alliance to share reports');const b=G.battles&&G.battles[idx];if(!b)return err('Report not found');
+function cmdShareReport(c,idx){const cl=clanOf(c);if(!cl)return err('Join an alliance to share reports');const _bk=x=>x.tick+'|'+(x.coord||'')+'|'+(x.atkId==null?'':x.atkId);
+  const b=typeof idx==='string'?(G.battles||[]).find(x=>_bk(x)===idx):(G.battles&&G.battles[idx]);
+  const _in=b&&[b.atkId,b.defId].some(id=>id!=null&&(id===c.id||(G.countries[id]&&G.countries[id].clan===cl.id)));if(!b||!_in)return err('Report not found');
   if(!rateOk(c,'clan',5,2))return err('Slow down, too many alliance messages.');
   clanPost(cl,c.id,battleOneLiner(b),'logi');
   return ok();}
 function battleOneLiner(b){const youAtk=!!b.youAtk;const foe=youAtk?(b.defName||'them'):(b.atkName||'them');const place=(b.region||'the ground')+(b.coord?' '+b.coord:'');
   const d=b.detail,su=o=>Object.values(o||{}).reduce((a,x)=>a+(+x||0),0);const yl=d?su(youAtk?d.atkLost:d.defLost):null;
   const verb=b.protected?'Shield held':b.outcome==='skirmish'?'A look, not the war':b.outcome==='captured'?(youAtk?'We took it':'We lost it'):(youAtk?'We did not take it':'We held');
-  return verb+' at '+place+' vs '+foe+(yl!=null?' · we lost '+yl:'')+'.';}
+  return verb+' at '+place+' vs '+foe+(yl?' · we lost '+full(yl)+' unit'+(yl===1?'':'s'):'')+'.';}
 // ---- Direct messaging / clan mail: player↔player, to your alliance, to officers ----
 // The comms layer that turns lone nations into a diplomatic, plotting, taunting world.
 function _mailId(){return G._mailId=(G._mailId||0)+1;}
@@ -2466,7 +2468,7 @@ function _p7Rec0(c,order){const items=[];let total={};
   pay(c,total);c.cp--;
   let maxT=0;items.forEach(it=>{maxT=Math.max(maxT,queueTraining(c,it.k,it.n,it.d.bt));});
   return ok({types:items.length,units:items.reduce((s,it)=>s+it.n,0),ticks:maxT});}
-function cmdReady(c,l){if(!READY[l])return err('bad');const order=['standby','ready','mobilized','full'];if(order.indexOf(l)>=2&&order.indexOf(l)>order.indexOf(c.ready))c._mobShift=G.tick;c.ready=l;return ok();}
+function cmdReady(c,l){if(typeof l!=='string'||!Object.prototype.hasOwnProperty.call(READY,l))return err('bad');const order=['standby','ready','mobilized','full'];if(order.indexOf(l)>=2&&order.indexOf(l)>order.indexOf(c.ready))c._mobShift=G.tick;c.ready=l;return ok();}
 function cmdCommander(c,k){if((c.commanders||[]).includes(k))return err('Already recruited');const d=COMMANDERS.find(x=>x.k===k);if(!d)return err('Unknown');
   // v3.13.2: a hard cap makes commanders a TACTICAL CHOICE, not a shopping list. With all six a rich player just stacks every
   // modifier; capped at MAX_COMMANDERS you must commit to an identity (war? logistics? economy? research?) and live with it.
@@ -4990,7 +4992,7 @@ function runTick(){
     f.status='outbound';f.eta=G.tick+f.travel;
     {const r=G.regions.find(x=>x.id===f.target);if(c.isAI===false)sitrep(c,'fleet','🦅 Scheduled army departed → '+(r?r.name:'target')+', '+full(fleetSize(f.units))+' units, lands tick #'+f.eta,{coord:r?r.coord:null,go:'fleets'});if(c.id===G.you)toast('🦅 Scheduled army launched'+(r?' → '+r.name:'')+', lands in '+f.travel+'t.','warn');}}});});
   // fleets: outbound arrive & fight, survivors return home after travel time
-  try{p7Tick();}catch(e){}G.countries.forEach(c=>{if(c.retired)return;c.fleets=(c.fleets||[]).filter(f=>{
+  try{p7Tick();}catch(e){}try{p11Tick();}catch(e){}G.countries.forEach(c=>{if(c.retired)return;c.fleets=(c.fleets||[]).filter(f=>{
     // Defensive fleets (pre-stationed garrison or mid-battle reinforcement) take station on arrival.
     if(f.status==='outbound'&&(f.intent==='garrison'||f.intent==='reinforce')&&G.tick>=f.eta){
       const r=G.regions.find(x=>x.id===f.target);
@@ -5343,7 +5345,7 @@ function wireMobileEndTurn(){if(typeof window==='undefined'||window.__MP__||docu
 // Share the season: the story + your legacy title + a link to play. Native share sheet on phones, clipboard elsewhere.
 function seasonShareText(){const base=(typeof window!=='undefined'&&window._seasonStory)||'';const url=GAME_URL();return base.replace(/\n▶[^\n]*$/,'')+'\n▶ Free browser strategy, no account, the computer never cheats: '+url;}
 function GAME_URL(){const g=_trkGame();return g==='romaterra'?'https://playterrastate.nl/romaterra.html':g==='ironfront'?'https://playterrastate.nl/ironfront.html':'https://playterrastate.nl';}
-function shareSeason(){const txt=seasonShareText();trackEvent('share-season');
+function shareSeason(){if(typeof p9ShareSeason==='function'&&typeof document!=='undefined')return p9ShareSeason();const txt=seasonShareText();trackEvent('share-season');
   try{if(navigator.share&&window.matchMedia&&window.matchMedia('(pointer:coarse)').matches){navigator.share({text:txt}).catch(()=>{});return;}}catch(e){}
   copyText(txt,'📋 Copied, paste it in Discord, Reddit or a message.');}
 
@@ -5425,7 +5427,7 @@ function foldHowto(){try{const v=document.getElementById('view');if(!v||view==='
   const keep=HOWTO_SEL.flatMap(s=>[...v.querySelectorAll(s)]).filter(e=>e.isConnected&&!e.closest('.howfold'));if(!keep.length)return;
   let f=v.querySelector('.howfold');if(!f){f=h('<details class="card mb howfold"><summary>ℹ How does this screen work?</summary><div class="howbody mt"></div></details>');v.appendChild(f);}
   const body=f.querySelector('.howbody');keep.forEach(e=>{e.classList.remove('mb');body.appendChild(e);});if(f!==v.lastElementChild)v.appendChild(f);}catch(e){}}
-function phase2After(){trainRender();foldHowto();try{phase3Home();}catch(e){}try{phase5Home();}catch(e){}try{p5MinText();}catch(e){}try{p7After();}catch(e){}}
+function phase2After(){trainRender();foldHowto();try{phase3Home();}catch(e){}try{phase5Home();}catch(e){}try{p5MinText();}catch(e){}try{p7After();}catch(e){}try{p8After();}catch(e){}try{p9After();}catch(e){}try{p10After();}catch(e){}try{p11After();}catch(e){}}
 if(typeof window!=='undefined'&&!(typeof process!=='undefined'&&process.versions&&process.versions.node)&&!window.__MP__&&typeof go==='function'&&!window.__p2go){window.__p2go=1;const _g=window.go||go;
   const wrapped=function(){const r=_g.apply(this,arguments);try{phase2After();setTimeout(phase2After,0);setTimeout(phase2After,120);setTimeout(foldHowto,450);setTimeout(foldHowto,1000);}catch(e){}return r;};
   try{window.go=wrapped;}catch(e){}try{go=wrapped;}catch(e){}
@@ -5932,10 +5934,13 @@ function p7Actions(a){const c=you();if(!c||!p7Solo()||!a)return '';const out=[];
 function priorityItems(){let out=_p7Prio0();try{const c=you();if(!c||!p7Solo())return out;
   out=out.filter(a=>a.sev===0||!p7Snoozed(c,p7Key(a.title)));
   out.forEach(a=>{if(/besieged/i.test(a.title||'')&&a.shield===false&&!c.shield&&!fleetsAllHome(c)){a.p7rs=true;a.cta='Homeland';}
-    if(a.reinforce!=null){const r=p7Region(a.reinforce);if(r&&r.owner===c.id){a.p7rid=a.reinforce;delete a.reinforce;}}});}catch(e){}return out;}
+    if(a.reinforce!=null){const r=p7Region(a.reinforce);if(r&&r.owner===c.id){a.p7rid=a.reinforce;delete a.reinforce;}}});
+  // 7.0: on Home the Front card carries the attack, so the priority list does not repeat it
+  if(typeof view!=='undefined'&&view==='dashboard'&&typeof p8Front==='function'&&p8Front(c))out=out.filter(a=>!(a.p7rid!=null||/besieged|incoming attack|inbound|away while home|final stand/i.test(a.title||'')));}catch(e){}return out;}
 function soloNextAction(c){const act=(typeof _p7Next0==='function')?_p7Next0(c):null;try{if(!act||!p7Solo())return act;const k=p7Key(act.what);
   if(act.sev>0&&p7Snoozed(c,k))return {sev:2,what:'All quiet for now',why:'"'+act.what+'" is snoozed and comes back in '+Math.max(1,c._p7sn[k]-G.tick)+' ticks.',go:act.go,btn:act.btn};
-  if(/^Incoming attack on |attacks on /.test(act.what)){const nm=act.what.replace(/^.*?(attack on |attacks on )/,'');const r=regionsOf(c).find(x=>x.name===nm);if(r)act.p7rid=r.id;}}catch(e){}return act;}
+  if(/^Incoming attack on |attacks on /.test(act.what)){const nm=act.what.replace(/^.*?(attack on |attacks on )/,'');const r=regionsOf(c).find(x=>x.name===nm);if(r)act.p7rid=r.id;}
+  if(act.p7rid!=null&&typeof p8Front==='function'){const f=p8Front(c);if(f&&f.r.id===act.p7rid){const v=p8Verdict(f);act.why='First lands in '+Math.max(0,f.eta)+'. Your defence '+full(f.def)+' against about '+full(Math.round(f.atk))+': '+v[1]+'.';if(v[0]==='bad'&&!c.shield&&!fleetsAllHome(c))act.p7rs=true;act.sev=0;}}}catch(e){}return act;}
 function p7NextBtns(act){try{return act?p7Actions(act):'';}catch(e){return '';}}
 function p7OwnR(rid){try{const r=p7Region(rid);return p7Solo()&&!!r&&r.owner===G.you;}catch(e){return false;}}
 
@@ -6061,15 +6066,17 @@ function p7After(){if(!p7Solo())return;const v=document.getElementById('view');c
   if(!window._p7brd&&typeof window.BR_DEFEND==='function'){const o=window.BR_DEFEND;window.BR_DEFEND=function(rid){if(p7OwnR(rid))return p7Defend(you(),rid);return o.apply(this,arguments);};window._p7brd=1;}
   if(G.tick<=1&&!c._p7cp){c._p7cp=1;c.cp=Math.max(c.cp||0,cpCap(c));try{drawTop();}catch(e){}}
   const top=n=>{const t=v.querySelector('.ptitle');if(t)t.after(n);else v.prepend(n);};
+  // 7.0 Command Desk: helper cards go under the screen's own content, not above it
+  const bottom=n=>{const f=v.querySelector(':scope > .howfold');if(f)f.before(n);else v.appendChild(n);};
   if(view==='dashboard'){p7Put(v,'p7digest',p7DigestHTML(c),top);
     // E25: in a crisis on a phone, the battle orders card comes first
     try{const ic=v.querySelector('.ifrcard');if(ic&&window.innerWidth<=720&&incomingTo(c.id).some(x=>x.eta<=2)){const z=v.querySelector('.dash-zone');const zh=z&&z.querySelector('.zone-h');if(zh&&zh.nextSibling!==ic)zh.after(ic);}}catch(e){}}
-  if(view==='market')p7Put(v,'p7market',p7MarketHTML(c),top);
+  if(view==='market')p7Put(v,'p7market',p7MarketHTML(c),bottom);
   if(view==='around')p7Put(v,'p7block',p7AttackHTML(c),top);
-  if(view==='diplomacy')p7Put(v,'p7dip',p7DipHTML(c),top);
-  if(view==='research')p7Put(v,'p7plan',p7PlanHTML(c),top);
-  if(view==='military'){p7Put(v,'p7auto',p7AutoHTML(c),top);
-    p7Put(v,'p7rep',c._p7last&&Object.keys(c._p7last).length?`<div class="card mb p7rep"><div class="row between wrap" style="gap:8px"><span class="small">↻ Last order: <b>${esc(p7OrderText(c._p7last))}</b></span>${p7B('↻ Repeat','data-p7="rec"','sec')}</div></div>`:'',top);
+  if(view==='diplomacy')p7Put(v,'p7dip',p7DipHTML(c),bottom);
+  if(view==='research')p7Put(v,'p7plan',p7PlanHTML(c),bottom);
+  if(view==='military'){p7Put(v,'p7auto',p7AutoHTML(c),bottom);
+    p7Put(v,'p7rep',c._p7last&&Object.keys(c._p7last).length?`<div class="card mb p7rep"><div class="row between wrap" style="gap:8px"><span class="small">↻ Last order: <b>${esc(p7OrderText(c._p7last))}</b></span>${p7B('↻ Repeat','data-p7="rec"','sec')}</div></div>`:'',n=>{const q=v.querySelector('#queuearmy');const cd=q&&q.closest('.card');if(cd)cd.before(n);else bottom(n);});
     try{const q=v.querySelector('#queuearmy');const ft=v.querySelector('#recapfoot');const row=q&&q.parentElement;if(row&&!row.classList.contains('p7sticky')){row.classList.add('p7sticky');if(ft&&ft.parentElement!==row)row.prepend(ft);}}catch(e){}}}
 
 // ---------- one click handler for every 7.0 button ----------
@@ -6100,6 +6107,340 @@ if(typeof document!=='undefined'&&document&&document.addEventListener&&!(typeof 
   document.addEventListener('click',e=>{const b=e.target&&e.target.closest&&e.target.closest('[data-p7a]');if(!b||!b.dataset.p7)return;e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();p7Click(b);},true);
   document.addEventListener('change',e=>{const s=e.target&&e.target.closest&&e.target.closest('[data-p7s]');if(!s)return;const c=you();if(!c)return;p7A(c)[s.dataset.p7s]=+s.value;try{save();}catch(_){}},true);
   const st=document.createElement('style');st.textContent='.p7sticky{position:sticky;bottom:calc(var(--bottomnav-h,0px) + 4px);z-index:6;background:var(--panel,#1a1d14);padding:8px 10px;border:1px solid var(--border);border-radius:10px;box-shadow:0 -6px 18px rgba(0,0,0,.35)}@media(min-width:900px){.p7sticky{bottom:6px}}.p7sticky #recapfoot{width:100%;border-top:0!important;padding-top:0!important;margin:0 0 6px}';document.head.appendChild(st);}catch(e){}}
+
+// ================= Update 7.0 "Command Desk", part 1 (shared: Terrastate, Romaterra, Ironfront) =================
+// One event, one place: an attack on your ground has one Front card on Home; other screens show one short line.
+// Each screen starts with its own content; long help moves into folds. On phones END TURN sits in the bottom bar.
+function p8Solo(){try{return typeof p7Solo==='function'&&p7Solo();}catch(e){return false;}}
+// The most urgent of your own regions under attack, with your defence against the attack power on the way.
+function p8Front(c){if(!c)return null;let inc=[];try{inc=incomingTo(c.id).filter(x=>x.region&&x.region.owner===c.id);}catch(e){return null;}
+  if(!inc.length)return null;const by={};
+  inc.forEach(x=>{const b=by[x.region.id]=by[x.region.id]||{r:x.region,n:0,eta:99,atk:0};b.n++;b.eta=Math.min(b.eta,x.eta);b.atk+=(x.atkP||0);});
+  const list=Object.values(by).sort((a,b)=>a.eta-b.eta);const f=list[0];let def=0;try{def=Math.round(regionDef(f.r));}catch(e){}
+  return Object.assign({},f,{def,more:list.length-1});}
+function p8Verdict(f){const q=f.atk/Math.max(1,f.def);return q>=1.25?['bad','it falls unless you act']:q>=0.8?['warn','a close call']:['ok','your defence should hold'];}
+function p8FrontHead(c,noScan){try{if(!p8Solo())return '';const f=p8Front(c);if(!f)return '';const v=p8Verdict(f);
+  const b=[p7B('🛡 Defend','data-p7="def" data-r="'+f.r.id+'"','','Scans what is coming and prepares the ground. Your home army already defends this region.')];
+  if(!noScan)b.push(p7ScanBtn(c,f.r));
+  if(v[0]==='bad'&&!c.shield&&!fleetsAllHome(c))b.push(p7B('🛡 Recall all + shield','data-p7="rs"'));
+  if(c.clan!=null)b.push(p7B('🆘 Help','data-p7="sos" data-r="'+f.r.id+'"','ghost','Ask your alliance to reinforce'));
+  return `<div class="p8front"><div class="p8f1">⚔ <b>${f.n} attack${f.n>1?'s':''} on ${esc(f.r.name)}</b> · first lands in ${Math.max(0,f.eta)}${f.more?' · '+f.more+' more region'+(f.more>1?'s':'')+' under threat':''}</div>
+    <div class="p8f2 ${v[0]}">Your defence ${full(f.def)} against about ${full(Math.round(f.atk))}: ${v[1]}.</div><div class="p8f3">${b.join('')}</div></div>`;}catch(e){return '';}}
+// Put a group of screen blocks into one fold, at the place of the first one. The blocks keep their buttons.
+function p8Fold(v,tests,label,cls){try{const kids=[...v.children].filter(n=>!n.classList.contains('ptitle')&&!n.classList.contains('p8fold')&&!n.className.toString().includes('p7')&&n.getBoundingClientRect().height>0);
+  const hit=kids.filter(n=>{const t=(n.innerText||'').replace(/\s+/g,' ').trim().slice(0,70);return tests.some(rx=>rx.test(t));});if(!hit.length)return;
+  let d=[...v.querySelectorAll(':scope > details.p8fold')].find(x=>x.dataset.l===label);
+  if(!d){d=document.createElement('details');d.className='card mb p8fold '+(cls||'');d.dataset.l=label;d.innerHTML=`<summary>${esc(label)} <span class="muted small p8n"></span></summary>`;hit[0].before(d);}
+  hit.forEach(n=>{n.classList.add('p8in');d.appendChild(n);});const k=d.querySelectorAll(':scope > .p8in').length;const sp=d.querySelector('.p8n');if(sp)sp.textContent='('+k+')';}catch(e){}}
+// Phone bottom bar: END TURN in the middle (solo, turn mode). Nearby moves into More.
+function p8NavItems(items){try{if(!p8Solo()||typeof document==='undefined'||!document.body.classList.contains('turnmode'))return items;
+  const out=items.filter(x=>x[0]!=='around'&&x[0]!=='map');while(out.length>4)out.splice(out.length-2,1);out.splice(2,0,['__end','End turn']);return out;}catch(e){return items;}}
+function p8NavFix(bn){if(!bn)return;const b=bn.querySelector('[data-bk="__end"]');document.body.classList.toggle('p8nav',!!b);if(!b||b._p8)return;b._p8=1;b.classList.add('p8end');
+  b.innerHTML='<span class="i">▶</span><span>END TURN</span>';
+  b.onclick=e=>{e.stopPropagation();const m=document.getElementById('mEnd');if(m)m.click();else if(typeof soloAdvance==='function')soloAdvance();};}
+function p8After(){if(!p8Solo())return;const v=document.getElementById('view');const c=you();if(!v||!c)return;
+  try{p8NavFix(document.getElementById('bottomnav'));}catch(e){}
+  const front=p8Front(c);
+  if(view==='dashboard'){
+    // Ironfront: the battle-orders card is the Front, so the next-action card about the same attack steps aside
+    try{const sn=v.querySelector('.solo-next');if(sn){const dup=!!(front&&v.querySelector('.ifrcard .p8front')&&/attack/i.test(sn.innerText||''));sn.style.display=dup?'none':'';}}catch(e){}
+    // Terrastate and Romaterra: if the next-action card is about something else, the Front gets its own card
+    try{const sn=v.querySelector('.solo-next');const covered=!!v.querySelector('.ifrcard .p8front')||!!(sn&&sn.style.display!=='none'&&/attack/i.test(sn.innerText||''));
+      const z=v.querySelector('.dash-zone')||v;const html=front&&!covered?'<div class="card mb p8frontcard" style="border-left:3px solid var(--danger,#e05a4a)"><div class="mono small" style="letter-spacing:1px;opacity:.8">FRONT</div>'+p8FrontHead(c)+'</div>':'';
+      p7Put(z,'p8frontcard',html,n=>{const zh=z.querySelector(':scope > .zone-h');if(zh)zh.after(n);else z.prepend(n);});}catch(e){}
+    // phone under attack: the Front comes before the tick line and the zone label, so Defend is on the first screen
+    try{if(front&&window.innerWidth<=720){const z0=v.querySelector('.dash-zone');const f=v.querySelector('.ifrcard')||v.querySelector('.p8frontcard')||[...v.querySelectorAll('.solo-next')].find(e=>e.style.display!=='none');
+      const dg=v.querySelector('.p7digest');const zh=z0&&z0.querySelector(':scope > .zone-h');if(zh)zh.style.display='none';if(f&&dg&&f.compareDocumentPosition(dg)&Node.DOCUMENT_POSITION_PRECEDING)f.after(dg);}}catch(e){}
+    const z=v.querySelector('.dash-zone')||v;p8Fold(z,[/in the air/i,/enemy \w+ (is|are) (in the air|on the march|on the way|marching|at sea|sailing)/i],'Who is coming, in detail');}
+  if(view==='self'&&front){const ifr=!!v.querySelector('.ifrcard');
+    p8Fold(v,[/^defence alert/i,/^safe to log off/i,/^your next actions/i,/timeline/i,/^advanced intelligence/i,/^shield &/i,/sleep-safe/i].concat(ifr?[/^your regions under attack/i,/^send defence/i]:[]),'More on this attack: alerts, timeline, intel, shield');
+    p8Fold(v,[/army movements|legion movements|fleet movements/i],'Your armies on the move');}
+  if(view==='around')p8Fold(v,[/^forces/i,/army movements|legion movements|fleet movements/i],'Your forces and armies on the move');}
+if(typeof document!=='undefined'&&document&&document.head&&!(typeof window!=='undefined'&&window._p8css)){try{window._p8css=1;const st=document.createElement('style');st.textContent=
+ '.alertbar .alertrow{padding:7px 12px!important;align-items:center;gap:8px;min-height:0}'+
+ '.alertbar .alertrow>span:first-child{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}'+
+ '.alertbar .p8det{display:none}.alertbar .p8more{font-size:11px;opacity:.7;padding:0 12px 2px}.alertbar .alertrow .btn{padding:3px 9px!important;font-size:11px!important;min-height:0!important}.alertbar .alertrow{margin-bottom:4px!important}'+
+ '@media(max-width:720px){.alertbar .alertrow{flex-wrap:wrap}.alertbar .alertrow>span:first-child{flex-basis:100%}.alertbar .p8more{display:none}}'+
+ '.p8front{border:1px solid var(--border);border-radius:10px;padding:10px 12px;margin:8px 0 10px;background:rgba(0,0,0,.18)}'+
+ '.p8f1{font-size:15px}.p8f2{margin:4px 0 6px;font-size:13px}.p8f2.bad{color:var(--danger,#e05a4a)}.p8f2.warn{color:var(--alert,#e0a84a)}.p8f2.ok{color:var(--ok,#7fbf6a)}'+
+ 'details.p8fold>summary{cursor:pointer;font-weight:700}details.p8fold[open]>summary{margin-bottom:8px}details.p8fold>.p8in{margin-top:8px}'+
+ 'body.p8nav .mend{display:none!important}body.p8nav .main{padding-bottom:calc(78px + env(safe-area-inset-bottom))!important}'+
+ '.bn.p8end{background:var(--accent2);color:#04121c;border-radius:12px;font-weight:800;margin:5px 3px}.bn.p8end .i{font-size:15px}';
+ document.head.appendChild(st);}catch(e){}}
+
+// ================= Update 7.0 "Open Lines", part 2 (shared: Terrastate, Romaterra, Ironfront) =================
+// Communication lines: one share sheet (WhatsApp, Telegram, Discord, copy) with a picture card, one community card,
+// background alerts (opt-in), a Comms screen (inbox first, forum moved in), and for the live world: alliance chat
+// links that only members see, plus a test message and delivery status for the alliance's Discord or Telegram feed.
+// Community lines (empty = hidden). Fill in the WhatsApp and Telegram channel links when the channels exist.
+const P9_LINES={discord:'https://discord.gg/PZGPKuzPCb',whatsapp:'',telegram:''};
+const P9_NUDGE_GAP=20; // at most one share nudge per 20 ticks
+function p9Game(){let k='terrastate';try{k=_trkGame();}catch(e){}const n={terrastate:'Terrastate',romaterra:'Romaterra',ironfront:'Ironfront'}[k]||'Terrastate';return {k:(n.toLowerCase()),n};}
+function p9Url(){try{return GAME_URL();}catch(e){return 'https://playterrastate.nl';}}
+function p9Clean(t){return String(t||'').replace(/\s+—\s+/g,', ').replace(/—/g,',').trim();}
+function p9LS(k,v){try{if(v===undefined)return localStorage.getItem('p9_'+k);if(v===null)localStorage.removeItem('p9_'+k);else localStorage.setItem('p9_'+k,v);}catch(e){}return null;}
+// ---------- alliance lines (live world): chat links that only members see ----------
+const P9_LINE_RX={whatsapp:/^https:\/\/(chat\.whatsapp\.com\/[A-Za-z0-9]{10,40}|(www\.)?whatsapp\.com\/channel\/[A-Za-z0-9]{10,40})$/,
+  discord:/^https:\/\/(discord\.gg|discord\.com\/invite)\/[A-Za-z0-9-]{2,32}$/,
+  telegram:/^https:\/\/t\.me\/(\+|joinchat\/)?[A-Za-z0-9_-]{5,64}$/};
+const P9_LINE_NAME={whatsapp:'WhatsApp',discord:'Discord',telegram:'Telegram'};
+function cmdSetLines(c,lines){const cl=clanOf(c);if(!cl)return err('Join an alliance first');if(!isClanOfficer(c))return err('Only the leader and officers can set the alliance chat links');
+  if(!rateOk(c,'lines',6,3))return err('Slow down, try again in a few ticks.');
+  lines=lines&&typeof lines==='object'?lines:{};const out={};
+  for(const k of ['whatsapp','discord','telegram']){let u=String(lines[k]||'').trim();if(!u)continue;if(u.length>200)return err('That link is too long.');
+    u=u.replace(/^https?:\/\//i,'');while(u.startsWith('/'))u=u.slice(1);u='https://'+u;const q=u.search(/[?#]/);if(q>=0)u=u.slice(0,q);while(u.endsWith('/'))u=u.slice(0,-1);
+    {const sl=u.indexOf('/',8);u=sl<0?u.toLowerCase():u.slice(0,sl).toLowerCase()+u.slice(sl);}
+    if(!P9_LINE_RX[k].test(u))return err('That is not a '+P9_LINE_NAME[k]+' invite link'+(k==='whatsapp'?' (https://chat.whatsapp.com/…).':k==='discord'?' (https://discord.gg/…).':' (https://t.me/…).'));out[k]=u;}
+  const had=cl.lines&&Object.keys(cl.lines).some(k=>P9_LINE_RX[k]&&cl.lines[k]);
+  if(!Object.keys(out).length){cl.lines=null;return ok({cleared:true});}
+  out.by=c.id;out.tick=G.tick;cl.lines=out;
+  try{cl.forum=cl.forum||[];clanPost(cl,c.id,'📞 '+(had?'Alliance chat links updated':'Alliance chat links are up')+': '+['whatsapp','discord','telegram'].filter(k=>out[k]).map(k=>P9_LINE_NAME[k]).join(', ')+'. Find them at the top of the Alliance screen.','general');}catch(e){}
+  return ok({lines:out});}
+// The leader sends one test line to the alliance's Discord or Telegram feed (delivered by the live-world server).
+function cmdTestLines(c){const cl=clanOf(c);if(!cl)return err('Join an alliance first');if(cl.roles[c.id]!=='leader')return err('Only the alliance leader can send a test message');
+  if(!(cl.discord&&cl.discord.url)&&!(cl.telegram&&cl.telegram.token))return err('Connect Discord or Telegram first');
+  if(typeof isSoloGame==='function'&&isSoloGame())return err('Test messages go out from the live-world server. Here the card is a preview.');
+  if((cl._p9test||-99)>G.tick-2)return err('One test every 2 ticks.');cl._p9test=G.tick;
+  (G._dq=G._dq||[]).push({clan:cl.id,kind:'test',text:'✅ Test from '+p9Game().n+': this line works. Sent by '+(c.name||'your leader')+' at tick '+G.tick+'.',tick:G.tick});
+  return ok({queued:true});}
+function p9Lines(cl){const l=cl&&cl.lines;if(!l)return [];return ['whatsapp','discord','telegram'].filter(k=>l[k]&&P9_LINE_RX[k].test(l[k])).map(k=>({k,u:l[k]}));}
+const P9_ICON={whatsapp:'🟢',discord:'🎮',telegram:'✈'};
+function p9LineBtns(list,sm){return list.map(x=>`<a class="btn ${sm?'ghost sm':'sec sm'} p9ln p9-${x.k}" href="${esc(x.u)}" target="_blank" rel="noopener noreferrer">${P9_ICON[x.k]} ${P9_LINE_NAME[x.k]}</a>`).join('');}
+function p9LinesCardHTML(c){const cl=clanOf(c);if(!cl)return '';const list=p9Lines(cl);const off=isClanOfficer(c);const l=cl.lines||{};
+  if(!list.length&&!off)return `<div class="card mb p9lines"><div class="small muted">📞 Your officers have not shared a chat yet. Ask them for a WhatsApp, Discord or Telegram link.</div></div>`;
+  const ed=off?`<details class="p9led"${list.length?'':' open'}><summary class="small">${list.length?'✎ Edit links':'✎ Add your chat links'}</summary>
+    <div class="small muted" style="margin:6px 0">Paste an invite link. Only members of ${esc(cl.tag)} see these links, never other players.</div>
+    <div class="p9grid"><label class="small">🟢 WhatsApp group<input id="p9wa" placeholder="https://chat.whatsapp.com/…" value="${esc(l.whatsapp||'')}"></label>
+    <label class="small">🎮 Discord invite<input id="p9dc" placeholder="https://discord.gg/…" value="${esc(l.discord||'')}"></label>
+    <label class="small">✈ Telegram group<input id="p9tg" placeholder="https://t.me/…" value="${esc(l.telegram||'')}"></label></div>
+    <div class="row mt" style="gap:6px"><button class="btn sm" data-p9a="lsave">Save links</button>${list.length?'<button class="btn ghost sm" data-p9a="lclear">Remove all</button>':''}</div></details>`:'';
+  return `<div class="card mb p9lines" style="border-left:3px solid var(--accent)"><div class="row wrap" style="gap:6px;align-items:center"><b class="small">📞 Alliance chat</b>${list.length?p9LineBtns(list):'<span class="small muted">No links yet.</span>'}</div>${ed}</div>`;}
+// ---------- community lines (outside the game) ----------
+function p9Community(){return ['discord','whatsapp','telegram'].filter(k=>P9_LINES[k]).map(k=>({k,u:P9_LINES[k]}));}
+function p9CommunityText(){const l=p9Community().map(x=>x.k);const ch=l.filter(k=>k!=='discord').map(k=>P9_LINE_NAME[k]);
+  return 'Questions, tips, battle stories and news'+(l.includes('discord')?' on Discord':'')+(ch.length?', updates on '+ch.join(' and '):'')+'. The Discord is also the waitlist for the live world: it opens at 100 commanders.';}
+function p9CommunityHTML(compact){const l=p9Community();if(!l.length)return '';
+  const btn=x=>`<a class="btn ${x.k==='discord'?'sec':'ghost'} sm p9ln p9-${x.k}" href="${esc(x.u)}" target="_blank" rel="noopener noreferrer">${P9_ICON[x.k]} ${x.k==='discord'?'Join the Discord':'Follow on '+P9_LINE_NAME[x.k]}</a>`;
+  if(compact)return `<div class="row wrap mt p9comm" style="gap:6px;border-top:1px solid var(--border);padding-top:10px"><div style="flex:1;min-width:180px"><b>💬 Community</b><div class="muted small">${p9CommunityText()}</div></div><div class="row wrap" style="gap:6px">${l.map(btn).join('')}</div></div>`;
+  return `<div class="card mb p9comm" style="border-left:3px solid #5865F2;margin:10px 0"><div class="row between wrap" style="align-items:center;gap:8px"><div style="flex:1;min-width:180px"><b>💬 Join the community</b><div class="muted small">${p9CommunityText()}</div></div><div class="row wrap" style="gap:6px">${l.map(btn).join('')}</div></div></div>`;}
+// ---------- the share sheet ----------
+function p9Coarse(){try{return !!(window.matchMedia&&window.matchMedia('(pointer:coarse)').matches);}catch(e){return false;}}
+function p9ShareText(o){const url=o.url||p9Url();const t=p9Clean(o.text);return o.nolink?t:(t+'\n▶ '+url);}
+function p9Share(o){o=o||{};const txt=p9ShareText(o);try{trackEvent('share-'+(o.ev||'x'));}catch(e){}
+  const mk=o.card?p9CardBlob(o.card):Promise.resolve(null);
+  if(p9Coarse()&&navigator.share){mk.then(bl=>{let data={text:txt};try{if(bl){const f=new File([bl],p9Game().k+'-'+(o.ev||'share')+'.jpg',{type:'image/jpeg'});if(navigator.canShare&&navigator.canShare({files:[f]}))data={text:txt,files:[f]};}}catch(e){}
+    navigator.share(data).catch(er=>{if(!er||er.name!=='AbortError')p9Sheet(txt,o,Promise.resolve(bl));});});return;}
+  p9Sheet(txt,o,mk);}
+function p9Sheet(txt,o,mk){document.querySelectorAll('.p9sheet').forEach(e=>{try{e._p9close&&e._p9close();}catch(x){}e.remove();});const url=o.url||p9Url();
+  const wa='https://wa.me/?text='+encodeURIComponent(txt);const tg='https://t.me/share/url?url='+encodeURIComponent(url)+'&text='+encodeURIComponent(o.nolink?txt:p9Clean(o.text));
+  const el=h(`<div class="p9sheet" role="dialog" aria-label="Share"><div class="p9box"><div class="row between" style="align-items:center"><b>📤 ${esc(o.title||'Share')}</b><button class="btn ghost sm" data-p9x aria-label="Close">✕</button></div>
+    <div class="p9prev small">${esc(txt).replace(/\n/g,'<br>')}</div><div class="p9img"></div>
+    <div class="p9btns"><a class="btn sm p9-whatsapp" data-p9s="whatsapp" href="${wa}" target="_blank" rel="noopener noreferrer">🟢 WhatsApp</a><a class="btn sm p9-telegram" data-p9s="telegram" href="${tg}" target="_blank" rel="noopener noreferrer">✈ Telegram</a>
+    <button class="btn sm p9-discord" data-p9s="discord">🎮 Discord</button><button class="btn ghost sm" data-p9s="copy">📋 Copy</button><button class="btn ghost sm" data-p9s="img" hidden>⬇ Picture</button></div>
+    <div class="muted small p9hint">WhatsApp and Telegram open with the text ready. For Discord the text is copied: paste it in your channel.</div></div></div>`);
+  document.body.appendChild(el);let blob=null;const urls=[];
+  mk.then(bl=>{blob=bl;if(!bl||!el.isConnected)return;const u=URL.createObjectURL(bl);urls.push(u);const im=el.querySelector('.p9img');im.innerHTML=`<img src="${u}" alt="Share picture">`;const b=el.querySelector('[data-p9s="img"]');if(b)b.hidden=false;});
+  const close=()=>{el.remove();document.removeEventListener('keydown',esck);urls.forEach(u=>{try{URL.revokeObjectURL(u);}catch(x){}});};el._p9close=close;const esck=e=>{if(e.key==='Escape')close();};document.addEventListener('keydown',esck);
+  el.onclick=e=>{if(e.target===el||e.target.closest('[data-p9x]'))return close();const b=e.target.closest('[data-p9s]');if(!b)return;const k=b.dataset.p9s;try{trackEvent('share-to-'+k);}catch(e2){}
+    if(k==='copy')copyText(txt,'📋 Copied');
+    else if(k==='discord'){copyText(txt,'📋 Copied, paste it in your Discord channel');}
+    else if(k==='img'&&blob){const a=document.createElement('a');a.href=URL.createObjectURL(blob);urls.push(a.href);a.download=p9Game().k+'-'+(o.ev||'share')+'.jpg';document.body.appendChild(a);a.click();a.remove();}};}
+// A picture card (1200x630) that fits a chat preview: game, headline, two lines, the nation's flag and the link.
+function p9CardBlob(card){return new Promise(res=>{try{const W=1200,H=630;const cv=document.createElement('canvas');cv.width=W;cv.height=H;const x=cv.getContext('2d');if(!x)return res(null);
+  const gm=p9Game();const col={terrastate:['#0d2233','#37d9a9'],romaterra:['#2e1709','#e0a84a'],ironfront:['#1d1c13','#c9a227']}[gm.k]||['#111','#4f8cff'];
+  const g=x.createLinearGradient(0,0,W,H);g.addColorStop(0,col[0]);g.addColorStop(1,'#050505');x.fillStyle=g;x.fillRect(0,0,W,H);x.fillStyle=col[1];x.fillRect(0,0,W,12);
+  const F='"IBM Plex Mono", ui-monospace, monospace';x.textBaseline='alphabetic';
+  x.fillStyle=col[1];x.font='700 34px '+F;x.fillText(gm.n.toUpperCase()+(card.kicker?'  ·  '+String(card.kicker).toUpperCase():''),64,96);
+  const wrap=(t,y,size,maxW,lh,maxL,color,weight)=>{x.fillStyle=color;x.font=(weight||700)+' '+size+'px '+F;const w=String(t||'').split(/\s+/);let line='',n=0;
+    for(let i=0;i<w.length;i++){const test=line?line+' '+w[i]:w[i];if(x.measureText(test).width>maxW&&line){x.fillText(line,64,y);y+=lh;n++;line=w[i];if(n>=maxL-1){const rest=w.slice(i).join(' ');let r=rest;while(x.measureText(r+'…').width>maxW&&r.length>3)r=r.slice(0,-1);x.fillText(r===rest?r:r+'…',64,y);return y+lh;}}else line=test;}
+    if(line){x.fillText(line,64,y);y+=lh;}return y;};
+  let y=wrap(p9Clean(card.head),200,62,W-430,74,3,'#ffffff',700);y+=10;(card.sub||[]).slice(0,3).forEach(s=>{y=wrap(p9Clean(s),y,30,W-430,40,1,'rgba(255,255,255,.78)',400);});
+  x.fillStyle=col[1];x.font='700 30px '+F;x.fillText('Free in your browser  ▶  '+p9Url().replace(/^https:\/\//,''),64,H-60);
+  const done=()=>{try{cv.toBlob(b=>res(b||null),'image/jpeg',0.86);}catch(e){res(null);}};
+  let svg='';try{svg=card.c?flagSVG(card.c,300):'';}catch(e){}
+  if(!svg)return done();if(!/xmlns=/.test(svg))svg=svg.replace('<svg','<svg xmlns="http://www.w3.org/2000/svg"');
+  const im=new Image();const t0=setTimeout(done,1500);im.onload=()=>{clearTimeout(t0);try{x.save();x.shadowColor='rgba(0,0,0,.55)';x.shadowBlur=24;x.drawImage(im,W-364,170,300,200);x.restore();x.strokeStyle='rgba(255,255,255,.35)';x.lineWidth=2;x.strokeRect(W-364,170,300,200);}catch(e){}done();};
+  im.onerror=()=>{clearTimeout(t0);done();};im.src='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(svg);}catch(e){res(null);}});}
+// What a battle report says, as a share.
+function p9BattleShare(b){const c=you();if(!b||!c)return null;const one=p9Clean(battleOneLiner(b));const youAtk=b.youAtk||b.atkId===c.id;const foe=youAtk?(b.defName||''):(b.atkName||'');
+  const head=b.outcome==='captured'?(youAtk?'I took '+(b.region||'their ground'):'I lost '+(b.region||'ground')):b.outcome==='repelled'?(youAtk?'Thrown back at '+(b.region||'their line'):'I held '+(b.region||'my ground')):(b.region||'A clash');
+  const sub=[(foe?(youAtk?'Against ':'Attacked by ')+foe:''),'Tick '+b.tick+(b.atkP?' · attack '+full(Math.round(b.atkP))+' vs defence '+full(Math.round(b.defP||0)):'')].filter(Boolean);
+  return {text:p9Game().n+': '+one.replace(/[.!\s]+$/,'')+'.',ev:'battle',title:'Share this battle',card:{head,sub,c,kicker:'battle report'}};}
+function p9ShareBattle(i){const b=G.battles&&G.battles[i];const o=p9BattleShare(b);if(o)p9Share(o);}
+function p9ShareSeason(){const c=you();const txt=(typeof seasonShareText==='function')?seasonShareText():'';const lines=String(txt).split('\n').filter(l=>l.trim()&&!/^▶/.test(l));
+  p9Share({text:lines.join('\n'),ev:'season',title:'Share my season',card:{head:lines[0]||('Season '+((G.season&&G.season.num)||1)),sub:lines.slice(1,4),c,kicker:'season '+((G.season&&G.season.num)||1)}});}
+// ---------- subtle share nudges ----------
+function p9NudgeOn(){return p9LS('nudge')!=='off';}
+function p9Nudge(c){try{if(!p9NudgeOn()||!c||!G.battles||!G.battles.length)return;if(typeof p8Front==='function'&&p8Front(c))return;
+  const S=window._p9s=window._p9s||{nt:-99,bs:0,season:null};const sk=(G.season&&G.season.num)||0;if(S.season!==sk){S.season=sk;S.nt=-99;S.bs=0;}
+  if(c._p9nt!=null){S.nt=c._p9nt;delete c._p9nt;}if(c._p9bs!=null){S.bs=c._p9bs;delete c._p9bs;}
+  if(S.nt>G.tick-P9_NUDGE_GAP||S.nt>G.tick+5)return;const seen=S.bs;
+  const b=G.battles.find(x=>x.tick>seen&&x.tick>=G.tick-1&&((x.outcome==='captured'&&(x.youAtk||x.atkId===c.id))||(x.outcome==='repelled'&&!x.youAtk&&x.defId===c.id&&(x.atkP||0)>=(x.defP||1)*0.5)));
+  S.bs=Math.max(seen,G.tick-1);if(!b)return;S.nt=G.tick;const bk=b.tick+'|'+(b.coord||'')+'|'+(b.region||'');
+  document.querySelectorAll('.p9nudge').forEach(e=>e.remove());
+  const n=h(`<div class="p9nudge" role="status"><span>${b.outcome==='captured'?'⚑ You took '+esc(b.region||'their ground'):'🛡 You held '+esc(b.region||'your ground')}.</span><button class="btn sm" data-p9n="${esc(bk)}">📤 Share</button><button class="btn ghost sm" data-p9nx aria-label="Close">✕</button></div>`);
+  document.body.appendChild(n);n.onclick=e=>{if(e.target.closest('[data-p9n]')){const k=e.target.closest('[data-p9n]').dataset.p9n;const i=(G.battles||[]).findIndex(x=>(x.tick+'|'+(x.coord||'')+'|'+(x.region||''))===k);if(i>=0)p9ShareBattle(i);n.remove();}else if(e.target.closest('[data-p9nx]'))n.remove();};
+  setTimeout(()=>{try{n.remove();}catch(e){}},14000);}catch(e){}}
+// ---------- alerts when the game runs in the background (opt-in) ----------
+function p9AlertOk(){try{return typeof Notification!=='undefined'&&p9LS('alerts')==='on'&&Notification.permission==='granted';}catch(e){return false;}}
+function p9Notify(key,title,body){try{if(!p9AlertOk()||!document.hidden)return;const now=Date.now();window._p9nl=window._p9nl||{};if(key!=='atk'&&(window._p9nl[key]||0)>now-60000)return;window._p9nl[key]=now;
+  const n=new Notification(title,{body,tag:'p9-'+key});n.onclick=()=>{try{window.focus();go('dashboard');n.close();}catch(e){}};}catch(e){}}
+function p9Watch(c){if(!c)return;try{const W=window._p9w=window._p9w||{inc:null,sos:null,mail:null,season:null};
+  let inc=[];try{inc=incomingTo(c.id).filter(x=>x.region&&x.region.owner===c.id);}catch(e){}
+  const ids=inc.map(x=>x.fleet?'f'+x.fleet.id:'r'+x.region.id+'a'+((x.from&&x.from.id)||0)).sort().join(',');
+  const fresh=ids.split(',').filter(k=>k&&!(','+(W.inc||'')+',').includes(','+k+','));if(W.inc!==null&&inc.length&&fresh.length){const f=inc.slice().sort((a,b)=>a.eta-b.eta)[0];p9Notify('atk','⚔ '+p9Game().n+': attack on '+f.region.name,(inc.length>1?inc.length+' attacks, the first':'It')+' lands in '+Math.max(0,f.eta)+' tick'+(f.eta===1?'':'s')+'. Open the Front on Home.');}
+  W.inc=ids;
+  const cl=clanOf(c);if(cl&&!isSoloGame()){let calls=[];try{calls=defenceCalls(cl).filter(k=>k.owner&&k.owner.id!==c.id);}catch(e){}const sk=calls.map(k=>k.region.id).join(',');
+    const freshS=calls.filter(k=>!(','+(W.sos||'')+',').includes(','+k.region.id+','));if(W.sos!==null&&freshS.length&&c.notif!=='mentions')p9Notify('sos','🆘 '+cl.tag+': '+freshS[0].owner.name+' needs help','Their region '+freshS[0].region.name+' is under attack. Open the Alliance screen.');W.sos=sk;}
+  const un=(c.mail||[]).filter(m=>!m.read).length;if(W.mail!==null&&un>W.mail&&!isSoloGame()&&c.notif==='all')p9Notify('mail','✉ New message',p9Game().n+': you have '+un+' unread message'+(un>1?'s':'')+'.');W.mail=un;
+  const sn=(G._seasonEnd||G._winner!=null||!!G._intermission)?1:0;if(W.season===0&&sn)p9Notify('season','🏁 '+p9Game().n+': the season is over','See how your season ended.');W.season=sn;}catch(e){}}
+function p9AlertsRow(){const has=typeof Notification!=='undefined';const st=has?Notification.permission:'unsupported';const on=p9LS('alerts')==='on'&&st==='granted';
+  const why=!has?'This browser has no notifications.':st==='denied'?'Blocked in this browser. Allow notifications for this site in the browser settings.':(window.top!==window.self)?'Inside an embedded page this may be blocked. On playterrastate.nl it works.':'';
+  return `<div class="row wrap mt p9alerts" style="gap:6px;border-top:1px solid var(--border);padding-top:10px;align-items:center"><div style="flex:1;min-width:180px"><b>🔔 Alerts in the background</b><div class="muted small">When this tab is in the background: an attack on your ground${isSoloGame()?'':', an ally calling for help'} and the end of the season. Off by default.${why?' '+why:''}</div></div><button class="btn ${on?'':'ghost'} sm" data-p9a="alerts" ${(!has||st==='denied')?'disabled':''}>${on?'On':'Off'}</button></div>
+  <div class="row wrap mt" style="gap:6px;border-top:1px solid var(--border);padding-top:10px;align-items:center"><div style="flex:1;min-width:180px"><b>📤 Share prompts</b><div class="muted small">After a big win, one small Share button. Never during an attack, at most once every ${P9_NUDGE_GAP} turns.</div></div><button class="btn ${p9NudgeOn()?'':'ghost'} sm" data-p9a="nudge">${p9NudgeOn()?'On':'Off'}</button></div>`;}
+// ---------- one delegated click handler ----------
+if(typeof document!=='undefined'&&document&&document.addEventListener&&!(typeof window!=='undefined'&&window._p9click)){window._p9click=1;
+  document.addEventListener('click',async e=>{const b=e.target.closest&&e.target.closest('[data-p9a]');if(!b)return;e.preventDefault();e.stopPropagation();const a=b.dataset.p9a;const c=you();
+    try{
+    if(a==='share-battle')return p9ShareBattle(+b.dataset.i);
+    if(a==='alerts'){if(p9LS('alerts')==='on'&&Notification.permission==='granted'){p9LS('alerts','off');b.textContent='Off';b.classList.add('ghost');toast('Background alerts off');return;}
+      let p=Notification.permission;if(p!=='granted'){try{p=await Notification.requestPermission();}catch(e2){p='denied';}}
+      if(p==='granted'){p9LS('alerts','on');b.textContent='On';b.classList.remove('ghost');toast('🔔 Background alerts on');}else toast('Notifications are blocked here. Allow them for this site in your browser settings.','warn');return;}
+    if(a==='nudge'){const on=!p9NudgeOn();p9LS('nudge',on?'on':'off');b.textContent=on?'On':'Off';b.classList.toggle('ghost',!on);toast(on?'Share prompts on':'Share prompts off');return;}
+    if(a==='lsave'||a==='lclear'){const v=document.getElementById('view');const val=id=>((v.querySelector('#'+id)||{}).value||'').trim();
+      const r=await cmdSetLines(c,a==='lclear'?{}:{whatsapp:val('p9wa'),discord:val('p9dc'),telegram:val('p9tg')});
+      if(r.ok){toast(r.data&&r.data.cleared?'Alliance chat links removed':'📞 Alliance chat links saved');save();go('clans');}else toast(r.error,'bad');return;}
+    if(a==='ltest'){const r=await cmdTestLines(c);toast(r.ok?'✅ Test sent. Look in your Discord or Telegram in a moment.':r.error,r.ok?'':'warn');if(r.ok){save();setTimeout(()=>{try{go(view);}catch(e3){}},3500);}return;}
+    }catch(err2){console.error('p9',a,err2);}},true);}
+// ---------- the render hook ----------
+function p9Ago(t){const s=Math.max(0,Math.round((Date.now()-t)/1000));return s<90?s+' s ago':s<5400?Math.round(s/60)+' min ago':Math.round(s/3600)+' h ago';}
+function p9After(){const v=document.getElementById('view');const c=you();if(!v||!c)return;
+  try{p9Watch(c);}catch(e){}try{p9Nudge(c);}catch(e){}
+  // Comms: the messages screen holds the inbox first, the composer behind a button, and the world forum
+  if(view==='mail'&&window._p9lv!=='mail'){if(!window._p9want)window._p9tab='inbox';window._p9want=0;}window._p9lv=view;
+  if(view==='mail'){try{const t=v.querySelector(':scope > .ptitle h2');if(t&&!/Comms/.test(t.textContent))t.textContent='Comms';const hh=v.querySelector(':scope > .ptitle .h');if(hh)hh.textContent='Your inbox and the world forum.';
+      const tab=window._p9tab||'inbox';const kids=[...v.children].filter(n=>!n.classList.contains('ptitle')&&!n.classList.contains('p9tabs'));
+      if(!v.querySelector(':scope > .p9tabs')){const seg=h(`<div class="seg mb p9tabs"><button class="${tab==='inbox'?'on':''}" data-p9t="inbox">✉ Inbox</button><button class="${tab==='forum'?'on':''}" data-p9t="forum">🌍 Forum</button></div>`);
+        const pt=v.querySelector(':scope > .ptitle');if(pt)pt.after(seg);else v.prepend(seg);seg.onclick=e=>{const bt=e.target.closest('[data-p9t]');if(!bt)return;window._p9tab=bt.dataset.p9t;go('mail');};}
+      if(tab==='forum'){kids.forEach(n=>n.remove());if(typeof p9ForumCard==='function')p9ForumCard(v,c);v.insertAdjacentHTML('beforeend',isSoloGame()?p9CommunityHTML():'');}
+      else{const comp=kids.find(n=>n.querySelector&&n.querySelector('#mlSend'));const hasMail=(c.mail||[]).length>0;
+        if(comp&&hasMail&&!comp.closest('details.p9comp')){const d=document.createElement('details');d.className='card mb p9comp';d.innerHTML='<summary><b>✉ New message</b></summary>';comp.before(d);comp.classList.remove('card','mb');comp.style.marginTop='8px';const h3=comp.querySelector('h3');if(h3)h3.remove();d.appendChild(comp);
+          const last=[...v.children].filter(n=>n!==d&&!n.classList.contains('ptitle')&&!n.classList.contains('p9tabs')).pop();if(last)last.after(d);}}}catch(e){}}
+  // Diplomacy: alone, one line instead of three "join an alliance" cards; the forum lives in Comms now
+  if(view==='diplomacy'){try{const cl=clanOf(c);
+      if(!cl){const kids=[...v.children];const hit=kids.filter(n=>/^(You speak alone|War Status\s*UNALIGNED|Join an alliance to wage diplomacy)/i.test((n.innerText||'').replace(/\s+/g,' ').trim()));
+        if(hit.length){hit.forEach(n=>n.remove());const pt=v.querySelector(':scope > .ptitle');const one=h(`<div class="card mb p9alone" style="border-left:3px solid var(--gold)"><div class="small">You speak alone. Diplomacy is between alliances: found or join one, and one person speaks for you. <button class="btn ghost sm" onclick="go('clans')">Alliance</button></div></div>`);if(pt)pt.after(one);else v.prepend(one);
+          const dip=v.querySelector(':scope > .p7dip');if(dip)one.after(dip);}}
+      if(!v.querySelector('.p9fl')){const fl=h(`<div class="card mb p9fl"><div class="row between wrap" style="gap:6px;align-items:center"><span class="small">🌍 The world forum is in <b>Comms</b>.</span><button class="btn ghost sm" onclick="window._p9tab='forum';window._p9want=1;go('mail')">Open the forum</button></div></div>`);
+        const how=v.querySelector(':scope > .howfold');if(how)how.before(fl);else v.appendChild(fl);}}catch(e){}}
+  // Alliance (live world): the chat links on top; the Discord and Telegram cards folded, with a test and the last delivery
+  if(view==='clans'&&!isSoloGame()){try{const cl=clanOf(c);if(cl){p7Put(v,'p9lines',p9LinesCardHTML(c),n=>{const bar=v.querySelector(':scope > #clantab');if(bar)bar.after(n);else{const pt=v.querySelector(':scope > .ptitle');if(pt)pt.after(n);else v.prepend(n);}});
+      const dc=v.querySelector('#dcsave'),tg=v.querySelector('#tgsave');const st=cl._lineStat||{};
+      const line=(k,el)=>{if(!el)return;const card=el.closest('.card');if(!card||card.querySelector('.p9st'))return;const s=st[k];
+        card.insertAdjacentHTML('beforeend',`<div class="row wrap mt p9st" style="gap:6px;align-items:center"><span class="small ${s?(s.ok?'':'bad'):'muted'}">${s?(s.ok?'✅ Last message delivered '+p9Ago(s.at):'⚠ Last message failed '+p9Ago(s.at)+': '+esc(s.msg||'unknown error')):'No message sent yet.'}</span>${cl.roles[c.id]==='leader'&&(k==='discord'?cl.discord&&cl.discord.on:cl.telegram&&cl.telegram.on)?'<button class="btn ghost sm" data-p9a="ltest">Send a test</button>':''}</div>`);};
+      line('discord',dc);line('telegram',tg);
+      const box=(dc||tg)&&(dc||tg).closest('.card')&&(dc||tg).closest('.card').parentElement;if(box&&typeof p8Fold==='function')p8Fold(box,[/discord integration/i,/telegram integration/i],'Alliance alerts to your Discord or Telegram');}}catch(e){}}
+  // battle reports: a Share button next to "Copy the line"
+  try{v.querySelectorAll('[data-copyrep]').forEach(bn=>{if(bn.nextElementSibling&&bn.nextElementSibling.dataset&&bn.nextElementSibling.dataset.p9a)return;bn.insertAdjacentHTML('afterend',`<button class="btn ghost sm" data-p9a="share-battle" data-i="${bn.dataset.copyrep}">📤 Share</button>`);});}catch(e){}}
+// copyText for the briefing and the invite now opens the share sheet (text kept as it was)
+function p9CopyShare(txt,kind){if(kind==='brief')return p9Share({text:txt,ev:'brief',title:'Share the briefing',nolink:true});return p9Share({text:txt,ev:'invite',title:'Invite to the alliance',nolink:/https?:\/\//.test(txt)});}
+if(typeof document!=='undefined'&&document&&document.head&&!(typeof window!=='undefined'&&window._p9css)){try{window._p9css=1;const st=document.createElement('style');st.textContent=
+ '.p9sheet{position:fixed;inset:0;z-index:400;background:rgba(0,0,0,.55);display:flex;align-items:center;justify-content:center;padding:16px}'+
+ '.p9box{background:var(--panel,#16130d);border:1px solid var(--border);border-radius:14px;max-width:520px;width:100%;padding:14px 16px;box-shadow:var(--shadow)}'+
+ '.p9prev{margin:10px 0;padding:8px 10px;border:1px solid var(--border);border-radius:8px;max-height:150px;overflow:auto;opacity:.9;white-space:normal}'+
+ '.p9img img{width:100%;border-radius:8px;border:1px solid var(--border);margin-bottom:8px}.p9btns{display:flex;flex-wrap:wrap;gap:6px}.p9btns .btn{flex:1 1 30%;justify-content:center;text-align:center;text-decoration:none}.p9hint{margin-top:8px}'+
+ '.btn.p9-whatsapp{background:#25D366;color:#062b12;border-color:#25D366}.btn.p9-telegram{background:#229ED9;color:#fff;border-color:#229ED9}.btn.p9-discord{background:#5865F2;color:#fff;border-color:#5865F2}'+
+ 'a.p9ln{text-decoration:none}.p9grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:8px}.p9grid input{width:100%;margin-top:3px}details.p9led{margin-top:8px}details.p9led>summary,details.p9comp>summary{cursor:pointer}'+
+ '.p9nudge{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(84px + env(safe-area-inset-bottom));z-index:120;background:var(--panel,#16130d);border:1px solid var(--accent);border-radius:12px;padding:6px 8px 6px 12px;display:flex;gap:8px;align-items:center;box-shadow:var(--shadow);font-size:13px;max-width:calc(100vw - 24px)}'+
+ '@media(min-width:881px){.p9nudge{bottom:22px}}.small.bad{color:var(--danger,#e05a4a)}'+
+ '@media(max-width:720px){body.p8nav header.top .tick{display:none!important}.commsfab{width:42px!important;height:42px!important;font-size:18px!important;opacity:.92}body:not(.map-open) .main{padding-bottom:calc(132px + env(safe-area-inset-bottom))!important}}';
+ document.head.appendChild(st);}catch(e){}}
+
+// ================= Update 7.0 part 3, bug fixes (shared: Terrastate, Romaterra, Ironfront) =================
+// Escape closes a modal that has a close button; on phones the Comms drawer sits above the bottom bar and closes
+// when you change screen; alert buttons stay big enough to tap.
+if(typeof document!=='undefined'&&document&&document.addEventListener&&!(typeof window!=='undefined'&&window._p10key)){window._p10key=1;
+  document.addEventListener('keydown',e=>{if(e.key!=='Escape'||document.querySelector('.p9sheet'))return;const t=e.target;if(t&&/^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName)&&t.value)return;
+    const ms=[...document.querySelectorAll('.modal-bg')];const m=ms[ms.length-1];if(!m)return;const x=m.querySelector('[data-x]');if(x){e.preventDefault();x.click();}});}
+function p10After(){try{if(typeof window==='undefined')return;const prev=window._p10lv;window._p10lv=view;
+  if(prev&&prev!==view&&window.innerWidth<=760&&typeof COMMS!=='undefined'&&COMMS.open){COMMS.open=false;try{commsRender();}catch(e){}}}catch(e){}}
+if(typeof document!=='undefined'&&document&&document.head&&!(typeof window!=='undefined'&&window._p10css)){try{window._p10css=1;const st=document.createElement('style');st.textContent=
+ '@media(max-width:760px){.comms{bottom:calc(58px + env(safe-area-inset-bottom))!important;max-height:calc(100vh - 58px - var(--top-h,140px) - 12px)!important}body.map-open .comms{bottom:0!important}}'+
+ '@media(max-width:720px){body .alertbar .alertrow .btn,body .alertbar .alertrow>.arr .btn{min-height:34px!important;padding:6px 12px!important;font-size:12px!important}}';
+ document.head.appendChild(st);}catch(e){}}
+// live world: the retreat line in the standing orders is a dropdown, so it goes to the server here
+if(typeof document!=='undefined'&&document&&document.addEventListener&&!(typeof window!=='undefined'&&window._p10chg)){window._p10chg=1;
+  document.addEventListener('change',e=>{const s=e.target&&e.target.closest&&e.target.closest('[data-p7s]');if(!s||(typeof p7Solo==='function'&&p7Solo()))return;
+    setTimeout(()=>{try{if(typeof cmdSetOrders==='function'&&typeof p11OrdersOf==='function')cmdSetOrders(you(),p11OrdersOf(you()));}catch(x){}},0);});}
+
+// ================= Update 7.0 part 4 "Fair Time" (shared: Terrastate, Romaterra, Ironfront) =================
+// Time, not money, is what you spend. So the chores that keep a nation going run by themselves for every player,
+// also in the live world while you sleep or work: a build plan (up to 5 builds that start when you can pay),
+// the research plan, keep-my-army and the standing orders. The live world also gets a friendly human check
+// for script-like timing (server side) and a public read-only API for community tools.
+const P11_PLAN_MAX=5;
+function p11B(c){return c.p11b=Array.isArray(c.p11b)?c.p11b:[];}
+function cmdPlanBuild(c,rid,k){rid=+rid;k=String(k||'');const r=G.regions.find(x=>x.id===rid);if(!r||r.owner!==c.id)return err('Not your region');
+  const d=BUILD.find(x=>x.k===k);if(!d)return err('Unknown building');
+  if(typeof buildUnlocked==='function'&&!buildUnlocked(c,d))return err('That building is still locked');
+  const P=p11B(c);if(P.length>=P11_PLAN_MAX)return err('The build plan holds '+P11_PLAN_MAX+' builds. Remove one first.');
+  P.push({rid,k,t:G.tick});return ok({plan:P.length});}
+function cmdUnplanBuild(c,i){const P=p11B(c);i=Math.floor(+i);if(!(i>=0&&i<P.length))return err('Not in the plan');P.splice(i,1);return ok();}
+function p11BuildTick(c){const P=p11B(c);if(!P.length)return;const notes=[];let placed=0;
+  for(let i=0;i<P.length&&placed<2;){const e=P[i];const r=G.regions.find(x=>x.id===e.rid);const d=BUILD.find(x=>x.k===e.k);
+    if(!r||r.owner!==c.id||!d){notes.push((d?d.n:e.k)+' dropped, the region is no longer yours');P.splice(i,1);continue;}
+    const q=(c.queue||[]).filter(x=>x.rid===e.rid&&x.k===e.k).sort((a,b)=>b.target-a.target)[0];const lvl=q?q.target:blevel(c,e.rid,e.k);
+    const cost=bcost(e.k,lvl);if(!afford(c,cost)||(c.cp||0)<1)break; // waits, in order, until you can pay
+    const x=cmdBuild(c,e.rid,e.k);P.splice(i,1);if(x&&x.ok){placed++;notes.push((d.n||e.k)+' in '+r.name+' started');}else notes.push((d.n||e.k)+' in '+r.name+' dropped: '+((x&&x.error)||'not possible'));}
+  if(notes.length)sitrep(c,'system','📋 Build plan: '+notes.join(' · '),{sev:0,go:'production'});}
+// The standing orders, research plan and keep-army rules as one command, so the live-world server runs them for you.
+function cmdSetOrders(c,cfg){if(!cfg||typeof cfg!=='object')return err('Invalid orders');if(!rateOk(c,'orders',12,1))return err('Slow down a little.');
+  const A=p7A(c);const b=v=>v===true;
+  A.on=b(cfg.on);A.ret=b(cfg.ret);A.scan=b(cfg.scan);A.pac=b(cfg.pac);
+  const rt=+cfg.retreat;A.retreat=rt>0&&rt<=0.95?Math.round(rt*100)/100:0;
+  A.keep=(Array.isArray(cfg.keep)?cfg.keep:[]).slice(0,6).map(x=>({k:String(x&&x.k||''),n:Math.floor(+(x&&x.n))})).filter(x=>Object.prototype.hasOwnProperty.call(UBYK,x.k)&&x.n>0&&x.n<=1e7);
+  A.plan=(Array.isArray(cfg.plan)?cfg.plan:[]).slice(0,10).map(String).filter(k=>TECH.some(t=>t.k===k)&&!c.tech.includes(k));
+  return ok();}
+function p11OrdersOf(c){const A=p7A(c);return {on:!!A.on,ret:!!A.ret,scan:!!A.scan,pac:!!A.pac,retreat:+A.retreat||0,keep:(A.keep||[]).map(x=>({k:x.k,n:x.n})),plan:(A.plan||[]).slice()};}
+// Every tick: the build plan for every player; in the live world also the standing orders (solo runs those already).
+function p11Tick(){(G.countries||[]).forEach(c=>{if(!c||c.retired||c.isAI!==false||c._noAuto)return;try{p11BuildTick(c);}catch(e){}
+  try{if(!(typeof p7Solo==='function'&&p7Solo())&&c.p7a&&typeof p7Auto==='function')p7Auto(c);}catch(e){}});}
+// ---------- UI ----------
+function p11PlanHTML(c){const P=p11B(c);const rs=regionsOf(c);if(!rs.length)return '';
+  const bl=BUILD.filter(d=>typeof buildUnlocked!=='function'||buildUnlocked(c,d));
+  const row=(e,i)=>{const r=G.regions.find(x=>x.id===e.rid);const d=BUILD.find(x=>x.k===e.k);let st='waits';try{const q=(c.queue||[]).filter(x=>x.rid===e.rid&&x.k===e.k).sort((a,b)=>b.target-a.target)[0];const cost=bcost(e.k,q?q.target:blevel(c,e.rid,e.k));st=i===0?(afford(c,cost)?((c.cp||0)>=1?'starts next tick':'waits for command'):'waits for '+affordMsg(c,cost).replace(/^Not enough /i,'')):'waits its turn';}catch(x){}
+    return `<div class="row between wrap small" style="gap:6px;padding:4px 0;border-top:1px solid var(--border)"><span>${i+1}. <b>${esc(d?d.n:e.k)}</b> in ${esc(r?r.name:'?')} <span class="muted">· ${esc(st)}</span></span>${p7B('✕','data-p7="p11x" data-i="'+i+'"')}</div>`;};
+  return `<details class="card mb p11plan" ${P.length?'open':''}><summary style="cursor:pointer;font-weight:700">📋 Build plan <span class="muted small" style="font-weight:400">${P.length}/${P11_PLAN_MAX} · builds that start by themselves when you can pay</span></summary>
+    <div class="muted small" style="margin:6px 0">Line up to ${P11_PLAN_MAX} builds. At the start of each tick the first one starts as soon as you have the money and 1 command, also while you are away.</div>
+    ${P.map(row).join('')}
+    ${P.length<P11_PLAN_MAX?`<div class="row wrap mt" style="gap:6px;align-items:center"><select id="p11r" style="width:auto;max-width:44%">${rs.map(r=>`<option value="${r.id}">${esc(r.name)}</option>`).join('')}</select><select id="p11k" style="width:auto;max-width:44%">${bl.map(d=>`<option value="${esc(d.k)}">${esc(d.n)}</option>`).join('')}</select>${p7B('+ Add','data-p7="p11+"','sec')}</div>`:''}</details>`;}
+// p7 buttons: the plan buttons, and in the live world every change to the standing orders goes to the server
+if(typeof window!=='undefined'&&typeof p7Click==='function'&&!window._p11click){window._p11click=1;const _o=p7Click;
+  p7Click=async function(b){const a=b.dataset.p7;const c=you();
+    if(a==='p11+'){const card=b.closest('.p11plan');const rid=+(card.querySelector('#p11r')||{}).value,k=(card.querySelector('#p11k')||{}).value;const r=await cmdPlanBuild(c,rid,k);toast(r.ok?'📋 Added to the build plan':r.error,r.ok?'':'bad');if(r.ok){save();go(view);}return;}
+    if(a==='p11x'){const r=await cmdUnplanBuild(c,+b.dataset.i);if(r.ok){save();go(view);}else toast(r.error,'bad');return;}
+    const inOrders=!!(b.closest('.p7auto')||b.closest('.p7plan'));const res=_o.apply(this,arguments);
+    if(inOrders&&!(typeof p7Solo==='function'&&p7Solo())){try{await res;}catch(e){}try{const r=await cmdSetOrders(you(),p11OrdersOf(you()));if(r&&!r.ok)toast(r.error,'bad');}catch(e){}}
+    return res;};}
+function p11After(){const v=document.getElementById('view');const c=you();if(!v||!c)return;
+  const bottom=n=>{const f=v.querySelector(':scope > .howfold');if(f)f.before(n);else v.appendChild(n);};
+  if(view==='production')p7Put(v,'p11plan',p11PlanHTML(c),bottom);
+  if(!(typeof p7Solo==='function'&&p7Solo())){ // live world: the same helper cards as in solo
+    if(view==='military'&&typeof p7AutoHTML==='function')p7Put(v,'p7auto',p7AutoHTML(c),bottom);
+    if(view==='research'&&typeof p7PlanHTML==='function')p7Put(v,'p7plan',p7PlanHTML(c),bottom);}}
+// ---------- live world: the friendly human check ----------
+function p11Ask(q){return new Promise(res=>{document.querySelectorAll('.p11hc').forEach(e=>e.remove());
+  const el=h(`<div class="modal-bg p11hc"><div class="modal" style="max-width:420px"><h3 style="margin:0 0 6px">👋 Quick check</h3><div class="small" style="margin-bottom:10px">Your orders came in at very regular times, like a script. Answer this and carry on. Nothing is lost.</div>
+    <div style="margin-bottom:8px"><b>${esc(q)}</b></div><input id="p11hca" autocomplete="off" style="width:100%;box-sizing:border-box"><div class="row mt" style="gap:6px;justify-content:flex-end"><button class="btn ghost sm" data-hc="0">Later</button><button class="btn sm" data-hc="1">Carry on</button></div></div></div>`);
+  document.body.appendChild(el);const inp=el.querySelector('#p11hca');setTimeout(()=>{try{inp.focus();}catch(e){}},50);
+  const done=v=>{el.remove();res(v);};el.querySelector('[data-hc="0"]').onclick=()=>done(null);el.querySelector('[data-hc="1"]').onclick=()=>done(inp.value);inp.onkeydown=e=>{if(e.key==='Enter')done(inp.value);};});}
+function p11InstallFetch(){if(typeof window==='undefined'||!window.fetch||window._p11f)return;window._p11f=1;const of=window.fetch.bind(window);
+  window.fetch=async function(u,init){const r=await of(u,init);try{const url=String((u&&u.url)||u||'');if(r.status!==428||!/\/api\/cmd\b/.test(url))return r;
+      let j={};try{j=await r.clone().json();}catch(e){}let q=j&&j.check&&j.check.q;
+      const hd={};try{const H=init&&init.headers;if(H&&typeof H.forEach==='function')H.forEach((v,k)=>hd[k]=v);else Object.assign(hd,H||{});}catch(e){}hd['Content-Type']='application/json';
+      for(let i=0;i<5&&q;i++){const ans=await p11Ask(q);if(ans==null)return r;const rr=await of(url.replace(/\/api\/cmd\b.*$/,'/api/human-check'),{method:'POST',headers:hd,body:JSON.stringify({answer:ans})});
+        let jj={};try{jj=await rr.json();}catch(e){}if(rr.ok){toast('Thanks, carry on');return of(u,init);}toast(jj.error||'Not quite, try again','warn');q=jj.check&&jj.check.q;}}catch(e){}return r;};}
+if(typeof window!=='undefined'&&window.__MP__)p11InstallFetch();
 
 function emblem(c){return `<span class="flagi" title="${esc((c&&c.name)||'')}">${flagSVG(c,22)}</span>`;}
 // Relationship-only colours (Planetarion-style): gold self, blue alliance,
@@ -6395,9 +6736,9 @@ function renderLanding(){
       <a class="card" href="updates.html" target="_self" rel="noopener" style="display:block;text-decoration:none;color:inherit;margin:0 auto">
         <div class="row between wrap" style="gap:10px;align-items:center">
           <div style="min-width:0;flex:1">
-            <div><span class="mono" style="color:var(--gold);font-size:11px;letter-spacing:1px">VERSION 6.1 · PATCH</span> <span class="muted small">October 2026</span></div>
-            <div style="font-weight:700;margin-top:3px">Romaterra 6.1: Act where you read</div>
-            <div class="muted small mt">Every warning and report now has the button that fixes it. Defend in one press, recall and shield in one press, quick buy on the market, standing orders for the chores, pacts with your neighbours.</div>
+            <div><span class="mono" style="color:var(--gold);font-size:11px;letter-spacing:1px">VERSION 7.0 · UPDATE 7</span> <span class="muted small">October 2026</span></div>
+            <div style="font-weight:700;margin-top:3px">Romaterra 7.0: Command Desk</div>
+            <div class="muted small mt">A calmer desk. An attack on your ground has one Front card on Home with your defence against what is coming. Alerts are one line, each screen starts with its own content, and on phones END TURN sits in the bottom bar. Share a battle to WhatsApp, Telegram or Discord, Messages is now Comms, and a build plan starts up to five builds by themselves.</div>
           </div>
           <span class="btn ghost sm" style="flex:none;pointer-events:none">What is new</span>
         </div>
@@ -6465,7 +6806,7 @@ function renderLanding(){
   {const b=s.querySelector('#lpNews');if(b)b.onclick=()=>{const t=s.querySelector('#playerupdate');if(t)t.scrollIntoView({behavior:'smooth',block:'center'});};}
 }
 // ---- Legal identity: ONE place to change the operator / contact / copyright holder. Used by the Privacy, Terms and Credits tabs and the footer.
-const LEGAL={operator:'Wim Kamphorst',email:'earth2026game@gmail.com',author:'Wim Kamphorst',country:'the Netherlands',law:'Dutch law',dpa:'Autoriteit Persoonsgegevens (the Dutch data protection authority)',dpaUrl:'https://www.autoriteitpersoonsgegevens.nl',version:'1.0',updated:'September 2026',build:'Version 6.1 · Oct 2026',minAge:16};
+const LEGAL={operator:'Wim Kamphorst',email:'earth2026game@gmail.com',author:'Wim Kamphorst',country:'the Netherlands',law:'Dutch law',dpa:'Autoriteit Persoonsgegevens (the Dutch data protection authority)',dpaUrl:'https://www.autoriteitpersoonsgegevens.nl',version:'1.0',updated:'September 2026',build:'Version 7.0 · Oct 2026',minAge:16};
 LEGAL.contact=`<b>${LEGAL.operator}</b>, <a href="mailto:${LEGAL.email}">${LEGAL.email}</a>`;
 // ---- Landing-page manual: beginner's handbook + combat formulae -------------
 const MANUAL={
@@ -7177,7 +7518,7 @@ function onboardStep(c){try{if(!c||c._guideOff||c.isAI!==false)return null;if(ty
 function playerLegacyHistory(){try{return (JSON.parse(localStorage.getItem('romaterra_legacy'))||[]).slice(-12);}catch(e){return [];}}
 function pushPlayerLegacy(entry){try{const a=playerLegacyHistory();a.push(entry);localStorage.setItem('romaterra_legacy',JSON.stringify(a.slice(-12)));}catch(e){}}
 // Freeze a season's results into the Hall of Fame (kept in the save AND a durable key).
-function archiveSeason(endType,winnerId){try{const _me=you();if(_me&&_me.isAI===false)saveReturningRivals(_me);}catch(e){}
+function archiveSeason(endType,winnerId){if(G._p10arch===((G.season&&G.season.num)||0)+':'+((G.season&&G.season.startTick)||0))return null;try{const _me=you();if(_me&&_me.isAI===false)saveReturningRivals(_me);}catch(e){}
   const you0=you();const rt=you0?rankTitle(you0.id):{title:'—',pos:0,total:0};
   const ranked=activeRanked();
   const topN=ranked.slice(0,3).map((x,i)=>{const c=G.countries[x.id];return {name:c?c.name:'?',tag:c?c.tag:'—',score:Math.round(x.s),rank:i+1};});
@@ -7208,7 +7549,7 @@ function archiveSeason(endType,winnerId){try{const _me=you();if(_me&&_me.isAI===
     richest:richest?{name:richest.name,tag:richest.tag,money:Math.round(richest.res.money||0)}:null,
     largest:largest?{name:largest.name,tag:largest.tag,regions:regionsOf(largest).length}:null};
   (G.hall=G.hall||[]).push(rec);if(G.hall.length>12)G.hall=G.hall.slice(-12);
-  const store=hallLoad();store.push(rec);hallSave(store);return rec;}
+  const store=hallLoad();store.push(rec);hallSave(store);G._p10arch=((G.season&&G.season.num)||0)+':'+((G.season&&G.season.startTick)||0);return rec;}
 function seasonFinaleHTML(c,rt,won){try{saveReturningRivals(c);}catch(e){}const L=slog(c);const lt=legacyTitle(c,rt,won);
   pushPlayerLegacy({season:G.season.num,title:lt.t,rank:rt.pos,total:rt.total,won:!!won,captures:L.captures,warsWon:L.warsWon,nemesis:(nemesis(c)||{}).tag||null,date:Date.now()});
   const hist=playerLegacyHistory().slice(0,-1).slice(-3).reverse(); // prior seasons (exclude the one we just pushed)
@@ -7221,7 +7562,7 @@ function seasonFinaleHTML(c,rt,won){try{saveReturningRivals(c);}catch(e){}const 
     ${stat('💔',L.betrayals,'pacts broken')}${stat('🎖',full(L.biggest||0),'biggest battle')}</div>`;
   const histHTML=hist.length?`<div class="mt" style="border-top:1px solid var(--border);padding-top:10px"><div class="clabel" style="text-align:left">Your history</div>${hist.map(hh=>`<div class="row between small" style="padding:3px 0"><span>Season ${hh.season} · <b>${esc(hh.title)}</b></span><span class="muted">#${hh.rank||'?'}${hh.won?' 🏆':''}</span></div>`).join('')}</div>`:'';
   const achBtn=(typeof isSoloGame==='function'&&isSoloGame())?`<div class="row wrap" style="gap:6px;margin:6px 0"><button class="btn ghost sm" onclick="showAchievements()">🏅 Achievements (${(c._ach||[]).length}/${ACH.length})</button><button class="btn ghost sm" onclick="showSlots('game')">🏺 Save this world</button></div>`:'';
-    const discordBtn=(typeof isSoloGame==='function'&&isSoloGame())?`<div class="card mb" style="border-left:3px solid #5865F2;margin:10px 0"><div class="row between wrap" style="align-items:center;gap:8px"><div><b>💬 Join the community</b><div class="muted small">Share how your season went, ask for tips, join the waitlist for the live world (opens at 100 commanders).</div></div><a class="btn sec sm" href="https://discord.gg/PZGPKuzPCb" target="_blank" rel="noopener">💬 Join the Discord</a></div></div>`:'';
+    const discordBtn=(typeof isSoloGame==='function'&&isSoloGame())?p9CommunityHTML():'';
 return `<div style="font-family:var(--mono);font-size:11px;letter-spacing:2px;color:var(--gold)">🏁 SEASON ${G.season.num} COMPLETE, HISTORY IS WRITTEN</div>${achBtn}${discordBtn}
     <h2 style="margin:.2em 0">${esc(medal)}</h2>
     <div class="card" style="border:1px solid var(--gold);background:linear-gradient(180deg,rgba(224,165,42,.10),transparent);margin:10px 0">
@@ -7333,7 +7674,7 @@ const NAV=[['dashboard','','Home'],['map','','Map'],['economy','','Economy'],['p
 // Command-console sidebar: grouped sections + military labels (view keys unchanged)
 // v3.25 Action-first: the core loop (resources, market, war, army, covert) sits up top and always open; the rest is one group lower.
 const NAV_SECTIONS=[['Core',['dashboard','map','economy','market','self','around','clans','military']],['More',['covert','production','research','diplomacy','mail']],['Intel',['rankings','reports','codex']]];
-const NAVLABEL={dashboard:'Home',map:'Tactical Map',self:'Homeland',around:'Nearby',fleets:'War Room',military:'Armed Forces',covert:'Covert Ops',economy:'Economy',production:'Production',research:'R&D',market:'Market',diplomacy:'Diplomacy',clans:'Alliance',mail:'Messages',rankings:'Rankings',reports:'Intel Reports',codex:'Field Manual'};
+const NAVLABEL={dashboard:'Home',map:'Tactical Map',self:'Homeland',around:'Nearby',fleets:'War Room',military:'Armed Forces',covert:'Covert Ops',economy:'Economy',production:'Production',research:'R&D',market:'Market',diplomacy:'Diplomacy',clans:'Alliance',mail:'Comms',rankings:'Rankings',reports:'Intel Reports',codex:'Field Manual'};
 const _sv=d=>`<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${d}</svg>`;
 const ICONS={
  dashboard:_sv('<rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="11" width="7" height="10" rx="1"/><rect x="3" y="15" width="7" height="6" rx="1"/>'),
@@ -7356,19 +7697,19 @@ const ICONS={
 // Mobile navigation: 4 primary destinations + a "More" sheet grouping the rest.
 const MENUICON=_sv('<line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>');
 const BOTTOMNAV=[['dashboard','Home'],['military','Forces'],['self','Homeland'],['around','Nearby'],['__more','More']];
-const MOREGROUPS=[['World',['map']],['Economy',['economy','production','research','market']],['Military',['military','covert']],['Diplomacy',['diplomacy','clans','mail']],['Standings',['rankings','reports']],['Help',['codex']]];
+const MOREGROUPS=[['World',['map','around']],['Economy',['economy','production','research','market']],['Military',['military','covert']],['Diplomacy',['diplomacy','clans','mail']],['Standings',['rankings','reports']],['Help',['codex']]];
 const PRIMARY_NAV=BOTTOMNAV.filter(x=>x[0]!=='__more').map(x=>x[0]);
 const EARLY_NAV=[['dashboard','Home'],['production','Build'],['military','Recruit'],['map','Map'],['__more','More']];
 function earlyPhone(){try{if(typeof window!=='undefined'&&window.__MP__)return false;if(typeof isSoloGame==='function'&&!isSoloGame())return false;const c=you();if(!c||c.isAI!==false)return false;const fought=(G.battles||[]).some(b=>b&&(b.atkId===c.id||b.defId===c.id));return (G.tick-(c._born||0))<16&&!fought;}catch(e){return false;}}
 function primaryKeys(){return earlyPhone()?['dashboard','production','military','map']:PRIMARY_NAV;}
 function navLabel(k){if(typeof NAVLABEL!=='undefined'&&NAVLABEL[k])return NAVLABEL[k];const n=NAV.find(x=>x[0]===k);return n?n[2]:k;}
 function buildMobileNav(){const bn=$('bottomnav');if(!bn)return;
-  const early=earlyPhone();const items=early?EARLY_NAV:BOTTOMNAV;const sig=items.map(x=>x[0]).join('|');
+  const early=earlyPhone();const items=(typeof p8NavItems==='function'?p8NavItems:(x=>x))(early?EARLY_NAV:BOTTOMNAV);const sig=items.map(x=>x[0]).join('|');
   if(bn.dataset.sig===sig&&bn.childElementCount)return;
   bn.dataset.sig=sig;bn.innerHTML='';
   items.forEach(([k,label])=>{const isMore=k==='__more';const icon=isMore?MENUICON:(ICONS[k]||'');const badge=(k==='self'||(early&&k==='dashboard'))?'<span class="badge" id="wbadge" style="display:none"></span>':'';
     const el=h(`<button class="bn ${k===view?'on':''}" data-bk="${k}"><span class="i">${icon}</span><span>${label}</span>${badge}</button>`);
-    el.onclick=()=>{if(isMore)openMore();else{closeMore();go(k);}};bn.appendChild(el);});}
+    el.onclick=()=>{if(isMore)openMore();else{closeMore();go(k);}};bn.appendChild(el);});try{p8NavFix(bn);}catch(e){}}
 function openMore(){const ms=$('moresheet');if(!ms)return;
   const groups=MOREGROUPS.map(([title,keys])=>`<h4>${title}</h4>`+keys.map(k=>`<div class="mrow ${k===view?'on':''}" data-mk="${k}"><span class="i">${ICONS[k]||''}</span><span>${navLabel(k)}</span></div>`).join('')).join('');
   ms.innerHTML=`<div class="sheet"><div style="position:sticky;top:-16px;background:var(--panel);border-bottom:1px solid var(--border2);display:flex;justify-content:space-between;align-items:center;z-index:2;margin:-16px -18px 8px;padding:14px 18px"><strong style="font-size:15px">Menu</strong><button class="gearbtn" id="moreclose" title="Close" style="font-size:18px;width:40px;height:40px;min-height:40px">✕</button></div>${groups}<div style="padding:14px 0 2px"><button class="btn ghost" style="width:100%;min-height:50px;font-size:14px" id="moreclose2">✕ Close</button></div></div>`;
@@ -7625,7 +7966,7 @@ function renderAlerts(v){try{const c=you();const cl=c&&clanOf(c);const a=cl&&act
     v.appendChild(bar);bar.querySelectorAll('[data-wa]').forEach(b=>b.onclick=async e=>{e.stopPropagation();const k=b.dataset.wa;if(k==='view'){go('clans');return;}const res=await cmdAckAlert(c,k);if(res.ok){toast(k==='in'?'⚔ Acknowledged, you are in':'Noted, marked as unavailable');save();go(view);}else toast(res.error,'bad');});}}catch(e){}
   try{const eg=endgameLine();if(eg){const eb=h(eg);eb.querySelector('[data-go]').onclick=()=>go('rankings');v.appendChild(eb);}}catch(e){}
   if(view==='dashboard')return;const items=priorityItems().filter(a=>a.sev===0);if(!items.length)return;
-  const bar=h(`<div class="alertbar">${items.map(a=>`<div class="alertrow ${a.cls}" data-go="${a.go}"${a.reinforce!=null?' data-rr="'+a.reinforce+'"':''}><span>${a.icon} ${esc(a.title)}. ${esc(a.detail)}</span><span class="arr">${a.qa?qaHTML(quickFixes(you(),a.qa)):''}${p7Actions(a)}${a.reinforce!=null&&!p7OwnR(a.reinforce)?'<button class="btn sm" data-reinf="'+a.reinforce+'" style="font-size:11px;padding:4px 8px;margin-right:6px" onclick="event.stopPropagation()">🛡 Reinforce</button>':''}${a.sos?'<button class="btn sm" data-sos="1" style="font-size:11px;padding:4px 8px;margin-right:6px" onclick="event.stopPropagation()">🆘 SOS</button>':''}GO →</span></div>`).join('')}</div>`);
+  const bar=h(`<div class="alertbar">${items.slice(0,1).map(a=>`<div class="alertrow ${a.cls}" data-go="${a.go}"${a.reinforce!=null?' data-rr="'+a.reinforce+'"':''}><span title="${esc(a.detail)}">${a.icon} <b>${esc(a.title)}</b><span class="p8det">. ${esc(a.detail)}</span></span><span class="arr">${a.qa?qaHTML(quickFixes(you(),a.qa)):''}${p7Actions(a)}${a.reinforce!=null&&!p7OwnR(a.reinforce)?'<button class="btn sm" data-reinf="'+a.reinforce+'" style="font-size:11px;padding:4px 8px;margin-right:6px" onclick="event.stopPropagation()">🛡 Reinforce</button>':''}${a.sos?'<button class="btn sm" data-sos="1" style="font-size:11px;padding:4px 8px;margin-right:6px" onclick="event.stopPropagation()">🆘 SOS</button>':''}GO →</span></div>`).join('')}${items.length>1?'<div class="p8more">+'+(items.length-1)+' more on Home</div>':''}</div>`);
   v.appendChild(bar);
   // For an incoming-attack bar, GO (and the whole row) opens the defend flow for that region — otherwise, on Homeland
   // itself, GO just re-opened the same screen and looked dead. Alerts without a region still navigate to their target.
@@ -7985,7 +8326,7 @@ VIEWS.dashboard=v=>{const c=you();const pj=projection(c),sc=scores(c);const sp=c
   // Under a MAJOR assault, Home goes into crisis mode: the season banner, the expansion quest and the guided
   // First-Steps card are civilian noise while you are holding the line, so they collapse until the threat passes.
   const _majorThreat=(()=>{try{return incomingTo(c.id).some(x=>x.threat>=0.5)||(c.fleets||[]).some(f=>f.status==='battle');}catch(e){return false;}})();
-  v.appendChild(h(`<div class="ptitle"><h2>Home</h2><span class="h">${_majorThreat?'<span class="muted small">Crisis mode, hold the line, the season goal is tucked away until it passes. </span>':nexusLine()}${esc(c.name)} · ${rankTitle(c.id).title} · Season ${G.season.num} · tick ${G.tick}</span></div>`));
+  v.appendChild(h(`<div class="ptitle"><h2>Home</h2><span class="h">${_majorThreat?'<span class="muted small">Crisis mode. </span>':nexusLine()}${esc(c.name)} · ${rankTitle(c.id).title} · Season ${G.season.num} · tick ${G.tick}</span></div>`));
   // v3.18 Home 3-zone layout. Zone 1 "Now" is full width on top; Zone 2 "Your nation" and Zone 3 "The world" sit side by side on wide
   // screens (stacked on mobile). Each card keeps its exact content and handlers, only its parent zone changes.
   const z1=h(`<div class="dash-zone"><div class="zone-h z1"><span class="zn">1</span> Now · who lands, and when</div></div>`);
@@ -9129,7 +9470,7 @@ function clusterList(){return [...new Set(G.regions.map(r=>r.cluster))].sort((a,
 // Beyond the 11 real continents, name the remaining theaters evocatively, players remember
 // "Crimson Corridor", never "Theater 17". Deterministic by cluster index, so a theater keeps its name.
 const THEATER_EXTRA=['Polar Frontier','Emerald Basin','Iron Coast','Crimson Corridor','Azure Expanse','Obsidian Reach','Golden Steppe','Stormlands','Ashen Wastes','Verdant Delta','Cobalt Straits','Scarlet Highlands','Silent Tundra','Amber Plateau','Onyx Sound','Sapphire Gulf'];
-function theaterName(k){const idx=(+k)-1;if(!(idx>=0))return 'Province '+k;const t=THEATERS[idx];if(t)return t[0];return THEATER_EXTRA[(idx-THEATERS.length)%THEATER_EXTRA.length]||('Province '+k);}
+function theaterName(k){if(k==null||k==='')return 'no territory';const idx=(+k)-1;if(!(idx>=0))return 'Province '+k;const t=THEATERS[idx];if(t)return t[0];return THEATER_EXTRA[(idx-THEATERS.length)%THEATER_EXTRA.length]||('Province '+k);}
 function theaterLabel(k){const nm=theaterName(k);return nm+' <span class="muted small">(T'+k+')</span>';}
 function sectorList(clu){return [...new Set(G.regions.filter(r=>r.cluster===clu).map(r=>r.sector))].sort((a,b)=>a-b);}
 const DOMCOL={self:RELCOL.self,enemy:RELCOL.enemy,ally:RELCOL.ally,alliance:RELCOL.alliance,neutral:RELCOL.neutral,empty:'#5a4630'};
@@ -10142,7 +10483,7 @@ VIEWS.clans=v=>{const c=you();const cl=clanOf(c);
      ops0.forEach(op=>{const r0=G.regions.find(x=>x.id===op.target);L.push('• ⚑ Join assault on '+(r0?r0.name:'a target')+' ('+op.coord+'), impact tick #'+op.landTick);});
      (G.wars||[]).filter(w=>w.active&&(w.a===cl.id||w.b===cl.id)).forEach(w=>{const foe=(G.clans||[]).find(x=>x.id===(w.a===cl.id?w.b:w.a));L.push('• ⚔ War vs '+(foe?foe.tag:'rival')+', score '+(w.a===cl.id?(w.sa||0)+':'+(w.sb||0):(w.sb||0)+':'+(w.sa||0)));});
      if(L.length===1)L.push('All quiet, hold, build and scout.');return L.join('\n');})();
-   const cs=h(`<div class="card mb" style="border-left:3px solid ${crit.length?'var(--danger)':calls0.length?'var(--alert)':'var(--ok)'}"><div class="row between wrap" style="gap:6px"><h3 style="margin:0">🦅 What needs doing <span class="muted small" style="text-transform:none;letter-spacing:0">critical calls · tap to act</span></h3><button class="btn ghost sm" id="copybrief">📋 Copy briefing</button></div>
+   const cs=h(`<div class="card mb" style="border-left:3px solid ${crit.length?'var(--danger)':calls0.length?'var(--alert)':'var(--ok)'}"><div class="row between wrap" style="gap:6px"><h3 style="margin:0">🦅 What needs doing <span class="muted small" style="text-transform:none;letter-spacing:0">critical calls · tap to act</span></h3><button class="btn ghost sm" id="copybrief">📤 Share briefing</button></div>
      ${cmdMsg}
      <div class="small muted" style="margin-bottom:2px"><b style="color:${calls0.length?'var(--danger)':'var(--ok)'}">${calls0.length}</b> region${calls0.length===1?'':'s'} under attack · <b style="color:${threatened?'var(--alert)':'var(--ok)'}">${threatened}</b> member${threatened===1?'':'s'} threatened · <b style="color:${ops0.length?'var(--tech)':'var(--text)'}">${ops0.length}</b> joint operation${ops0.length===1?'':'s'}</div>
      ${missing?`<div class="small" style="color:var(--alert)">⚠ Alliance is short <b>${full(missing)}</b> defensive power across all calls.</div>`:''}
@@ -10151,7 +10492,7 @@ VIEWS.clans=v=>{const c=you();const cl=clanOf(c);
    cs.querySelectorAll('[data-defend]').forEach(b=>b.onclick=async ()=>{const rid=+b.dataset.defend;const com={};for(const k in c.units){const n=Math.floor((c.units[k]||0)*0.5);if(n>0)com[k]=n;}const r=await cmdStation(c,rid,com);if(r.ok){{const _confirmed=await cmdAckCall(c,rid,'omw');if(!_confirmed.ok){toast(_confirmed.error,'bad');go(view);return;}}toast('🐂 Army dispatched & alliance notified, arrives in '+r.data.eta+'t');go('clans');drawTop();save();}else{selDefend=rid;go('fleets');}});
    cs.querySelectorAll('[data-joinop]').forEach(b=>b.onclick=()=>OPEN_JOINOP(b.dataset.joinop));
    cs.querySelectorAll('[data-ack]').forEach(b=>b.onclick=async ()=>{const r=await cmdAckCall(c,+b.dataset.ack,b.dataset.as);if(r.ok){toast('Response sent to the alliance');go('clans');save();}else toast(r.error,'bad');});
-   {const cb=cs.querySelector('#copybrief');if(cb)cb.onclick=()=>copyText(brief,'📋 Briefing copied, paste it into Discord, WhatsApp or your chat of choice');}}
+   {const cb=cs.querySelector('#copybrief');if(cb)cb.onclick=()=>p9CopyShare(brief,'brief');}}
   // ---- YOUR TASK, a member should never wonder "what do I do for the team?". Concrete, one-tap. ----
   {const tasks=[];const calls1=defenceCalls(cl);
    if(c._task&&c._task.text){const by=G.countries[c._task.by];tasks.push({t:`📣 <b>Order from ${esc(by?leaderName(by):'command')}:</b> ${esc(c._task.text)}`,b:`<button class="btn ghost sm" data-mytask-done="1">✓ Done</button>`});}
@@ -10298,7 +10639,7 @@ VIEWS.clans=v=>{const c=you();const cl=clanOf(c);
     const ac=memberActivity(m);
     return `<tr><td><span title="${esc(ac.lbl)}" style="font-size:13px;vertical-align:middle">${ac.ic}</span> ${emblem(m)} ${esc(m.name)} <span class="tag">${m.tag}</span>${me?' <span class="pill a">you</span>':''}${m.away?' <span class="pill n">🌙 away</span>':''}</td><td><span class="pill ${role==='leader'?'g':role==='officer'?'a':'n'}">${ROLE[role]}</span></td><td class="small">${rd.l}</td><td class="r mono">${full(Math.round(power(m,'atk')))}</td><td class="r">${regionsOf(m).length}</td><td class="r">${inc?'<span class="pill b">⚔'+inc+'</span>':short?'<span class="pill w">⚠ short</span>':'<span class="pill g">ok</span>'}</td><td class="r">${act}</td></tr>`;}).join('');
   boxMem.appendChild(h(`<div class="card mb"><h3>Alliance dashboard <span class="muted small" style="text-transform:none;letter-spacing:0">readiness, strength & who needs help</span></h3><div class="scroll"><table><thead><tr><th>Nation</th><th>Role</th><th>Ready</th><th class="r">⚔ Power</th><th class="r">Rgn</th><th class="r">Status</th><th></th></tr></thead><tbody>${mrows}</tbody></table></div>
-    <div class="row mt wrap" style="gap:8px;align-items:center"><button class="btn sec sm" id="sos">📣 Send SOS ping</button><button class="btn ghost sm" id="copyinv">📋 Copy invite</button><label class="row small" style="gap:6px;align-items:center"><input type="checkbox" id="awaytoggle" ${c.away?'checked':''} style="width:auto"> 🌙 Away / vacation</label><button class="btn ghost sm" id="leave">Leave alliance</button></div>
+    <div class="row mt wrap" style="gap:8px;align-items:center"><button class="btn sec sm" id="sos">📣 Send SOS ping</button><button class="btn ghost sm" id="copyinv">📤 Share invite</button><label class="row small" style="gap:6px;align-items:center"><input type="checkbox" id="awaytoggle" ${c.away?'checked':''} style="width:auto"> 🌙 Away / vacation</label><button class="btn ghost sm" id="leave">Leave alliance</button></div>
     ${isOff&&mem.length>1?`<div class="row mt wrap" style="gap:6px;align-items:center;border-top:1px solid var(--border);padding-top:8px"><span class="small muted">🎯 Assign task</span><select id="asgto" style="width:auto">${mem.filter(m=>m.id!==c.id).map(m=>`<option value="${m.id}">${esc(m.name)} (${m.tag})</option>`).join('')}</select><input id="asgtxt" maxlength="120" placeholder="e.g. Defend B7 / Join ACS / Donate livestock" style="flex:1;min-width:140px"><button class="btn sm" id="asgbtn">Assign</button></div>`:''}
     <div class="muted small mt" style="text-transform:none;letter-spacing:0">🟢 active · 🟠 idle · 🔴 dormant · 🌙 away, set yourself Away so allies know not to count on you.</div></div>`));
   // Alliance Defence, structured Defence Calls (spec §10-12): required vs assigned power, status, and help actions
@@ -10402,7 +10743,7 @@ VIEWS.clans=v=>{const c=you();const cl=clanOf(c);
   const lv=v.querySelector('#leave');if(lv)lv.onclick=async ()=>{const r=await cmdLeaveClan(c);if(r.ok){toast('You left the alliance');go('clans');drawTop();save();}else toast(r.error,'bad');};
   const sos=v.querySelector('#sos');if(sos)sos.onclick=()=>{const myR=regionsOf(c)[0];clanPost(cl,c.id,'📣 SOS from '+c.name+(myR?' ('+myR.coord+')':'')+', requesting immediate support!','war');toast('📣 SOS ping sent to your alliance');go('clans');save();};
   const awt=v.querySelector('#awaytoggle');if(awt)awt.onchange=async ()=>{{const _confirmed=await cmdSetPref(c,'away',awt.checked);if(!_confirmed.ok){toast(_confirmed.error,'bad');go(view);return;}}toast(awt.checked?'Marked away, allies will see the moon on your name':'Welcome back, marked active');go('clans');save();};
-  const cpi=v.querySelector('#copyinv');if(cpi)cpi.onclick=()=>{if(!cl.code)cl.code=genInviteCode(cl.tag);copyText('Join our Romaterra alliance!\nAlliance: '+cl.name+' ['+cl.tag+']\nInvite code: '+cl.code+'\nPaste the code in the pre-season lobby to line up with us.','📋 Invite message copied, share it anywhere');};
+  const cpi=v.querySelector('#copyinv');if(cpi)cpi.onclick=()=>{if(!cl.code)cl.code=genInviteCode(cl.tag);p9CopyShare('Join our Romaterra alliance!\nAlliance: '+cl.name+' ['+cl.tag+']\nInvite code: '+cl.code+'\nPaste the code in the pre-season lobby to line up with us.','invite');};
   const asg=v.querySelector('#asgbtn');if(asg)asg.onclick=async ()=>{const r=await cmdAssignTask(c,+$('asgto').value,$('asgtxt').value);if(r.ok){toast('🎯 Task assigned');go('clans');save();}else toast(r.error,'bad');};
   const cms=v.querySelector('#cmdmsgset');if(cms)cms.onclick=async ()=>{const r=await cmdCommandMsg(c,($('cmdmsg').value)||'');if(r.ok){toast('Command message pinned');go('clans');save();}else toast(r.error,'bad');};
   v.querySelectorAll('button[data-defend]').forEach(b=>b.onclick=async ()=>{const rid=+b.dataset.defend;const com={};for(const k in c.units){const n=Math.floor((c.units[k]||0)*0.5);if(n>0)com[k]=n;}const r=await cmdStation(c,rid,com);if(r.ok){toast('🛡 Defensive army dispatched, arrives in '+r.data.eta+'t (speed matters!)');go('clans');drawTop();save();}else toast(r.error,'bad');});
@@ -10532,6 +10873,8 @@ VIEWS.diplomacy=v=>{const c=you();
   v.querySelectorAll('button[data-peace]').forEach(b=>b.onclick=async ()=>{const r=await cmdSuePeace(c,+b.dataset.peace);if(r.ok){toast('🕊 Peace declared.');go('diplomacy');save();}else toast(r.error,'bad');});
   v.querySelectorAll('button[data-reqwar]').forEach(b=>b.onclick=async ()=>{const r=await cmdRequestWar(c,+b.dataset.reqwar);if(r.ok){toast('📣 War petition sent to '+r.data.leader+'.');go('diplomacy');save();}else toast(r.error,'bad');});
   v.querySelectorAll('button[data-reqpeace]').forEach(b=>b.onclick=async ()=>{const r=await cmdRequestPeace(c,+b.dataset.reqpeace);if(r.ok){toast('🕊 Peace petition sent to the leadership.');go('diplomacy');save();}else toast(r.error,'bad');});
+  // the world forum is in Comms now (Update 7.0 part 2)
+};function p9ForumCard(v,c){
   // ---- Global forum, the whole world's message board ----
   const topic=G._forumTopic||'all';
   const posts=(G.forum||[]).filter(p=>topic==='all'||p.topic===topic).slice(0,30);
@@ -10542,9 +10885,10 @@ VIEWS.diplomacy=v=>{const c=you();
     <div class="row wrap" style="gap:6px"><select id="fpt" style="width:auto">${FORUM_TOPICS.map(t=>`<option value="${t}">${t[0].toUpperCase()+t.slice(1)}</option>`).join('')}</select><input id="fmsg" maxlength="240" placeholder="Post to the world forum…" style="flex:1;min-width:150px"><button class="btn sm" id="fpost">Post</button></div>
     <div class="mt" style="max-height:320px;overflow:auto">${list}</div></div>`);
   v.appendChild(fc);
-  fc.querySelectorAll('[data-ft]').forEach(b=>b.onclick=()=>{G._forumTopic=b.dataset.ft;go('diplomacy');});
-  {const fp=fc.querySelector('#fpost');if(fp)fp.onclick=async ()=>{const t=fc.querySelector('#fmsg').value,tp=fc.querySelector('#fpt').value;const r=await cmdForumPost(c,t,tp);if(r.ok){toast('Posted to the global forum');go('diplomacy');save();}else toast(r.error,'bad');};}
-};
+  fc.querySelectorAll('[data-ft]').forEach(b=>b.onclick=()=>{G._forumTopic=b.dataset.ft;go(view);});
+  {const fp=fc.querySelector('#fpost');if(fp)fp.onclick=async ()=>{const t=fc.querySelector('#fmsg').value,tp=fc.querySelector('#fpt').value;const r=await cmdForumPost(c,t,tp);if(r.ok){toast('Posted to the global forum');go(view);save();}else toast(r.error,'bad');};}
+}
+
 VIEWS.market=v=>{const c=you();
   v.appendChild(h(`<div class="ptitle"><h2>World Market ${helpBtn('help-market')}</h2><span class="h">One resource. One price. You see it before you pay.</span></div>`));
   {const pj=projection(c);const shorts=MARKET.map(r=>{const net=pj.net[r]||0;if(!(net<0))return null;const t=Math.floor((c.res[r]||0)/Math.max(1,-net));return t<8?{r,t,q:Math.max(1,Math.ceil(-net*12-(c.res[r]||0)))}:null;}).filter(Boolean);
@@ -10642,7 +10986,7 @@ VIEWS.market=v=>{const c=you();
   v.querySelectorAll('button[data-cancel]').forEach(b=>b.onclick=async ()=>{const id=+b.dataset.cancel;let found=null,fres=null;for(const res in (G.orders||{})){const o=(G.orders[res]||[]).find(x=>x.id===id&&x.owner===c.id);if(o){found=o;fres=res;break;}}const r=await cmdCancelOrder(c,id);if(r.ok){const back=found?(found.side==='bid'?fmt(Math.round(found.price*found.qty),true)+' returned to you.':fmt(found.qty)+' '+(RMETA[fres]?RMETA[fres].l:'units')+' returned to you.'):'What you put down is returned.';toast('Cancelled. '+back);go('market');drawTop();save();}else toast(r.error,'bad');});
 };
 VIEWS.mail=v=>{const c=you();const cl=clanOf(c);const mail=c.mail||[];
-  v.appendChild(h(`<div class="ptitle"><h2>Messages</h2><span class="h">Diplomacy, threats, coordination, talk to the world.</span></div>`));
+  v.appendChild(h(`<div class="ptitle"><h2>Comms</h2><span class="h">Diplomacy, threats, coordination, talk to the world.</span></div>`));
   // ---- New-conversation composer ----
   const recips=mailRecipients(c);
   let opts='';if(cl)opts+=`<option value="clan">My alliance, all of ${esc(cl.tag)}</option><option value="officers">Alliance officers only</option>`;
@@ -10823,11 +11167,11 @@ function renderBattleList(v,c){if(!G.battles||!G.battles.length)return;const inC
   list.forEach(b=>{let g=groups[groups.length-1];if(!g||g.tick!==b.tick){g={tick:b.tick,items:[]};groups.push(g);}g.items.push(b);});
   const html=groups.map(g=>{const head=g.items.length>1?`<div class="small" style="margin:8px 0 4px;color:var(--muted)">Tick #${g.tick} · ${g.items.length} fights</div>`:'';
     return head+g.items.map(b=>{const i=G.battles.indexOf(b);const open=window._openBat?(b.tick===window._openBat.tick&&b.coord===window._openBat.coord):false;
-      const share=(inClan&&(b.youAtk||b.defName==='Your forces'))?`<button class="btn sm" data-share="${i}">Tell the alliance</button>`:'';
+      const share=(inClan&&(b.youAtk||b.defName==='Your forces'))?`<button class="btn sm" data-share="${esc(b.tick+'|'+(b.coord||'')+'|'+(b.atkId==null?'':b.atkId))}">Tell the alliance</button>`:'';
       return battleCardHTML(b,open)+`<div class="row wrap" style="justify-content:flex-end;gap:6px;margin:-2px 0 10px">${share}<button class="btn ghost sm" data-copyrep="${i}">Copy the line</button></div>`;}).join('');}).join('');
   const bcard=h(`<div class="card mb"><h3>Battle reports <span class="muted small" style="text-transform:none;letter-spacing:0">one line each · open for the story</span></h3>${html}</div>`);
   v.appendChild(bcard);if(window._openBat){const ob=window._openBat;const od=[...bcard.querySelectorAll('details.brep')].find(d=>+d.dataset.bt===ob.tick&&d.dataset.bc===ob.coord);if(od){od.open=true;setTimeout(()=>od.scrollIntoView({block:'start',behavior:'smooth'}),60);}window._openBat=null;}
-  bcard.querySelectorAll('[data-share]').forEach(bn=>bn.onclick=async ()=>{const r=await cmdShareReport(c,+bn.dataset.share);toast(r.ok?'Told your alliance.':r.error,r.ok?'':'bad');if(r.ok)save();});
+  bcard.querySelectorAll('[data-share]').forEach(bn=>bn.onclick=async ()=>{const r=await cmdShareReport(c,bn.dataset.share);toast(r.ok?'Told your alliance.':r.error,r.ok?'':'bad');if(r.ok)save();});
   bcard.querySelectorAll('[data-copyrep]').forEach(bn=>bn.onclick=()=>{const b=G.battles[+bn.dataset.copyrep];if(b)copyText(battleOneLiner(b),'Line copied');});}
 VIEWS.reports=v=>{const c=you();
   v.appendChild(h(`<div class="ptitle"><h2>Tick Reports ${helpBtn('help-reports')}</h2><span class="h">What happened in your country, tick by tick, now tick #${G.tick}.</span></div>`));
@@ -11039,10 +11383,11 @@ function showSettings(){const bg=h(`<div class="modal-bg"><div class="modal"><di
      <div class="row wrap mt" style="gap:6px" id="setDiffs">${Object.entries(SOLO_DIFFS).map(([k,v])=>`<button class="btn sm ${G.solo.diff===k?'':'ghost'}" data-sdiff="${k}" title="${esc(v.d)}">${v.ic} ${v.n}</button>`).join('')}</div>
      <div class="row wrap mt" style="gap:6px"><button class="btn sec sm" id="setSlots">🏺 Saved games</button><button class="btn sec sm" id="setAch">🏅 Achievements</button><button class="btn sec sm" id="setCamp">🎯 Campaign${curScenario()?': '+esc(curScenario().n):''}</button></div>
      <div class="row wrap mt" style="gap:6px" id="setLens">${Object.entries(SOLO_LENGTHS).map(([k,v])=>`<button class="btn sm ${G.solo.len===k?'':'ghost'}" data-slen="${k}" title="${esc(v.d)}">${v.n} · ${v.ticks}</button>`).join('')}</div></div>`:''}
-   ${window.__MP__?'':`<div class="row wrap mt" style="gap:6px;border-top:1px solid var(--border);padding-top:10px"><div style="flex:1;min-width:180px"><b>🏺 Back-up your game</b><div class="muted small">Your game lives in this browser. Download a back-up JSON and keep this HTML file together — an old HTML + new save can look wrong.</div></div><button class="btn sec sm" id="setExport">⬇ Download back-up</button><button class="btn ghost sm" id="setImport">⬆ Load back-up</button><input type="file" id="setImportFile" accept="application/json,.json" style="display:none"></div>`}
+   ${window.__MP__?'':`<div class="row wrap mt" style="gap:6px;border-top:1px solid var(--border);padding-top:10px"><div style="flex:1;min-width:180px"><b>🏺 Back-up your game</b><div class="muted small">Your game lives in this browser. Download a back-up JSON and keep this HTML file together, an old HTML + new save can look wrong.</div></div><button class="btn sec sm" id="setExport">⬇ Download back-up</button><button class="btn ghost sm" id="setImport">⬆ Load back-up</button><input type="file" id="setImportFile" accept="application/json,.json" style="display:none"></div>`}
    <div class="row wrap mt" style="gap:6px;border-top:1px solid var(--border);padding-top:10px"><button class="btn sec sm" onclick="reportProblem('bug','')">🛟 Report a problem</button><span class="muted small" style="align-self:center">${window.__MP__?'Private ticket to the game admin, bug, cheat or account.':'Copies a diagnostic block to paste in Discord / e-mail.'}</span></div>
-   ${isSoloGame()?`<div class="row wrap mt" style="gap:6px;border-top:1px solid var(--border);padding-top:10px"><div style="flex:1;min-width:180px"><b>💬 Community</b><div class="muted small">Questions, tips, screenshots, bug reports and news. It is also the waitlist for the live world: it opens at 100 commanders.</div></div><a class="btn sec sm" href="https://discord.gg/PZGPKuzPCb" target="_blank" rel="noopener">💬 Join the Discord</a></div>`:''}
-   ${isSoloGame()?`<div class="row wrap mt" style="gap:6px;border-top:1px solid var(--border);padding-top:10px"><div style="flex:1;min-width:180px"><b>Tips & uitleg</b><div class="muted small">Kaarten die je hebt weggeklikt blijven weg. Reset of verberg alles.</div></div><button class="btn ghost sm" id="setTipReset">Toon tips weer</button><button class="btn ghost sm" id="setTipHide">Verberg alle tips</button></div>`:''}
+   ${isSoloGame()?p9CommunityHTML(true):''}
+   ${isSoloGame()?`<div class="row wrap mt" style="gap:6px;border-top:1px solid var(--border);padding-top:10px"><div style="flex:1;min-width:180px"><b>Tips</b><div class="muted small">Tip cards you closed stay closed. Show them again or hide them all.</div></div><button class="btn ghost sm" id="setTipReset">Show tips again</button><button class="btn ghost sm" id="setTipHide">Hide all tips</button></div>`:''}
+   ${p9AlertsRow()}
    <div class="muted small mt">Settings are saved on this device.</div></div></div>`);
   document.body.appendChild(bg);
   const close=()=>bg.remove();bg.querySelector('[data-x]').onclick=close;bg.onclick=e=>{if(e.target===bg)close();};
@@ -11057,8 +11402,8 @@ function showSettings(){const bg=h(`<div class="modal-bg"><div class="modal"><di
    if(imp&&impF){imp.onclick=()=>impF.click();impF.onchange=()=>{const f=impF.files&&impF.files[0];if(!f)return;const rd=new FileReader();rd.onload=()=>{try{const obj=JSON.parse(rd.result);if(!obj||!Array.isArray(obj.countries)||obj.you==null||!obj.countries[obj.you])throw new Error('not a valid save');if(!confirm('Load this back-up? It replaces your current game in this browser (Season '+((obj.season&&obj.season.num)||'?')+', tick '+(obj.tick!=null?obj.tick:'?')+').'))return;localStorage.setItem('romaterra',JSON.stringify(obj));toast('✅ Back-up loaded, restarting…','good');setTimeout(()=>p6Reload(),400);}catch(e){toast('That file is not a valid Romaterra back-up','bad');}};rd.onerror=()=>toast('Could not read that file','bad');rd.readAsText(f);};}
   bg.querySelectorAll('.toggle[data-t]').forEach(tg=>tg.onclick=()=>{const k=tg.dataset.t;if(k==='density')SETTINGS.density=SETTINGS.density==='compact'?'normal':'compact';else SETTINGS[k]=!SETTINGS[k];tg.classList.toggle('on');saveSettings();applySettings();if(k==='sound'){updateMuteBtn();if(SETTINGS.sound){audioInit();sfx('ok');}}if(k==='focused'){try{window._worldShow=null;go(view);}catch(e){}}});
   const vol=bg.querySelector('[data-vol]');if(vol)vol.oninput=()=>{SETTINGS.vol=vol.value/100;if(_master)_master.gain.value=SETTINGS.vol;saveSettings();};
-  {const a=bg.querySelector('#setTipReset');if(a)a.onclick=()=>{try{localStorage.removeItem('tt_dismissed');}catch(e){}toast('Tips weer zichtbaar','info');bg.remove();if(typeof go==='function')go(view);};
-   const b=bg.querySelector('#setTipHide');if(b)b.onclick=()=>{try{localStorage.setItem('tt_dismissed',JSON.stringify({'*':1}));}catch(e){}toast('Alle uitleg verborgen','info');bg.remove();if(typeof go==='function')go(view);};}
+  {const a=bg.querySelector('#setTipReset');if(a)a.onclick=()=>{try{localStorage.removeItem('tt_dismissed');}catch(e){}toast('Tips are back','info');bg.remove();if(typeof go==='function')go(view);};
+   const b=bg.querySelector('#setTipHide');if(b)b.onclick=()=>{try{localStorage.setItem('tt_dismissed',JSON.stringify({'*':1}));}catch(e){}toast('All tips hidden','info');bg.remove();if(typeof go==='function')go(view);};}
 }
 window.SHOW_SETTINGS=showSettings;
 function clanLink(clanId,label){return `<span class="lk" onclick="GOTO_CLAN(${clanId})" title="Show this alliance's heartland on the map">${label}</span>`;}
@@ -15627,7 +15972,7 @@ function injectSoloNext(){
       '<div style="font-weight:800;font-size:18px;margin:4px 0 2px">'+(typeof esc==='function'?esc(act.what):act.what)+'</div>'+
       '<div class="small muted">'+(typeof esc==='function'?esc(act.why):act.why)+'</div>'+
       '<div class="row mt" style="gap:8px;margin-top:8px">'+
-      '<button class="btn sm" data-solo-go="'+act.go+'">'+(typeof esc==='function'?esc(act.btn):act.btn)+'</button>'+(typeof p7NextBtns==='function'?p7NextBtns(act):'')+'</div>';
+      (act.p7rid!=null?'':'<button class="btn sm" data-solo-go="'+act.go+'">'+(typeof esc==='function'?esc(act.btn):act.btn)+'</button>')+(typeof p7NextBtns==='function'?p7NextBtns(act):'')+'</div>';
     if(!el){
       el=document.createElement('div');
       el.className='card mb solo-next';

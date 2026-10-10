@@ -1,6 +1,6 @@
 // Terrastate / Romaterra / Ironfront service worker: makes the site installable and playable offline.
 // Bump VERSION whenever a page changes, so players get the new build.
-const VERSION='terrastate-v6.1.1';
+const VERSION='terrastate-v7.0.0';
 const FILES=['./','index.html','updates.html','site.css?v=107','play.html','romaterra.html','ironfront.html','ww2-strategy-game.html','privacy.html','presskit.html','terrastate.webmanifest','romaterra.webmanifest','ironfront.webmanifest',
   'icons/terrastate-64.png','icons/terrastate-180.png','icons/terrastate-192.png','icons/terrastate-512.png',
   'icons/romaterra-64.png','icons/romaterra-180.png','icons/romaterra-192.png','icons/romaterra-512.png',
