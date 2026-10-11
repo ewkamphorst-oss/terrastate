@@ -16,7 +16,7 @@
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="https://playterrastate.nl/img/v4/terrastate-share.jpg">
 <meta name="author" content="Wim Kamphorst">
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"VideoGame","@id":"https://playterrastate.nl/play.html#game","name":"Terrastate","url":"https://playterrastate.nl/play.html","description":"Free Planetarion-style grand strategy in your browser. Lead one nation against 300 AI nations on a world map, form alliances and fight for the Nexus. No account, no download, no pay-to-win.","image":"https://playterrastate.nl/img/v4/terrastate-share.jpg","genre":["Strategy","Grand strategy","Turn-based strategy","4X","Browser game"],"gamePlatform":["Web browser","Windows","macOS","Linux","Android","iOS"],"applicationCategory":"Game","operatingSystem":"Any (web browser)","playMode":"SinglePlayer","inLanguage":"en","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"EUR","availability":"https://schema.org/InStock"},"author":{"@type":"Person","@id":"https://playterrastate.nl/#wim","name":"Wim Kamphorst","url":"https://wimkamphorst.nl"},"publisher":{"@type":"Person","@id":"https://playterrastate.nl/#wim","name":"Wim Kamphorst","url":"https://wimkamphorst.nl"},"softwareVersion":"7.3","sameAs":["https://wimkamphorstcoaching.itch.io/terrastate"]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"VideoGame","@id":"https://playterrastate.nl/play.html#game","name":"Terrastate","url":"https://playterrastate.nl/play.html","description":"Free Planetarion-style grand strategy in your browser. Lead one nation against 300 AI nations on a world map, form alliances and fight for the Nexus. No account, no download, no pay-to-win.","image":"https://playterrastate.nl/img/v4/terrastate-share.jpg","genre":["Strategy","Grand strategy","Turn-based strategy","4X","Browser game"],"gamePlatform":["Web browser","Windows","macOS","Linux","Android","iOS"],"applicationCategory":"Game","operatingSystem":"Any (web browser)","playMode":"SinglePlayer","inLanguage":"en","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"EUR","availability":"https://schema.org/InStock"},"author":{"@type":"Person","@id":"https://playterrastate.nl/#wim","name":"Wim Kamphorst","url":"https://wimkamphorst.nl"},"publisher":{"@type":"Person","@id":"https://playterrastate.nl/#wim","name":"Wim Kamphorst","url":"https://wimkamphorst.nl"},"softwareVersion":"7.4","sameAs":["https://wimkamphorstcoaching.itch.io/terrastate"]}</script>
 <link rel="manifest" href="terrastate.webmanifest"><meta name="theme-color" content="#0d1420"><link rel="icon" href="icons/terrastate-64.png"><link rel="apple-touch-icon" href="icons/terrastate-180.png">
 <script>window.__MP_URL__=''; /* '' = live multiplayer not open yet */ if('serviceWorker' in navigator)addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));</script>
 <script data-goatcounter="https://playterrastate.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
@@ -928,7 +928,7 @@ const $=id=>document.getElementById(id);
 const h=html=>{const t=document.createElement('template');t.innerHTML=html.trim();const c=t.content;
   if(c.childElementCount<=1)return c.firstChild; // single root, return it directly (unchanged behaviour)
   const w=document.createElement('div');w.style.display='contents';w.appendChild(c);return w;}; // multi-root: keep ALL of them (was silently dropping everything after the first)
-const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const rand=(a,b)=>a+Math.random()*(b-a);
 const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
 const pick=arr=>arr[Math.floor(Math.random()*arr.length)];
@@ -2241,7 +2241,7 @@ function _regionDef(r){const gar=r.sv*45+r.pop/40000+r.infra*20;if(r.owner==null
   const pth=o.path?PBYK[o.path]:null;if(pth&&pth.fortify)terr*=1.15; // Fortress State: every region is dug in
   terr=Math.min(2.2,terr); // v3.13 diminishing returns: stacked terrain/fort/path multipliers cap at +120%, so no region becomes mathematically impossible to take (a rock always needs a scissor)
   const _sbNx=r.nexus&&seasonBonus().nexusDef2x?2:1; // FINALE: the Nexus becomes a fortress, defence doubled
-  let def=power(o,'def')*terr*_sbNx+gar+bunkerLevel(r)*BUNKER_DEF; // Bunker Network adds flat defensive ground
+  let def=power(o,'def')*(p17Far(o,r)?P17_REACH:1)*terr*_sbNx+gar+bunkerLevel(r)*BUNKER_DEF; // Bunker Network adds flat defensive ground
   // Holder momentum (anti-hot-potato): the WHOLE Nexus position (army + garrison) hardens the longer it's held unbroken,
   // so a force that seizes the built Command Center and survives the first counter-punches can actually reach the 12-tick hold.
   if(r.nexus&&r.commandCenter&&r.ccHolder!=null&&r.ccHolder===r.owner)def*=1+Math.min(NEXUS_MOMENTUM_CAP,(r.ccHeld||0)*NEXUS_MOMENTUM_PER);
@@ -4248,12 +4248,15 @@ function garrisonCap(r,defC){const base=defC?defC.units:garrisonUnits(r);const o
   // cap in peacetime. No permanent allied turtle: no attack, no raised cap. Defensive only, allies spend their OWN units.
   try{const inb=regionInbound(r.id);if(inb&&inb.ap>0){const siege=inb.ap*GARRISON_SIEGE_MULT;if(siege>cap)cap=siege;}}catch(e){}
   return cap;}
+const P17_REACH=0.5;
+function p17Far(c,r){if(!c||!r||r.owner!==c.id||r.nexus||r.commandCenter)return false;try{if(regionHasCapitol(c,r.id))return false;const hs=homeSector(c);if(!hs)return false;return (r.cluster+':'+(r.sector||1))!==hs;}catch(e){return false;}}
+function p17Reach(u){const o={};for(const k in (u||{})){const n=Math.floor((u[k]||0)*P17_REACH);if(n>0)o[k]=n;}return o;}
 function defenderPool(r,defC){const contribs=defenderContribs(r).sort((a,b)=>a.fleet.id-b.fleet.id);
   // v3.13.2 "Paper Tiger" fix: an OWNED region fights with its inherent local garrison PLUS the owner's stationed army — not
   // only the mobile army. Before, if the owner sent every unit off on a mission, defU was empty → dRaw≈0 and a single militia
   // could walk into a maxed fortress, even though regionDef (the UI/threat read) always counted that base garrison. Now the
   // battle matches what the interface promises: your capital is never truly undefended.
-  const base=defC?mergeUnits([garrisonUnits(r),defC.units]):garrisonUnits(r);
+  const base=defC?mergeUnits([garrisonUnits(r),p17Far(defC,r)?p17Reach(defC.units):defC.units]):garrisonUnits(r);
   const capP=garrisonCap(r,defC);let used=0;const inLine=[],excess=[];
   contribs.forEach(ct=>{if(defC&&ct.owner===defC.id){inLine.push(ct);return;}const oc=G.countries[ct.owner];const p=oc?power(oc,'def',ct.fleet.units):fleetSize(ct.fleet.units)*10;if(used+p<=capP){inLine.push(ct);used+=p;}else excess.push(ct);});
   return {units:mergeUnits([base,...inLine.map(c=>c.fleet.units)]),contribs:inLine,excess,capP,used};}
@@ -5420,7 +5423,7 @@ function foldHowto(){try{const v=document.getElementById('view');if(!v||view==='
   const keep=HOWTO_SEL.flatMap(s=>[...v.querySelectorAll(s)]).filter(e=>e.isConnected&&!e.closest('.howfold'));if(!keep.length)return;
   let f=v.querySelector('.howfold');if(!f){f=h('<details class="card mb howfold"><summary>ℹ How does this screen work?</summary><div class="howbody mt"></div></details>');v.appendChild(f);}
   const body=f.querySelector('.howbody');keep.forEach(e=>{e.classList.remove('mb');body.appendChild(e);});if(f!==v.lastElementChild)v.appendChild(f);}catch(e){}}
-function phase2After(){trainRender();foldHowto();try{phase3Home();}catch(e){}try{phase5Home();}catch(e){}try{p5MinText();}catch(e){}try{p7After();}catch(e){}try{p8After();}catch(e){}try{p9After();}catch(e){}try{p10After();}catch(e){}try{p11After();}catch(e){}try{p12After();}catch(e){}try{p13After();}catch(e){}try{p14After();}catch(e){}try{p15After();}catch(e){}}
+function phase2After(){trainRender();foldHowto();try{phase3Home();}catch(e){}try{phase5Home();}catch(e){}try{p5MinText();}catch(e){}try{p7After();}catch(e){}try{p8After();}catch(e){}try{p9After();}catch(e){}try{p10After();}catch(e){}try{p11After();}catch(e){}try{p12After();}catch(e){}try{p13After();}catch(e){}try{p14After();}catch(e){}try{p15After();}catch(e){}try{p16After();}catch(e){}}
 if(typeof window!=='undefined'&&!(typeof process!=='undefined'&&process.versions&&process.versions.node)&&!window.__MP__&&typeof go==='function'&&!window.__p2go){window.__p2go=1;const _g=window.go||go;
   const wrapped=function(){const r=_g.apply(this,arguments);try{phase2After();setTimeout(phase2After,0);setTimeout(phase2After,120);setTimeout(foldHowto,450);setTimeout(foldHowto,1000);}catch(e){}return r;};
   try{window.go=wrapped;}catch(e){}try{go=wrapped;}catch(e){}
@@ -5881,7 +5884,7 @@ function p7Threatened(c,r){if(!c||!r)return false;try{if(incomingTo(c.id).some(x
 function p7HomeUnits(c){let n=0;for(const k in (c.units||{}))n+=c.units[k]||0;return n;}
 // A1. Your home army already defends every region you own. Sending it to your own region under threat only takes it
 // off the field for the trip, so that order is refused with the moves that do help.
-function p7HomeGuard(c,r){if(!c||!r||r.owner!==c.id||!p7Threatened(c,r))return null;
+function p7HomeGuard(c,r){if(!c||!r||r.owner!==c.id||!p7Threatened(c,r))return null;if(typeof p17Far==='function'&&p17Far(c,r))return null;
   return err('Your home army already defends '+r.name+'. Sending it there takes it off the field for the trip. Scan the attacker, recruit, or call your alliance instead'+(typeof IFR_WORKS!=='undefined'?', or dig in field works':'')+'.');}
 // A2. Recall and shield in one press. What can come home is recalled; the shield engages by itself once all are home.
 function cmdRecallShield(c){if(c.shield)return err('Your shield is already up or arming');
@@ -5917,7 +5920,7 @@ function p7ScanBtn(c,r){try{const un=incomingTo(c.id).filter(x=>x.region&&x.regi
 function p7Actions(a){const c=you();if(!c||!p7Solo()||!a)return '';const out=[];const t=String(a.title||a.what||'');
   if(a.p7rs)out.push(p7B('🛡 Recall all + shield','data-p7="rs"','','Calls every army home; the shield engages by itself once all are home'));
   const rid=a.reinforce!=null?a.reinforce:(a.p7rid!=null?a.p7rid:null);
-  if(rid!=null){const r=p7Region(rid);if(r&&r.owner===c.id){out.push(p7B('🛡 Defend','data-p7="def" data-r="'+rid+'"','','Scans what is coming and prepares the ground. Your home army already defends this region.'));out.push(p7ScanBtn(c,r));}}
+  if(rid!=null){const r=p7Region(rid);if(r&&r.owner===c.id){out.push(p7B('🛡 Defend','data-p7="def" data-r="'+rid+'"','','Scans what is coming and prepares the ground. Far from home it sends troops: there your home army covers only half.'));out.push(p7ScanBtn(c,r));}}
   if(/unrest|revolt|uprising|riot/i.test(t)){const r=p7HotRegion(c);if(r)out.push(p7B('🕊 Pacify '+esc(r.name),'data-p7="pac" data-r="'+r.id+'"','','Costs '+PACIFY_COST+' influence + 1 command point'));}
   if(/research/i.test(t)&&/idle|unused|sitting/i.test(t+String(a.why||a.detail||''))){const d=p7CheapTech(c);if(d)out.push(p7B('▶ Start '+esc(d.n),'data-p7="res" data-k="'+d.k+'"'));}
   if(/runs out|running out|shortage/i.test(t)){const k=(typeof MARKET!=='undefined'?MARKET:[]).find(k=>t.toLowerCase().indexOf(String(p7ResLabel(k)).toLowerCase())>=0);if(k){const q=p7BuyQty(c,k,8);out.push(p7B('🛒 Buy '+fmt(q,false),'data-p7="buy" data-k="'+k+'" data-q="'+q+'"','','About 8 ticks of what you are short. No command point.'));}}
@@ -5945,12 +5948,12 @@ function p7EvBtn(e){try{if(!p7Solo()||!e||!e.coord)return '';const c=you();const
   return '<span style="flex-shrink:0">'+out.join('')+'</span>';}catch(err){return '';}}
 // B7. Quick buttons on every incoming attack against your own region.
 function p7IncBtns(r,homeUnits){const c=you();const out=[];
-  out.push(homeUnits>0?p7B('🛡 Defend','data-p7="def" data-r="'+r.id+'"','','Scans what is coming and prepares the ground. Your home army already defends this region.'):`<button class="btn ghost sm" onclick="go('military')" title="No army home, recruit first">🎖 Recruit</button>`);
+  out.push(homeUnits>0?p7B('🛡 Defend','data-p7="def" data-r="'+r.id+'"','','Scans what is coming and prepares the ground. Far from home it sends troops: there your home army covers only half.'):`<button class="btn ghost sm" onclick="go('military')" title="No army home, recruit first">🎖 Recruit</button>`);
   out.push(p7ScanBtn(c,r));
   if(c&&c.clan!=null)out.push(p7B('🆘 Help','data-p7="sos" data-r="'+r.id+'"','ghost','Ask your alliance to reinforce'));
   return out.join('');}
 // B8. One press "Defend this region": scan what is coming, dig in (Ironfront), and say plainly what defends it.
-async function p7Defend(c,rid){const r=p7Region(rid);if(!r)return;
+async function p7Defend(c,rid){const r=p7Region(rid);if(!r)return;if(r.owner===c.id&&typeof p17Far==='function'&&p17Far(c,r)&&typeof p14Defend==='function'&&fleetSize(c.units||{})>0){p14Defend(rid);return;}
   if(r.owner!==c.id){if(typeof window.BR_DEFEND==='function')window.BR_DEFEND(rid);return;}
   const done=[];let sc=0;
   try{for(const x of incomingTo(c.id).filter(x=>x.region&&x.region.id===rid&&x.fleet&&!x.fleet.acs&&!p7Seen(x.fleet,c))){if((c.res.influence||0)<P7_SCAN||c.cp<1)break;const s=await cmdScan(c,x.fleet.id);if(s&&s.ok)sc++;}}catch(e){}
@@ -6113,7 +6116,7 @@ function p8Front(c){if(!c)return null;let inc=[];try{inc=incomingTo(c.id).filter
   return Object.assign({},f,{def,more:list.length-1});}
 function p8Verdict(f){const q=f.atk/Math.max(1,f.def);return q>=1.25?['bad','it falls unless you act']:q>=0.8?['warn','a close call']:['ok','your defence should hold'];}
 function p8FrontHead(c,noScan){try{if(!p8Solo())return '';const f=p8Front(c);if(!f)return '';const v=p8Verdict(f);
-  const b=[p7B('🛡 Defend','data-p7="def" data-r="'+f.r.id+'"','','Scans what is coming and prepares the ground. Your home army already defends this region.')];
+  const b=[p7B('🛡 Defend','data-p7="def" data-r="'+f.r.id+'"','','Scans what is coming and prepares the ground. Far from home it sends troops: there your home army covers only half.')];
   if(!noScan)b.push(p7ScanBtn(c,f.r));
   if(v[0]==='bad'&&!c.shield&&!fleetsAllHome(c))b.push(p7B('🛡 Recall all + shield','data-p7="rs"'));
   if(c.clan!=null)b.push(p7B('🆘 Help','data-p7="sos" data-r="'+f.r.id+'"','ghost','Ask your alliance to reinforce'));
@@ -6880,7 +6883,7 @@ function p15After(){const v=document.getElementById('view');const c=you();if(!v|
   p15Bind(c,n);}
 // ---------- calmer combat screens: the overview stays, the rest folds under "More on this screen" ----------
 const P15_FOLD={self:/^(forces|army movements|🦅 army movements|beginner protection|safe to log off|advanced intelligence|shield & sleep-safe)/i,
-  around:/^(your forces and armies on the move|battle reports|nearest targets|covert ops|you cannot run a covert|combat simulator|ℹ how does this screen work)/i,
+  around:/^(your forces and armies on the move|battle reports|covert ops|you cannot run a covert|combat simulator|ℹ how does this screen work)/i,
   military:/^(forces|doctrine presets)/i,
   market:/^(market at a glance|who holds the stock|trade fills now)/i};
 function p15Head(e){const t=e.querySelector&&e.querySelector('h3,h2,summary,.clabel');return ((t||e).innerText||'').trim().split('\n')[0].trim();}
@@ -6895,11 +6898,66 @@ function p15Key(t){return String(t||'').toLowerCase().replace(/[^a-z ]/g,' ').sp
 function p15HomeTidy(){const v=document.getElementById('view');if(!v||view!=='dashboard')return;
   try{const na=v.querySelector('.solo-next');const naT=na?((na.children[1]||{}).innerText||''):'';const nk=p15Key(naT);const att=[...v.querySelectorAll('.card')].find(c=>{const h3=c.querySelector(':scope > h3');return h3&&/things? need attention/i.test(h3.textContent||'');});
     if(att&&nk.length){let hid=0;att.querySelectorAll(':scope > .prow').forEach(r=>{const rk=p15Key(((r.innerText||'').split('\n').map(x=>x.trim()).filter(Boolean))[0]||'');if(r.style.display!=='none'&&rk.length&&rk.every(w=>nk.some(n=>n.slice(0,3)===w.slice(0,3)))){r.style.display='none';hid++;}});
-      if(hid){const h3=att.querySelector(':scope > h3');if(h3)h3.innerHTML=h3.innerHTML.replace(/(\d+)(\s*)things?/i,(m,n,sp)=>{const k=Math.max(0,+n-hid);return k+sp+(k===1?'thing':'things');});const left=[...att.querySelectorAll(':scope > .prow')].filter(r=>r.style.display!=='none').length;if(!left)att.style.display='none';}}}catch(e){}
+      if(hid){const h3=att.querySelector(':scope > h3');if(h3)h3.innerHTML=h3.innerHTML.replace(/(\d+)(\s*)things?(\s+)needs?/i,(m,n,sp,s2)=>{const k=Math.max(0,+n-hid);return k+sp+(k===1?'thing'+s2+'needs':'things'+s2+'need');});const left=[...att.querySelectorAll(':scope > .prow')].filter(r=>r.style.display!=='none').length;if(!left)att.style.display='none';}}}catch(e){}
   try{const rb=v.querySelector('.rboard');const card=rb&&rb.closest('.card');if(card){const ks=[...card.children];ks.forEach((k,i)=>{if(i===1&&k.classList.contains('small')&&!k.querySelector('button'))k.style.display='none';if(k.classList.contains('muted')&&k.classList.contains('small')&&k.classList.contains('mt')&&/^No landings yet/i.test(k.textContent||''))k.style.display='none';});}}catch(e){}
   try{const more=v.querySelector('details.p5more');const am=[...v.querySelectorAll('.card')].find(c=>{const l=c.querySelector(':scope > .clabel');return l&&/^army movements/i.test((l.textContent||'').trim());});if(more&&am)more.appendChild(am);}catch(e){}}
 function p15MarketTidy(){const v=document.getElementById('view');if(!v||view!=='market')return;const qb=v.querySelector(':scope > .p7market');if(!qb||qb._p15)return;
   const pos=[...v.children].find(e=>/^your position/i.test(p15Head(e)));if(pos){pos.after(qb);qb._p15=1;}}
+
+// ================= Patch 7.4: every screen in order of importance, doubles and filler out =================
+// Per screen: what comes first (top), what goes to the end (down), what folds under "More on this screen" (fold),
+// and what disappears because it repeats something on the same screen or is not needed (hide).
+// Matching is on the block's classes, heading and first words, so it works for all three eras.
+const P16={
+ self:{top:['ifrcard|attack on ','regions under attack','send defence','\\bp15\\b','more on this attack','battle reports'],fold:['armies on the move','active engagements','phase5-camp|^front:'],hideEmpty:['^battle reports']},
+ around:{top:['\\bp15\\b','active engagements','nearest targets'],fold:['active operations','phase5-camp|^front:','^covert ops','you cannot run a covert','ptitle'],hideBare:['^launch operation']},
+ economy:{top:['threatpanel|biggest lever|your economy is','production ledger','taxation','national charter']},
+ production:{top:['· \\d+ built','build plan',"what you've built",'national priorities','capture doctrine']},
+ research:{down:['national priorities','national paths']},
+ military:{top:['p14rec|quick recruit','training capacity','army recruitment','combat posture']},
+ diplomacy:{top:['war status',"your alliance's wars",'pacts with your neighbours','the world'],fold:['is your voice in','letter table','petition the leadership','world at war','(theater|province|front) control'],hide:['world forum is in']},
+ rankings:{top:['overall rank #','threat assessment','\\bseg\\b','top nations','top alliances','your (theater|province|front):'],hide:['^dangerous is military rank']},
+ reports:{top:['phase2-battle-head','p13|battle reports','^tick #','tick log','world news'],fold:['where your armies are','your chronicle','active rules']},
+ clans:{fold:['staff-hq','^standing order'],hide:['the living room is here']}
+};
+P16.fleets=P16.around;
+function p16Key(e){const c=(e.className&&typeof e.className==='string')?e.className:'';const t=(e.innerText||'').replace(/\s+/g,' ').trim().slice(0,160);return (c+' | '+p15Head(e).replace(/^[^A-Za-z#]+/,'')+' | '+t).toLowerCase();}
+function p16Fixed(e){return (e.classList.contains('ptitle')&&!e.previousElementSibling?.classList?.contains('ptitle')&&e===e.parentElement.querySelector(':scope > .ptitle'))||e.classList.contains('alertbar')||e.classList.contains('p15more')||e.classList.contains('howfold');}
+function p16More(v){let d=v.querySelector(':scope > .p15more');if(!d){d=h('<details class="card mb p15more"><summary>More on this screen <span class="muted small p15ml" style="font-weight:400"></span></summary></details>');v.appendChild(d);}return d;}
+function p16Count(d){const ml=d.querySelector('.p15ml');if(ml){const n=[...d.children].filter(e=>e.tagName!=='SUMMARY').length;ml.textContent=n+' more block'+(n>1?'s':'');}}
+function p16Apply(v,R){const kids=[...v.children].filter(e=>!p16Fixed(e));const key=new Map(kids.map(e=>[e,p16Key(e)]));const m=(e,p)=>{const r=new RegExp(p,'i'),k=key.get(e);return r.test(k)||r.test(k.split(' | ').slice(1).join(' | '));};
+  (R.hide||[]).forEach(p=>kids.forEach(e=>{if(m(e,p))e.style.display='none';}));
+  (R.hideBare||[]).forEach(p=>kids.forEach(e=>{if(m(e,p))e.style.display=e.querySelector('input,select,button,#launch')?'':'none';}));
+  (R.hideEmpty||[]).forEach(p=>kids.forEach(e=>{if(m(e,p)&&/no battle reports yet|nothing here yet|none yet/i.test(e.innerText||''))e.style.display='none';}));
+  const folded=[];(R.fold||[]).forEach(p=>kids.forEach(e=>{if(!folded.includes(e)&&m(e,p))folded.push(e);}));
+  const live=kids.filter(e=>!folded.includes(e));
+  if(R.top){const anchor=[...v.children].filter(e=>p16Fixed(e)&&(e.classList.contains('ptitle')||e.classList.contains('alertbar'))).pop();let at=anchor;const placed=[];
+    R.top.forEach(p=>live.forEach(e=>{if(!placed.includes(e)&&m(e,p)){placed.push(e);}}));
+    placed.forEach(e=>{if(at)at.after(e);else v.prepend(e);at=e;});}
+  if(R.down){const end=v.querySelector(':scope > .p15more')||v.querySelector(':scope > .howfold');R.down.forEach(p=>live.forEach(e=>{if(m(e,p)){if(end)end.before(e);else v.appendChild(e);}}));}
+  if(folded.length){const d=p16More(v);folded.forEach(e=>d.appendChild(e));p16Count(d);const how=v.querySelector(':scope > .howfold');if(how)how.before(d);else v.appendChild(d);}}
+// Home: the three big buttons and the command line repeat the menu and the top bar, and so does the Command Points tile
+function p16Home(v){const b=[...v.querySelectorAll('button')].find(x=>/go\('covert'\)/.test(x.getAttribute('onclick')||''));const row=b&&b.parentElement;
+  if(row&&row.querySelectorAll('button').length<=4){row.style.display='none';const n=row.nextElementSibling;if(n&&/command/i.test(n.textContent||'')&&/this cycle/i.test(n.textContent||''))n.style.display='none';}
+  v.querySelectorAll('.console').forEach(c=>{const l=c.querySelector('.clabel');if(l&&/^command points$/i.test((l.textContent||'').trim()))c.style.display='none';});}
+// Alliance: what needs doing and your own task first, the goal next, the standing order last
+function p16Clan(v){[...v.children].forEach(w=>{if(w.classList.contains('card')||p16Fixed(w))return;const cs=[...w.children];if(cs.length<3)return;const k=e=>((e.innerText||'').trim().slice(0,60)).toLowerCase();
+  const want=['what needs doing','your task in the alliance','alliance goal'];const got=want.map(t=>cs.find(e=>k(e).startsWith(t))).filter(Boolean);if(got.length<2)return;
+  got.reverse().forEach(e=>w.prepend(e));const so=cs.find(e=>k(e).startsWith('standing order'));if(so)w.appendChild(so);});}
+// Research cards: the grey percent line repeats the line above it and the ▸ line below it
+function p16Research(v){v.querySelectorAll('span,small,div').forEach(e=>{if(e.children.length===0&&/^the percent is the small print/i.test((e.textContent||'').trim()))e.style.display='none';});v.querySelectorAll('.card').forEach(c=>{const fx=[...c.children].some(e=>/^▸/.test((e.textContent||'').trim()));if(!fx)return;c.querySelectorAll(':scope > .muted.small').forEach(e=>{if(!e.querySelector('button,a'))e.style.display='none';});});}
+// Rankings: two "Overall" columns side by side, keep one
+function p16Tables(v){v.querySelectorAll('table').forEach(t=>{const hs=[...t.querySelectorAll('thead th')];for(let i=1;i<hs.length;i++){const a=(hs[i-1].textContent||'').trim().toLowerCase(),b=(hs[i].textContent||'').trim().toLowerCase();if(a&&a===b){hs[i].style.display='none';t.querySelectorAll('tbody tr').forEach(r=>{const c=r.children[i];if(c&&r.children.length===hs.length)c.style.display='none';});}}});}
+// Map: the build label in the title is for us, not for the player
+function p16Map(v){const pt=v.querySelector(':scope > .ptitle');if(!pt)return;pt.querySelectorAll('span').forEach(s=>{if(/^(patch|version) \d+\.\d+ · /i.test((s.textContent||'').trim()))s.style.display='none';});}
+function p16Near(v){const c=[...v.children].find(e=>/^nearest targets/i.test(p15Head(e)));if(!c||c._p16)return;const rows=[...c.querySelectorAll('tbody tr')];if(rows.length<=8)return;c._p16=1;
+  rows.slice(8).forEach(r=>r.style.display='none');const b=h('<button class="btn ghost sm mt">Show all '+rows.length+' targets</button>');b.onclick=()=>{rows.forEach(r=>r.style.display='');b.remove();};(c.querySelector('table')||c).after(b);}
+// Armed Forces: units you cannot build yet sit behind one line, so the list shows what you can recruit now
+function p16Locked(v){v.querySelectorAll('table').forEach(t=>{if(t._p16)return;const rows=[...t.querySelectorAll('tbody tr')];if(!rows.some(r=>r.querySelector('input')))return;const lk=rows.filter(r=>!r.querySelector('input')&&r.children.length>3&&getComputedStyle(r).display!=='none');if(lk.length<2)return;t._p16=1;
+  lk.forEach(r=>r.style.display='none');const b=h('<button class="btn ghost sm" style="margin:8px 0">'+lk.length+' more units unlock through R&amp;D · show them</button>');b.onclick=()=>{lk.forEach(r=>r.style.display='');b.remove();};t.after(b);});}
+function p16Tidy(){const v=document.getElementById('view');if(!v)return;try{if(P16[view])p16Apply(v,P16[view]);}catch(e){}
+  try{if(view==='dashboard')p16Home(v);if(view==='clans')p16Clan(v);if(view==='research')p16Research(v);if(view==='rankings')p16Tables(v);if(view==='map')p16Map(v);if(view==='around'||view==='fleets')p16Near(v);if(view==='military')p16Locked(v);}catch(e){}}
+function p16After(){if(localStorage.getItem('p16off')==='1')return;const _t=()=>{try{p16Tidy();}catch(e){}};_t();setTimeout(_t,0);setTimeout(_t,220);}
 
 function emblem(c){return `<span class="flagi" title="${esc((c&&c.name)||'')}">${flagSVG(c,22)}</span>`;}
 // Relationship-only colours (Planetarion-style): gold self, blue alliance,
@@ -7195,9 +7253,9 @@ function renderLanding(){
       <a class="card" href="updates.html" target="_self" rel="noopener" style="display:block;text-decoration:none;color:inherit;margin:0 auto">
         <div class="row between wrap" style="gap:10px;align-items:center">
           <div style="min-width:0;flex:1">
-            <div><span class="mono" style="color:var(--gold);font-size:11px;letter-spacing:1px">VERSION 7.3 · KNOW YOUR ODDS</span> <span class="muted small">October 2026</span></div>
-            <div style="font-weight:700;margin-top:3px">Terrastate 7.3: Know Your Odds</div>
-            <div class="muted small mt">Know your odds before you strike: neutral garrisons show their strength and your chance, and a hopeless or blind attack asks first. Every battle gets its moment: a result screen with victory or defeat and what to do next, the last battle on Home, and battle reports first in Reports. Also: a living world. AI alliances grow, unite and form blocs, a coalition rises against whoever leads, allies answer the call and every hit gets an answer. See who leads on Diplomacy. Also: a calmer desk. An attack on your ground has one Front card on Home with your defence against what is coming. Alerts are one line, each screen starts with its own content, and on phones END TURN sits in the bottom bar. Share a battle to WhatsApp, Telegram or Discord, Messages is now Comms, and a build plan starts up to five builds by themselves.</div>
+            <div><span class="mono" style="color:var(--gold);font-size:11px;letter-spacing:1px">PATCH 7.4 · CLEAR SCREENS</span> <span class="muted small">October 2026</span></div>
+            <div style="font-weight:700;margin-top:3px">Patch 7.4: Clear Screens</div>
+            <div class="muted small mt">Every screen now starts with what matters, and what repeated itself is gone. Know your odds before you strike: neutral garrisons show their strength and your chance, and a hopeless or blind attack asks first. Every battle gets its moment: a result screen with victory or defeat and what to do next, the last battle on Home, and battle reports first in Reports. Also: a living world. AI alliances grow, unite and form blocs, a coalition rises against whoever leads, allies answer the call and every hit gets an answer. See who leads on Diplomacy. Also: a calmer desk. An attack on your ground has one Front card on Home with your defence against what is coming. Alerts are one line, each screen starts with its own content, and on phones END TURN sits in the bottom bar. Share a battle to WhatsApp, Telegram or Discord, Messages is now Comms, and a build plan starts up to five builds by themselves.</div>
           </div>
           <span class="btn ghost sm" style="flex:none;pointer-events:none">What is new</span>
         </div>
@@ -7265,7 +7323,7 @@ function renderLanding(){
   {const b=s.querySelector('#lpNews');if(b)b.onclick=()=>{const t=s.querySelector('#playerupdate');if(t)t.scrollIntoView({behavior:'smooth',block:'center'});};}
 }
 // ---- Legal identity: ONE place to change the operator / contact / copyright holder. Used by the Privacy, Terms and Credits tabs and the footer.
-const LEGAL={operator:'Wim Kamphorst',email:'wimkamphorst.coaching@gmail.com',author:'Wim Kamphorst',country:'the Netherlands',law:'Dutch law',dpa:'Autoriteit Persoonsgegevens (the Dutch data protection authority)',dpaUrl:'https://www.autoriteitpersoonsgegevens.nl',version:'1.0',updated:'September 2026',build:'Version 7.3 · Oct 2026',minAge:16};
+const LEGAL={operator:'Wim Kamphorst',email:'wimkamphorst.coaching@gmail.com',author:'Wim Kamphorst',country:'the Netherlands',law:'Dutch law',dpa:'Autoriteit Persoonsgegevens (the Dutch data protection authority)',dpaUrl:'https://www.autoriteitpersoonsgegevens.nl',version:'1.0',updated:'September 2026',build:'Patch 7.4 · Oct 2026',minAge:16};
 LEGAL.contact=`<b>${LEGAL.operator}</b>, <a href="mailto:${LEGAL.email}">${LEGAL.email}</a>`;
 // ---- Landing-page manual: beginner's handbook + combat formulae -------------
 const MANUAL={
@@ -11606,9 +11664,9 @@ VIEWS.rankings=v=>{const c=you();const rt=rankTitle(c.id);const myS=scores(c);co
   if(clans.length){const crows=clans.map((o,i)=>{
       const total=o.wins+o.losses;const wr=total?Math.round(o.wins/total*100):null;
       const status=o.aw>0?'<span class="pill b">⚔ At war</span>':o.losses>o.wins&&(o.x.warCooldown||0)>G.tick?'<span class="pill w">🟡 Recovering</span>':o.wins>0?'<span class="pill g">🟢 Battle-tested</span>':'<span class="muted small">at peace</span>';
-      const rec=total?`${o.wins}W–${o.losses}L${wr!=null?' · '+wr+'%':''}`:'—';
+      const rec=total?`${o.wins}W–${o.losses}L${wr!=null?' · '+wr+'%':''}`:'no wars ended yet';
       return `<tr ${myCl0&&o.x.id===myCl0.id?'style="background:rgba(79,140,255,.09)"':''}><td>${i===0?'🥇':i===1?'🥈':i===2?'🥉':'#'+(i+1)}</td><td>${clanLink(o.x.id,esc(o.x.name))} <span class="tag">${o.x.tag}</span>${o.x.ai?'':' <span class="pill a">yours</span>'}${!o.x.listed?' <span class="tag" title="hidden, visible only to you">🔒</span>':''}${clanAtWar(o.x.id,(myCl0||{}).id)?' <span class="pill w" title="at war with you">⚔ vs you</span>':''}</td><td class="r">${o.n}</td><td class="r">${status}</td><td class="r hide-sm">${rec}</td><td class="r hide-sm">🏆${o.renown}</td><td class="r"><strong>${fmt(o.nw,true)}</strong></td><td class="r hide-sm">${o.terr}</td></tr>`;}).join('');
-    v.appendChild(h(`<details class="card mt"><summary style="cursor:pointer;font-weight:700">Top alliances <span class="muted small" style="font-weight:400">ranked by net worth · ${myCl0?'yours: #'+myClPos:'you are in none'}</span></summary><div class="scroll"><table><thead><tr><th>#</th><th>Alliance</th><th class="r">Members</th><th class="r">Status</th><th class="r hide-sm">War record</th><th class="r hide-sm">Renown</th><th class="r">Net worth</th><th class="r hide-sm">Territory</th></tr></thead><tbody>${crows}</tbody></table></div><div class="muted small mt">Only alliances that opt in are listed.${hidden?' <b>'+hidden+'</b> alliance(s) are staying hidden.':''} War record accrues as wars resolve, renown is won by victory.</div></details>`));}
+    v.appendChild(h(`<details class="card mt"><summary style="cursor:pointer;font-weight:700">Top alliances <span class="muted small" style="font-weight:400">ranked by net worth · ${myCl0?(typeof myClPos==='number'?'yours: #'+myClPos:'yours is not in the top 15'):'you are in no alliance yet'}</span></summary><div class="scroll"><table><thead><tr><th>#</th><th>Alliance</th><th class="r">Members</th><th class="r">Status</th><th class="r hide-sm">War record</th><th class="r hide-sm">Renown</th><th class="r">Net worth</th><th class="r hide-sm">Territory</th></tr></thead><tbody>${crows}</tbody></table></div><div class="muted small mt">Only alliances that opt in are listed.${hidden?' <b>'+hidden+'</b> alliance(s) are staying hidden.':''} War record accrues as wars resolve, renown is won by victory.</div></details>`));}
   // Top clusters (theaters)
   const clus={};G.regions.forEach(r=>{if(r.owner==null)return;const o=G.countries[r.owner];if(!o||o.retired)return;const cl=clus[r.cluster]=clus[r.cluster]||{score:0,players:new Set(),alli:{}};const rc=regionsOf(o).length||1;cl.score+=scores(o).overall/rc;cl.players.add(o.id);const cc=clanOf(o);if(cc)cl.alli[cc.tag]=(cl.alli[cc.tag]||0)+1;});
   const clusRows=Object.entries(clus).map(([k,d])=>{const dom=Object.entries(d.alli).sort((a,b)=>b[1]-a[1])[0];return {k:+k,score:d.score,players:d.players.size,dom:dom?dom[0]:'—'};}).sort((a,b)=>b.score-a.score);

@@ -2,7 +2,7 @@
 
 > Terrastate is a free, Planetarion-style grand strategy game that runs in the web browser. You lead one nation against 300 AI nations on a world map, form alliances and fight for the Nexus, the one region that decides the season. No account, no download, no ads, no pay-to-win. Romaterra is the same game set in the age of Rome, and Ironfront in a 1940s world at war. Made by Wim Kamphorst, a hobby developer from the Netherlands.
 
-Current version: 7.3. The game is updated regularly. Language: English. Platforms: any modern browser on desktop or phone; installable and playable offline.
+Current version: 7.4. The game is updated regularly. Language: English. Platforms: any modern browser on desktop or phone; installable and playable offline.
 
 ## Play
 - [Play Terrastate](https://playterrastate.nl/play.html): modern world, alternative 2026, 25 theaters from Europe to Oceania
@@ -26,6 +26,7 @@ Current version: 7.3. The game is updated regularly. Language: English. Platform
 - [Discord community and live-world waitlist](https://discord.gg/TRgERXq4u)
 
 ## Good to know
+- Patch 7.4 (October 2026), Clear Screens, for all three games: regions outside your home sector get half of your home army as defence plus the troops stationed there; every screen starts with what matters most (Homeland with the attacks on you, Nearby with your army and nearest targets, Diplomacy with your wars and pacts, Economy with what you make); information shown twice is shown once; background blocks fold under More on this screen; the website has a new front page and logo.
 - Update 7.3 (October 2026), Know Your Odds, for all three games: unclaimed ground shows the strength of its neutral garrison and your chance; the launch panel offers ready-made forces (enough to take it, half, everything) with their odds; a hopeless attack or a blind attack on a nation you never scouted asks first; defend your own ground or an ally with a quarter, half or most of your home army in one tap; quick recruit in Armed Forces; unit lists no longer cut off; a calmer battle result screen.
 - Update 7.2 (October 2026), Battle Moments, for all three games: after every battle of yours a result screen opens with victory or defeat, the losses of both sides, the full report and what to do next (garrison and calm new ground, plan a new attack, strike back after holding); the latest battle stays on Home for a few turns; battle reports come first in Reports with an unread dot; a Field Manual page about holding new ground; turns as fast as before 7.1.
 - Update 7.1 (October 2026), Living World, for all three games: AI alliances take in lone nations and can unite through the normal merger, so alliances differ in size; the greatest powers form blocs with allied pacts; when one alliance stays ahead, the next ones form a coalition against it and strike together, and break up once it falls back; allied partners join a war when their ally is attacked; a nation that is hit strikes back, most of all while the attacker's army is away; fewer and longer wars that are really fought; a world card on Diplomacy. The AI uses the same commands and limits as players.
