@@ -273,3 +273,24 @@ a:focus-visible,button:focus-visible,.endturn:focus-visible{outline:2px solid #4
 .pick3-a.iron:hover b,.pick3-a.iron i{color:#d8c96a}
 @media (max-width:640px){.pick3{display:flex;flex-direction:column}.pick3-l{padding:12px 16px 4px;border-right:0}.pick3-a{border-left:0;border-top:1px solid rgba(255,255,255,.1)}.pick3-l+.pick3-a{border-top:0}.pick3-a i{margin-left:auto}}
 @media (max-width:640px){.mini3{grid-template-columns:72px 1fr auto;gap:10px;padding:10px 14px}.mini3-shot{width:72px}}
+
+/* ---- creators' order: mini games as the quick way in, the season story, challenges ---- */
+.quick3-in{display:grid;grid-template-columns:1.25fr 1fr;gap:40px;align-items:center}
+.quick3-media video{width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:14px;display:block;background:#05080d;border:1px solid var(--border)}
+.quick3-cap{margin:8px 0 0;font:500 11px var(--mono);color:var(--muted)}
+.quick3-txt p{color:var(--muted);line-height:1.6}
+.quick3-btns{display:flex;flex-wrap:wrap;gap:10px;margin:18px 0}
+.quick3-btns .mini3-go{text-decoration:none;font-size:14px;padding:10px 14px}
+.mini3-go.terra{color:var(--accent2)}.mini3-go.rome{color:var(--rome)}.mini3-go.iron{color:#d8c96a}
+.quick3-next{font-size:14px}.quick3-next a{color:var(--text)}
+.tl3-big{max-width:860px;margin:0 auto;padding:34px 34px 22px}
+.tl3-big h2{margin:4px 0 8px}
+.tl3-big .tl-x{font-size:17px}
+#feel .feel3{grid-template-columns:1fr}
+.ch3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:22px}
+.ch3-c{background:var(--panel);border-radius:14px;padding:22px;border-top:3px solid var(--gold)}
+.ch3-c b{display:block;font:800 20px/1.25 var(--disp);margin:10px 0 6px}
+.ch3-c p{margin:0;color:var(--muted);line-height:1.55}
+.ch3-n{display:inline-grid;place-items:center;width:28px;height:28px;border-radius:50%;background:var(--gold);color:#1a1408;font-weight:800}
+.ch3-note{margin:22px 0 0;color:var(--muted);max-width:760px;line-height:1.6}.ch3-note a{color:var(--text)}
+@media (max-width:860px){.quick3-in{grid-template-columns:1fr;gap:22px}.ch3{grid-template-columns:1fr}.tl3-big{padding:24px 20px 14px}}
