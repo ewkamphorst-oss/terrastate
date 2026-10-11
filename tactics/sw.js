@@ -1,6 +1,6 @@
 // Service worker: bewaart de spelbestanden zodat ze offline werken. Verhoog VERSIE bij elke nieuwe build.
-const VERSIE = 'tactics-v3.3-3';
-const BESTANDEN = ['./', './index.html', './romaterra.html', './ironfront.html', './terrastate.html'];
+const VERSIE = 'tactics-v3.3-6';
+const BESTANDEN = ['./', './index.html', './romaterra.html', './ironfront.html', './terrastate.html', './music/terrastate.mp3', './music/romaterra.mp3', './music/ironfront.mp3'];
 self.addEventListener('install', (e) => {
   e.waitUntil(caches.open(VERSIE).then((c) => c.addAll(BESTANDEN).catch(() => {})).then(() => self.skipWaiting()));
 });
