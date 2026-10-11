@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Tactics games: Terrastate, Romaterra and Ironfront</title>
+<meta name="description" content="Three turn-based tactics games on one engine: Terrastate: Conquer, Romaterra: Imperium and Ironfront: D-Day. Free, no account, works offline.">
+<meta name="theme-color" content="#0f1216">
+<link rel="icon" href="icons/terrastate-192.png">
+<style>
+  :root { --bg: #0f1216; --ink: #e8e2d4; --dim: #a9a295; --card: #171c23; --line: #2a3140; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: radial-gradient(1200px 600px at 50% -10%, #1d2633 0%, var(--bg) 60%); color: var(--ink); font: 17px/1.55 Georgia, "Times New Roman", serif; }
+  header { text-align: center; padding: 56px 16px 24px; }
+  header h1 { margin: 0; font-size: clamp(32px, 6vw, 54px); letter-spacing: .06em; text-transform: uppercase; }
+  header p { color: var(--dim); max-width: 620px; margin: 12px auto 0; }
+  .taal { position: absolute; top: 14px; right: 16px; background: none; border: 1px solid var(--line); color: var(--ink); padding: 6px 12px; border-radius: 8px; cursor: pointer; font: inherit; font-size: 14px; }
+  main { max-width: 1080px; margin: 0 auto; padding: 16px; display: grid; gap: 20px; grid-template-columns: repeat(auto-fit, minmax(290px, 1fr)); }
+  .kaart { background: var(--card); border: 1px solid var(--line); border-radius: 14px; overflow: hidden; display: flex; flex-direction: column; box-shadow: 0 12px 30px rgba(0,0,0,.35); }
+  .kaart .kop { padding: 22px 22px 8px; display: flex; align-items: center; gap: 14px; }
+  .kaart img { width: 56px; height: 56px; border-radius: 12px; }
+  .kaart h2 { margin: 0; font-size: 24px; }
+  .kaart h2 small { display: block; font-size: 13px; color: var(--dim); font-weight: normal; letter-spacing: .08em; text-transform: uppercase; }
+  .kaart p { margin: 0; padding: 0 22px; color: var(--dim); flex: 1; }
+  .kaart a.speel { display: block; margin: 18px 22px 22px; padding: 12px; text-align: center; border-radius: 10px; text-decoration: none; font-weight: bold; color: #111; letter-spacing: .04em; }
+  .romaterra .speel { background: #c9a24a; } .ironfront .speel { background: #c9b25a; } .terrastate .speel { background: #7fc2ea; }
+  .romaterra { border-top: 4px solid #c9a24a; } .ironfront { border-top: 4px solid #8a9a50; } .terrastate { border-top: 4px solid #3f8fc4; }
+  section.uitleg { max-width: 760px; margin: 36px auto; padding: 0 16px; color: var(--dim); }
+  section.uitleg h3 { color: var(--ink); margin-bottom: 6px; }
+  footer { text-align: center; color: var(--dim); font-size: 14px; padding: 30px 16px 50px; }
+</style>
+</head>
+<body>
+<button class="taal" id="taal">NL</button>
+<header>
+  <h1 data-nl="Speel Terrastate">Play Terrastate</h1>
+  <p data-nl="Drie beurtgebaseerde tactiekspellen op één motor. Gratis, geen account, geen download nodig. Werkt ook offline nadat je een keer hebt gespeeld.">Three turn-based tactics games on one engine. Free, no account, nothing to download. Works offline once you have played a game.</p>
+</header>
+<main>
+  <article class="kaart terrastate">
+    <div class="kop"><img src="icons/terrastate-192.png" alt=""><h2><small data-nl="Science fiction">Science fiction</small>Terrastate: Conquer</h2></div>
+    <p data-nl="Koloniale strijdkrachten tegen de clans van een nieuwe wereld. Drones, walkers en energieschilden op een hexkaart.">Colonial forces against the clans of a new world. Drones, walkers and energy shields on a hex map.</p>
+    <a class="speel" href="terrastate.html" data-nl="Speel">Play</a>
+  </article>
+  <article class="kaart romaterra">
+    <div class="kop"><img src="icons/romaterra-192.png" alt=""><h2><small data-nl="Oudheid">Antiquity</small>Romaterra: Imperium</h2></div>
+    <p data-nl="Legioenen, boogschutters en olifanten. Veldtocht van elf slagen, vrije gevechten, duel met een vriend en een eigen aanvoerder die meegroeit.">Legions, archers and elephants. An eleven-battle campaign, skirmishes, duels with a friend and your own commander who grows with you.</p>
+    <a class="speel" href="romaterra.html" data-nl="Speel">Play</a>
+  </article>
+  <article class="kaart ironfront">
+    <div class="kop"><img src="icons/ironfront-192.png" alt=""><h2><small data-nl="Tweede Wereldoorlog">World War II</small>Ironfront: D-Day</h2></div>
+    <p data-nl="Van Omaha Beach tot de bruggen in het binnenland. Infanterie, mitrailleurs, pantserwagens en artillerie.">From Omaha Beach to the bridges inland. Infantry, machine guns, armoured cars and artillery.</p>
+    <a class="speel" href="ironfront.html" data-nl="Speel">Play</a>
+  </article>
+</main>
+<section class="uitleg">
+  <h3 data-nl="Hoe werkt het">How it works</h3>
+  <p data-nl="Je geeft al je eenheden een bevel en sluit de beurt af. Dan beweegt iedereen tegelijk, schutters schieten, linies botsen en het moreel wankelt. Wie de vlaggen houdt, scoort punten.">You give all your units an order and end the turn. Then everyone moves at once, archers fire, lines clash and morale wavers. Hold the flags to score points.</p>
+  <h3 data-nl="Op je telefoon">On your phone</h3>
+  <p data-nl="Open een spel en kies in je browser 'Zet op beginscherm'. Daarna start het als een app, ook zonder internet. Je voortgang staat in de browser; met een voortgangscode neem je hem mee naar een ander apparaat.">Open a game and choose 'Add to home screen' in your browser. It then starts like an app, even without internet. Your progress lives in the browser; a progress code takes it to another device.</p>
+  <h3 data-nl="Met een vriend">With a friend</h3>
+  <p data-nl="Duel op één toestel (om de beurt) of op afstand met beurtcodes die je elkaar stuurt via een berichtje. Er is geen server nodig.">Duel on one device (taking turns) or at a distance with turn codes you send each other in a message. No server needed.</p>
+</section>
+<footer>playterrastate.nl</footer>
+<script>
+  const knop = document.getElementById('taal');
+  let nl = false;
+  try { nl = localStorage.getItem('portaal-taal') === 'nl'; } catch (e) {}
+  function toon() {
+    document.documentElement.lang = nl ? 'nl' : 'en';
+    knop.textContent = nl ? 'EN' : 'NL';
+    for (const e of document.querySelectorAll('[data-nl]')) {
+      if (!e.dataset.en) e.dataset.en = e.textContent;
+      e.textContent = nl ? e.dataset.nl : e.dataset.en;
+    }
+  }
+  knop.onclick = () => { nl = !nl; try { localStorage.setItem('portaal-taal', nl ? 'nl' : 'en'); } catch (e) {} toon(); };
+  toon();
+  if ('serviceWorker' in navigator && location.protocol.startsWith('http')) addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));
+</script>
+</body>
+</html>
