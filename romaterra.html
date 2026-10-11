@@ -16,7 +16,7 @@
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="https://playterrastate.nl/img/v4/romaterra-share.jpg">
 <meta name="author" content="Wim Kamphorst">
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"VideoGame","@id":"https://playterrastate.nl/romaterra.html#game","name":"Romaterra","url":"https://playterrastate.nl/romaterra.html","description":"Free Roman grand strategy in your browser. Rule a people of the ancient world against hundreds of AI rivals, take Roma, raise the Imperial Palace and hold it. No account, no download.","image":"https://playterrastate.nl/img/v4/romaterra-share.jpg","genre":["Strategy","Grand strategy","Turn-based strategy","4X","Browser game"],"gamePlatform":["Web browser","Windows","macOS","Linux","Android","iOS"],"applicationCategory":"Game","operatingSystem":"Any (web browser)","playMode":"SinglePlayer","inLanguage":"en","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"EUR","availability":"https://schema.org/InStock"},"author":{"@type":"Person","@id":"https://playterrastate.nl/#wim","name":"Wim Kamphorst","url":"https://wimkamphorst.nl"},"publisher":{"@type":"Person","@id":"https://playterrastate.nl/#wim","name":"Wim Kamphorst","url":"https://wimkamphorst.nl"},"softwareVersion":"7.2","sameAs":["https://wimkamphorstcoaching.itch.io/romaterra"]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"VideoGame","@id":"https://playterrastate.nl/romaterra.html#game","name":"Romaterra","url":"https://playterrastate.nl/romaterra.html","description":"Free Roman grand strategy in your browser. Rule a people of the ancient world against hundreds of AI rivals, take Roma, raise the Imperial Palace and hold it. No account, no download.","image":"https://playterrastate.nl/img/v4/romaterra-share.jpg","genre":["Strategy","Grand strategy","Turn-based strategy","4X","Browser game"],"gamePlatform":["Web browser","Windows","macOS","Linux","Android","iOS"],"applicationCategory":"Game","operatingSystem":"Any (web browser)","playMode":"SinglePlayer","inLanguage":"en","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"EUR","availability":"https://schema.org/InStock"},"author":{"@type":"Person","@id":"https://playterrastate.nl/#wim","name":"Wim Kamphorst","url":"https://wimkamphorst.nl"},"publisher":{"@type":"Person","@id":"https://playterrastate.nl/#wim","name":"Wim Kamphorst","url":"https://wimkamphorst.nl"},"softwareVersion":"7.3","sameAs":["https://wimkamphorstcoaching.itch.io/romaterra"]}</script>
 <link rel="manifest" href="romaterra.webmanifest"><meta name="theme-color" content="#1a1410"><link rel="icon" href="icons/romaterra-64.png"><link rel="apple-touch-icon" href="icons/romaterra-180.png">
 <script>window.__MP_URL__=''; /* '' = live multiplayer not open yet */ if('serviceWorker' in navigator)addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));</script>
 <script data-goatcounter="https://playterrastate.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
@@ -5427,7 +5427,7 @@ function foldHowto(){try{const v=document.getElementById('view');if(!v||view==='
   const keep=HOWTO_SEL.flatMap(s=>[...v.querySelectorAll(s)]).filter(e=>e.isConnected&&!e.closest('.howfold'));if(!keep.length)return;
   let f=v.querySelector('.howfold');if(!f){f=h('<details class="card mb howfold"><summary>ℹ How does this screen work?</summary><div class="howbody mt"></div></details>');v.appendChild(f);}
   const body=f.querySelector('.howbody');keep.forEach(e=>{e.classList.remove('mb');body.appendChild(e);});if(f!==v.lastElementChild)v.appendChild(f);}catch(e){}}
-function phase2After(){trainRender();foldHowto();try{phase3Home();}catch(e){}try{phase5Home();}catch(e){}try{p5MinText();}catch(e){}try{p7After();}catch(e){}try{p8After();}catch(e){}try{p9After();}catch(e){}try{p10After();}catch(e){}try{p11After();}catch(e){}try{p12After();}catch(e){}try{p13After();}catch(e){}}
+function phase2After(){trainRender();foldHowto();try{phase3Home();}catch(e){}try{phase5Home();}catch(e){}try{p5MinText();}catch(e){}try{p7After();}catch(e){}try{p8After();}catch(e){}try{p9After();}catch(e){}try{p10After();}catch(e){}try{p11After();}catch(e){}try{p12After();}catch(e){}try{p13After();}catch(e){}try{p14After();}catch(e){}try{p15After();}catch(e){}}
 if(typeof window!=='undefined'&&!(typeof process!=='undefined'&&process.versions&&process.versions.node)&&!window.__MP__&&typeof go==='function'&&!window.__p2go){window.__p2go=1;const _g=window.go||go;
   const wrapped=function(){const r=_g.apply(this,arguments);try{phase2After();setTimeout(phase2After,0);setTimeout(phase2After,120);setTimeout(foldHowto,450);setTimeout(foldHowto,1000);}catch(e){}return r;};
   try{window.go=wrapped;}catch(e){}try{go=wrapped;}catch(e){}
@@ -6663,19 +6663,19 @@ function p13NextHTML(b){const c=you();const r=p13Region(b);if(!c||!r)return '';c
   else{const a=G.countries[b.atkId];let back=null;if(a){const mine=r;back=regionsOf(a).sort((x,y)=>Math.hypot(x.x-mine.x,x.y-mine.y)-Math.hypot(y.x-mine.x,y.y-mine.y))[0]||null;}
     t=`<b>You held ${esc(r.name)}.</b> ${a?esc(a.name)+'’s army is going home weakened. ':''}${back?'Their nearest ground is '+esc(back.name)+': while their army is away, a strike back hurts most.':'Keep the garrison strong; they may come again.'}`;
     btn=(back?`<button class="btn sm" data-p13="attack" data-r="${back.id}" data-k="${esc(p13Key(b))}" style="margin:3px 6px 3px 0">⚔ Strike back</button>`:'')+B('🛡 Strengthen the defence','garrison');}
-  return `<div class="card" style="margin:10px 0 0;border-left:3px solid var(--${won?'good':'warn'})"><div class="mono small" style="color:var(--gold);letter-spacing:1px;margin-bottom:4px">NOW WHAT?</div><div class="small">${t}</div><div class="row wrap mt" style="gap:0">${btn}</div></div>`;}
-function p13Hero(b){const bb=battleBadge(b);const won=p13Won(b);const big=b.protected?'SHIELD HELD':won?(b.youAtk?'VICTORY':'DEFENDED'):(b.youAtk?'DEFEAT':'GROUND LOST');
-  return `<div style="text-align:center;padding:14px 8px 10px;border-radius:10px;background:linear-gradient(180deg,${won?'rgba(55,217,169,.16)':'rgba(240,98,95,.16)'},transparent)">
-    <div style="font-size:clamp(30px,8vw,46px);font-weight:900;letter-spacing:3px;color:${won?'var(--good)':'var(--bad)'}">${big}</div>
+  return `<div class="card" style="margin:8px 0 0;padding:10px 12px;border-left:3px solid var(--${won?'good':'warn'})"><div class="mono small" style="color:var(--gold);letter-spacing:1px;margin-bottom:4px">NOW WHAT?</div><div class="small">${t}</div><div class="row wrap mt" style="gap:0">${btn}</div></div>`;}
+function p13Hero(b){const bb=battleBadge(b);const won=p13Won(b);const big=b.protected?(b.youAtk?'BLOCKED':'SHIELD HELD'):won?(b.youAtk?'VICTORY':'DEFENDED'):(b.youAtk?'DEFEAT':'GROUND LOST');
+  return `<div style="text-align:center;padding:8px 8px 6px;border-radius:10px;background:linear-gradient(180deg,${won?'rgba(55,217,169,.16)':'rgba(240,98,95,.16)'},transparent)">
+    <div style="font-size:clamp(24px,6vw,34px);font-weight:900;letter-spacing:2px;line-height:1.1;color:${won?'var(--good)':'var(--bad)'}">${big}</div>
     <div class="mono small" style="color:${bb.bcol};letter-spacing:1px">${esc(bb.badge)}</div>
     <div style="margin-top:4px;font-weight:700">${esc(b.region||'')} <span class="muted small">${esc(b.coord||'')} · tick #${b.tick}</span></div></div>`;}
-function p13Show(list,idx){if(!list||!list.length)return;idx=idx||0;document.querySelectorAll('.p13m').forEach(e=>e.remove());const b=list[idx];p13Opened()[p13Key(b)]=1;
+function p13Show(list,idx){if(!list||!list.length)return;if(!document.getElementById('p13css')){const st=document.createElement('style');st.id='p13css';st.textContent='body:has(.p13m) .p9nudge{display:none!important}';document.head.appendChild(st);}document.querySelectorAll('.p9nudge').forEach(e=>e.remove());idx=idx||0;document.querySelectorAll('.p13m').forEach(e=>e.remove());const b=list[idx];p13Opened()[p13Key(b)]=1;
   let rep='';try{rep=battleReportHTML(b);}catch(e){rep='';}
   const others=list.length>1?`<div class="small muted" style="margin:10px 0 4px">${list.length} battles this turn</div>`+list.map((x,i)=>`<div class="row between small" style="gap:8px;padding:4px 0;border-top:1px solid var(--border)"><span>${p13Won(x)?'🟢':'🔴'} ${esc((typeof battleOneLiner==='function'?battleOneLiner(x):x.region)||'')}</span>${i===idx?'<span class="muted">shown</span>':`<button class="btn ghost sm" data-p13o="${i}">Show</button>`}</div>`).join(''):'';
   const i=G.battles.indexOf(b);
-  const el=h(`<div class="modal-bg p13m"><div class="modal" style="max-width:720px;max-height:92vh;overflow:auto"><div class="row between"><span class="mono small muted">BATTLE RESULT</span><button class="btn ghost sm" data-x>✕</button></div>
-    ${p13Hero(b)}${p13NextHTML(b)}<details style="margin-top:10px" ${list.length>1?'':'open'}><summary style="cursor:pointer;font-weight:700">The full report</summary>${rep}</details>${others}
-    <div class="row wrap mt" style="gap:6px;justify-content:space-between;align-items:center"><label class="small muted" style="display:flex;gap:6px;align-items:center"><input type="checkbox" id="p13off" ${p13On()?'':'checked'}> Do not open this screen after a battle</label>
+  const el=h(`<div class="modal-bg p13m"><div class="modal p13box" style="max-width:600px;width:calc(100% - 24px);max-height:86vh;overflow:auto;margin:auto"><div class="row between" style="position:sticky;top:0;z-index:2;background:inherit;padding-bottom:4px"><span class="mono small muted">BATTLE RESULT</span><button class="btn ghost sm" data-x>✕</button></div>
+    ${p13Hero(b)}${p13NextHTML(b)}<details style="margin-top:10px"><summary style="cursor:pointer;font-weight:700">The full report (losses, why, the battle tick by tick)</summary>${rep}</details>${others}
+    <div class="row wrap mt" style="gap:6px;justify-content:space-between;align-items:center"><label class="small muted" style="display:flex;gap:6px;align-items:center;text-transform:none;letter-spacing:0;font-size:12px;flex:1 1 220px;margin:0"><input type="checkbox" id="p13off" style="width:auto;margin:0;flex:none" ${p13On()?'':'checked'}> Do not open this screen after a battle</label>
     <span>${typeof p9ShareBattle==='function'&&i>=0?`<button class="btn ghost sm" data-p13="share" data-i="${i}">Share</button> `:''}<button class="btn ghost sm" data-p13="reports" data-k="${esc(p13Key(b))}">All reports</button> <button class="btn sm" data-x>Continue</button></span></div></div></div>`);
   document.body.appendChild(el);const close=()=>{el.remove();try{p13Badge();}catch(e){}};
   el.querySelectorAll('[data-x]').forEach(x=>x.onclick=close);el.onclick=e=>{if(e.target===el)close();};
@@ -6683,7 +6683,7 @@ function p13Show(list,idx){if(!list||!list.length)return;idx=idx||0;document.que
   el.querySelectorAll('[data-p13o]').forEach(x=>x.onclick=()=>p13Show(list,+x.dataset.p13o));
   el.querySelectorAll('[data-p13]').forEach(x=>x.onclick=()=>{close();p13Act(x);});}
 async function p13Act(x){const c=you();const a=x.dataset.p13;const rid=x.dataset.r!=null?+x.dataset.r:null;const r=rid!=null?_rgId(rid):null;
-  try{if(a==='garrison'&&r){selDefend=r.id;warTab='defence';go('fleets');}
+  try{if(a==='garrison'&&r){if(typeof p14Defend==='function'&&r.owner===c.id)p14Defend(r.id);else{selDefend=r.id;warTab='defence';go('fleets');}}
   else if(a==='attack'&&r){selTarget=r.id;warTab='offence';go('fleets');}
   else if(a==='scout'&&r){const res=await cmdScoutRegion(c,r.id);toast(res&&res.ok?'🔍 Scouts sent to '+r.name:(res&&res.error)||'Not possible',res&&res.ok?'':'bad');try{save();}catch(e){}go(view);}
   else if(a==='pacify'&&r){const res=await cmdPacify(c,r.id);toast(res&&res.ok?'🕊 Unrest calmed in '+r.name:(res&&res.error)||'Not possible',res&&res.ok?'':'bad');try{save();}catch(e){}go(view);}
@@ -6722,6 +6722,191 @@ function p13After(){p13Help();const v=document.getElementById('view');const c=yo
 function p13Help(){try{if(typeof HELP!=='undefined'&&Array.isArray(HELP)&&!HELP.some(x=>x.id==='help-newground'))HELP.push({id:'help-newground',sec:'B',ic:'🏳',title:'After a battle: holding new ground',short:'A captured region is weakest right after the fight. Garrison it, calm it, then make it yours for good.',
   bullets:['After a battle the result screen tells you if you won, what it cost, and what to do next. Every report stays in Reports, newest at the top.','New ground starts with a weak defence. Send a garrison from your home army (War Room, Defence) in the same turn.','Neighbours notice. The first turns after a capture are when ground is taken back most often, and the nation you hit may strike back.','Occupied ground has unrest. Calm it before it revolts, and later build a Provincial Capitol so it counts as core ground and produces fully.','Lost a region? Right after the fight the new owner is weak there too: a quick counter-attack often takes it back.','Held the line? The attacker’s army is going home weakened. That is the moment to strike back at their nearest ground.'],
   see:['help-first3','help-quick'],anchor:'reports'});}catch(e){}}
+
+// ================= Update 7.3 "Know Your Odds" (shared: Terrastate, Romaterra, Ironfront) =================
+// Before a battle you should know what you are walking into. Unclaimed ground has a neutral garrison whose
+// strength is public (the AI sees it too), so the target lists and the launch panel now show it with your chance
+// instead of "open ground". Launching a fleet that will almost surely be crushed, or that goes in blind at a
+// nation you never scouted, first asks you, with what you would need. Nothing is free and nothing is hidden.
+function p14Band(ratio){return ratio>=1.5?['you can take it','var(--good)','✓']:ratio>=1.25?['likely yours','var(--good)','✓']:ratio>=0.95?['a coin flip','var(--warn)','≈']:ratio>=0.7?['too strong for now','var(--bad)','✗']:['far too strong','var(--bad)','✗'];}
+function p14Atk(c){try{return Math.round(power(c,'atk'));}catch(e){return 0;}}
+function p14Neutral(c,r){const def=Math.round(regionDef(r));const atk=p14Atk(c);const b=p14Band(def>0?atk/def:9);
+  return `<span class="mono">${full(def)}</span><div class="mono" style="font-size:11px;color:${b[1]}">${b[2]} ${esc(b[0])}</div>`;}
+function p14NeutralLine(c,r){const def=Math.round(regionDef(r));const atk=p14Atk(c);const b=p14Band(def>0?atk/def:9);
+  return `<span class="small">Neutral garrison <strong>${full(def)}</strong> <span style="color:${b[1]}">· with your whole army (${full(atk)}): ${esc(b[0])}</span></span>`;}
+// the same estimate the forecast uses: a scout report if you have one, the public garrison for unclaimed ground
+function p14Odds(c,tgt,units){if(!c||!tgt||!units||fleetSize(units)<=0)return null;if(tgt.owner!=null&&tgt.owner!==c.id&&!regionIntel(c,tgt.id))return {blind:true};
+  const defC=tgt.owner!=null?G.countries[tgt.owner]:null;const it=regionIntel(c,tgt.id);let defU;
+  if(it&&it.comp&&Object.keys(it.comp).length)defU=Object.assign({},it.comp);
+  else{const g=garrisonUnits(tgt);const est=Math.round(regionDef(tgt));const gp=power(GARRISON_DUMMY,'def',g)||1;const k=est/gp;defU={};for(const u in g)defU[u]=Math.max(0,Math.round(g[u]*k));}
+  let R;try{R=resolveBattle(c,Object.assign({},units),tgt,defC,1,defU);}catch(e){return null;}
+  const ratio=+R.ratio||0;const atk=Math.round(power(c,'atk',units));const need=ratio>0?Math.max(0,Math.round(atk*(1.3/ratio)-atk)):null;return {ratio,atk,need,def:Math.round(regionDef(tgt))};}
+function p14BestUnit(c){try{const ks=Object.keys(c.units||{}).filter(k=>UBYK[k]&&(UBYK[k].cost||{}).money);if(!ks.length)return null;
+  return ks.map(k=>({k,v:power(c,'atk',{[k]:1})/Math.max(1,UBYK[k].cost.money)})).sort((a,b)=>b.v-a.v)[0].k;}catch(e){return null;}}
+function p14Ask(html,yes,no){return new Promise(res=>{document.querySelectorAll('.p14m').forEach(e=>e.remove());
+  const el=h(`<div class="modal-bg p14m"><div class="modal" style="max-width:480px"><div class="row between"><h3 style="margin:0">⚠ Before you launch</h3><button class="btn ghost sm" data-x>✕</button></div><div class="small" style="margin:10px 0">${html}</div>
+    <label class="small muted" style="display:flex;gap:6px;align-items:center;margin-bottom:8px;text-transform:none;letter-spacing:0;font-size:12px"><input type="checkbox" id="p14off" style="width:auto;margin:0;flex:none"> Do not ask me again</label>
+    <div class="row wrap" style="gap:6px;justify-content:flex-end">${no}<button class="btn ghost sm" data-a="go">${yes}</button></div></div></div>`);
+  document.body.appendChild(el);const done=v=>{try{if(el.querySelector('#p14off').checked)localStorage.setItem('p14off','1');}catch(e){}el.remove();res(v);};
+  el.querySelectorAll('[data-x]').forEach(x=>x.onclick=()=>done('cancel'));el.querySelectorAll('[data-a]').forEach(x=>x.onclick=()=>done(x.dataset.a));});}
+function p14On(){try{return localStorage.getItem('p14off')!=='1';}catch(e){return true;}}
+function p14After(){try{p14DefendAfter();}catch(e){}try{p14AttackAfter();}catch(e){}try{p14RecAfter();}catch(e){}const v=document.getElementById('view');const c=you();if(!v||!c)return;const lb=v.querySelector('#launch');if(!lb||lb._p14||typeof lb.onclick!=='function')return;
+  const orig=lb.onclick;lb._p14=1;
+  lb.onclick=async function(e){const tgt=typeof selTarget!=='undefined'&&selTarget!=null?_rgId(selTarget):null;const ui=v.querySelector('#ui');const com=ui&&typeof readInputs==='function'?readInputs(ui):{};
+    if(!p14On()||!tgt||!fleetSize(com))return orig.call(this,e);let o=null;try{o=p14Odds(c,tgt,com);}catch(x){}
+    if(o&&o.blind){const a=await p14Ask(`You have never scouted <b>${esc(tgt.name)}</b>. You do not know what stands there, and blind attacks are how armies get lost. A scout costs ${SCOUT_COST} influence and 1 command point and shows the garrison.`,'Launch blind','<button class="btn sm" data-a="scout">🔍 Scout first</button><button class="btn ghost sm" data-a="cancel">Cancel</button>');
+      if(a==='go')return orig.call(this,e);if(a==='scout'){const s=v.querySelector('[data-scout]');if(s)s.click();}return;}
+    if(o&&o.ratio<0.7){const bu=p14BestUnit(c);const per=bu?power(c,'atk',{[bu]:1}):0;const more=bu&&per>0&&o.need?Math.ceil(o.need/per):null;
+      const a=await p14Ask(`Your <b>${full(o.atk)}</b> attack against about <b>${full(o.def)}</b> defence at <b>${esc(tgt.name)}</b>: <b style="color:var(--bad)">${o.ratio<0.5?'you will be crushed':'you will very likely be repelled'}</b>.${o.need?` To take it you need about <b>${full(o.need)}</b> more attack${more?`, roughly ${full(more)} more ${esc((UBYK[bu]||{n:bu}).n)}`:''}.`:''}`,'Launch anyway','<button class="btn sm" data-a="recruit">Recruit first</button><button class="btn ghost sm" data-a="cancel">Cancel</button>');
+      if(a==='go')return orig.call(this,e);if(a==='recruit')go('military');return;}
+    return orig.call(this,e);};}
+// ---------- quick defend: send part of your home army to your own ground in one tap ----------
+function p14Com(c,f){const com={};for(const k in (c.units||{})){const n=Math.floor((c.units[k]||0)*f);if(n>0)com[k]=n;}return com;}
+function p14QuickHTML(c,r){const n=fleetSize(c.units||{});if(!r||n<=0)return '';
+  try{const gd=typeof p7HomeGuard==='function'?p7HomeGuard(c,r):null;if(gd&&gd.error)return `<div class="p14q" style="margin:8px 0 12px;padding:10px 12px;border:1px solid var(--good);border-radius:8px"><div class="small"><b>🛡 Your home army of ${full(n)} already defends ${esc(r.name)}.</b> Every region of yours under attack is covered by the army at home, so sending it there only takes it off the field for the trip. To hold it better: recruit more, scan the attacker, or call your alliance.</div><div class="row wrap mt" style="gap:6px"><button class="btn sm" onclick="go('military')">Recruit</button>${clanOf(c)&&typeof window.SOS_HELP==='function'?`<button class="btn ghost sm" onclick="SOS_HELP(${r.id})">Call the alliance</button>`:''}</div></div>`;}catch(e){}const now=Math.round(regionDef(r)+(typeof regionReinforce==='function'?regionReinforce(r):0));
+  let tv=null;try{const hm=homeFor(c,r);tv=hm?reinforceTravel(c,hm,r,c.units):null;}catch(e){}
+  const opt=[[0.25,'A quarter'],[0.5,'Half'],[0.8,'Most, keep a home guard']].map(([f,l])=>{const com=p14Com(c,f);const add=Math.round(power(c,'def',com));
+    return `<button class="btn ${f===0.5?'':'sec'}" data-p14q="${f}" data-r="${r.id}" style="flex:1 1 150px;min-height:58px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;text-transform:none;letter-spacing:0"><b>${l}</b><span class="small" style="opacity:.85">${full(fleetSize(com))} units · defence ${full(now)} → ${full(now+add)}</span></button>`;}).join('');
+  return `<div class="p14q" style="margin:8px 0 12px"><div class="small" style="margin-bottom:6px">Send from your home army (<b>${full(n)}</b> units)${tv!=null?`, arrives in <b>${tv}t</b>`:''}. Free, no command points.</div><div class="row wrap" style="gap:8px">${opt}</div></div>`;}
+async function p14QuickSend(c,rid,f){const r=_rgId(rid);if(!c||!r)return;const com=p14Com(c,+f);if(!fleetSize(com)){toast('No units at home to send','warn');return;}
+  const res=await cmdStation(c,r.id,com);if(res&&res.ok){toast('🛡 '+full(fleetSize(com))+' units are on their way to '+r.name+'.');try{save();}catch(e){}try{drawTop();}catch(e){}go(view);}else toast((res&&res.error)||'Not possible','bad');}
+function p14Defend(rid){const c=you();const r=_rgId(rid);if(!c||!r)return;document.querySelectorAll('.p14d').forEach(e=>e.remove());const q=p14QuickHTML(c,r);
+  const el=h(`<div class="modal-bg p14d"><div class="modal" style="max-width:560px;width:calc(100% - 24px)"><div class="row between"><h3 style="margin:0">🛡 Defend ${esc(r.name)}</h3><button class="btn ghost sm" data-x>✕</button></div>
+    ${q||'<div class="small" style="margin:10px 0">You have no units at home. Recruit first.</div>'}<div class="row wrap" style="gap:6px;justify-content:space-between"><button class="btn ghost sm" data-a="pick">Choose the units myself</button>${q?'':'<button class="btn sm" data-a="rec">Recruit</button>'}</div></div></div>`);
+  document.body.appendChild(el);const close=()=>el.remove();el.querySelectorAll('[data-x]').forEach(x=>x.onclick=close);el.onclick=e=>{if(e.target===el)close();};
+  el.querySelectorAll('[data-p14q]').forEach(b=>b.onclick=async()=>{close();await p14QuickSend(c,+b.dataset.r,b.dataset.p14q);});
+  const pk=el.querySelector('[data-a="pick"]');if(pk)pk.onclick=()=>{close();selDefend=r.id;warTab='defence';go('fleets');};const rc=el.querySelector('[data-a="rec"]');if(rc)rc.onclick=()=>{close();go('military');};}
+function p14Css(){if(document.getElementById('p14css'))return;const st=document.createElement('style');st.id='p14css';
+  st.textContent='#launch.p14glow{box-shadow:0 0 0 3px var(--gold),0 0 18px var(--gold)}.ugrid{grid-template-columns:repeat(auto-fill,minmax(250px,1fr))!important;gap:6px 18px!important}.ugrid .urow label{display:flex!important;align-items:center;justify-content:space-between;gap:10px;text-transform:none!important;letter-spacing:0!important;white-space:normal!important;font-size:13px;line-height:1.25;padding:4px 0;border-bottom:1px solid var(--border)}.ugrid .urow input{flex:none;width:96px!important;min-height:36px}@media(max-width:560px){.ugrid{grid-template-columns:1fr!important}}';document.head.appendChild(st);}
+function p14DefendAfter(){p14Css();const v=document.getElementById('view');const c=you();if(!v||!c)return;const dui=v.querySelector('#dui');if(!dui)return;const card=dui.closest('.card');if(!card||card.querySelector('.p14q'))return;
+  const rid=typeof selDefend!=='undefined'?selDefend:null;const r=rid!=null?_rgId(rid):null;if(!r)return;const q=p14QuickHTML(c,r);if(!q)return;const hd=card.querySelector('h3');const n=h(q);if(hd)hd.after(n);else card.prepend(n);
+  n.querySelectorAll('[data-p14q]').forEach(b=>b.onclick=()=>p14QuickSend(c,+b.dataset.r,b.dataset.p14q));
+  const more=h('<div class="small muted" style="margin:4px 0 6px">Or pick the units yourself:</div>');n.after(more);}
+
+// ---------- quick attack: three ready-made forces with their odds, one tap fills the launch panel ----------
+function p14AttackHTML(c,tgt){const n=fleetSize(c.units||{});if(!tgt||n<=0)return '';
+  if(tgt.owner!=null&&tgt.owner!==c.id&&!regionIntel(c,tgt.id))return `<div class="p14a small" style="margin:6px 0 10px;padding:8px 10px;border:1px dashed var(--warn);border-radius:8px">🔍 You do not know what stands at ${esc(tgt.name)} yet. Scout it first, then this panel shows how much you need.</div>`;
+  let enough=null;for(let f=0.1;f<=1.0001;f+=0.1){const com=p14Com(c,f);const o=p14Odds(c,tgt,com);if(o&&o.ratio>=1.3){enough={f,com,o};break;}}
+  const opts=[];if(enough&&enough.f<0.95)opts.push(['Enough to take it',enough.f]);opts.push(['Half',0.5]);opts.push(['Everything',1]);
+  const btn=([l,f])=>{const com=p14Com(c,f);const o=p14Odds(c,tgt,com);const b=o?p14Band(o.ratio):['?','var(--muted)','?'];
+    return `<button class="btn ${l==='Enough to take it'?'':'sec'}" data-p14a="${f}" style="flex:1 1 150px;min-height:58px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;text-transform:none;letter-spacing:0"><b>${l}</b><span class="small">${full(fleetSize(com))} units · <span style="color:${b[1]}">${esc(b[0])}</span></span></button>`;};
+  return `<div class="p14a" style="margin:6px 0 12px"><div class="small" style="margin-bottom:6px">Pick a force${enough?'':`: <span style="color:var(--bad)">even your whole army is not enough yet</span>`}. It fills the units below, then press Launch.</div><div class="row wrap" style="gap:8px">${opts.map(btn).join('')}</div></div>`;}
+function p14AttackAfter(){const v=document.getElementById('view');const c=you();if(!v||!c)return;const ui=v.querySelector('#ui');if(!ui||!v.querySelector('#launch')||v.querySelector('.p14a'))return;
+  const tgt=typeof selTarget!=='undefined'&&selTarget!=null?_rgId(selTarget):null;if(!tgt||tgt.owner===c.id)return;const html=p14AttackHTML(c,tgt);if(!html)return;const n=h(html);ui.before(n);
+  n.querySelectorAll('[data-p14a]').forEach(b=>b.onclick=()=>{const com=p14Com(c,+b.dataset.p14a);ui.querySelectorAll('input[data-cu]').forEach(i=>{i.value=com[i.dataset.cu]||0;i.dispatchEvent(new Event('input',{bubbles:true}));i.dispatchEvent(new Event('change',{bubbles:true}));});
+    const lb=v.querySelector('#launch');if(lb){lb.scrollIntoView({block:'center',behavior:'smooth'});lb.classList.add('p14glow');setTimeout(()=>lb.classList.remove('p14glow'),1600);}});}
+// ---------- quick recruit: a mixed army for part of your treasury in one tap ----------
+function p14RecOrder(c,budget){const us=UNIT.filter(u=>{try{return unitUnlocked(c,u)&&(u.cost||{}).money>0;}catch(e){return false;}});if(!us.length)return null;
+  const val=(u,k)=>power(c,k,{[u.k]:1})/Math.max(1,u.cost.money);const ua=us.slice().sort((a,b)=>val(b,'atk')-val(a,'atk'))[0],ud=us.slice().sort((a,b)=>val(b,'def')-val(a,'def'))[0];
+  const o={};const add=(u,m)=>{const q=Math.floor(m/u.cost.money);if(q>0)o[u.k]=(o[u.k]||0)+q;};if(ua===ud)add(ua,budget);else{add(ua,budget/2);add(ud,budget/2);}return Object.keys(o).length?o:null;}
+function p14RecHTML(c){const m=c.res.money||0;if(m<1e5)return '';const opts=[[0.25,'A quarter of the treasury'],[0.5,'Half the treasury']].map(([f,l])=>{const o=p14RecOrder(c,m*f);if(!o)return '';
+    return `<button class="btn ${f===0.5?'':'sec'}" data-p14r="${f}" style="flex:1 1 180px;min-height:58px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;text-transform:none;letter-spacing:0"><b>${l}</b><span class="small">${esc(p7OrderText?p7OrderText(o):'')} · +${full(Math.round(power(c,'atk',o)))} attack, +${full(Math.round(power(c,'def',o)))} defence</span></button>`;}).join('');
+  if(!opts)return '';return `<div class="card mb p14rec"><div style="font-weight:700;margin:0 0 4px">⚡ Quick recruit</div><div class="small muted" style="margin-bottom:8px">An army in one tap, from the units that give you the most attack and defence for your money. Or build your own mix below.</div><div class="row wrap" style="gap:8px">${opts}</div></div>`;}
+function p14RecAfter(){const v=document.getElementById('view');const c=you();if(!v||!c||view!=='military')return;if(v.querySelector('.p14rec'))return;const html=p14RecHTML(c);if(!html)return;const n=h(html);
+  const a=v.querySelector(':scope > .threatpanel')||v.querySelector(':scope > .ptitle');if(a)a.after(n);else v.prepend(n);
+  n.querySelectorAll('[data-p14r]').forEach(b=>b.onclick=async()=>{const o=p14RecOrder(c,(c.res.money||0)*(+b.dataset.p14r));if(!o)return;const r=await cmdRecruitBatch(c,o);toast(r&&r.ok?'🎖 Training: '+p7OrderText(o):(r&&r.error)||'Not possible',r&&r.ok?'':'bad');if(r&&r.ok){try{save();}catch(e){}try{drawTop();}catch(e){}go(view);}});}
+
+// ================= Update 7.3 part 2 "Combat at a glance" (shared: Terrastate, Romaterra, Ironfront) =================
+// One clean card on top of Homeland and Nearby that answers the three combat questions:
+//   1. How many units do I have, and where are they?   2. How do I attack a coordinate (scout, how many units)?
+//   3. What is my alliance attacking, who joins, with how much, and is it enough?
+// Everything else on those screens stays, folded under "More".
+function p15Units(c){return fleetSize(c.units||{});}
+function p15Fl(f){const r=_rgId(f.target);const n=fleetSize(f.units||{});const eta=(f.eta||0)-G.tick;let what,when;
+  if(f.status==='returning'){what='↩ coming home from';when=f.rEta!=null?'home in '+Math.max(0,f.rEta-G.tick)+'t':'on the way home';}
+  else if(f.status==='battle'){what='⚔ fighting at';when='battle round '+Math.min(3,(f.bTick||0)+1)+' of 3';}
+  else if(f.intent==='garrison'||f.intent==='reinforce'){what=f.status==='outbound'?'🛡 on the way to guard':'🛡 guarding';when=f.status==='outbound'?'arrives in '+Math.max(0,eta)+'t':'standing guard';}
+  else{what='⚔ attacking';when=f.departIn>0?'leaves in '+f.departIn+'t':'lands in '+Math.max(0,eta)+'t';}
+  return {r,n,what,when};}
+function p15Mine(c){const out=[];(c.fleets||[]).forEach(f=>{const x=p15Fl(f);if(x.r&&x.n>0)out.push(x);});(G.acs||[]).forEach(op=>(op.fleets||[]).forEach(f=>{if(f.owner!==c.id)return;const r=_rgId(op.target);const n=fleetSize(f.units||{});if(r&&n)out.push({r,n,what:'🤝 joint strike on',when:'lands in '+Math.max(0,op.landTick-G.tick)+'t'});}));return out;}
+function p15Who(id){const o=G.countries[id];return o?(o.id===G.you?'You':(o.name||'?')):'?';}
+// what the alliance is hitting: joint strikes, the war goal, the war alert, with who takes part
+function p15Ops(c){const cl=clanOf(c);if(!cl)return [];const ops=[];const mem=clanMembers(cl);
+  (G.acs||[]).filter(op=>op.clan===cl.id&&op.landTick>=G.tick).forEach(op=>{const r=_rgId(op.target);if(!r)return;const parts=(op.fleets||[]).map(f=>({id:f.owner,n:fleetSize(f.units||{}),p:Math.round(power(G.countries[f.owner]||c,'atk',f.units||{}))}));
+    ops.push({k:'acs',op,r,title:'Joint strike',land:op.landTick,lead:op.leader,parts,mine:parts.some(x=>x.id===c.id)});});
+  const tg=[];if(cl.warGoal&&cl.warGoal.rid!=null)tg.push({rid:cl.warGoal.rid,title:'War goal',by:cl.warGoal.by,until:cl.warGoal.tick});if(cl.alert&&cl.alert.rid!=null&&cl.alert.tick>=G.tick)tg.push({rid:cl.alert.rid,title:'War alert',by:cl.alert.by,until:cl.alert.tick,acks:cl.alert.acks||{}});
+  tg.forEach(g=>{if(ops.some(o=>o.r.id===g.rid&&o.k!=='acs'))return;const r=_rgId(g.rid);if(!r)return;const parts=[];
+    mem.forEach(m=>{(m.fleets||[]).forEach(f=>{if(f.target!==g.rid||f.status==='returning')return;parts.push({id:m.id,n:fleetSize(f.units||{}),p:Math.round(power(m,'atk',f.units||{})),eta:Math.max(0,(f.eta||0)-G.tick)});});});
+    (G.acs||[]).filter(op=>op.clan===cl.id&&op.target===g.rid).forEach(op=>(op.fleets||[]).forEach(f=>parts.push({id:f.owner,n:fleetSize(f.units||{}),p:Math.round(power(G.countries[f.owner]||c,'atk',f.units||{})),eta:Math.max(0,op.landTick-G.tick)})));
+    ops.push({k:'goal',r,title:g.title,by:g.by,until:g.until,parts,acks:g.acks,mine:parts.some(x=>x.id===c.id)});});
+  return ops;}
+function p15DefTxt(c,r){if(r.owner===c.id)return 'yours';if(r.owner==null)return full(Math.round(regionDef(r)));const it=regionIntel(c,r.id);return it?full(it.lo)+'–'+full(it.hi):'unknown, scout first';}
+function p15OpHTML(c,o){const tot=o.parts.reduce((a,x)=>a+x.p,0);let defN=null;if(o.r.owner==null)defN=regionDef(o.r);else{const it=regionIntel(c,o.r.id);if(it)defN=(it.lo+it.hi)/2;}
+  const b=defN?p14Band(tot/Math.max(1,defN)):null;const land=o.k==='acs'?'lands tick #'+o.land+' (in '+Math.max(0,o.land-G.tick)+'t)':(o.until?'by tick #'+o.until:'');
+  const ppl=o.parts.length?o.parts.slice(0,8).map(x=>`<span class="p15chip">${esc(p15Who(x.id))} <b>${full(x.p)}</b>${x.eta!=null?` <span class="muted">${x.eta}t</span>`:''}</span>`).join('')+(o.parts.length>8?`<span class="muted small"> +${o.parts.length-8} more</span>`:''):'<span class="small" style="color:var(--warn)">Nobody has sent troops yet.</span>';
+  const acks=o.acks?(()=>{const ins=Object.keys(o.acks).filter(k=>o.acks[k]==='in').map(p15Who),outs=Object.keys(o.acks).filter(k=>o.acks[k]!=='in').map(p15Who);return `<div class="small muted" style="margin-top:4px">Said yes: ${ins.length?esc(ins.join(', ')):'nobody yet'}${outs.length?' · said no: '+esc(outs.join(', ')):''}</div>`;})():'';
+  const act=o.k==='acs'?(o.mine?'<span class="small" style="color:var(--good)">✓ you are in</span>':`<button class="btn sm" data-p15j="${o.op.id}" data-f="0.5">Join with half</button><button class="btn ghost sm" data-p15j="${o.op.id}" data-f="1">Join with all</button>`)
+    :(o.mine?'<span class="small" style="color:var(--good)">✓ your troops are on the way</span>':`<button class="btn sm" data-p15a="${o.r.id}">Send my troops</button>`);
+  return `<div class="p15op"><div class="row between wrap" style="gap:6px"><div><b>${esc(o.title)}</b>${o.k==='acs'&&o.lead!=null?` <span class="muted small">led by ${esc(p15Who(o.lead))}</span>`:o.by!=null?` <span class="muted small">set by ${esc(p15Who(o.by))}</span>`:''} → ${esc(o.r.name)} <span class="tag">${esc(o.r.coord)}</span> <span class="muted small">${esc(land)}</span></div>
+    <div class="small">${full(tot)} attack${defN?` vs ~${full(Math.round(defN))} · <span style="color:${b[1]}">${esc(b[0])}</span>`:o.r.owner!=null&&o.r.owner!==c.id?' · <span style="color:var(--warn)">defence unknown, scout it</span>':''}</div></div>
+    <div style="margin:6px 0">${ppl}</div>${acks}<div class="row wrap" style="gap:6px;margin-top:6px">${act}</div></div>`;}
+
+// your ground: every region with the troops standing there, its defence, and one tap to top it up
+function p15Ground(c){const rs=regionsOf(c);if(!rs.length)return '';let home=null;try{home=homeRegionOf(c);}catch(e){}const inc={};try{incomingTo(c.id).forEach(x=>{if(x.region)inc[x.region.id]=(inc[x.region.id]||0)+1;});}catch(e){}
+  const rows=rs.map(r=>{const g=(c.fleets||[]).filter(f=>f.target===r.id&&(f.intent==='garrison'||f.intent==='reinforce'));const there=g.filter(f=>f.status!=='outbound').reduce((a,f)=>a+fleetSize(f.units||{}),0);const coming=g.filter(f=>f.status==='outbound').reduce((a,f)=>a+fleetSize(f.units||{}),0);
+    const isHome=home&&home.id===r.id;const def=Math.round(regionDef(r)+(typeof regionReinforce==='function'?regionReinforce(r):0));return {r,there,coming,isHome,def,inc:inc[r.id]||0};}).sort((a,b)=>(b.inc-a.inc)||(b.isHome-a.isHome)||(a.def-b.def));
+  const row=x=>`<div class="p15g"><span><b>${esc(x.r.name)}</b> <span class="tag">${esc(x.r.coord)}</span>${x.isHome?' <span class="muted small">home</span>':''}${x.inc?` <span class="small" style="color:var(--bad)">⚔ ${x.inc} attack${x.inc>1?'s':''} coming</span>`:''}</span>
+    <span class="small">${x.isHome?`home army <b>${full(p15Units(c))}</b>`:`<b>${full(x.there)}</b> units there${x.coming?` · ${full(x.coming)} on the way`:''}`} · defence <b>${full(x.def)}</b></span>
+    ${x.isHome?'<span></span>':`<button class="btn sm ${x.inc?'':'ghost'}" data-p15d="${x.r.id}">Top up</button>`}</div>`;
+  return `<div class="p15box" style="margin-top:12px"><div class="p15h">🗺 Your ground <span class="muted small" style="font-weight:400">${rs.length} region${rs.length>1?'s':''}, weakest first</span></div>${rows.slice(0,8).map(row).join('')}${rows.length>8?`<details><summary class="small muted">${rows.length-8} more regions</summary>${rows.slice(8).map(row).join('')}</details>`:''}</div>`;}
+function p15HTML(c){const n=p15Units(c);const mv=p15Mine(c);const away=mv.reduce((a,x)=>a+x.n,0);const cl=clanOf(c);
+  const rows=mv.slice(0,6).map(x=>`<div class="p15row"><span>${x.what} <b>${esc(x.r.name)}</b> <span class="tag">${esc(x.r.coord)}</span></span><span class="small">${full(x.n)} units · ${esc(x.when)}</span></div>`).join('')+(mv.length>6?`<div class="small muted">+${mv.length-6} more armies</div>`:'');
+  const ops=p15Ops(c);
+  const near=(()=>{try{const home=regionsOf(c)[0];if(!home)return '';const atk=p14Atk(c);const busy=new Set((c.fleets||[]).map(f=>f.target));return G.regions.filter(r=>r.owner==null&&!r.nexus&&!busy.has(r.id)).map(r=>({r,d:Math.hypot(r.x-home.x,r.y-home.y),def:regionDef(r)})).sort((a,b)=>a.d-b.d).slice(0,12).filter(x=>atk>=x.def*1.3).slice(0,3)
+    .map(x=>`<button class="btn ghost sm" data-p15c="${esc(x.r.coord)}">${esc(x.r.coord)} · ${full(Math.round(x.def))}</button>`).join('');}catch(e){return '';}})();
+  return `<div class="card mb p15"><div class="p15grid">
+   <div class="p15box"><div class="p15h">🪖 Your army</div><div class="p15big">${full(n)} <span class="small muted">at home</span></div><div class="small muted">${full(Math.round(power(c,'atk')))} attack · ${full(Math.round(power(c,'def')))} defence${away?` · ${full(away)} away`:''}</div>
+     <div style="margin-top:8px">${rows||'<div class="small muted">All your troops are at home.</div>'}</div></div>
+   <div class="p15box"><div class="p15h">🎯 Attack a coordinate</div><div class="row" style="gap:6px;margin-top:4px"><input id="p15co" placeholder="for example 1:2:5" autocomplete="off" style="flex:1;min-width:0"><button class="btn sm" id="p15go">Look</button></div>
+     <div id="p15res" class="small" style="margin-top:8px"></div>${near?`<div class="small muted" style="margin-top:8px">Unclaimed ground you can take now:</div><div class="row wrap" style="gap:4px;margin-top:4px">${near}</div>`:''}</div>
+   <div class="p15box"><div class="p15h">🤝 With your alliance</div>${cl?(ops.length?ops.map(o=>p15OpHTML(c,o)).join(''):'<div class="small muted" style="margin-top:4px">No joint strike or war goal right now.'+(isClanOfficer(c)?' As an officer you can start one from a target: look it up on the left, then choose Joint strike.':' Your officers start them; you will see them here.')+'</div>'):'<div class="small muted" style="margin-top:4px">You are not in an alliance. Together you can hit far harder targets.</div><button class="btn sm mt" onclick="go(\'clans\')">Find an alliance</button>'}</div>
+  </div>${p15Ground(c)}</div>`;}
+function p15Look(c,box,coord){const res=box.querySelector('#p15res');const s=String(coord||'').trim().replace(/\s+/g,'').replace(/[.,;]/g,':');const r=(G.regions||[]).find(x=>x.coord===s);
+  if(!r){res.innerHTML=`<span style="color:var(--warn)">No region at ${esc(s||'?')}. Use the form 1:2:5.</span>`;return;}
+  const o=r.owner!=null?G.countries[r.owner]:null;let tv=null;try{const hm=homeFor(c,r);tv=hm?travelFor(c,hm,r):null;}catch(e){}
+  const known=r.owner==null||r.owner===c.id||!!regionIntel(c,r.id);let ch='';
+  if(r.owner!==c.id&&known){const def=r.owner==null?regionDef(r):((regionIntel(c,r.id).lo+regionIntel(c,r.id).hi)/2);const b=p14Band(p14Atk(c)/Math.max(1,def));ch=` · with your whole army: <span style="color:${b[1]}">${esc(b[0])}</span>`;}
+  const off=isClanOfficer&&clanOf(c)&&isClanOfficer(c)&&r.owner!==c.id;
+  res.innerHTML=`<div><b>${esc(r.name)}</b> <span class="tag">${esc(r.coord)}</span>${r.nexus?' <span class="tag">Nexus</span>':''}</div>
+    <div class="muted">${r.owner===c.id?'Your ground':o?esc(o.name)+(o.tag?' ['+esc(o.tag)+']':''):'Unclaimed'} · defence ${esc(p15DefTxt(c,r))}${tv!=null?' · '+tv+'t away':''}${ch}</div>
+    <div class="row wrap" style="gap:6px;margin-top:6px">${r.owner===c.id?`<button class="btn sm" data-p15d="${r.id}">Defend it</button>`:`${known?'':`<button class="btn sm" data-p15s="${r.id}">🔍 Scout (${SCOUT_COST} · 1 CP)</button>`}<button class="btn ${known?'':'ghost'} sm" data-p15a="${r.id}">⚔ Attack</button>${off?`<button class="btn ghost sm" data-p15k="${r.id}">🤝 Joint strike</button>`:''}`}</div>`;
+  p15Bind(c,res);}
+function p15Bind(c,root){
+  root.querySelectorAll('[data-p15a]').forEach(b=>b.onclick=()=>{selTarget=+b.dataset.p15a;warTab='offence';go('around');setTimeout(()=>{const l=document.querySelector('#launch');if(l)l.scrollIntoView({block:'center'});},80);});
+  root.querySelectorAll('[data-p15k]').forEach(b=>b.onclick=()=>{selTarget=+b.dataset.p15k;warTab='offence';go('around');setTimeout(()=>{const l=document.getElementById('acs');if(l)l.scrollIntoView({block:'center'});},80);});
+  root.querySelectorAll('[data-p15d]').forEach(b=>b.onclick=()=>p14Defend(+b.dataset.p15d));
+  root.querySelectorAll('[data-p15s]').forEach(b=>b.onclick=async()=>{const r=await cmdScoutRegion(c,+b.dataset.p15s);toast(r&&r.ok?(r.data&&r.data.miss?'🔍 The scan bounced off their radar':'🔍 Scouts sent'):(r&&r.error)||'Not possible',r&&r.ok?'':'bad');try{save();}catch(e){}go(view);});
+  root.querySelectorAll('[data-p15j]').forEach(b=>b.onclick=async()=>{const com=p14Com(c,+b.dataset.f);if(!fleetSize(com)){toast('No units at home','warn');return;}const r=await cmdJoinACS(c,+b.dataset.p15j,com);toast(r&&r.ok?'🤝 You joined the strike, it lands in '+r.data.landsIn+'t':(r&&r.error)||'Not possible',r&&r.ok?'':'bad');if(r&&r.ok){try{save();}catch(e){}try{drawTop();}catch(e){}go(view);}});
+  root.querySelectorAll('[data-p15c]').forEach(b=>b.onclick=()=>{const box=b.closest('.p15box');const i=box.querySelector('#p15co');if(i)i.value=b.dataset.p15c;p15Look(c,box,b.dataset.p15c);});}
+function p15Css(){if(document.getElementById('p15css'))return;const st=document.createElement('style');st.id='p15css';
+  st.textContent='.p15grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px}.p15box{border:1px solid var(--border);border-radius:10px;padding:12px;min-width:0}.p15h{font-weight:800;letter-spacing:.3px;margin-bottom:4px;text-transform:none}.p15big{font-size:26px;font-weight:800;line-height:1.1}.p15row{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;padding:5px 0;border-top:1px solid var(--border);font-size:13px}.p15op{border-top:1px solid var(--border);padding:8px 0}.p15op:first-of-type{border-top:0}.p15chip{display:inline-block;font-size:12px;border:1px solid var(--border);border-radius:999px;padding:2px 8px;margin:2px 4px 2px 0}.p15more>summary{cursor:pointer;font-weight:700;padding:8px 2px}.p15g{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1.4fr) auto;gap:8px;align-items:center;padding:6px 0;border-top:1px solid var(--border);font-size:13px}@media(max-width:600px){.p15g{grid-template-columns:1fr auto}.p15g>span:nth-child(2){grid-column:1;grid-row:2}.p15g>button,.p15g>span:nth-child(3){grid-column:2;grid-row:1/3}}';document.head.appendChild(st);}
+function p15After(){const v=document.getElementById('view');const c=you();if(!v||!c)return;p15Css();const _t=()=>{try{p15Tidy();}catch(e){}try{p15HomeTidy();}catch(e){}try{p15MarketTidy();}catch(e){}};_t();setTimeout(_t,0);setTimeout(_t,200);if(!['self','around','fleets'].includes(view))return;
+  if(v.querySelector('.p15'))return;const n=h(p15HTML(c));const a=v.querySelector(':scope > .ptitle');if(a)a.after(n);else v.prepend(n);
+  const box=n.querySelector('#p15co');const go2=n.querySelector('#p15go');const doLook=()=>p15Look(c,box.closest('.p15box'),box.value);if(go2)go2.onclick=doLook;if(box)box.onkeydown=e=>{if(e.key==='Enter')doLook();};
+  if(typeof selTarget!=='undefined'&&selTarget!=null&&view==='around'){const r=_rgId(selTarget);if(r&&box){box.value=r.coord;}}
+  p15Bind(c,n);}
+// ---------- calmer combat screens: the overview stays, the rest folds under "More on this screen" ----------
+const P15_FOLD={self:/^(forces|army movements|🦅 army movements|beginner protection|safe to log off|advanced intelligence|shield & sleep-safe)/i,
+  around:/^(your forces and armies on the move|battle reports|nearest targets|covert ops|you cannot run a covert|combat simulator|ℹ how does this screen work)/i,
+  military:/^(forces|doctrine presets)/i,
+  market:/^(market at a glance|who holds the stock|trade fills now)/i};
+function p15Head(e){const t=e.querySelector&&e.querySelector('h3,h2,summary,.clabel');return ((t||e).innerText||'').trim().split('\n')[0].trim();}
+function p15Tidy(){const v=document.getElementById('view');if(!v)return;const re=P15_FOLD[view];if(!re)return;
+  const kids=[...v.children].filter(e=>!e.classList.contains('ptitle')&&!e.classList.contains('p15')&&!e.classList.contains('p15more')&&!e.classList.contains('alertbar')&&re.test(p15Head(e).replace(/^[^A-Za-z]+/,'')));
+  let d=v.querySelector(':scope > .p15more');if(!kids.length)return;if(!d){if(kids.length<2)return;d=h('<details class="card mb p15more"><summary>More on this screen <span class="muted small p15ml" style="font-weight:400"></span></summary></details>');v.appendChild(d);}
+  kids.forEach(k=>d.appendChild(k));const ml=d.querySelector('.p15ml');if(ml){const n=[...d.children].filter(e=>e.tagName!=='SUMMARY').length;ml.textContent=n+' more block'+(n>1?'s':'')+': details, movements, tips';}
+  v.appendChild(d);}
+
+// Home: no double to-do, no story lines that repeat the three tiles, army movements live on Homeland now
+function p15Key(t){return String(t||'').toLowerCase().replace(/[^a-z ]/g,' ').split(/\s+/).filter(w=>w&&!['is','the','a','an','your','you','are','has','have','of','to'].includes(w));}
+function p15HomeTidy(){const v=document.getElementById('view');if(!v||view!=='dashboard')return;
+  try{const na=v.querySelector('.solo-next');const naT=na?((na.children[1]||{}).innerText||''):'';const nk=p15Key(naT);const att=[...v.querySelectorAll('.card')].find(c=>{const h3=c.querySelector(':scope > h3');return h3&&/things? need attention/i.test(h3.textContent||'');});
+    if(att&&nk.length){let hid=0;att.querySelectorAll(':scope > .prow').forEach(r=>{const rk=p15Key(((r.innerText||'').split('\n').map(x=>x.trim()).filter(Boolean))[0]||'');if(r.style.display!=='none'&&rk.length&&rk.every(w=>nk.some(n=>n.slice(0,3)===w.slice(0,3)))){r.style.display='none';hid++;}});
+      if(hid){const h3=att.querySelector(':scope > h3');if(h3)h3.innerHTML=h3.innerHTML.replace(/(\d+)(\s*)things?/i,(m,n,sp)=>{const k=Math.max(0,+n-hid);return k+sp+(k===1?'thing':'things');});const left=[...att.querySelectorAll(':scope > .prow')].filter(r=>r.style.display!=='none').length;if(!left)att.style.display='none';}}}catch(e){}
+  try{const rb=v.querySelector('.rboard');const card=rb&&rb.closest('.card');if(card){const ks=[...card.children];ks.forEach((k,i)=>{if(i===1&&k.classList.contains('small')&&!k.querySelector('button'))k.style.display='none';if(k.classList.contains('muted')&&k.classList.contains('small')&&k.classList.contains('mt')&&/^No landings yet/i.test(k.textContent||''))k.style.display='none';});}}catch(e){}
+  try{const more=v.querySelector('details.p5more');const am=[...v.querySelectorAll('.card')].find(c=>{const l=c.querySelector(':scope > .clabel');return l&&/^army movements/i.test((l.textContent||'').trim());});if(more&&am)more.appendChild(am);}catch(e){}}
+function p15MarketTidy(){const v=document.getElementById('view');if(!v||view!=='market')return;const qb=v.querySelector(':scope > .p7market');if(!qb||qb._p15)return;
+  const pos=[...v.children].find(e=>/^your position/i.test(p15Head(e)));if(pos){pos.after(qb);qb._p15=1;}}
 
 function emblem(c){return `<span class="flagi" title="${esc((c&&c.name)||'')}">${flagSVG(c,22)}</span>`;}
 // Relationship-only colours (Planetarion-style): gold self, blue alliance,
@@ -7017,9 +7202,9 @@ function renderLanding(){
       <a class="card" href="updates.html" target="_self" rel="noopener" style="display:block;text-decoration:none;color:inherit;margin:0 auto">
         <div class="row between wrap" style="gap:10px;align-items:center">
           <div style="min-width:0;flex:1">
-            <div><span class="mono" style="color:var(--gold);font-size:11px;letter-spacing:1px">VERSION 7.2 · BATTLE MOMENTS</span> <span class="muted small">October 2026</span></div>
-            <div style="font-weight:700;margin-top:3px">Romaterra 7.2: Battle Moments</div>
-            <div class="muted small mt">Every battle gets its moment: a result screen with victory or defeat and what to do next, the last battle on Home, and battle reports first in Reports. Also: a living world. AI alliances grow, unite and form blocs, a coalition rises against whoever leads, allies answer the call and every hit gets an answer. See who leads on Diplomacy. Also: a calmer desk. An attack on your ground has one Front card on Home with your defence against what is coming. Alerts are one line, each screen starts with its own content, and on phones END TURN sits in the bottom bar. Share a battle to WhatsApp, Telegram or Discord, Messages is now Comms, and a build plan starts up to five builds by themselves.</div>
+            <div><span class="mono" style="color:var(--gold);font-size:11px;letter-spacing:1px">VERSION 7.3 · KNOW YOUR ODDS</span> <span class="muted small">October 2026</span></div>
+            <div style="font-weight:700;margin-top:3px">Romaterra 7.3: Know Your Odds</div>
+            <div class="muted small mt">Know your odds before you strike: neutral garrisons show their strength and your chance, and a hopeless or blind attack asks first. Every battle gets its moment: a result screen with victory or defeat and what to do next, the last battle on Home, and battle reports first in Reports. Also: a living world. AI alliances grow, unite and form blocs, a coalition rises against whoever leads, allies answer the call and every hit gets an answer. See who leads on Diplomacy. Also: a calmer desk. An attack on your ground has one Front card on Home with your defence against what is coming. Alerts are one line, each screen starts with its own content, and on phones END TURN sits in the bottom bar. Share a battle to WhatsApp, Telegram or Discord, Messages is now Comms, and a build plan starts up to five builds by themselves.</div>
           </div>
           <span class="btn ghost sm" style="flex:none;pointer-events:none">What is new</span>
         </div>
@@ -7087,7 +7272,7 @@ function renderLanding(){
   {const b=s.querySelector('#lpNews');if(b)b.onclick=()=>{const t=s.querySelector('#playerupdate');if(t)t.scrollIntoView({behavior:'smooth',block:'center'});};}
 }
 // ---- Legal identity: ONE place to change the operator / contact / copyright holder. Used by the Privacy, Terms and Credits tabs and the footer.
-const LEGAL={operator:'Wim Kamphorst',email:'wimkamphorst.coaching@gmail.com',author:'Wim Kamphorst',country:'the Netherlands',law:'Dutch law',dpa:'Autoriteit Persoonsgegevens (the Dutch data protection authority)',dpaUrl:'https://www.autoriteitpersoonsgegevens.nl',version:'1.0',updated:'September 2026',build:'Version 7.2 · Oct 2026',minAge:16};
+const LEGAL={operator:'Wim Kamphorst',email:'wimkamphorst.coaching@gmail.com',author:'Wim Kamphorst',country:'the Netherlands',law:'Dutch law',dpa:'Autoriteit Persoonsgegevens (the Dutch data protection authority)',dpaUrl:'https://www.autoriteitpersoonsgegevens.nl',version:'1.0',updated:'September 2026',build:'Version 7.3 · Oct 2026',minAge:16};
 LEGAL.contact=`<b>${LEGAL.operator}</b>, <a href="mailto:${LEGAL.email}">${LEGAL.email}</a>`;
 // ---- Landing-page manual: beginner's handbook + combat formulae -------------
 const MANUAL={
@@ -9494,7 +9679,7 @@ VIEWS.fleets=v=>{const c=you();const inc=incomingTo(c.id);const cl0=clanOf(c);
   if(tgt&&tgt.owner!==c.id){const home=homeFor(c,tgt);travel=home?travelFor(c,home,tgt):null;const owner=tgt.owner!=null?G.countries[tgt.owner]:null;
     v.appendChild(h(`<div class="card mb" style="border-left:3px solid var(--accent)"><h3>Launch operation → ${esc(tgt.name)} <span class="tag">${tgt.coord}</span></h3>
       <div class="row wrap" style="gap:18px" class="mb"><span class="small muted">Owner: ${owner?esc(owner.name)+(owner.isAI?'':''):'Unclaimed'}</span>
-        ${(()=>{const it=regionIntel(c,tgt.id);return it?`<span class="small">🔍 Scouted defence <strong>${full(it.lo)}–${full(it.hi)}</strong> <span class="muted">(${it.conf}% confidence · t${it.tick})</span></span>`:`<span class="small" style="color:var(--alert)">${scanMissed(c,tgt.id)?'Scan bounced. Defence unknown.':'Defence unknown. Scout before you launch.'}</span>`;})()}
+        ${(()=>{const it=regionIntel(c,tgt.id);if(tgt.owner==null&&!it)return p14NeutralLine(c,tgt);return it?`<span class="small">🔍 Scouted defence <strong>${full(it.lo)}–${full(it.hi)}</strong> <span class="muted">(${it.conf}% confidence · t${it.tick})</span></span>`:`<span class="small" style="color:var(--alert)">${scanMissed(c,tgt.id)?'Scan bounced. Defence unknown.':'Defence unknown. Scout before you launch.'}</span>`;})()}
         <span class="small">Your attack power <strong>${full(Math.round(power(c,'atk')))}</strong></span>
         <span class="small">Travel <strong class="eta">${travel!=null?travel+' ticks':'—'}</strong>${travel!=null?` · arrives tick #${G.tick+travel} · ${attackReturnLabel(travel)}`:''}</span></div>
       <div class="row wrap" style="gap:4px;margin-bottom:5px;padding-bottom:5px;border-bottom:1px solid var(--border)"><span class="muted small" style="align-self:center">⚡ Preset:</span><button class="btn ghost sm" title="All units at max" onclick="(()=>{document.querySelectorAll('#ui [data-cu]').forEach(i=>{i.value=+(i.max)||0;});})()">100% All</button><button class="btn ghost sm" title="Cataphracts, ballistae, horse archers, praetorian guard, onagers" onclick="(()=>{const k=['tank','artillery','strike_fighter','powered_armor','strat_bomber'];document.querySelectorAll('#ui [data-cu]').forEach(i=>{i.value=k.includes(i.dataset.cu)?+(i.max)||0:0;});})()">Assault</button><button class="btn ghost sm" title="Fast units, speculatores, intrigue, supply wagons, velites, horse archers, onagers, quantum" onclick="(()=>{const k=['spec_ops','cyber_cell','supply_truck','interceptor','strike_fighter','strat_bomber','quantum_hacker'];document.querySelectorAll('#ui [data-cu]').forEach(i=>{i.value=k.includes(i.dataset.cu)?+(i.max)||0:0;});})()">Fast/Ranged</button><button class="btn ghost sm" title="Defensive units, levies, legionaries, velites, Shield Wall, praetorian guard" onclick="(()=>{const k=['militia','infantry','interceptor','sam','powered_armor'];document.querySelectorAll('#ui [data-cu]').forEach(i=>{i.value=k.includes(i.dataset.cu)?+(i.max)||0:0;});})()">Defenders</button></div>
@@ -9633,7 +9818,7 @@ VIEWS.fleets=v=>{const c=you();const inc=incomingTo(c.id);const cl0=clanOf(c);
   // Nearest targets (offence)
   const near=(TAB==='offence')?G.regions.filter(r=>r.owner!==c.id&&!sameTheaterAlly(c,r)&&!(c.clan!=null&&G.countries[r.owner]&&G.countries[r.owner].clan===c.clan)).map(r=>{const home=homeFor(c,r);return {r,eta:home?travelFor(c,home,r):99};}).sort((a,b)=>a.eta-b.eta||b.r.sv-a.r.sv).slice(0,14):[];
   const nr=near.map(x=>{const o=x.r.owner!=null?G.countries[x.r.owner]:null;const it=regionIntel(c,x.r.id);
-    const defCell=it?`<span class="mono">${full(it.lo)}–${full(it.hi)}</span><div class="mono" style="font-size:9.5px;color:var(--ok)">🔍 ${it.conf}% confidence</div>`:(x.r.owner==null?`<span class="muted">open ground</span>`:`<span class="muted">unknown</span>`);
+    const defCell=it?`<span class="mono">${full(it.lo)}–${full(it.hi)}</span><div class="mono" style="font-size:9.5px;color:var(--ok)">🔍 ${it.conf}% confidence</div>`:(x.r.owner==null?p14Neutral(c,x.r):`<span class="muted">unknown</span>`);
     return `<tr><td style="white-space:nowrap"><span class="tag">${x.r.coord}</span> ${esc(x.r.name)}</td><td style="white-space:nowrap">${o?emblem(o)+' '+esc(o.tag):'<span class="muted">unclaimed</span>'}</td><td class="r">${defCell}</td><td class="r eta">${x.eta}t</td><td class="r"><button class="btn ghost sm" data-scout="${x.r.id}" title="Scout this region: ${SCOUT_COST} influence + 1 command point">🔍 Scout</button>${clanOf(c)?` <button class="btn ghost sm" data-shareintel="${x.r.id}" title="Post this target's intel to alliance chat">📤</button>`:''} <button class="btn sm" data-tgt="${x.r.id}">Target</button></td></tr>`;}).join('');
   if(TAB==='offence')v.appendChild(h(`<div class="card mb"><h3>Nearest targets <span class="muted small" style="text-transform:none;letter-spacing:0">unknown until a scan lands</span></h3><div class="scroll"><table><thead><tr><th>Region</th><th>Owner</th><th class="r">Defence</th><th class="r">Travel</th><th></th></tr></thead><tbody>${nr}</tbody></table></div></div>`));
 
