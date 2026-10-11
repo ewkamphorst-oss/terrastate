@@ -243,22 +243,20 @@ a:focus-visible,button:focus-visible,.endturn:focus-visible{outline:2px solid #4
 @media (max-width:640px){.h3ro{min-height:0;padding:210px 0 48px}.h3ro::after{background:linear-gradient(180deg,rgba(7,11,18,.1) 0%,rgba(7,11,18,.55) 22%,rgba(7,11,18,.9) 42%,var(--bg) 100%)}.h3ro-media{bottom:auto;height:320px}.h3ro-video{object-position:45% 40%}
  .h3ro-cta .endturn{width:100%;text-align:center}.h3ro-cap{display:none}.s3{padding:60px 0}.feel3-list{grid-template-columns:1fr}.era3-body{padding:18px}.era3 .endturn{width:100%;text-align:center}}
 
-/* ---- grand strategy vs tactics: a label on every picture, and a section of its own ---- */
-.era3-shot{position:relative}
-.era3-shot[data-kind]::after{content:attr(data-kind);position:absolute;left:12px;top:12px;background:rgba(5,8,13,.82);color:#fff;font:800 12px/1 var(--disp);letter-spacing:2px;text-transform:uppercase;padding:7px 10px;border-radius:6px;border:1px solid rgba(255,255,255,.25)}
-.tac3 .era3-shot[data-kind]::after{background:#f0c75e;color:#1a1408;border-color:#f0c75e}
-.era3-also{font-size:14px;color:var(--muted);text-decoration:none;margin-top:4px}
-.era3-also b{color:var(--text)}
-.era3-also:hover b{text-decoration:underline}
-.tac3s{border-top:1px solid var(--border)}
-.cmp3{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:0 0 26px}
-.cmp3>div{background:var(--panel);border-radius:12px;padding:14px 16px;color:var(--text)}
-.cmp3 span{display:block;color:var(--muted);margin-top:4px;line-height:1.5}
-.tac3{display:flex;flex-direction:column;background:var(--panel);border-radius:14px;overflow:hidden;border-top:3px solid var(--accent2)}
-.tac3.rome{border-top-color:var(--rome)}
-.tac3.iron{border-top-color:#c9b458}
-.tac3 .tac3-name{font:800 21px/1.1 var(--disp);letter-spacing:1px;color:var(--text)}
-.tac3 .endturn{margin-top:auto;align-self:flex-start}
+/* ---- one card, two parts: the big solo game, and its small mini game attached below ---- */
+.mini3{display:grid;grid-template-columns:80px 1fr auto;align-items:center;gap:14px;margin:0;padding:12px 16px;background:rgba(0,0,0,.28);border-top:1px dashed var(--border);text-decoration:none;color:var(--text);transition:background .2s}
+.mini3:hover{background:rgba(255,255,255,.05)}
+.mini3-shot{display:block;width:80px;aspect-ratio:16/9;border-radius:6px;overflow:hidden;border:1px solid var(--border)}
+.mini3-shot img{width:100%;height:100%;object-fit:cover;display:block}
+.mini3-txt{display:flex;flex-direction:column;line-height:1.3;min-width:0}
+.mini3-txt small{font:700 11px/1 var(--disp);letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:4px}
+.mini3-txt b{font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mini3-txt span{font-size:13px;color:var(--muted)}
+.mini3-go{font:700 12px/1 var(--disp);letter-spacing:1px;text-transform:uppercase;white-space:nowrap;padding:7px 10px;border:1px solid var(--border);border-radius:8px}
+.era3.terra .mini3-go{color:var(--accent2)}
+.era3.rome .mini3-go{color:var(--rome)}
+.era3.iron .mini3-go{color:#d8c96a}
+/* hero era picker */
 .pick3{display:inline-flex;align-items:stretch;background:rgba(7,11,18,.66);backdrop-filter:blur(6px);border:1px solid rgba(255,255,255,.14);border-radius:14px;overflow:hidden}
 .pick3-l{display:flex;align-items:center;padding:0 18px;font:800 12px/1 var(--disp);letter-spacing:2px;text-transform:uppercase;color:var(--muted);border-right:1px solid rgba(255,255,255,.1)}
 .pick3-a{display:flex;align-items:center;gap:12px;padding:12px 20px 12px 14px;text-decoration:none;color:var(--text);border-left:1px solid rgba(255,255,255,.1);transition:background .2s}
@@ -274,4 +272,4 @@ a:focus-visible,button:focus-visible,.endturn:focus-visible{outline:2px solid #4
 .pick3-a.rome:hover b,.pick3-a.rome i{color:var(--rome)}
 .pick3-a.iron:hover b,.pick3-a.iron i{color:#d8c96a}
 @media (max-width:640px){.pick3{display:flex;flex-direction:column}.pick3-l{padding:12px 16px 4px;border-right:0}.pick3-a{border-left:0;border-top:1px solid rgba(255,255,255,.1)}.pick3-l+.pick3-a{border-top:0}.pick3-a i{margin-left:auto}}
-@media (max-width:640px){.cmp3{grid-template-columns:1fr}.tac3 .endturn{width:100%;text-align:center}}
+@media (max-width:640px){.mini3{grid-template-columns:72px 1fr auto;gap:10px;padding:10px 14px}.mini3-shot{width:72px}}
