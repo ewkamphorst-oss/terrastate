@@ -1,0 +1,8 @@
+Music in the tactics games of playterrastate.nl. All tracks are CC0 (public domain) from opengameart.org.
+romaterra.mp3: "War Theme" by Spring Spring, https://opengameart.org/content/war-theme
+ironfront.mp3: "Some Militaristic Tune" by Spring Spring, https://opengameart.org/content/some-militaristic-tune
+terrastate.mp3: "Claimed by the Void" by vitalezzz, https://opengameart.org/content/claimed-by-the-void
+Re-encoded to 80 kbit/s mp3 with even loudness.
+
+Extra sound effects (point, flee, not allowed, and the Terrastate line-break sound) come from the Kenney.nl packs
+Interface Sounds, RPG Audio, Sci-fi Sounds and Impact Sounds, all CC0, https://kenney.nl
