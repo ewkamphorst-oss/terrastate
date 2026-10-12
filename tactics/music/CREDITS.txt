@@ -6,3 +6,16 @@ Re-encoded to 80 kbit/s mp3 with even loudness.
 
 Extra sound effects (point, flee, not allowed, and the Terrastate line-break sound) come from the Kenney.nl packs
 Interface Sounds, RPG Audio, Sci-fi Sounds and Impact Sounds, all CC0, https://kenney.nl
+
+Sound effects (update 8.0, playterrastate.nl update 8.0 credits)
+Kenney.nl (CC0, https://kenney.nl), packs Interface Sounds, RPG Audio, Impact Sounds and Sci-fi Sounds, mixed and
+re-encoded to 44.1 kHz mono, 96 kbit/s mp3 with even loudness:
+  Romaterra: klik (click), mars (footsteps), gevecht (blade and metal impacts), inslag (wood and soft impacts)
+  Ironfront: klik (metal click, RPG Audio), mars (footsteps on grass), inslag (low explosion)
+  Terrastate: klik (select), mars (heavy plate impacts), schot (small laser), inslag (explosion crunch), gevecht (large laser and explosion)
+  All three: punt, gevlucht, fout, and in Terrastate breuk (since 7.4)
+Pixabay (Pixabay Content License, https://pixabay.com), the effects that are still the original recordings:
+  Romaterra: schot "arrow-swish-03", breuk "war-horn-sfx", winst "success-fanfare-trumpets", verlies "failure-1" (freesound_community)
+  Ironfront: schot "shot-rifle-39-mm" (freesound_community), gevecht "machine-gun-burst" (freesound_community),
+             breuk "short-whistle" (freesound_community), winst "victory-fanfare", verlies "game-over-orchestral-stinger"
+  Terrastate: winst "digital-success-chime", verlies "power-down"
