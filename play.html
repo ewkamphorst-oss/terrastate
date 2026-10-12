@@ -16,7 +16,7 @@
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="https://playterrastate.nl/img/v4/terrastate-share.jpg">
 <meta name="author" content="Wim Kamphorst">
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"VideoGame","@id":"https://playterrastate.nl/play.html#game","name":"Terrastate","url":"https://playterrastate.nl/play.html","description":"Free Planetarion-style grand strategy in your browser. Lead one nation against 300 AI nations on a world map, form alliances and fight for the Nexus. No account, no download, no pay-to-win.","image":"https://playterrastate.nl/img/v4/terrastate-share.jpg","genre":["Strategy","Grand strategy","Turn-based strategy","4X","Browser game"],"gamePlatform":["Web browser","Windows","macOS","Linux","Android","iOS"],"applicationCategory":"Game","operatingSystem":"Any (web browser)","playMode":"SinglePlayer","inLanguage":"en","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"EUR","availability":"https://schema.org/InStock"},"author":{"@type":"Person","@id":"https://playterrastate.nl/#wim","name":"Wim Kamphorst","url":"https://wimkamphorst.nl"},"publisher":{"@type":"Person","@id":"https://playterrastate.nl/#wim","name":"Wim Kamphorst","url":"https://wimkamphorst.nl"},"softwareVersion":"7.4","sameAs":["https://wimkamphorstcoaching.itch.io/terrastate"]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"VideoGame","@id":"https://playterrastate.nl/play.html#game","name":"Terrastate","url":"https://playterrastate.nl/play.html","description":"Free Planetarion-style grand strategy in your browser. Lead one nation against 300 AI nations on a world map, form alliances and fight for the Nexus. No account, no download, no pay-to-win.","image":"https://playterrastate.nl/img/v4/terrastate-share.jpg","genre":["Strategy","Grand strategy","Turn-based strategy","4X","Browser game"],"gamePlatform":["Web browser","Windows","macOS","Linux","Android","iOS"],"applicationCategory":"Game","operatingSystem":"Any (web browser)","playMode":"SinglePlayer","inLanguage":"en","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"EUR","availability":"https://schema.org/InStock"},"author":{"@type":"Person","@id":"https://playterrastate.nl/#wim","name":"Wim Kamphorst","url":"https://wimkamphorst.nl"},"publisher":{"@type":"Person","@id":"https://playterrastate.nl/#wim","name":"Wim Kamphorst","url":"https://wimkamphorst.nl"},"softwareVersion":"8.0","sameAs":["https://wimkamphorstcoaching.itch.io/terrastate"]}</script>
 <link rel="manifest" href="terrastate.webmanifest"><meta name="theme-color" content="#0d1420"><link rel="icon" href="icons/terrastate-64.png"><link rel="apple-touch-icon" href="icons/terrastate-180.png">
 <script>window.__MP_URL__=''; /* '' = live multiplayer not open yet */ if('serviceWorker' in navigator)addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));</script>
 <script data-goatcounter="https://playterrastate.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
@@ -2119,9 +2119,9 @@ function nexusLine(compact){try{
     return '<div class="small" style="display:block;margin:2px 0 6px;padding:5px 10px;border:1px solid var(--gold);border-radius:8px;background:var(--bg2)"><b>🎯 SCENARIO</b> · '+esc(sc.ic+' '+sc.n)+' — '+esc(sc.goal)+' <span class="muted">· '+esc(pr)+'</span></div>';
   }
   const nx=nexus();if(!nx)return '';const o=nx.owner!=null?G.countries[nx.owner]:null;const me=G.you!=null&&nx.owner===G.you;const coord=nx.cluster+':'+nx.sector+':'+nx.slot;const left=_ticksLeft();
-  if(compact)return `<span class="small muted" style="white-space:nowrap" title="Season goal: capture the Nexus, build the Earth Command Center and hold it ${NEXUS_HOLD} ticks, otherwise whoever holds it the most ticks in the Last Battle (the final ${FINALE_WINDOW} ticks)">🏛 Nexus ${coordChip(coord)} · ${o?(me?'<b style="color:var(--gold)">yours</b>':esc(o.tag||o.name)):'unclaimed'} · ${left}t left</span>`;
+  if(compact)return `<span class="small muted" style="white-space:nowrap" title="Season goal: capture the Nexus, build the Earth Command Center and hold it ${NEXUS_HOLD} ticks, otherwise whoever has the most hold points (a point for every turn holding it once it awakens, two in the final ${FINALE_WINDOW} ticks)">🏛 Nexus ${coordChip(coord)} · ${o?(me?'<b style="color:var(--gold)">yours</b>':esc(o.tag||o.name)):'unclaimed'} · ${left}t left</span>`;
   const st=nx.ccBuild?('Command Center under construction, ready in '+(nx.ccBuild.done-G.tick)+' tick'+(nx.ccBuild.done-G.tick===1?'':'s')):!nx.commandCenter?(G.tick<ccUnlockTick()?'Command Center unlocks at tick #'+ccUnlockTick():'Earth Command Center not built'):(nx.ccHolder===nx.owner?('held '+(nx.ccHeld||0)+'/'+NEXUS_HOLD+' ticks'):'Command Center contested');
-  return `<div class="small" style="display:block;margin:2px 0 6px;padding:5px 10px;border:1px solid ${me?'var(--gold)':'var(--border2)'};border-radius:8px;background:var(--bg2)"><b>🏛 SEASON GOAL</b> · Nexus ${coordChip(coord)} <b>${esc(nx.name)}</b> · held by ${o?(me?'<b style="color:var(--gold)">YOU</b>':esc(o.name)+(o.tag?' ['+esc(o.tag)+']':'')):'nobody'} · ${st} · <span class="muted">${left} ticks left on the season clock, then the Last Battle decides</span></div>`;}catch(e){return '';}}
+  return `<div class="small" style="display:block;margin:2px 0 6px;padding:5px 10px;border:1px solid ${me?'var(--gold)':'var(--border2)'};border-radius:8px;background:var(--bg2)"><b>🏛 SEASON GOAL</b> · Nexus ${coordChip(coord)} <b>${esc(nx.name)}</b> · held by ${o?(me?'<b style="color:var(--gold)">YOU</b>':esc(o.name)+(o.tag?' ['+esc(o.tag)+']':'')):'nobody'} · ${st} · <span class="muted">${left} ticks left on the season clock, the most hold points wins</span></div>`;}catch(e){return '';}}
 function _ticksLeft(){return Math.max(0,SEASON_TICKS-(G.tick-((G.season&&G.season.startTick)||0)));}
 function _nexusChat(){const nx=nexus();if(!nx)return null;const o=nx.owner!=null?G.countries[nx.owner]:null;
   if(nx.commandCenter&&o){const left=Math.max(0,NEXUS_HOLD-(nx.ccHeld||0));return left<=4?('⚠ '+leaderName(o)+' is '+left+' ticks from winning at the Nexus ('+nx.coord+'), everyone on the CC NOW.'):('Command Center is up at '+nx.coord+', '+leaderName(o)+' holding. We break it or the season\'s theirs.');}
@@ -5423,7 +5423,7 @@ function foldHowto(){try{const v=document.getElementById('view');if(!v||view==='
   const keep=HOWTO_SEL.flatMap(s=>[...v.querySelectorAll(s)]).filter(e=>e.isConnected&&!e.closest('.howfold'));if(!keep.length)return;
   let f=v.querySelector('.howfold');if(!f){f=h('<details class="card mb howfold"><summary>ℹ How does this screen work?</summary><div class="howbody mt"></div></details>');v.appendChild(f);}
   const body=f.querySelector('.howbody');keep.forEach(e=>{e.classList.remove('mb');body.appendChild(e);});if(f!==v.lastElementChild)v.appendChild(f);}catch(e){}}
-function phase2After(){trainRender();foldHowto();try{phase3Home();}catch(e){}try{phase5Home();}catch(e){}try{p5MinText();}catch(e){}try{p7After();}catch(e){}try{p8After();}catch(e){}try{p9After();}catch(e){}try{p10After();}catch(e){}try{p11After();}catch(e){}try{p12After();}catch(e){}try{p13After();}catch(e){}try{p14After();}catch(e){}try{p15After();}catch(e){}try{p16After();}catch(e){}}
+function phase2After(){trainRender();foldHowto();try{phase3Home();}catch(e){}try{phase5Home();}catch(e){}try{p5MinText();}catch(e){}try{p7After();}catch(e){}try{p8After();}catch(e){}try{p9After();}catch(e){}try{p10After();}catch(e){}try{p11After();}catch(e){}try{p12After();}catch(e){}try{p13After();}catch(e){}try{p14After();}catch(e){}try{p15After();}catch(e){}try{p16After();}catch(e){}try{p19After();}catch(e){}try{p18After();}catch(e){}try{p17After();}catch(e){}}
 if(typeof window!=='undefined'&&!(typeof process!=='undefined'&&process.versions&&process.versions.node)&&!window.__MP__&&typeof go==='function'&&!window.__p2go){window.__p2go=1;const _g=window.go||go;
   const wrapped=function(){const r=_g.apply(this,arguments);try{phase2After();setTimeout(phase2After,0);setTimeout(phase2After,120);setTimeout(foldHowto,450);setTimeout(foldHowto,1000);}catch(e){}return r;};
   try{window.go=wrapped;}catch(e){}try{go=wrapped;}catch(e){}
@@ -6959,6 +6959,620 @@ function p16Tidy(){const v=document.getElementById('view');if(!v)return;try{if(P
   try{if(view==='dashboard')p16Home(v);if(view==='clans')p16Clan(v);if(view==='research')p16Research(v);if(view==='rankings')p16Tables(v);if(view==='map')p16Map(v);if(view==='around'||view==='fleets')p16Near(v);if(view==='military')p16Locked(v);}catch(e){}}
 function p16After(){if(localStorage.getItem('p16off')==='1')return;const _t=()=>{try{p16Tidy();}catch(e){}};_t();setTimeout(_t,0);setTimeout(_t,220);}
 
+// ================= Update 8.0 "Solid Ground", package B: a living mid-game and a fair finale =================
+// Shared by Terrastate, Romaterra and Ironfront (theme words from GAME_CFG). Single-player only: p18On() is false on the
+// headless multiplayer server (Node) and in the multiplayer client (window.__MP__), so the live world keeps its rules.
+// The code sits in the main script, before the BOOT marker, so build-engine.js carries it into engine.js unchanged.
+//  1 land rush      a weakened mid-table nation collapses into 3-6 weak regions with a 10-turn timer
+//  2 neutral ground garrisons of unclaimed regions thin out after turn 60 (never below 60%)
+//  3 hold race      a hold point for every turn a prize is held once it awakens (2 in the Last Battle); holders dig in;
+//                   at most 3 armies fight at a prize at once; strong AI holders really build the win building, and a
+//                   win building that changes hands is wrecked (no more hot potato that a random nation wins outright)
+//  4 coalition      #1 for 20 turns draws a coalition of 2-3 nations with announced waves
+//  5 raids          Veteran and Warlord: tribute demands and raids on rich, weakly held humans
+//  6 auto shield    the Rules of Engagement shield lowers itself after quiet turns and rests
+//  7 growth helper  no new region for 15 turns: the weakest target, what is missing, a build-up in one tap
+//  8 spending       sell what is full, auto-buy what runs out, one prestige option per game
+const P18={WALL_PER:0.025,WALL_CAP:0.4,CONTEND:0.15,PRIZE_FIGHTS:3,RUSH_FIRST:40,RUSH_EVERY:40,RUSH_TIMER:10,RUSH_GAR:0.3,NEU_FROM:60,NEU_RATE:0.004,NEU_MIN:0.6,
+  LEAD_TURNS:20,COAL_CD:30,STUCK:15,SHIELD_QUIET:6,SHIELD_MAX:15,SHIELD_CD:30,PRESTIGE_MAX:5,PRESTIGE_CD:10,PRESTIGE_PTS:2};
+let _p18f=null; // fast switch for hot paths, refreshed every tick and on first use
+function p18F(){if(_p18f===null)_p18f=p18On();return _p18f;}
+function p18On(){try{if(typeof window!=='undefined'&&window.__MP__)return false;if(typeof P18_FORCE!=='undefined'&&P18_FORCE)return true;return typeof isSoloGame==='function'&&isSoloGame();}catch(e){return false;}}
+function p18S(){const key=((G.season&&G.season.num)||0)+':'+((G.season&&G.season.startTick)||0);if(!G._p18||G._p18.sk!==key)G._p18={sk:key};const s=G._p18;s.rushLog=s.rushLog||[];s.coalLog=s.coalLog||[];s.raidLog=s.raidLog||[];s.ccLog=s.ccLog||[];return s;}
+function p18Diff(){try{return (G.solo&&G.solo.diff)||'veteran';}catch(e){return 'veteran';}}
+function p18El(){return G.tick-((G.season&&G.season.startTick)||0);}
+function p18Len(){return typeof SEASON_TICKS==='number'?SEASON_TICKS:840;}
+function p18W(){const g=(typeof GAME_CFG!=='undefined'&&GAME_CFG&&GAME_CFG.track)||'terrastate';
+  if(g==='romaterra')return {g,prize:'Roma',prizeA:'Roma',cc:'Imperial Palace',anarchy:'rebel provinces',coal:'league',army:'legions',pre:'Triumph',preIc:'🏛',preD:'a triumph through Roma',preX:'+1,500 influence'};
+  if(g==='ironfront')return {g,prize:'the Capital Sectors',prizeA:'a Capital Sector',cc:'GHQ Bunker',anarchy:"no man's land",coal:'coalition',army:'divisions',pre:'War Bonds',preIc:'🎗',preD:'a war bond drive',preX:'fresh troops worth 40% of the cost'};
+  return {g,prize:'the Nexus',prizeA:'the Nexus',cc:'Earth Command Center',anarchy:'anarchy zones',coal:'coalition',army:'forces',pre:'Festival of Unity',preIc:'🎆',preD:'a festival of unity',preX:'+1,500 influence'};}
+function p18Prizes(){try{const t=(typeof nexuses==='function'?nexuses():[nexus()]).filter(Boolean);return t.length?t:[nexus()].filter(Boolean);}catch(e){return [];}}
+function p18PrizeName(r){const w=p18W();return w.g==='ironfront'?(r&&r.name?r.name:'a Capital Sector'):w.prizeA;}
+function p18Slice(u,f){const o={};for(const k in (u||{})){const n=Math.floor((u[k]||0)*f);if(n>0)o[k]=n;}return o;}
+function p18Dist(a,b){return Math.hypot((a.x||0)-(b.x||0),(a.y||0)-(b.y||0));}
+function p18Near(list,to){let best=null,bd=1e18;(list||[]).forEach(r=>{(to||[]).forEach(t=>{const d=p18Dist(r,t);if(d<bd){bd=d;best=r;}});});return {r:best,d:bd};}
+function p18Sit(c,cls,txt,o){try{sitrep(c,cls,txt,o||{});}catch(e){}}
+function p18Toast(t,k){try{if(typeof window!=='undefined'&&typeof toast==='function'&&typeof document!=='undefined'&&document.getElementById&&document.getElementById('toasts'))toast(t,k);}catch(e){}}
+
+// ---------- 2 + 1: unclaimed ground thins out after turn 60; land-rush regions are weak while their timer runs ----------
+function p18NeuMult(r){if(!r||r.owner!=null||!p18F())return 1;let m=1;const el=p18El();if(el>P18.NEU_FROM)m=Math.max(P18.NEU_MIN,1-(el-P18.NEU_FROM)*P18.NEU_RATE);
+  if(r._p18rush&&G.tick<r._p18rush)m=Math.min(m,P18.RUSH_GAR);return m;}
+// ---------- 3: a prize holder digs in, +3% defence for every turn held without a break (max +60%) ----------
+function p18HeldTurns(r){if(!r||r.owner==null||r._p18o!==r.owner||r._p18since==null)return 0;return Math.max(0,G.tick-r._p18since);}
+function p18Wall(r){if(!r||!r.nexus||r.owner==null||r.commandCenter||!p18F())return 1; // a standing win building has its own, stronger momentum
+return 1+Math.min(P18.WALL_CAP,p18HeldTurns(r)*P18.WALL_PER);}
+{const _o=_regionDef;_regionDef=function(r){let d=_o(r);if(r&&(r.owner==null||r.nexus)&&p18F()){try{if(r.owner==null)d*=p18NeuMult(r);else d*=p18Wall(r);}catch(e){}}return d;};}
+{const _o=garrisonUnits;garrisonUnits=function(r){const g=_o(r);try{if(r&&r.owner==null&&p18F()){const m=p18NeuMult(r);if(m<1)for(const k in g)g[k]=Math.max(0,Math.round(g[k]*m));}}catch(e){}return g;};}
+{const _o=resolveBattle;resolveBattle=function(atkC,atkU0,r,defC,coord,defOverride){let w=1;try{if(r&&r.nexus&&defC&&r.owner===defC.id)w=p18Wall(r);}catch(e){}
+  if(w<=1)return _o.apply(this,arguments);const c0=coord||1;const R=_o.call(this,atkC,atkU0,r,defC,c0/w,defOverride);
+  try{R.phases=(R.phases||[]).filter(p=>p.p!=='Coordination');if(c0!==1)R.phases.unshift({p:'Coordination',t:c0>=1?'Joint assault, allied fleets combined, +'+Math.round((c0-1)*100)+'% force':'Bureaucratic drag on coordination '+Math.round((c0-1)*100)+'%',win:c0>=1});
+    R.phases.unshift({p:'Walls',t:'The holder dug in for '+p18HeldTurns(r)+' turns: +'+Math.round((w-1)*100)+'% defence',win:false});if(R.detail)R.detail.p18wall=+w.toFixed(2);}catch(e){}return R;};}
+// only real contenders (top 15% by score) march on a prize, unless its holder clearly leads the hold race (then everyone may);
+// once its win building is raised, the whole world may hunt the holder
+let _p18rk=null,_p18rl=null;
+// the clear leader of the hold race (1.3x the points of #2, at least 10) is hunted by every nation that wants the prize
+function p18RaceLead(){if(_p18rl&&_p18rl.t===G.tick&&_p18rl.g===G.regions)return _p18rl.v;let v=null;try{const T=p18Table();if(T[0]&&T[0].t>=10&&(!T[1]||T[0].t>=T[1].t*1.3))v=T[0];}catch(e){}_p18rl={t:G.tick,g:G.regions,v};return v;}
+function p18Contender(c){if(!c)return false;if(_p18rk&&_p18rk.t===G.tick&&_p18rk.g===G.regions)return _p18rk.s.has(c.id);const rk=activeRanked();const n=Math.max(3,Math.ceil(rk.length*P18.CONTEND));_p18rk={t:G.tick,g:G.regions,s:new Set(rk.slice(0,n).map(x=>x.id))};return _p18rk.s.has(c.id);}
+{const _o=worldBias;worldBias=function(c,r){let b=_o.apply(this,arguments);if(!r||!(r.nexus||r._p18rush)||!p18F())return b;try{if(r._p18rush&&c.isAI&&G.tick<r._p18rush-P18.RUSH_TIMER+3)b-=200;if(r.nexus&&r.owner!==c.id&&c.isAI&&!r.commandCenter&&!r.ccBuild){const lead=p18RaceLead();const hunted=lead&&r.owner===lead.id&&(c.clan==null||(G.countries[lead.id]||{}).clan!==c.clan);if(hunted)b+=p18Contender(c)?80:0;else if(!p18Contender(c))b-=160;}}catch(e){}return b;};}
+// at most three armies fight for one prize at the same time; the next ones wait a turn outside
+{const _o=startBattle;startBattle=function(c,f,r,prevOwner,defC){try{if(r&&r.nexus&&p18On()&&f&&f.intent!=='garrison'&&f.intent!=='reinforce'){let n=0;G.countries.forEach(o=>{(o&&o.fleets||[]).forEach(x=>{if(x!==f&&x.status==='battle'&&x.target===r.id)n++;});});
+    if(n>=P18.PRIZE_FIGHTS){f.status='outbound';f.eta=G.tick+1;f._p18wait=(f._p18wait||0)+1;if(f._p18wait===1&&c.isAI===false)p18Sit(c,'battle','⏳ Your army waits outside '+r.name+': '+n+' armies are already fighting there. It goes in as soon as a place is free.',{coord:r.coord,sev:1,go:'fleets'});if(f._p18wait<=6)return;}}}catch(e){}
+  return _o.apply(this,arguments);};}
+
+// ---------- 3: the hold race runs all season ----------
+function p18Hold(){const F=G._finale=G._finale||{ticks:[],start:null,news:{}};F.hold=F.hold||{};return F;}
+function p18HoldTick(S){if(G._winner!=null||G._seasonEnd)return;const T=p18Prizes();if(!T.length)return;
+  T.forEach(r=>{if(r._p18o!==r.owner){r._p18o=r.owner;r._p18since=G.tick;}});
+  const F=p18Hold();if(F.done)return;const left=typeof endgameLeft==='function'?endgameLeft():999;const inLB=!!G._overtime||left<=FINALE_WINDOW;
+  const awake=typeof ccUnlockTick!=='function'||G.tick>=ccUnlockTick();
+  if(!inLB){if(!awake)return;if(F.holdTick!==G.tick){F.holdTick=G.tick;T.forEach(r=>{if(r.owner!=null)F.hold[r.owner]=(F.hold[r.owner]||0)+1;});}}
+  else{if(F.start==null)F.start=G.tick;if(F._p18x!==G.tick){F._p18x=G.tick;T.forEach(r=>{if(r.owner!=null)F.hold[r.owner]=(F.hold[r.owner]||0)+1;});if(F.holdTick!==G.tick){F.holdTick=G.tick;T.forEach(r=>{if(r.owner!=null)F.hold[r.owner]=(F.hold[r.owner]||0)+1;});}}}}
+// a nation that no longer holds any ground drops out of the hold race and cannot win it
+{const _o=finaleHoldTable;finaleHoldTable=function(){const T=_o.apply(this,arguments);try{if(p18On())return T.filter(x=>{const o=G.countries[x.id];return o&&!o.retired&&regionsOf(o).length>0;});}catch(e){}return T;};}
+function p18Table(){try{return typeof finaleHoldTable==='function'?finaleHoldTable():[];}catch(e){return [];}}
+function p18Pts(id){const F=G._finale;return (F&&F.hold&&F.hold[id])||0;}
+// turns of holding that you still need to pass the leader, if they stopped gaining now (null: not possible any more)
+function p18TurnsToPass(myPts,lead){const endT=typeof finaleEndTick==='function'?finaleEndTick():G.tick+999;const lbFrom=endT-FINALE_WINDOW;let need=lead-myPts+1;if(need<=0)return 0;let t=0,T=G.tick;
+  while(need>0&&T<endT+(G._overtime?0:0)){T++;t++;need-=(T>lbFrom?2:1);}return need>0?null:t;}
+
+// ---------- 3: a win building that changes hands is wrecked: the new holder has to raise it again ----------
+// (in 7.4 a standing building passed from hand to hand, and whoever held it last won outright, often a nation nobody had heard of)
+function p18WreckTick(){const w=p18W();p18Prizes().forEach(r=>{if(!r.commandCenter){r._p18ccO=null;return;}if(r._p18ccO==null){r._p18ccO=r.ccHolder!=null?r.ccHolder:r.owner;return;}
+  if(r.owner!==r._p18ccO){const o=r.owner!=null?G.countries[r.owner]:null;r.commandCenter=false;r.ccHeld=0;r.ccHolder=null;r._p18ccO=null;
+    news('territory','💥 The '+w.cc+' at '+r.name+' was wrecked in the fighting. '+(o?o.name+' holds the ground, but has to raise it again.':'The ground is open.'));
+    const me=you();if(me&&me.isAI===false)p18Sit(me,'event','💥 The '+w.cc+' at '+r.name+' was wrecked when it changed hands. Whoever holds it now has to build it again.',{coord:r.coord,sev:2,go:'dashboard'});}});}
+{const _o=checkWin;checkWin=function(c){try{if(p18On())p18Prizes().forEach(r=>{if(r.commandCenter&&r._p18ccO==null)r._p18ccO=r.ccHolder!=null?r.ccHolder:r.owner;});if(p18On())p18WreckTick();}catch(e){}return _o.apply(this,arguments);};}
+// ---------- 3: an AI that holds a prize really builds the win building, sometimes ----------
+function p18CCTick(S){if(typeof ccUnlockTick!=='function'||G.tick<ccUnlockTick()||G._winner!=null)return;
+  // 8.0 integration: AI nations only raise the win building in the second half (60%+) of the season, so a season never ends before the player has had a real run at it
+  {const st=(G.season&&G.season.startTick)||0;if(typeof SEASON_TICKS!=='undefined'&&G.tick<st+Math.round(SEASON_TICKS*0.6))return;}const d=p18Diff();const pr=d==='warlord'?0.35:d==='recruit'?0.12:0.22;const cost=typeof CC_COST!=='undefined'?CC_COST:null;if(!cost)return;
+  p18Prizes().forEach(r=>{if(r.owner==null||r.commandCenter||r.ccBuild)return;const o=G.countries[r.owner];if(!o||!o.isAI||o.retired||!p18Contender(o))return;if(p18HeldTurns(r)<4||Math.random()>pr)return;
+    if(G._finale&&G._finale.done)return;for(const k in cost){if((o.res[k]||0)<cost[k])o.res[k]=cost[k];}o.cp=Math.max(o.cp||0,2);let res=null;try{res=cmdBuildCC(o,r.id);}catch(e){}
+    if(res&&res.ok){S.ccLog.push({t:G.tick,id:o.id,r:r.id});}});}
+
+// ---------- 1: land rush ----------
+function p18RushTick(S){const el=p18El(),L=p18Len();
+  if(S.rush&&G.tick>=S.rush.until){const R=S.rush;const left=R.rids.map(id=>_rgId(id)).filter(r=>r&&r.owner==null).length;news('territory','🏴 The land rush in the old lands of '+R.name+' is over'+(left?', '+left+' region'+(left===1?' is':'s are')+' still unclaimed.':', every region found a new owner.'));S.rush=null;}
+  if(S.nextRush==null)S.nextRush=P18.RUSH_FIRST+Math.floor(Math.random()*6);
+  if(!S.rush&&el>=S.nextRush&&el<=L-20){p18Collapse(S);S.nextRush=el+P18.RUSH_EVERY-2+Math.floor(Math.random()*5);}}
+function p18Collapse(S){const me=you();const ranked=activeRanked();const N=ranked.length||1;const pos={};ranked.forEach((x,i)=>pos[x.id]=i/N);
+  const myR=me&&!me.retired?regionsOf(me):[];const myClan=me?me.clan:null;
+  const pool=n=>G.countries.filter(c=>c&&c.isAI&&!c.retired&&c.id!==G.you&&(myClan==null||c.clan!==myClan)&&pos[c.id]!=null&&pos[c.id]>=0.12&&pos[c.id]<=0.88).map(c=>({c,rg:regionsOf(c).filter(r=>!r.nexus)})).filter(x=>x.rg.length>=n&&!regionsOf(x.c).some(r=>r.nexus));
+  let cand=pool(3);if(!cand.length)cand=pool(2);if(!cand.length)return false;
+  cand.forEach(x=>{const nr=myR.length?p18Near(x.rg,myR).d:0;const weak=(100-(x.c.stab||50))/100+(x.c._p18lost||0)*0.1;x.k=nr/100-weak*2-Math.min(6,x.rg.length)*0.2+Math.random()*0.8;});
+  cand.sort((a,b)=>a.k-b.k);const x=cand[0];const c=x.c;
+  const take=x.rg.slice().sort((a,b)=>(myR.length?p18Near([a],myR).d-p18Near([b],myR).d:0)).slice(0,6);const ids=new Set(take.map(r=>r.id));
+  take.forEach(r=>{r.owner=null;r.unrest=0;r._anarchy=G.tick;r._p18rush=G.tick+P18.RUSH_TIMER;});
+  c.buildings=(c.buildings||[]).filter(b=>!ids.has(b.rid));c.queue=(c.queue||[]).filter(q=>!ids.has(q.rid));
+  if(!regionsOf(c).length){c.units={};c.fleets=[];c.mq=[];c.queue=[];}else{for(const k in (c.units||{}))c.units[k]=Math.floor((c.units[k]||0)*0.5);}
+  try{homeClusterInvalidate();}catch(e){}
+  const w=p18W();S.rush={id:c.id,name:c.name,tag:c.tag,rids:take.map(r=>r.id),start:G.tick,until:G.tick+P18.RUSH_TIMER,near:myR.length?Math.round(p18Near(take,myR).d):null};S.rushLog.push({t:G.tick,id:c.id,n:take.length,whole:!regionsOf(c).length});
+  news('territory','🏴 '+c.name+' ['+c.tag+'] '+(regionsOf(c).length?'is breaking apart':'has collapsed')+'. '+take.length+' regions fell into '+w.anarchy+' with weak garrisons for '+P18.RUSH_TIMER+' turns. A land rush is on.');
+  if(me&&me.isAI===false){p18Sit(me,'alert','🏴 Land rush: '+c.name+' '+(regionsOf(c).length?'is breaking apart':'collapsed')+'. '+take.length+' regions have weak garrisons for '+P18.RUSH_TIMER+' turns. See Home.',{coord:take[0].coord,sev:2,go:'dashboard'});p18Toast('🏴 Land rush: '+take.length+' weak regions are up for grabs for '+P18.RUSH_TIMER+' turns.','warn');}
+  return true;}
+function p18RushTargets(c){const S=p18S();if(!S.rush)return [];const home=c?regionsOf(c):[];return S.rush.rids.map(id=>_rgId(id)).filter(r=>r&&r.owner==null).map(r=>({r,d:home.length?p18Near(home,[r]).d:0})).sort((a,b)=>a.d-b.d);}
+
+// ---------- 4: coalition against the nation that leads for too long ----------
+function p18CoalCfg(){const d=p18Diff();return d==='recruit'?{n:2,waves:2,f:0.25,gap:6,lead:1.8}:d==='warlord'?{n:3,waves:3,f:0.45,gap:5,lead:1.25}:{n:3,waves:2,f:0.35,gap:5,lead:1.5};}
+function p18CoalTick(S){const el=p18El(),L=p18Len();const rk=activeRanked();const top=rk[0];if(!top)return;const cfg0=p18CoalCfg();
+  // only a runaway leader counts: #1 by a clear margin over #2 (Recruit 1.8x, Veteran 1.5x, Warlord 1.25x)
+  const runaway=!rk[1]||(top.s||0)>=(rk[1].s||0)*cfg0.lead;
+  if(!S.lead||S.lead.id!==top.id||!runaway)S.lead={id:top.id,since:G.tick};
+  const K=S.coal;
+  if(K){const T=G.countries[K.target];if(!T||T.retired||!regionsOf(T).length){S.coal=null;S.coalCd=G.tick+P18.COAL_CD;return;}
+    const nx=K.waves.findIndex(w=>!w.done);if(nx<0){if(G.tick>=K.end){S.coal=null;S.coalCd=G.tick+P18.COAL_CD;S.lead={id:top.id,since:G.tick};news('war','⚔ The '+p18W().coal+' against '+K.name+' disbands after '+K.waves.length+' waves.');}return;}
+    const wv=K.waves[nx];if(G.tick>=wv.at){wv.done=true;wv.sent=p18CoalWave(K,nx);K.end=G.tick+8;
+      if(T.isAI===false&&wv.sent)p18Sit(T,'alert','⚔ Coalition wave '+(nx+1)+' of '+K.waves.length+' is on its way: '+wv.sent+' armies from '+K.tags.join(', ')+'. Defend the regions they target.',{sev:3,go:'self'});}
+    return;}
+  if(G.tick<(S.coalCd||0)||el<60||el>L-15||G.tick-S.lead.since<P18.LEAD_TURNS)return;
+  const T=G.countries[top.id];if(!T||T.retired||regionsOf(T).length<2)return;const cfg=p18CoalCfg();const tr=regionsOf(T);
+  const mem=G.countries.filter(m=>m&&m.isAI&&!m.retired&&m.id!==T.id&&(T.clan==null||m.clan!==T.clan)&&regionsOf(m).length&&fleetSize(m.units||{})>=40).map(m=>({m,d:p18Near(regionsOf(m),tr).d,p:power(m,'atk')})).filter(x=>x.d<900&&!(T.isAI===false&&typeof bullyBlocked==='function'&&bullyBlocked(x.m,tr[0])))
+    .sort((a,b)=>(a.d/300-a.p/Math.max(1,power(T,'def')))-(b.d/300-b.p/Math.max(1,power(T,'def')))).slice(0,cfg.n).map(x=>x.m);
+  if(mem.length<2)return;
+  const waves=[];for(let i=0;i<cfg.waves;i++)waves.push({at:G.tick+3+i*cfg.gap,done:false});
+  S.coal={target:T.id,name:T.name,tag:T.tag,members:mem.map(m=>m.id),tags:mem.map(m=>m.tag||m.name),waves,start:G.tick,f:cfg.f,end:G.tick+3+cfg.waves*cfg.gap+8};S.coalLog.push({t:G.tick,target:T.id,you:T.id===G.you,n:mem.length});
+  const w=p18W();news('war','⚔ A '+w.coal+' forms against '+T.name+' ['+T.tag+'], #1 for '+(G.tick-S.lead.since)+' turns: '+mem.map(m=>m.name).join(', ')+'. '+cfg.waves+' waves, the first in 3 turns.');
+  if(T.isAI===false){p18Sit(T,'alert','⚔ You led the world for '+(G.tick-S.lead.since)+' turns. A '+w.coal+' of '+mem.map(m=>m.name+' ['+m.tag+']').join(', ')+' is coming: '+cfg.waves+' waves, the first lands in about 3 to 6 turns. See Home.',{sev:3,go:'dashboard'});p18Toast('⚔ A '+w.coal+' forms against you. '+cfg.waves+' waves are coming.','bad');}
+  else{const me=you();if(me&&me.isAI===false)p18Sit(me,'world','⚔ A '+w.coal+' forms against the leader, '+T.name+' ['+T.tag+']. Their ground may open up.',{sev:1,go:'dashboard'});}}
+function p18CoalWave(K,i){const T=G.countries[K.target];if(!T)return 0;const last=i===K.waves.length-1;let sent=0;
+  K.members.forEach(id=>{const m=G.countries[id];if(!m||m.retired||!regionsOf(m).length)return;const tr=regionsOf(T);if(!tr.length)return;
+    let cand=tr.filter(r=>!r.nexus);if(!cand.length)cand=tr;const hs=typeof homeSector==='function'?homeSector(T):null;
+    if(!last){const far=cand.filter(r=>(r.cluster+':'+(r.sector||1))!==hs);if(far.length)cand=far;}
+    const tgt=p18Near(cand,regionsOf(m)).r;if(!tgt)return;const com=p18Slice(m.units,K.f);if(fleetSize(com)<20)return;
+    if(m.shield)m.shield=null;m.cp=Math.max(m.cp||0,2);let r=null;try{r=cmdOp(m,tgt.id,com);}catch(e){}if(r&&r.ok){sent++;const f=(m.fleets||[]).filter(x=>x.target===tgt.id).pop();if(f)f._p18coal=K.target;}});
+  return sent;}
+
+// ---------- 5: tribute demands and raids on rich, weakly held humans (Veteran, Warlord) ----------
+function p18RaidTick(S){const me=you();if(!me||me.isAI!==false||me.retired)return;const d=p18Diff();if(d==='recruit')return;const el=p18El();if(el<60||el>p18Len()-10)return;
+  const every=d==='warlord'?14:24;const T=S.trib;
+  if(T){if(T.paid){S.trib=null;return;}if(G.tick>=T.until||T.refused){S.trib=null;S.nextRaid=G.tick+every;p18Raid(S,T);}return;}
+  if(G.tick<(S.nextRaid||0))return;S.nextRaid=G.tick+3;
+  const mine=regionsOf(me);if(!mine.length)return;const money=me.res.money||0;const ais=G.countries.filter(x=>x&&x.isAI&&!x.retired&&regionsOf(x).length);
+  const med=ais.map(x=>x.res.money||0).sort((a,b)=>a-b)[Math.floor(ais.length/2)]||0;if(money<Math.max(2e7,med*(d==='warlord'?1.2:2)))return;
+  const weakR=mine.filter(r=>!r.nexus).map(r=>({r,def:regionDef(r)})).sort((a,b)=>a.def-b.def)[0];if(!weakR)return;
+  const raider=ais.filter(x=>(me.clan==null||x.clan!==me.clan)&&!(typeof bullyBlocked==='function'&&bullyBlocked(x,weakR.r))&&!(typeof sameTheaterAlly==='function'&&sameTheaterAlly(x,weakR.r))).map(x=>({x,a:power(x,'atk')*(d==='warlord'?0.5:0.4),dd:p18Near(regionsOf(x),[weakR.r]).d}))
+    .filter(o=>o.dd<500&&o.a>=weakR.def*(d==='warlord'?0.8:1.0)).sort((a,b)=>(b.a/Math.max(1,weakR.def)-b.dd/400)-(a.a/Math.max(1,weakR.def)-a.dd/400))[0];
+  if(!raider){S.nextRaid=G.tick+6;return;}
+  const amt=Math.round(money*(d==='warlord'?0.12:0.08));const x=raider.x;
+  S.trib={by:x.id,name:x.name,tag:x.tag,amt,rid:weakR.r.id,until:G.tick+3,at:G.tick};
+  p18Sit(me,'alert','💰 '+x.name+' ['+x.tag+'] demands a tribute of '+fmt(amt,true)+'. Pay within 3 turns, or they raid '+weakR.r.name+' and take part of your stockpile. See Home.',{coord:weakR.r.coord,sev:3,go:'dashboard'});
+  p18Toast('💰 '+x.name+' demands tribute: '+fmt(amt,true)+', or they raid.','bad');}
+function p18Raid(S,T){const me=you();const x=G.countries[T.by];const r=_rgId(T.rid);if(!me||!x||x.retired||!r||r.owner!==me.id)return;const d=p18Diff();
+  const com=p18Slice(x.units,d==='warlord'?0.5:0.4);if(fleetSize(com)<20)return;if(x.shield)x.shield=null;x.cp=Math.max(x.cp||0,2);let res=null;try{res=cmdOp(x,r.id,com);}catch(e){}
+  if(res&&res.ok){const f=(x.fleets||[]).filter(y=>y.target===r.id).pop();if(f)f._p18raid=1;S.raidLog.push({t:G.tick,by:x.id,r:r.id});
+    p18Sit(me,'alert','⚔ '+x.name+' ['+x.tag+'] is raiding '+r.name+': '+full(fleetSize(com))+' troops on the way. If they win, they carry off part of your stockpile.',{coord:r.coord,sev:3,go:'self'});}}
+{const _o=finalizeBattle;finalizeBattle=function(c,f,r,defC,R,retreated){if(f&&f._p18raid&&p18On())f._captor=false; // a raid carries off goods, it does not take the ground
+  const out=_o.apply(this,arguments);
+  try{if(f&&f._p18raid&&!retreated&&R&&R.ratio>=1&&defC&&defC.isAI===false&&p18On()){const got={};['money','food','energy','steel','fuel','electronics'].forEach(k=>{const n=Math.floor((defC.res[k]||0)*0.12);if(n>0){defC.res[k]-=n;c.res[k]=Math.min(capOf(c,k),(c.res[k]||0)+n);got[k]=n;}});
+    f._p18raid=0;try{const L=p18S().raidLog;const e=L[L.length-1];if(e&&e.by===c.id)e.ok=1;}catch(e){}const txt=Object.entries(got).slice(0,4).map(([k,v])=>fmt(v,k==='money')+' '+((RMETA[k]||{}).l||k)).join(', ');
+    p18Sit(defC,'alert','💰 Raid: '+c.name+' ['+c.tag+'] broke through at '+r.name+' and carried off '+txt+'.',{coord:r.coord,sev:3,go:'reports'});news('war','💰 '+c.name+' raided '+defC.name+' at '+r.name+'.');}}catch(e){}
+  return out;};}
+function p18PayTribute(){const S=p18S();const T=S.trib;const me=you();if(!T||!me)return {ok:false,error:'No demand'};if((me.res.money||0)<T.amt)return {ok:false,error:'Not enough money'};
+  const x=G.countries[T.by];me.res.money-=T.amt;if(x)x.res.money=(x.res.money||0)+T.amt;T.paid=true;S.nextRaid=G.tick+(p18Diff()==='warlord'?14:30);p18Sit(me,'world','💰 Tribute paid to '+T.name+'. They leave you alone for now.',{go:'dashboard'});return {ok:true};}
+function p18RefuseTribute(){const S=p18S();if(S.trib){S.trib.refused=true;}return {ok:true};}
+
+// ---------- 6: the automatic shield lowers itself and rests ----------
+{const _o=applyRoE;applyRoE=function(c){if(!p18On()||!c||!c.roe)return _o.apply(this,arguments);const had=!!c.shield;const cd=(c._p18shCd||0)>G.tick;const keep=c.roe.shield;if(cd)c.roe.shield=false;
+  try{return _o.apply(this,arguments);}finally{if(cd)c.roe.shield=keep;if(!had&&c.shield){c.shield._auto=true;c.shield._p18at=G.tick;c._p18q=0;}}};}
+function p18ShieldTick(){G.countries.forEach(c=>{if(!c||c.retired||!c.shield||!c.shield._auto)return;const act=c.shield.status==='active';const thr=incomingTo(c.id).some(x=>(x.threat||0)>=0.25);c._p18q=thr?0:(c._p18q||0)+1;
+  const age=G.tick-(c.shield._p18at||G.tick);if(act&&(c._p18q>=P18.SHIELD_QUIET||age>=P18.SHIELD_MAX)){c.shield=null;c._p18shCd=G.tick+P18.SHIELD_CD;
+    if(c.isAI===false){p18Sit(c,'alert','🛡 Your automatic shield went down: '+(age>=P18.SHIELD_MAX?'it held its maximum of '+P18.SHIELD_MAX+' turns':P18.SHIELD_QUIET+' quiet turns')+'. Production is back to 100%. The automatic shield rests for '+P18.SHIELD_CD+' turns.',{sev:2,go:'dashboard'});if(c.id===G.you)p18Toast('🛡 Automatic shield lowered, production back to 100%.','warn');}}});}
+
+// ---------- 7 + 8: the human's own turn bookkeeping ----------
+function p18HumanTick(S){const c=you();if(!c||c.isAI!==false||c.retired)return;const n=regionsOf(c).length;
+  if(c._p18n==null||n>c._p18n||c._p18gain==null)c._p18gain=G.tick;c._p18n=n;
+  if(c._p18auto){const pj=c._pj||projection(c);['food','energy'].forEach(k=>{const net=(pj.net&&pj.net[k])||0;if(net>=0)return;if((c.res[k]||0)>-net*6)return;const q=Math.floor(Math.min(-net*10,capOf(c,k)-(c.res[k]||0),(c.res.money||0)*0.2/Math.max(1,G.prices[k]||1)));if(q>0){try{const r=cmdMarket(c,k,'buy',q);if(r&&r.ok)c._p18bought=(c._p18bought||0)+1;}catch(e){}}});}}
+function p18Tick(){if(!p18On())return;const S=p18S();
+  try{p18HoldTick(S);}catch(e){}try{p18WreckTick();}catch(e){}try{p18CCTick(S);}catch(e){}try{p18RushTick(S);}catch(e){}try{p18CoalTick(S);}catch(e){}try{p18RaidTick(S);}catch(e){}try{p18ShieldTick(S);}catch(e){}try{p18HumanTick(S);}catch(e){}}
+{const _o=runTick;runTick=function(){_p18f=null;const r=_o.apply(this,arguments);try{p18Tick();}catch(e){}return r;};}
+
+// ---------- 7: why can't I grow? ----------
+function p18Weakest(c){const home=regionsOf(c);if(!home.length)return null;const rush=new Set(p18RushTargets(c).map(x=>x.r.id));
+  const L=G.regions.filter(r=>r.owner!==c.id&&!(typeof sameTheaterAlly==='function'&&sameTheaterAlly(c,r))&&!(typeof sameAllianceMember==='function'&&sameAllianceMember(c,r))&&!(typeof coldPeaceBlocks==='function'&&coldPeaceBlocks(c,r))&&!(r.owner!=null&&G.countries[r.owner]&&typeof newbieProtected==='function'&&newbieProtected(G.countries[r.owner]))&&!(typeof bullyBlocked==='function'&&bullyBlocked(c,r)))
+    .map(r=>{const hm=p18Near(home,[r]);let t=9;try{t=travelFor(c,hm.r,r);}catch(e){}return {r,t,def:regionDef(r),rush:rush.has(r.id)};}).filter(x=>x.t<=9);
+  if(!L.length)return null;L.sort((a,b)=>(a.def*(a.rush?0.7:1)+a.t*50)-(b.def*(b.rush?0.7:1)+b.t*50));return L[0];}
+function p18GrowHTML(c){if(!c._p18gain||G.tick-c._p18gain<P18.STUCK||p18El()<20)return '';const t=p18Weakest(c);if(!t)return '';const atk=Math.round(power(c,'atk'));const def=Math.round(t.def);const want=Math.round(def*1.3);const miss=Math.max(0,want-atk);
+  const why=[];if(c.shield)why.push('your shield is up, and nobody can attack while shielded');if((c.cp||0)<2)why.push('you are short of command points (an attack needs 2)');
+  let rec='';if(miss>0){const m=c.res.money||0;const o=m>1e5&&typeof p14RecOrder==='function'?p14RecOrder(c,m*0.5):null;const g=o?power(c,'atk',o):0;
+    if(g>0){const per=g/(m*0.5);const budget=Math.min(m*0.9,miss/per);rec=budget<=m*0.9&&budget*per>=miss*0.99?`<button class="btn sm" data-p18="rec" data-b="${Math.ceil(budget)}">Recruit +${full(miss)} attack (${fmt(budget,true)})</button>`:`<button class="btn sm" data-p18="rec" data-b="${Math.floor(m*0.9)}">Recruit with 90% of the treasury (+${full(Math.round(per*m*0.9))})</button>`;}
+    else rec=`<button class="btn sm" onclick="go('economy')">Grow the economy first</button>`;}
+  const own=t.r.owner!=null?G.countries[t.r.owner]:null;const lbl=own?esc(own.name)+' ['+esc(own.tag||'')+']':(t.rush?'land rush, weak garrison':'unclaimed');
+  return `<div class="p18row" style="border-left:3px solid var(--warn)"><div><b>📉 No new region for ${G.tick-c._p18gain} turns.</b> Weakest target in reach: <b>${esc(t.r.name)}</b> <span class="mono small">${esc(t.r.coord)}</span> (${lbl}, ${t.t} turns away). Its defence ${own?'is about':'is'} <b>${full(def)}</b>${own?' (an estimate, scout it for the real number)':''}; your army attacks with <b>${full(atk)}</b>. ${miss>0?'You need about <b>+'+full(miss)+'</b> more attack for a safe strike (1.3× its defence).':'<b>You can take it now.</b>'}${why.length?' Also: '+why.join('; ')+'.':''}</div>
+    <div class="row wrap" style="gap:6px;margin-top:6px">${rec}<button class="btn ${miss>0?'ghost':''} sm" data-p18="atk" data-r="${t.r.id}">${miss>0?'Plan the strike':'Strike now'}</button><button class="btn ghost sm" data-p18="map" data-c="${esc(t.r.coord)}">Show on map</button>${own?`<button class="btn ghost sm" data-p18="scout" data-r="${t.r.id}">Scout it</button>`:''}</div></div>`;}
+
+// ---------- 8: spending sinks ----------
+function p18Full(c){const pj=c._pj||projection(c);return MARKET.filter(k=>(c.res[k]||0)>=capOf(c,k)*0.98).map(k=>({k,w:Math.max(0,Math.round((pj.net&&pj.net[k])||0))}));}
+function p18PrestigeCost(c){return Math.round(Math.max(2e8,capOf(c,'money')*0.1));}
+function p18Prestige(){const c=you();const S=p18S();const w=p18W();const cost=p18PrestigeCost(c);S.pre=S.pre||{n:0,at:-99};
+  if(S.pre.n>=P18.PRESTIGE_MAX)return {ok:false,error:'Used '+P18.PRESTIGE_MAX+' times this season'};if(G.tick-S.pre.at<P18.PRESTIGE_CD)return {ok:false,error:'Ready again in '+(P18.PRESTIGE_CD-(G.tick-S.pre.at))+' turns'};if((c.res.money||0)<cost)return {ok:false,error:'It costs '+fmt(cost,true)};
+  c.res.money-=cost;S.pre.n++;S.pre.at=G.tick;c.stab=clamp((c.stab||0)+10,0,100);const bits=['+10 stability'];
+  if(p18Pts(c.id)>0&&!(G._finale&&G._finale.done)){const F=p18Hold();F.hold[c.id]=(F.hold[c.id]||0)+P18.PRESTIGE_PTS;bits.push('+'+P18.PRESTIGE_PTS+' hold points');}
+  if(w.g==='ironfront'){const o=typeof p14RecOrder==='function'?p14RecOrder(c,cost*0.4):null;if(o){for(const k in o)c.units[k]=(c.units[k]||0)+o[k];bits.push(full(fleetSize(o))+' fresh troops');}}
+  else{c.res.influence=Math.min(capOf(c,'influence'),(c.res.influence||0)+1500);bits.push('+1,500 influence');}
+  return {ok:true,txt:w.pre+': '+bits.join(', ')};}
+function p18SinkHTML(c){const full_=p18Full(c);const out=[];const m=c.res.money||0;const mc=capOf(c,'money');
+  if(full_.length){const parts=full_.map(x=>esc((RMETA[x.k]||{}).l||x.k)+(x.w?' (+'+full(x.w)+'/turn wasted)':'')).join(', ');out.push(`<div class="p18row"><div>📦 <b>Storage full:</b> ${parts}.</div><div class="row wrap" style="gap:6px;margin-top:6px"><button class="btn sm" data-p18="sell">Sell the surplus</button></div></div>`);}
+  const S=p18S();const pre=S.pre||{n:0,at:-99};const cost=p18PrestigeCost(c);const w=p18W();
+  if(m>=cost&&(m>=mc*0.5||full_.length)&&pre.n<P18.PRESTIGE_MAX){const cd=P18.PRESTIGE_CD-(G.tick-pre.at);const pts=p18Pts(c.id)>0;
+    out.push(`<div class="p18row"><div>${w.preIc} <b>${esc(w.pre)}</b>: turn ${fmt(cost,true)} into ${esc(w.preD)}: +10 stability, ${esc(w.preX)}${pts?', +'+P18.PRESTIGE_PTS+' hold points':''}. ${P18.PRESTIGE_MAX-pre.n} left this season.${m>=mc*0.98?' <span class="muted">Your treasury is full, income above the cap is lost.</span>':''}</div><div class="row wrap" style="gap:6px;margin-top:6px"><button class="btn sm" data-p18="pre" ${cd>0?'disabled':''}>${cd>0?'Ready in '+cd+' turns':esc(w.pre)}</button></div></div>`);}
+  const lowF=['food','energy'].some(k=>{const pj=c._pj||{};const net=(pj.net&&pj.net[k])||0;return net<0&&(c.res[k]||0)<-net*12;});
+  if(lowF||c._p18auto)out.push(`<div class="p18row"><div>🛒 <b>Auto-buy</b> ${esc(((RMETA.food||{}).l||'food').toLowerCase())} and ${esc(((RMETA.energy||{}).l||'energy').toLowerCase())} when less than 6 turns are left: <b>${c._p18auto?'on':'off'}</b>.</div><div class="row wrap" style="gap:6px;margin-top:6px"><button class="btn ${c._p18auto?'ghost':''} sm" data-p18="auto">${c._p18auto?'Turn off':'Turn on'}</button></div></div>`);
+  return out.join('');}
+
+// ---------- Home: one card, the most urgent line first ----------
+function p18RaceHTML(c){const el=p18El(),L=p18Len();if(el<Math.round(L/2)||G._winner!=null||G._seasonEnd)return '';const w=p18W();const T=p18Table();const my=p18Pts(c.id);const lead=T[0]?T[0].t:0;
+  const top=T.slice(0,3).map((x,i)=>{const o=G.countries[x.id];return `<span style="white-space:nowrap">${i+1}. ${x.id===c.id?'<b>you</b>':esc((o&&o.tag)||(o&&o.name)||'?')} <b>${x.t}</b>${x.holding?' ⚑':''}</span>`;}).join(' · ')||'<span class="muted">nobody has held it yet</span>';
+  const P=p18Prizes();const mineP=P.find(r=>r.owner===c.id);const home=regionsOf(c);const near=home.length?p18Near(P.filter(r=>r.owner!==c.id),home).r:null;
+  const left=Math.max(0,(typeof finaleEndTick==='function'?finaleEndTick():G.tick)-G.tick);const tt=p18TurnsToPass(my,lead);const top3=T.slice(0,3).some(x=>x.id===c.id);
+  const inRace=!!mineP||top3||(tt!=null&&tt<=left);
+  const st=mineP?`<b style="color:var(--good)">You hold ${esc(p18PrizeName(mineP))}</b>, every turn adds a point${p18HeldTurns(mineP)?' (dug in '+p18HeldTurns(mineP)+' turns, +'+Math.round((p18Wall(mineP)-1)*100)+'% defence)':''}.`:inRace?`<b style="color:var(--warn)">You are in the race</b>${tt?': hold '+esc(w.g==='ironfront'?'a Capital Sector':w.prizeA)+' about '+tt+' turns to pass #1':''}.`:`<b style="color:var(--bad)">You are not in the race</b>: even holding from now on you cannot pass #1. Take it from them to stop their points, or back the holder in your alliance.`;
+  const btn=mineP?`<button class="btn sm" data-p18="def" data-r="${mineP.id}">Strengthen ${esc(p18PrizeName(mineP))}</button>`:near?`<button class="btn sm" data-p18="atk" data-r="${near.id}">Target ${esc(p18PrizeName(near))}</button>`:'';
+  const ccs=P.filter(r=>r.ccBuild||r.commandCenter).map(r=>{const o=G.countries[r.ccBuild?r.ccBuild.holder:r.owner];if(!o)return '';return r.ccBuild?`<div class="small" style="color:var(--bad);margin-top:4px">⚠ ${o.id===c.id?'You are':esc(o.name)+' is'} building the ${esc(w.cc)} at ${esc(r.name)}: ready in ${Math.max(0,r.ccBuild.done-G.tick)} turns, then ${NEXUS_HOLD} turns of holding ${w.g==='ironfront'&&typeof AXIS_WIN_COUNT!=='undefined'?'complete a hold ('+AXIS_WIN_COUNT+' of '+NEXUS_COUNT+' win the season outright)':'win the season outright'}.</div>`:(r.owner!=null?`<div class="small" style="color:var(--bad);margin-top:4px">⚠ The ${esc(w.cc)} at ${esc(r.name)} stands: ${o.id===c.id?'you hold it':esc(o.name)+' holds it'} ${r.ccHeld||0}/${NEXUS_HOLD} turns${w.g==='ironfront'&&typeof AXIS_WIN_COUNT!=='undefined'?', and '+AXIS_WIN_COUNT+' completed holds win the season outright':' to an outright win'}.</div>`:'');}).join('');
+  return `<div class="p18race"><div class="row between wrap" style="gap:6px"><span>🏆 <b>Hold race</b> <span class="muted small">a point per turn holding ${esc(w.prize)}, 2 in the Last Battle, ${left} turns left</span></span></div>
+    <div class="small" style="margin-top:4px">${top}${top3?'':' · you <b>'+my+'</b>'}</div><div class="small" style="margin-top:4px">${st}</div>${ccs}${btn?`<div class="row wrap" style="gap:6px;margin-top:6px">${btn}</div>`:''}</div>`;}
+function p18HomeHTML(c){const S=p18S();const w=p18W();const rows=[];
+  if(c.shield){const auto=!!c.shield._auto;const q=Math.max(0,P18.SHIELD_QUIET-(c._p18q||0));rows.push(`<div class="p18row p18red"><div><b>🛡 Shield ${c.shield.status==='active'?'up':'arming'}: production 50%.</b> Nobody can take your ground, and you cannot attack.${auto?' It went up automatically and lowers itself after '+q+' more quiet turn'+(q===1?'':'s')+'.':''}</div><div class="row wrap" style="gap:6px;margin-top:6px"><button class="btn sm" data-p18="unshield">Lower shield</button></div></div>`);}
+  const K=S.coal;if(K){const nx=K.waves.findIndex(x=>!x.done);const T=G.countries[K.target];const vsMe=K.target===c.id;const when=nx>=0?Math.max(0,K.waves[nx].at-G.tick):0;
+    rows.push(`<div class="p18row" style="border-left:3px solid ${vsMe?'var(--bad)':'var(--tech)'}"><div><b>⚔ ${vsMe?'A '+esc(w.coal)+' against you':'A '+esc(w.coal)+' against '+esc(T?T.name:'the leader')}</b>: ${K.tags.map(esc).join(', ')}. ${nx>=0?'Wave '+(nx+1)+' of '+K.waves.length+' leaves in '+when+' turn'+(when===1?'':'s')+'.':'All '+K.waves.length+' waves are on their way.'}${vsMe?' Keep your army home and dig in, or strike first.':' Their ground may open up while they fight.'}</div><div class="row wrap" style="gap:6px;margin-top:6px">${vsMe?`<button class="btn sm" onclick="go('self')">Defence</button><button class="btn ghost sm" onclick="go('military')">Recruit</button>`:(T&&regionsOf(T).length?`<button class="btn ghost sm" data-p18="map" data-c="${esc(regionsOf(T)[0].coord)}">Show on map</button>`:'')}</div></div>`);}
+  const Tr=S.trib;if(Tr&&!Tr.paid&&!Tr.refused){const r=_rgId(Tr.rid);const left=Math.max(0,Tr.until-G.tick);rows.push(`<div class="p18row" style="border-left:3px solid var(--bad)"><div><b>💰 ${esc(Tr.name)} [${esc(Tr.tag||'')}] demands ${fmt(Tr.amt,true)}</b> in tribute. Refuse or let ${left} turn${left===1?'':'s'} pass and they raid ${r?esc(r.name):'you'} to carry off part of your stockpile.</div><div class="row wrap" style="gap:6px;margin-top:6px"><button class="btn sm" data-p18="pay">Pay ${fmt(Tr.amt,true)}</button><button class="btn ghost sm" data-p18="refuse">Refuse</button>${r?`<button class="btn ghost sm" data-p18="def" data-r="${r.id}">Defend ${esc(r.name)}</button>`:''}</div></div>`);}
+  const RT=p18RushTargets(c);if(S.rush&&RT.length){const left=Math.max(0,S.rush.until-G.tick);const t0=RT[0];rows.push(`<div class="p18row" style="border-left:3px solid var(--gold)"><div><b>🏴 Land rush:</b> ${esc(S.rush.name)} broke apart. ${RT.length} region${RT.length===1?'':'s'} in ${esc(w.anarchy)}, garrisons weak for <b>${left} more turn${left===1?'':'s'}</b>. Nearest: <b>${esc(t0.r.name)}</b> <span class="mono small">${esc(t0.r.coord)}</span>, defence ${full(Math.round(regionDef(t0.r)))}, your attack ${full(Math.round(power(c,'atk')))}.</div><div class="row wrap" style="gap:6px;margin-top:6px"><button class="btn sm" data-p18="atk" data-r="${t0.r.id}">Target ${esc(t0.r.name)}</button><button class="btn ghost sm" data-p18="map" data-c="${esc(t0.r.coord)}">Show on map</button></div></div>`);}
+  const gr=p18GrowHTML(c);if(gr)rows.push(gr);
+  const race=p18RaceHTML(c);const sink=p18SinkHTML(c);
+  if(!rows.length&&!race&&!sink)return '';const urg=rows.filter(x=>/p18red|var\(--bad\)/.test(x.slice(0,120)));const rest=rows.filter(x=>!urg.includes(x));
+  return `<div class="card mb p18home">${urg.join('')}${race}${rest.join('')}${sink}</div>`;}
+function p18Css(){if(typeof document==='undefined'||document.getElementById('p18css'))return;const s=document.createElement('style');s.id='p18css';
+  s.textContent='.p18home{padding:10px 12px}.p18home>div+div{margin-top:8px}.p18row{padding:6px 10px;border-left:3px solid var(--border2);border-radius:6px;background:var(--bg2);font-size:13px;line-height:1.45;overflow-wrap:anywhere}.p18row.p18red{border-left-color:var(--bad);background:linear-gradient(90deg,rgba(240,98,95,.14),transparent 80%)}.p18race{padding:6px 10px;border:1px solid var(--gold);border-radius:8px;font-size:13px;line-height:1.45;overflow-wrap:anywhere}.p18home .btn{min-height:34px}';
+  document.head.appendChild(s);}
+async function p18Act(b){const c=you();const a=b.dataset.p18;const rid=b.dataset.r!=null?+b.dataset.r:null;let res=null;
+  try{if(a==='atk'&&rid!=null){if(typeof window.BR_ATTACK==='function')window.BR_ATTACK(rid);else{selTarget=rid;warTab='offence';go('fleets');}return;}
+    if(a==='def'&&rid!=null){if(typeof p14Defend==='function')p14Defend(rid);else{selDefend=rid;warTab='defence';go('fleets');}return;}
+    if(a==='map'){if(typeof window.GOTO_COORD==='function')window.GOTO_COORD(b.dataset.c);else go('map');return;}
+    if(a==='scout'&&rid!=null){res=await cmdScoutRegion(c,rid);toast(res&&res.ok?'🔍 Scouts sent':(res&&res.error)||'Not possible',res&&res.ok?'':'bad');}
+    else if(a==='rec'){const o=p14RecOrder(c,+b.dataset.b);if(!o){toast('Nothing to recruit','warn');return;}res=await cmdRecruitBatch(c,o);toast(res&&res.ok?'🎖 Training: '+(typeof p7OrderText==='function'?p7OrderText(o):full(fleetSize(o))+' units'):(res&&res.error)||'Not possible',res&&res.ok?'':'bad');}
+    else if(a==='unshield'){res=await cmdShield(c,false);if(res&&res.ok){c._p18shCd=G.tick+P18.SHIELD_CD;toast('🛡 Shield lowered. Production back to 100%.');}}
+    else if(a==='pay'){res=p18PayTribute();toast(res.ok?'💰 Tribute paid':res.error,res.ok?'':'bad');}
+    else if(a==='refuse'){res=p18RefuseTribute();toast('You refused. Expect a raid soon.','warn');}
+    else if(a==='sell'){let got=0,err='';p18Full(c).forEach(x=>{const q=Math.floor((c.res[x.k]||0)-capOf(c,x.k)*0.7);if(q<=0)return;const m0=c.res.money||0;const r=cmdMarket(c,x.k,'sell',q);if(r&&r.ok)got+=(c.res.money||0)-m0;else err=(r&&r.error)||err;});toast(got>0?'📦 Surplus sold for '+fmt(got,true):(err||'Nothing sold'),got>0?'':'bad');}
+    else if(a==='pre'){res=p18Prestige();toast(res.ok?p18W().preIc+' '+res.txt:res.error,res.ok?'good':'bad');}
+    else if(a==='auto'){c._p18auto=!c._p18auto;toast(c._p18auto?'🛒 Auto-buy on':'🛒 Auto-buy off');}
+    else if(a==='go'){go(b.dataset.v);return;}}catch(e){console.error('p18',e);}
+  try{save();}catch(e){}try{drawTop();}catch(e){}go(view);}
+function p18Home(){const v=document.getElementById('view');const c=you();if(!v||!c||view!=='dashboard')return;p18Css();
+  const html=p18HomeHTML(c);const el=p7Put(v,'p18home',html,n=>{const a=v.querySelector(':scope > .p13last')||v.querySelector(':scope > .alertbar')||v.querySelector(':scope > .ptitle');if(a)a.after(n);else v.prepend(n);});
+  if(el)el.onclick=e=>{const b=e.target.closest('[data-p18]');if(b&&!b.disabled)p18Act(b);};}
+
+// ---------- 3: the Finale phase message gives an order with a button ----------
+function p18Order(c){const w=p18W();const P=p18Prizes();const home=regionsOf(c);const mine=P.find(r=>r.owner===c.id);const T=p18Table();const my=p18Pts(c.id);const lead=T[0];
+  const race=lead?(lead.id===c.id?'You lead the hold race with '+my+' points.':'Hold race: '+esc((G.countries[lead.id]||{}).name||'?')+' leads with '+lead.t+' points, you have '+my+'.'):'Nobody has held '+esc(w.prize)+' yet.';
+  if(mine)return {txt:'<b>Your order: hold '+esc(p18PrizeName(mine))+'.</b> Station troops there now; every turn it stays yours is a point, two in the Last Battle. '+race,btn:'Strengthen '+esc(p18PrizeName(mine)),a:'def',r:mine.id};
+  const t=home.length?p18Near(P,home).r:P[0];if(!t)return null;const def=Math.round(regionDef(t));const atk=Math.round(power(c,'atk'));
+  if(atk>=def*1.3)return {txt:'<b>Your order: strike '+esc(p18PrizeName(t))+'.</b> Your army attacks with '+full(atk)+', its defence is about '+full(def)+'. Take it and hold it. '+race,btn:'Plan the strike on '+esc(p18PrizeName(t)),a:'atk',r:t.id};
+  return {txt:'<b>Your order: build up for '+esc(p18PrizeName(t))+'.</b> Its defence is about '+full(def)+', your army attacks with '+full(atk)+'. You need about +'+full(Math.round(def*1.3-atk))+' attack. '+race,btn:'Recruit with half the treasury',a:'rec',b:Math.floor((c.res.money||0)*0.5)};}
+{const _o=showPulse;showPulse=function(title,body){try{if(p18On()&&/^A new phase: finale/i.test(String(title||''))){const c=you();const o=c&&p18Order(c);if(o){if(document.querySelector('.modal-bg'))return false;
+    const bg=h(`<div class="modal-bg p18m"><div class="modal" style="max-width:460px"><h2 style="margin:0 0 8px">${esc(title)}</h2><p class="small" style="margin:0 0 10px;line-height:1.5">${esc(body)}</p><p class="small" style="margin:0 0 12px;line-height:1.5">${o.txt}</p><div class="row wrap" style="gap:8px"><button class="btn" data-p18="${o.a}" ${o.r!=null?'data-r="'+o.r+'"':''} ${o.b!=null?'data-b="'+o.b+'"':''}>${o.btn}</button><button class="btn ghost" data-x>Later</button></div></div></div>`);
+    document.body.appendChild(bg);const close=()=>bg.remove();bg.querySelector('[data-x]').onclick=close;bg.querySelector('[data-p18]').onclick=e=>{close();p18Act(e.currentTarget);};return true;}}}catch(e){}return _o.apply(this,arguments);};}
+
+// ---------- 3: the end screen says why the winner won ----------
+function p18WhyHTML(){try{const c=you();if(!c)return '';const w=p18W();const F=G._finale||{};const T=(F.holdTable&&F.holdTable.length?F.holdTable:p18Table());const my=p18Pts(c.id);const rk=rankTitle(c.id);const regs=regionsOf(c).length;
+  const maxR=Math.max(0,...G.countries.filter(x=>x&&!x.retired).map(x=>regionsOf(x).length));let head='',body='';
+  if(G._winner!=null){const o=G.countries[G._winner];const mine=G._winner===c.id||(o&&o.clan!=null&&o.clan===c.clan);head=mine?'Why you won':'Why '+esc(o?o.name:'they')+' won';
+    body=w.g==='ironfront'&&typeof AXIS_WIN_COUNT!=='undefined'?(mine?'You':esc(o?o.name:'They'))+' completed a '+NEXUS_HOLD+'-turn hold with a '+esc(w.cc)+' at '+AXIS_WIN_COUNT+' of '+NEXUS_COUNT+' Capital Sectors: that wins the season outright, whatever the hold race says.':(mine?'You':esc(o?o.name:'They'))+' built the '+esc(w.cc)+' and held it '+NEXUS_HOLD+' turns: that wins the season outright, whatever the hold race says.';}
+  else if(F.winner!=null){const o=G.countries[F.winner];const mine=typeof finaleWonBy==='function'&&finaleWonBy(c);head=mine?'Why you won':'Why '+esc(o?o.name:'they')+' won';
+    body=(F.winner===c.id?'You':esc(o?o.name:'They'))+' had the most hold points: <b>'+(F.winnerTicks||0)+'</b>. A point for every turn holding '+esc(w.prize)+' once it awakened, two in the Last Battle.'+(mine&&F.winner!==c.id?' Your alliance shares the win.':'');
+    if(!mine)body+=' You had <b>'+my+'</b>.'+(my===0?' You never held '+esc(w.prize)+' this season.':'');
+    if(!mine&&regs>=maxR&&regs>0)body+=' Your empire was the largest on the map ('+regs+' regions), but the season is decided at '+esc(w.prize)+', not by size.';}
+  else{head='How the season was decided';body='Nobody held '+esc(w.prize)+', so the overall score decided. You finished #'+rk.pos+'.';}
+  const tbl=T.slice(0,3).map((x,i)=>{const o=G.countries[x.id];return (i+1)+'. '+(x.id===c.id?'<b>you</b>':esc((o&&o.name)||'?'))+' '+x.t;}).join(' · ');
+  return `<div class="p18why" style="border:1px solid var(--gold);border-radius:8px;padding:8px 12px;margin:0 0 10px;font-size:13px;line-height:1.5"><b>🏆 ${head}</b><div>${body}</div>${tbl?'<div class="muted small" style="margin-top:4px">Hold points: '+tbl+'</div>':''}</div>`;}catch(e){return '';}}
+function p18AddWhy(){try{if(!p18On())return;const ms=[...document.querySelectorAll('.modal-bg .modal')];const m=ms[ms.length-1];if(!m||m.querySelector('.p18why'))return;const html=p18WhyHTML();if(!html)return;const n=h(html);const first=m.firstElementChild;if(first&&/last battle|lb-|fn-/i.test((first.className||'')+' '+(first.textContent||'').slice(0,40)))first.after(n);else m.prepend(n);}catch(e){}}
+{const _o=showSeasonEnd;showSeasonEnd=function(){const r=_o.apply(this,arguments);p18AddWhy();return r;};}
+{const _o=showVictory;showVictory=function(){const r=_o.apply(this,arguments);p18AddWhy();return r;};}
+function p18After(){if(!p18On())return;try{p18Home();}catch(e){console.error('p18 home',e);}}
+
+// ================= Update 8.0 "Solid Ground", package C: calm screens, phone, speed =================
+// Solo only. The live-world server engine and the multiplayer client keep their own behaviour: every wrapper below
+// is installed only when p19Solo() is true (a browser, no window.__MP__, not Node).
+const P19={inst:false,inTick:false,inTurn:false,rv:1,rvBuilt:0,rArr:null,rLen:-1,idx:null,tier:null,tierTick:-1,skipped:0,decided:0,saveDue:false,saveT:0,last:{}};
+function p19Solo(){try{if(typeof window==='undefined'||typeof document==='undefined'||window.__MP__)return false;if(typeof process!=='undefined'&&process.versions&&process.versions.node)return false;return true;}catch(e){return false;}}
+// switches for testing (localStorage p19off=1 turns the whole package off, p19off_<part>=1 one part); read once per turn
+function p19Off(k){const o=P19.offs||p19ReadOffs();return !!(o.all||o[k]);}
+function p19ReadOffs(){const o={};try{o.all=localStorage.getItem('p19off')==='1';['reg','ai','save','prune','calm','phone','track'].forEach(k=>{o[k]=localStorage.getItem('p19off_'+k)==='1';});}catch(e){}P19.offs=o;return o;}
+
+// ---------- SPEED 1: regionsOf() from an owner index instead of filtering all regions on every call ----------
+// Exact: same regions, same order (G.regions order), a fresh array per call. The index is rebuilt only after an owner
+// really changed: every region's "owner" becomes an accessor (still saved as a normal field) that bumps a version.
+const P19_OWN={get(){return this._p19o;},set(x){if(x!==this._p19o){this._p19o=x;P19.rv++;}}};
+function p19Arm(R){for(let i=0;i<R.length;i++){const r=R[i];if(!r||r._p19a)continue;const v=r.owner;
+    Object.defineProperty(r,'_p19a',{value:1,writable:true,enumerable:false,configurable:true});Object.defineProperty(r,'_p19o',{value:v,writable:true,enumerable:false,configurable:true});
+    Object.defineProperty(r,'owner',{get:P19_OWN.get,set:P19_OWN.set,enumerable:true,configurable:true});}
+  P19.rArr=R;P19.rLen=R.length;P19.rv++;}
+function p19Index(){const m=new Map(),R=G.regions;for(let i=0;i<R.length;i++){const r=R[i];const o=r.owner;if(o==null)continue;let a=m.get(o);if(!a){a=[];m.set(o,a);}a.push(r);}P19.idx=m;P19.rvBuilt=P19.rv;}
+function p19RegionsOf(orig){return function(c){if(!c||c.id==null||!G||!Array.isArray(G.regions)||p19Off('reg'))return orig(c);
+  const R=G.regions;if(P19.rArr!==R||P19.rLen!==R.length)p19Arm(R);if(P19.rvBuilt!==P19.rv)p19Index();const a=P19.idx.get(c.id);return a?a.slice():[];};}
+
+// ---------- SPEED 2: AI nations far from you decide every 2nd or 3rd turn ----------
+// Fair and fixed: who counts as "near" is decided once per turn from the board, never at random. Near means: your
+// theater, your alliance, at war with you or your alliance, armies moving between you, your rival, the top 12, the
+// first 12 and the last 20 turns of a season, and anyone whose army is moving on you or an other player. Everyone else keeps producing every turn
+// (economy runs for all), only their choices come every 2nd turn (upper half of the ranking) or every 3rd turn.
+function p19Tiers(){if(P19.tierTick===G.tick&&P19.tier)return P19.tier;const T=new Map();P19.tier=T;P19.tierTick=G.tick;
+  try{const me=you();if(!me)return T;const near=new Set();const mine=new Set(regionsOf(me).map(r=>r.id));
+    const myCl=new Set(regionsOf(me).map(r=>r.cluster));const hc=homeCluster(me);if(hc!=null)myCl.add(hc);
+    const mc=me.clan;const top=new Set(G.countries.filter(c=>c&&!c.retired).map(c=>[c.id,c._lastScore||0]).sort((a,b)=>b[1]-a[1]).slice(0,12).map(x=>x[0]));
+    (me.fleets||[]).forEach(f=>{try{const r=_rgId(f.target);if(r&&r.owner!=null)near.add(r.owner);}catch(e){}});
+    const act=G.countries.filter(c=>c&&!c.retired&&c.isAI);const rk=act.map(c=>[c.id,c._lastScore||0]).sort((a,b)=>b[1]-a[1]);const half=new Set(rk.slice(0,Math.ceil(rk.length/2)).map(x=>x[0]));
+    act.forEach(c=>{let t=1;
+      const close=near.has(c.id)||top.has(c.id)||(G._rival!=null&&G._rival===c.id)||(mc!=null&&c.clan===mc)||(c.vsYou&&((c.vsYou.grudge||0)>0||(c.vsYou.threat||0)>40));
+      if(!close){let hcC=null;try{hcC=homeCluster(c);}catch(e){}
+        const inMine=(hcC!=null&&myCl.has(hcC))||regionsOf(c).some(r=>myCl.has(r.cluster));
+        const fl=(c.fleets||[]).some(f=>{if(!f)return false;const r=_rgId(f.target);return r&&(mine.has(r.id)||(r.owner!=null&&G.countries[r.owner]&&G.countries[r.owner].isAI===false));});
+        const war=(mc!=null&&c.clan!=null&&typeof clanAtWar==='function'&&clanAtWar(c.clan,mc));
+        if(!inMine&&!fl&&!war)t=2;}
+      T.set(c.id,t);});}catch(e){}
+  return T;}
+function p19Due(c){if(!c||!c.isAI||p19Off('ai'))return true;const st=(G.season&&G.season.startTick)||0;if(G.tick-st<=12)return true;
+  if(typeof endgameLeft==='function'){try{if(endgameLeft()<=20)return true;}catch(e){}}
+  const t=p19Tiers().get(c.id)||1;return t===1||((G.tick+c.id)%t===0);}
+
+// On a turn without a full decision an AI still keeps its army training, the way almost every AI does every turn:
+// the same budget rule and the same doctrine order as its own recruit choice (aiDecide), one command point.
+function p19KeepTraining(c){try{if(!c||c.retired||(c.cp||0)<1||typeof aiRecruitOrder!=='function')return;const p=c.pers||{};if(!regionsOf(c).length)return;
+  const budget=(c.res.money||0)*(.1+(p.mil||50)/100*.25);const dB=Math.min(budget,Math.max(0,(c.res.money||0)*0.6));if(dB<=0)return;
+  if(dB>2e5){const order=aiRecruitOrder(c,dB);if(order)cmdRecruitBatch(c,order);return;}
+  // small treasuries buy one unit type, like the AI's own fallback: the cheapest unit it can field
+  const u=(typeof UNIT!=='undefined'?UNIT:[]).filter(x=>unitUnlocked(c,x)&&x.cost&&x.cost.money>0).sort((a,b)=>a.cost.money-b.cost.money)[0];if(u){const q=Math.floor(budget/u.cost.money);if(q>0)cmdRecruit(c,u.k,q);}}catch(e){}}
+
+// ---------- SPEED 3: the save waits until the new turn is on screen ----------
+function p19SaveNow(){if(!P19.saveDue)return;P19.saveDue=false;clearTimeout(P19.saveT);P19.saveT=0;try{P19.realSave(P19.saveFast);}catch(e){}}
+function p19SaveLater(fast){P19.saveDue=true;P19.saveFast=P19.saveFast===undefined?fast:(P19.saveFast&&fast);if(P19.saveT)return;
+  const run=()=>{P19.saveT=0;if(P19.inTurn){P19.saveT=setTimeout(run,60);return;}const t=performance.now();p19SaveNow();P19.saveFast=undefined;P19.last.save=Math.round(performance.now()-t);};
+  P19.saveT=setTimeout(()=>{if(window.requestIdleCallback)requestIdleCallback(run,{timeout:1200});else run();},30);}
+
+// ---------- SPEED 4: a lighter save ----------
+// Taken out of the SAVE only (the running game keeps everything, so nothing plays differently): the battle working
+// data of armies that are not in a battle (rebuilt when their next battle starts), and the AI-versus-AI campaign logs
+// beyond the last two lines (nothing reads them). The end screen and history keep all their data.
+function p19Prune(){const back=[];if(p19Off('prune'))return back;
+  try{(G.countries||[]).forEach(c=>{(c&&c.fleets||[]).forEach(f=>{if(!f||f.status==='battle')return;['bLog','_lastR','bStart','bDefStart','bDefLost'].forEach(k=>{if(k in f){back.push([f,k,f[k]]);delete f[k];}});});});}catch(e){}
+  try{const cm=G._campaigns;if(cm)for(const k in cm){const x=cm[k];if(x&&Array.isArray(x.events)&&x.events.length>2){back.push([x,'events',x.events]);x.events=x.events.slice(0,2);}}}catch(e){}
+  return back;}
+function p19Restore(back){for(let i=back.length-1;i>=0;i--){const [o,k,v]=back[i];o[k]=v;}}
+function p19Install(){if(P19.inst||!p19Solo())return;P19.inst=true;
+  try{const o=regionsOf;regionsOf=p19RegionsOf(o);}catch(e){}
+  try{const o=aiDecide;aiDecide=function(c){if(P19.inTick&&c&&c.isAI&&!p19Due(c)){P19.skipped++;p19KeepTraining(c);return;}P19.decided++;return o.apply(this,arguments);};}catch(e){}
+  try{const o=runTick;runTick=function(){p19ReadOffs();P19.inTick=true;P19.inTurn=true;P19.skipped=0;P19.decided=0;const t=performance.now();try{return o.apply(this,arguments);}finally{P19.inTick=false;P19.last.tick=Math.round(performance.now()-t);P19.last.skip=P19.skipped;P19.last.dec=P19.decided;try{p19TurnEnd();}catch(e){}}};}catch(e){}
+  try{const o0=save;const o=function(){const bk=p19Prune();try{return o0.apply(this,arguments);}finally{p19Restore(bk);}};P19.realSave=o;save=function(fast){if(P19.inTurn&&!p19Off('save')){p19SaveLater(fast);return;}if(P19.saveDue){P19.saveDue=false;clearTimeout(P19.saveT);P19.saveT=0;}return o.apply(this,arguments);};}catch(e){}
+  // a slot (and the autosave every 20 turns) copies the saved world: that save must be written now, not after paint
+  try{const o=slotWrite;slotWrite=function(){const was=P19.inTurn;P19.inTurn=false;try{return o.apply(this,arguments);}finally{P19.inTurn=was;}};}catch(e){}
+  // the 1.85 MB size guard was for the old browser storage; with the IndexedDB save it only cost a few extra full
+  // serialisations every 5th turn. It still runs when a save really gets big (over 3 MB).
+  try{const o=p6GuardDue;p6GuardDue=function(){try{if(typeof P6!=='undefined'&&P6.on){const k=Object.keys(P6.mem).find(x=>/^(earth2026|romaterra|ironfront)$/.test(x));if(k&&P6.mem[k].length<3e6)return false;}}catch(e){}return o.apply(this,arguments);};}catch(e){}
+  try{window.addEventListener('pagehide',()=>{if(P19.saveDue){p19SaveNow();try{p6Flush();}catch(e){}}});document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden'&&P19.saveDue){p19SaveNow();try{p6Flush();}catch(e){}}});}catch(e){}}
+// the turn ends when the new screen is painted
+function p19TurnEnd(){requestAnimationFrame(()=>requestAnimationFrame(()=>{P19.inTurn=false;}));}
+if(p19Solo())setTimeout(p19Install,0);
+
+// ================= CALM SCREENS =================
+const P19_GAME='Terrastate';
+const P19_DNAME={Terrastate:'Turn report',Romaterra:'Dispatch from the Senate',Ironfront:'Radio bulletin'}[P19_GAME]||'Turn report';
+P19.d={tick:-1,notes:[],battles:[],ready:{},shown:false};P19.turnUntil=0;P19.modalTick=-1;
+function p19Phone(){try{return window.matchMedia('(max-width:760px)').matches;}catch(e){return false;}}
+function p19Calm(){return p19Solo()&&!p19Off('calm')&&typeof G!=='undefined'&&G&&G.you!=null&&!!G.countries&&!!G.countries[G.you];}
+function p19TurnNo(){const st=(G.season&&G.season.startTick)||0;let tot=null;try{const cfg=soloCfg();const L=cfg&&SOLO_LENGTHS[cfg.len];if(L)tot=L.ticks;}catch(e){}
+  if(!tot&&typeof SEASON_TICKS!=='undefined')tot=SEASON_TICKS;return {n:Math.max(0,G.tick-st),tot};}
+function p19Training(){try{return typeof trainOn==='function'&&trainOn(you());}catch(e){return false;}}
+function p19Busy(){return P19.inTurn||performance.now()<P19.turnUntil;}
+
+// ---------- the dispatch: one card per turn instead of a popup storm ----------
+function p19DNew(){P19.d={tick:G.tick,notes:[],battles:[],ready:{},shown:false};}
+function p19DCur(){if(P19.d.tick!==G.tick)p19DNew();return P19.d;}
+function p19Note(text,kind,title){const d=p19DCur();const t=String(text||'').trim();if(!t&&!title)return;
+  const m=/^([\d.,]+[KM]?) (.+) ready for duty$/i.exec(t);if(m){d.ready[m[2]]=m[1];p19DSoon();return;}
+  const key=(title||'')+'|'+t;if(d.notes.some(n=>n.key===key))return;d.notes.push({key,t,title:title||'',kind:kind||''});p19DSoon();}
+function p19DSoon(){if(p19Busy())return;clearTimeout(P19.dT);P19.dT=setTimeout(()=>{try{p19DRender();}catch(e){}},120);}
+// battles of this turn, repeated assaults on one region merged into one siege line
+function p19BattleRows(T){const me=you();if(!me)return [];const L=(G.battles||[]).filter(b=>b&&b.tick===T&&p13Mine(b));const by=new Map();
+  L.forEach(b=>{const k=b.coord||b.region;if(!by.has(k))by.set(k,[]);by.get(k).push(b);});
+  const su=o=>Object.values(o||{}).reduce((a,x)=>a+(+x||0),0);const rows=[];
+  by.forEach((list,k)=>{const b=list[0];const all=(G.battles||[]).filter(x=>x&&(x.coord||x.region)===k&&p13Mine(x)&&x.youAtk===b.youAtk&&T-x.tick<=20).sort((a,c)=>a.tick-c.tick);
+    const won=p13Won(b);let txt;
+    if(all.length>1){const yl=all.reduce((a,x)=>a+su(x.detail&&(x.youAtk?x.detail.atkLost:x.detail.defLost)),0),fl=all.reduce((a,x)=>a+su(x.detail&&(x.youAtk?x.detail.defLost:x.detail.atkLost)),0);
+      const d0=all[0].dN,d1=b.dN;const prog=(b.youAtk&&d0&&d1!=null)?' Defenders '+full(d0)+' → '+full(d1)+'.':'';
+      txt=(b.youAtk?'Siege of ':'Defence of ')+(b.region||'the region')+': '+(b.youAtk?'assault ':'attack ')+all.length+'. '+(b.outcome==='captured'?(b.youAtk?'The ground is yours.':'The ground is lost.'):(b.youAtk?'Not taken yet.':'Line held.'))+prog+' Losses so far: you '+full(yl)+', them '+full(fl)+'.';}
+    else txt=battleOneLiner(b);
+    rows.push({won,txt,b,n:all.length});});
+  return rows;}
+function p19EventHTML(){if(G._pendingEvent==null||typeof EVENTS==='undefined')return '';const ev=EVENTS[G._pendingEvent];if(!ev)return '';
+  return `<div class="p19r p19ev"><span class="p19i">⚡</span><div class="p19x"><b>${esc(ev.t)}</b><div class="small muted">${esc(ev.d)}</div><div class="p19opts">${ev.opts.map((o,i)=>`<button class="btn sm ghost" data-p19ev="${i}">${esc(o.l)}</button>`).join('')}</div></div></div>`;}
+function p19EventPick(i){const ev=EVENTS[G._pendingEvent];const c=you();if(!ev||!c)return;const o=ev.opts[i];if(!o)return;
+  o.fx(c);news('economy',c.name+': '+ev.t+', '+o.l);sitrep(c,'event','⚡ '+ev.t+', '+o.l,{go:'dashboard'});G._pendingEvent=null;
+  p19Note(ev.t+': '+o.l,'good','Chosen');drawTop();if(view!=='map')go(view);save();p19DRender();}
+function p19DItems(){const me=you();const d=P19.d;const T=d.tick;const rows=[];
+  const sr=(me&&me.sitrep||[]).filter(e=>e.tick===T);const heads=sr.map(e=>e.head);
+  const pick=(cls,ic,label)=>{const L=sr.filter(e=>e.cls===cls);if(!L.length)return;const tx=L.slice(0,3).map(e=>esc(e.head.replace(/^\W+\s*/,''))).join(' · ')+(L.length>3?' · +'+(L.length-3)+' more':'');rows.push({ic,h:(label?'<b>'+label+'</b> ':'')+tx,sev:Math.max(...L.map(e=>e.sev||0))});};
+  // battles first
+  p19BattleRows(T).forEach(r=>rows.push({ic:r.won?'🟢':'🔴',h:esc(r.txt),btn:`<button class="btn ghost sm" data-p19b="${esc(p13Key(r.b))}">Result</button>`,sev:3}));
+  pick('alert','🚨','');
+  pick('build','🏗','Built:');pick('research','🔬','Research:');
+  const rd=Object.entries(d.ready);if(rd.length)rows.push({ic:'🎖',h:'<b>Ready for duty:</b> '+rd.map(([n,c])=>esc(c+' '+n)).join(' · ')});
+  else pick('army','🎖','');
+  pick('territory','🏴','');pick('alliance','🤝','');pick('intel','👁','');pick('economy','💰','');pick('world','🌍','');
+  const voices=[];
+  d.notes.forEach(n=>{const plain=n.t.replace(/^\W+\s*/,'');if(!n.title&&heads.some(h=>h.indexOf(plain.slice(0,40))>=0))return;
+    if(!n.title&&n.kind!=='bad'){voices.push(n.t);return;}
+    rows.push({ic:n.kind==='bad'?'⚠':'📣',h:(n.title?'<b>'+esc(n.title)+'</b> ':'')+esc(n.t),sev:n.kind==='bad'?2:1});});
+  if(voices.length===1)rows.push({ic:'💬',h:esc(voices[0]),sev:0});
+  else if(voices.length>1)rows.push({ic:'💬',h:`<details><summary>${voices.length} messages and moves around you</summary>${voices.map(x=>'<div class="small" style="padding:3px 0">'+esc(x)+'</div>').join('')}</details>`,sev:0,cnt:voices.length});
+  return rows;}
+function p19DRender(){if(!p19Calm())return;let el=document.getElementById('p19d');const d=P19.d;if((d.tick<=0||G.tick<=0)&&G._pendingEvent==null){if(el)el.remove();return;}
+  const rows=p19DItems();const evh=p19EventHTML();
+  if(!rows.length&&!evh){if(el)el.remove();return;}
+  let act=null;try{if(!p19Training())act=soloNextAction(you());}catch(e){} // during training the training bar is the one next step
+  const nb=rows.filter(r=>r.btn).length;const nn=rows.reduce((a,r)=>a+(r.btn?0:(r.cnt||1)),0);const sum=[nb?nb+' battle'+(nb>1?'s':''):'',evh?'1 choice':'',nn?nn+' note'+(nn>1?'s':''):''].filter(Boolean).join(' · ');
+  const tn=p19TurnNo();const hot=rows.some(r=>r.sev>=2);const col=!evh&&((()=>{try{return localStorage.getItem('p19dcol')==='1';}catch(e){return false;}})()||(p19Phone()&&!hot));
+  const html=`<div class="p19dh" data-p19t="1"><span class="p19dt">${esc(P19_DNAME.toUpperCase())} · TURN ${d.tick>=0?Math.max(0,d.tick-((G.season&&G.season.startTick)||0)):tn.n}</span><span class="p19ds">${esc(sum)}</span><span class="p19dc">${col?'▸':'▾'}</span><button class="p19dx" data-p19x="1" title="Close until next turn" aria-label="Close">✕</button></div>
+    <div class="p19db">${evh}${rows.slice(0,9).map(r=>`<div class="p19r${r.sev>=2?' hot':''}"><span class="p19i">${r.ic}</span><div class="p19x">${r.h}</div>${r.btn||''}</div>`).join('')}${rows.length>9?`<div class="small muted" style="padding:4px 2px">+${rows.length-9} more in Reports</div>`:''}</div>
+    ${act&&!evh?`<div class="p19df"><span class="small muted">Next:</span> <b class="small">${esc(act.what)}</b><button class="btn sm" data-p19go="${esc(act.go||'dashboard')}">${esc(act.btn||'Go')}</button></div>`:''}`;
+  if(!el){el=document.createElement('div');el.id='p19d';el.setAttribute('role','status');document.body.appendChild(el);
+    el.addEventListener('click',e=>{const t=e.target.closest('button,[data-p19t]');if(!t)return;
+      if(t.dataset.p19x){el.remove();P19.d.closed=G.tick;return;}
+      if(t.dataset.p19ev!=null){p19EventPick(+t.dataset.p19ev);return;}
+      if(t.dataset.p19b){const b=(G.battles||[]).find(y=>p13Key(y)===t.dataset.p19b);if(b){P19.userBattle=1;try{p13Show([b],0);}finally{P19.userBattle=0;}}return;}
+      if(t.dataset.p19go){go(t.dataset.p19go);if(p19Phone())el.classList.add('col');return;}
+      if(t.dataset.p19t){const c=!el.classList.contains('col');el.classList.toggle('col',c);try{localStorage.setItem('p19dcol',c?'1':'0');}catch(_){}const s=el.querySelector('.p19dc');if(s)s.textContent=c?'▸':'▾';}});}
+  el.innerHTML=html;el.classList.toggle('col',col);el.classList.toggle('ev',!!evh);d.shown=true;}
+// after the turn: show what came in
+function p19TurnDone(){if(!p19Calm())return;P19.turnUntil=performance.now()+900;setTimeout(()=>{try{p19DRender();}catch(e){}},950);}
+
+// ---------- the guidance track on Home: training first, then the five season phases, one next action ----------
+function p19Track(v){const c=you();if(!c)return;const tr=p19Training();const cards=[...v.querySelectorAll('.card')];const hide=e=>{if(e)e.style.display='none';};
+  const attn=cards.filter(e=>{const h=e.querySelector(':scope > h3');return h&&/things? need attention|priority center/i.test(h.textContent||'');});
+  const dir=cards.filter(e=>{const h=e.querySelector(':scope h3');return h&&/^\s*phase \d+ of 3\b/i.test((h.textContent||'').trim());});
+  const guide=[...v.querySelectorAll('[data-guideoff]')].map(b=>b.closest('.card')).filter(Boolean);
+  // while training runs the training bar is the one track; an attack that is really coming still shows its buttons
+  let under=false;try{under=incomingTo(c.id).some(x=>x.threat>=0.02);}catch(e){}
+  if(tr){if(!under)attn.forEach(hide);dir.forEach(hide);guide.forEach(hide);v.querySelectorAll('.p3card,.solo-lesson'+(under?'':',.solo-next')).forEach(hide);return;}
+  guide.forEach(hide);
+  const p3=v.querySelector('.p3card');if(!p3||!dir.length)return;dir.forEach(hide);
+  if(p3.querySelector('.p19step'))return;const row=[...dir[0].querySelectorAll('.row')].find(r=>/^\s*▶/.test((r.querySelector('b')||{}).textContent||''));if(!row)return;
+  const ob=row.querySelector('button[data-fs]');const sn=v.querySelector('.solo-next [data-solo-go]');if(ob&&sn&&sn.dataset.soloGo===ob.dataset.fs)return; // the next action already says it
+  const b=row.querySelector('b');const mu=row.querySelector('.muted');
+  const el=h(`<div class="row between wrap p19step" style="gap:6px;border-top:1px solid var(--border);padding-top:6px;margin-top:6px"><div class="small">Next step: <b>${esc((b.textContent||'').replace(/^\s*▶\s*/,''))}</b> <span class="muted">${esc(mu?mu.textContent:'')}</span></div>${ob?'<button class="btn ghost sm">'+esc(ob.textContent||'Show me')+'</button>':''}</div>`);
+  const nb=el.querySelector('button');if(nb&&ob)nb.onclick=()=>ob.click();const first=p3.firstElementChild;if(first)first.after(el);else p3.appendChild(el);}
+// timer words in turn mode: the world moves when you press END TURN, not when a clock runs out
+const P19_WORDS=[[/When NEXT TICK hits 0, the world updates/g,'When you press END TURN, the world updates'],[/When the timer hits 0,? the world updates once/g,'When you press END TURN, the world updates once'],[/resolves in the countdown above/g,'resolves when you press END TURN'],[/or when the timer runs out/g,'or when its turns run out']];
+function p19TurnMode(){try{return !!(G.solo&&G.solo.mode==='turn');}catch(e){return false;}}
+function p19Words(root){if(!root||!p19TurnMode())return;const w=document.createTreeWalker(root,NodeFilter.SHOW_TEXT,{acceptNode:n=>/hits 0|countdown above|timer runs out/.test(n.nodeValue)?1:3});const L=[];let n;while((n=w.nextNode()))L.push(n);
+  L.forEach(t=>{let x=t.nodeValue;P19_WORDS.forEach(([a,b])=>{x=x.replace(a,b);});if(x!==t.nodeValue)t.nodeValue=x;});}
+// formula jargon (I=-0.33, efficiency 97 %, EMP) folds behind "details"
+const P19_JARGON=/\(I=-?\d|\bI=-?\d[\d.]* \(|→ efficiency \d+%|\bcyber EMP\b|\bcovert EMP\b|Enemy covert|suppresses (attacker|defender) readiness/i;
+function p19Jargon(root){if(!root)return;const hits=[];root.querySelectorAll('div,li,tr,p').forEach(e=>{if(e._p19j||e.closest('.p19jg'))return;if(e.querySelector('div,li,tr,p,table'))return;const t=e.textContent||'';if(t.length<220&&P19_JARGON.test(t))hits.push(e);});
+  const byP=new Map();hits.forEach(e=>{e._p19j=1;const p=e.parentElement;if(!byP.has(p))byP.set(p,[]);byP.get(p).push(e);});
+  byP.forEach((L,p)=>{L.forEach(e=>{e.classList.add('p19jg');e.style.display='none';});const tr=L[0].tagName==='TR';
+    const t=tr?h(`<table><tbody><tr class="p19jt"><td colspan="9"><button class="btn ghost sm p19jb">details</button></td></tr></tbody></table>`).querySelector('tr'):h('<div class="p19jt"><button class="btn ghost sm p19jb">details</button></div>');
+    t.querySelector('button').onclick=e=>{e.stopPropagation();const on=L[0].style.display==='none';L.forEach(x=>x.style.display=on?'':'none');e.target.textContent=on?'hide details':'details';};const sib=[...p.children].filter(x=>x.tagName===L[0].tagName&&x.className.replace(' p19jg','')===L[0].className.replace(' p19jg',''));(sib[sib.length-1]||L[L.length-1]).after(t);});}
+// a new nation starts on Standby (60% strength): say so where you attack
+function p19Standby(v){const c=you();if(!c||c.ready!=='standby'||typeof READY==='undefined')return;const l=v.querySelector('#launch');if(!l)return;const box=l.closest('.card')||l.parentElement;if(!box||box.querySelector('.p19sb'))return;
+  const pc=Math.round(READY.standby.p*100),rp=Math.round(READY.ready.p*100);
+  const el=h(`<div class="p19sb small"><span>⚠ Your army is on <b>Standby</b>: it fights at <b>${pc}%</b> strength. On Ready it fights at ${rp}%.</span><button class="btn sm ghost" type="button">Switch to Ready</button></div>`);
+  el.querySelector('button').onclick=()=>{const r=cmdReady(c,'ready');if(r&&r.ok===false){toast(r.error||'Not possible','bad');return;}toast('Army set to Ready','good');try{save();}catch(e){}go(view);};
+  box.insertBefore(el,box.firstChild);}
+
+// ================= PHONE AND SCREEN FIXES =================
+// tables that are wider than the phone become one card per row, with the buttons full width under the name
+function p19Cards(v){if(!p19Phone()||p19Off('phone'))return;v.querySelectorAll('table').forEach(t=>{if(t.classList.contains('p19c'))return;const hs=[...t.querySelectorAll('thead th')].map(x=>(x.textContent||'').trim());if(hs.length<4)return;
+  const wide=t.scrollWidth>(t.parentElement?t.parentElement.clientWidth:innerWidth)+4;const btns=t.querySelector('tbody button,tbody input');if(!wide||!btns)return;
+  t.classList.add('p19c');if(t.parentElement)t.parentElement.classList.add('p19cw');
+  t.querySelectorAll('tbody tr').forEach(r=>{[...r.children].forEach((td,i)=>{if(hs[i])td.setAttribute('data-l',hs[i]);if(td.querySelector('button,input'))td.classList.add('p19act');});});});}
+function p19Research(v){if(view!=='research')return;v.querySelectorAll('.card.now,.card.next,.card.done,.card.lock,.card.locked').forEach(c=>{const g=c.parentElement;if(g&&!g.classList.contains('p19vl'))g.classList.add('p19vl');});}
+// the END TURN button on the phone carries the turn number; the header pill is the one on desktop
+function p19EndBtn(){const tn=p19TurnNo();const lab='Turn '+tn.n+(tn.tot?'/'+tn.tot:'');
+  const b=document.querySelector('#bottomnav [data-bk="__end"]');if(b){let s=b.querySelector('.p19tn');if(!s){s=document.createElement('span');s.className='p19tn';b.appendChild(s);}if(s.textContent!==lab)s.textContent=lab;}
+  const m=document.getElementById('mEnd');if(m&&!m.classList.contains('busy')){const t='END TURN ▶ · '+lab;if(m.textContent!==t)m.textContent=t;}
+  const tk=document.querySelector('header.top .tick');if(tk)tk.classList.toggle('p19turn',p19TurnMode());}
+// the training banner stays in sight when its step changes
+function p19TrainScroll(v){const tb=v.querySelector('.trainbar');if(!tb){P19.trainKey=null;return;}const k=(tb.querySelector('.mono')||tb).textContent||'';if(P19.trainKey!=null&&P19.trainKey!==k){const r=tb.getBoundingClientRect();if(r.top<0||r.top>innerHeight*0.6)tb.scrollIntoView({block:'start',behavior:'smooth'});}P19.trainKey=k;
+  if(p19Phone()&&document.querySelector('#bottomnav [data-bk="__end"]'))tb.querySelectorAll('[data-trn="end"]').forEach(b=>{b.style.display='none';if(!tb.querySelector('.p19endhint')){const s=h('<div class="small p19endhint" style="margin-top:6px">Press <b>END TURN</b> in the bar at the bottom.</div>');b.after(s);}});}
+function p19ScrollLaunch(v){if(!P19.wantLaunch)return;P19.wantLaunch=0;const l=v.querySelector('#launch');if(!l)return;const box=l.closest('.card')||l;setTimeout(()=>{try{box.scrollIntoView({block:'start',behavior:'smooth'});}catch(e){}},30);}
+
+// map on a phone: the filter panel folds to one button, the first look fits your theater
+function p19Map(v){if(view!=='map'||!p19Phone())return;const mt=v.querySelector('.maptools');if(mt&&!mt.querySelector('.p19mtb')){mt.classList.add('p19fold');const b=h('<button class="btn ghost sm p19mtb" type="button">Map filters ▸</button>');b.onclick=e=>{e.stopPropagation();const f=mt.classList.toggle('p19fold');b.textContent=f?'Map filters ▸':'Map filters ▾';};mt.insertBefore(b,mt.firstChild);}
+  // the first look on a phone shows your whole theater (the game's own theater view), so no label is cut off
+  try{if(!P19.mapFit&&typeof WM!=='undefined'&&typeof mapView!=='undefined'){const hc=homeCluster(you());if(hc!=null&&mapView.level===2&&mapView.cluster===hc){P19.mapFit=1;mapView.level=1;mapView.sector=null;WM.jump={kind:'theater',a:hc};setTimeout(()=>{try{if(view==='map')go('map');}catch(e){}},0);}}}catch(e){}}
+function p19After(){if(!p19Solo())return;const v=document.getElementById('view');if(!v)return;
+  const run=()=>{try{if(!p19Off('track')&&view==='dashboard')p19Track(v);}catch(e){}try{p19Words(v);}catch(e){}try{p19Jargon(v);}catch(e){}try{if(view==='around'||view==='fleets'||view==='self')p19Standby(v);}catch(e){}
+    try{p19Cards(v);p19Research(v);p19Map(v);}catch(e){}try{p19EndBtn();}catch(e){}try{p19TrainScroll(v);}catch(e){}try{p19ScrollLaunch(v);}catch(e){}};
+  run();setTimeout(run,0);setTimeout(run,260);}
+
+// ---------- install the calm wrappers ----------
+function p19InstallCalm(){if(!p19Solo())return;
+  try{const o=toast;toast=function(msg,kind){try{if(p19Calm()){const m=String(msg==null?'':msg);
+      if(/save failed|storage is full|fell back|back-up/i.test(m))return o.apply(this,arguments);
+      if(/^(World )?tick #\d+/i.test(m))return; // the report replaces the tick toast
+      const quote=/^[^:"]{2,40}: "/.test(m);
+      if(p19Busy()||quote||(G.tick<=1&&(p19Training()||document.querySelector('.modal-bg')))){p19Note(m,kind);return;}}}catch(e){}return o.apply(this,arguments);};}catch(e){}
+  try{const o=showPulse;showPulse=function(title,body){try{if(p19Calm()&&!/^A new phase: finale/i.test(String(title||''))){p19Note(body,'',title);return true;}}catch(e){}return o.apply(this,arguments);};}catch(e){}
+  try{const o=showEvent;showEvent=function(){try{if(p19Calm()){p19DCur();p19DSoon();if(!p19Busy())p19DRender();return;}}catch(e){}return o.apply(this,arguments);};}catch(e){}
+  try{const o=p13Act;p13Act=function(){P19.userBattle=1;try{return o.apply(this,arguments);}finally{setTimeout(()=>{P19.userBattle=0;},0);}};}catch(e){}
+  try{const o=p13Show;p13Show=function(list,idx){try{if(p19Calm()&&!P19.userBattle&&!document.querySelector('.p13m')){const me=you();
+        // the one window a turn may still open: your first victory, or losing your homeland
+        const imp=(list||[]).find(b=>(b.youAtk&&p13Won(b)&&!me._p19fv)||(!b.youAtk&&b.outcome==='captured'&&P19.homeCoord&&b.coord===P19.homeCoord));
+        if(imp&&P19.modalTick!==G.tick){P19.modalTick=G.tick;if(imp.youAtk)me._p19fv=G.tick;return o.call(this,[imp].concat(list.filter(x=>x!==imp)),0);}
+        (list||[]).forEach(b=>{if(b.youAtk&&p13Won(b)&&!me._p19fv)me._p19fv=G.tick;});p19DSoon();return;}}catch(e){}return o.apply(this,arguments);};}catch(e){}
+  try{const o=soloNextAction;soloNextAction=function(c){let r=o.apply(this,arguments);try{if(r&&c&&/command points are full/i.test(r.what||'')){const last=c._p19cp;
+        if(G.tick<10||(last!=null&&last!==G.tick&&G.tick-last<15)){const cp=c.cp;c.cp=0;try{r=o.apply(this,arguments);}finally{c.cp=cp;}}else c._p19cp=G.tick;}}catch(e){}return r;};}catch(e){}
+  try{const o=tipOnce;tipOnce=function(c,flag,text){if(typeof text==='string'&&p19TurnMode())P19_WORDS.forEach(([a,b])=>{text=text.replace(a,b);});const a=[...arguments];a[2]=text;return o.apply(this,a);};}catch(e){}
+  try{const o=runTick;runTick=function(){try{if(p19Calm()){const hr=homeRegionOf(you());P19.homeCoord=hr?hr.coord:null;}}catch(e){}try{P19.d={tick:G.tick+1,notes:[],battles:[],ready:{},shown:false};}catch(e){}const r=o.apply(this,arguments);try{p19TurnDone();}catch(e){}return r;};}catch(e){}
+  // the bottom bar keeps the same five buttons on every screen and every turn
+  try{if(typeof EARLY_NAV!=='undefined'&&typeof BOTTOMNAV!=='undefined'&&Array.isArray(EARLY_NAV))EARLY_NAV.splice(0,EARLY_NAV.length,...BOTTOMNAV.map(x=>x.slice()));}catch(e){}
+  // on a phone the chat bubble is small and also sits in the More menu; it steps aside while the turn report is open
+  try{const o=openMore;openMore=function(){const r=o.apply(this,arguments);try{const fab=document.querySelector('.commsfab');const sh=document.querySelector('#moresheet .sheet');if(fab&&sh&&p19Phone()&&!sh.querySelector('.p19chat')){const row=h('<div class="mrow p19chat"><span class="i">💬</span><span>Chat and messages</span></div>');row.onclick=()=>{try{closeMore();}catch(e){}fab.click();};const h4=sh.querySelector('h4');if(h4)h4.before(row);else sh.appendChild(row);}}catch(e){}return r;};}catch(e){}
+  document.addEventListener('click',e=>{const t=e.target&&e.target.closest&&e.target.closest('[data-tgt]');if(t)P19.wantLaunch=1;},true);
+  // windows that still open (war game, battle result, help) get the same plain words and folded formulas
+  try{new MutationObserver(ms=>{ms.forEach(m=>m.addedNodes.forEach(n=>{if(n.nodeType===1&&n.classList&&n.classList.contains('modal-bg'))setTimeout(()=>{try{p19Jargon(n);p19Words(n);}catch(e){}},0);}));}).observe(document.body,{childList:true});}catch(e){}
+  try{const st=document.createElement('style');st.id='p19css';st.textContent=P19_CSS;document.head.appendChild(st);}catch(e){}
+  setInterval(()=>{try{if(p19Calm())p19EndBtn();}catch(e){}},1000);}
+if(p19Solo())setTimeout(p19InstallCalm,0);
+const P19_CSS=`
+#p19d{position:fixed;right:16px;bottom:78px;width:360px;max-width:calc(100vw - 24px);max-height:62vh;display:flex;flex-direction:column;z-index:57;background:var(--panel,#111a2b);border:1px solid var(--border2,#2a4666);border-left:4px solid var(--accent2,#37d9a9);border-radius:12px;box-shadow:0 14px 40px rgba(0,0,0,.45);font-size:13px}
+#p19d.ev{border-left-color:var(--warn,#e3b341)}
+#p19d .p19dh{display:flex;align-items:center;gap:8px;padding:8px 8px 8px 12px;cursor:pointer;border-bottom:1px solid var(--border,#22324a)}
+#p19d .p19dt{font-family:var(--mono,monospace);font-size:11px;letter-spacing:1.4px;color:var(--accent2,#37d9a9);white-space:nowrap}
+#p19d .p19ds{flex:1;min-width:0;color:var(--muted,#93a3bd);font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#p19d .p19dc{color:var(--muted,#93a3bd)}
+#p19d .p19dx{background:none;border:0;color:var(--muted,#93a3bd);font-size:16px;min-width:40px;min-height:40px;cursor:pointer;border-radius:8px}
+#p19d .p19db{overflow:auto;padding:4px 12px 6px}
+#p19d .p19r{display:flex;gap:8px;align-items:flex-start;padding:7px 0;border-top:1px solid var(--border,#22324a);line-height:1.45}
+#p19d .p19r:first-child{border-top:0}
+#p19d .p19r.hot .p19x{color:var(--text,#e6edf6)}
+#p19d .p19i{flex:none;width:20px;text-align:center}
+#p19d .p19x{flex:1;min-width:0}
+#p19d .p19r .btn{flex:none;min-height:36px}
+#p19d .p19opts{display:flex;flex-direction:column;gap:6px;margin-top:8px}
+#p19d .p19opts .btn{width:100%;min-height:44px;text-align:left}
+#p19d .p19df{display:flex;align-items:center;gap:8px;padding:8px 12px;border-top:1px solid var(--border,#22324a)}
+#p19d .p19df b{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#p19d.col .p19db,#p19d.col .p19df{display:none}
+#p19d.col .p19dh{border-bottom:0}
+body:has(.modal-bg) #p19d{display:none}
+body.map-open #p19d{display:none}
+.p19sb{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between;padding:8px 10px;margin:0 0 10px;border:1px solid var(--warn,#e3b341);border-radius:8px;background:rgba(227,179,65,.08)}
+.p19jt{margin:4px 0}.p19jt .btn{min-height:30px;font-size:12px}
+.wm-build{display:none!important}
+.p13box > .row.wrap.mt:last-child{position:sticky;bottom:-1px;z-index:3;background:var(--panel,#111a2b);padding:8px 0 4px;margin-bottom:-4px;border-top:1px solid var(--border,#22324a)}
+header.top .tick.p19turn{background:var(--accent2,#37d9a9)!important;border-color:var(--accent2,#37d9a9)!important;opacity:1!important}
+header.top .tick.p19turn,header.top .tick.p19turn *{color:#04121c!important}
+body.p6busy header.top .tick.p19turn{opacity:.75!important}
+body.turnmode header.top .tspeed{margin-left:22px;padding-left:12px;border-left:1px solid var(--border2,#2a4666);opacity:.8}
+@media (max-height:900px){#setup :has(> #go){position:sticky;bottom:0;z-index:5;background:var(--panel,#111a2b);padding:10px 0;box-shadow:0 -10px 18px rgba(0,0,0,.35)}}
+@media (min-width:761px){.p7sticky{position:sticky!important;top:auto!important;bottom:8px!important;z-index:20;display:flex!important;flex-wrap:wrap;align-items:center;gap:8px 12px;padding:6px 10px!important}.p7sticky #recapfoot{flex:1 1 380px;margin:0!important;font-size:12px}.p7sticky .btn{min-height:38px}}
+@media (max-width:760px){
+ #p19d{left:8px;right:8px;width:auto;bottom:calc(var(--bottomnav-h,62px) + env(safe-area-inset-bottom) + 8px);max-height:48vh}
+ .toasts,#toasts{top:auto!important;bottom:calc(var(--bottomnav-h,62px) + env(safe-area-inset-bottom) + 10px)!important;left:8px!important;right:8px!important}
+ body:has(#p19d:not(.col)) .toasts{bottom:calc(var(--bottomnav-h,62px) + 48vh + 18px)!important}
+ #bottomnav [data-bk="__end"]{display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1.1}
+ #bottomnav .p19tn{display:block;font-size:10px;font-family:var(--mono,monospace);letter-spacing:.5px;opacity:.85;margin-top:2px;text-transform:none}
+ body.p8nav header.top .tick,body.p8nav header.top .tspeed{display:none!important}
+ .commsfab,#commsfab{width:40px!important;height:40px!important;min-width:40px!important;min-height:40px!important;right:6px!important;opacity:.78}
+ body:has(#p19d:not(.col)) #commsfab{display:none!important}
+ .tag.lk.p-coord,.p-coord{min-height:40px;display:inline-flex!important;align-items:center;padding-top:0;padding-bottom:0}
+ .p19cw,.p19cw .tw,div:has(> table.p19c){overflow:visible!important;max-width:100%!important;min-width:0!important;width:auto!important}
+ table.p19c,table.p19c tbody{display:block!important;width:100%!important;min-width:0!important}
+ table.p19c thead{display:none!important}
+ table.p19c tr{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px 10px;padding:10px 2px;border-bottom:1px solid var(--border,#22324a)}
+ table.p19c td{display:block;white-space:normal!important;text-align:left!important;padding:0!important;border:0!important;min-width:0;width:auto!important}
+ table.p19c td:first-child{grid-column:1/-1;font-weight:700}
+ table.p19c td[data-l]:not(:first-child):not(.p19act)::before{content:attr(data-l);display:block;font-size:10px;letter-spacing:1px;color:var(--muted2,#6f819c);text-transform:uppercase;font-weight:400}
+ table.p19c td.p19act{grid-column:1/-1;display:flex!important;gap:8px;flex-wrap:wrap}
+ table.p19c td.p19act > .row{display:flex!important;flex-wrap:wrap;gap:8px!important;width:100%;justify-content:stretch!important}
+ table.p19c td.p19act .btn{flex:1 1 0;min-height:44px}
+ table.p19c td.p19act input{flex:1 1 70px;min-height:44px;width:auto!important}
+ .p7sticky{position:fixed!important;left:0;right:0;top:auto!important;bottom:calc(var(--bottomnav-h,62px) + env(safe-area-inset-bottom));z-index:54;margin:0!important;border-radius:12px 12px 0 0;background:var(--panel,#111a2b);border-top:1px solid var(--border2,#2a4666);padding:8px 10px!important;box-shadow:0 -8px 24px rgba(0,0,0,.35)}
+ body:has(.p7sticky) #p19d.col,body:has(.p7sticky) #commsfab{display:none!important}
+ body:has(.p7sticky) #p19d{bottom:calc(var(--bottomnav-h,62px) + env(safe-area-inset-bottom) + 140px);max-height:36vh}
+ body:has(.p7sticky) .main{padding-bottom:calc(var(--bottomnav-h,62px) + 170px)!important}
+ .p19vl{display:flex!important;flex-direction:column!important;gap:10px}
+ .p19vl > .card{width:auto!important;max-width:none!important}
+ .p19vl > .card > .row.between{flex-wrap:wrap;row-gap:4px}
+ .p19vl > .card > .row.between > strong{flex:1 1 60%;min-width:0}
+ .p13box{max-height:calc(100dvh - 24px)!important}
+}
+@media (max-width:760px){.maptools.p19fold > *:not(.p19mtb){display:none!important}.maptools .p19mtb{min-height:40px}}
+@media (max-width:500px){body.map-open .wm-mini,.wm-mini{display:none!important}}
+`;
+
+
+// Update 8.0: no long dashes on screen. Older game texts used " — " as a pause; it reads as ", " now. A lone dash (no value) reads as "-".
+(function(){if(typeof document==='undefined'||typeof MutationObserver==='undefined')return;const SK=/^(SCRIPT|STYLE|TEXTAREA|INPUT|CODE)$/;
+  const fix=v=>v.indexOf('\u2014')<0?v:(v.trim()==='\u2014'?v.replace('\u2014','-'):v.replace(/\s*\u2014\s*/g,', ').replace(/^, /,'').replace(/, ([.,;:!?])/g,'$1'));
+  const tn=n=>{const pn=n.parentNode;if(!pn||(pn.nodeType===1&&SK.test(pn.tagName)))return;const v=n.nodeValue;if(v&&v.indexOf('\u2014')>=0){const t=fix(v);if(t!==v)n.nodeValue=t;}};
+  const walk=r=>{if(!r)return;if(r.nodeType===3){tn(r);return;}if(r.nodeType!==1||SK.test(r.tagName))return;const w=document.createTreeWalker(r,NodeFilter.SHOW_TEXT);let n;while((n=w.nextNode()))tn(n);
+    ['title','placeholder','aria-label'].forEach(a=>{const v=r.getAttribute&&r.getAttribute(a);if(v&&v.indexOf('\u2014')>=0)r.setAttribute(a,fix(v));});};
+  let busy=false;const mo=new MutationObserver(rs=>{if(busy)return;busy=true;try{rs.forEach(x=>{if(x.type==='characterData')tn(x.target);else x.addedNodes.forEach(walk);});}catch(e){}mo.takeRecords();busy=false;});
+  const go=()=>{walk(document.body);mo.observe(document.body,{childList:true,subtree:true,characterData:true});try{document.title=fix(document.title);}catch(e){}};
+  if(document.body)go();else document.addEventListener('DOMContentLoaded',go);
+  ['alert','confirm'].forEach(k=>{const f=window[k];if(typeof f==='function')window[k]=function(m,...r){return f.call(window,fix(String(m==null?'':m)),...r);};});})();
+
 function emblem(c){return `<span class="flagi" title="${esc((c&&c.name)||'')}">${flagSVG(c,22)}</span>`;}
 // Relationship-only colours (Planetarion-style): gold self, blue alliance,
 // green ally, red enemy, gray neutral.
@@ -7247,15 +7861,15 @@ function renderLanding(){
       <p style="max-width:600px;margin:0 auto;font-size:clamp(15px,3.6vw,17px);color:var(--text)">A grand-strategy <b>solo</b> season against AI nations. The world advances every <b>tick</b> — set orders, wait for the tick, deal with what happened. Same rules the live world will use.</p>
       <div class="row" style="gap:12px;justify-content:center;margin-top:30px;flex-wrap:wrap">${hasSave?'<button class="btn sec" id="lc2" style="font-size:16px;padding:15px 24px">▶ Resume your nation</button>':''}<button class="btn" id="lp2" style="font-size:16px;padding:15px 30px">🚀 Start, create your nation →</button><button class="btn sec" id="lcamp" style="font-size:16px;padding:15px 24px">🎯 Campaign, 6 scenarios</button>${anySlot()?'<button class="btn ghost" id="lslots" style="font-size:16px;padding:15px 20px">💾 Saved games</button>':''}</div>
       <div class="row" style="gap:8px;justify-content:center;margin-top:14px;flex-wrap:wrap"><button class="btn ghost sm" id="lpSee">👁 See it in action</button><button class="btn ghost sm" id="lpNews">📄 What's new</button><button class="btn ghost sm" id="lmCombat">⚔ Combat &amp; formulae</button></div>
-      <div class="muted small mt">Free · browser only · you vs AI · Season 0: the live world opens at 100 commanders</div><div class="small mt" style="border:1px solid var(--border2);border-radius:10px;padding:8px 12px;display:inline-block;max-width:560px"><b>How you win a season:</b> capture the <b>Nexus</b>, build the <b>Earth Command Center</b> there and hold it for ${NEXUS_HOLD} ticks. If nobody does, the Last Battle decides: whoever holds the Nexus the most ticks at the end of the season wins, together with their alliance. Then the world resets. <b>Campaign</b> is practice. <b>Start</b> asks you to pick Quick (200 turns), Standard (400) or Epic (840).</div>
+      <div class="muted small mt">Free · browser only · you vs AI · Season 0: the live world opens at 100 commanders</div><div class="small mt" style="border:1px solid var(--border2);border-radius:10px;padding:8px 12px;display:inline-block;max-width:560px"><b>How you win a season:</b> capture the <b>Nexus</b>, build the <b>Earth Command Center</b> there and hold it for ${NEXUS_HOLD} ticks. If nobody does, the Last Battle decides: whoever has the most hold points at the end of the season wins (a point for every turn holding the Nexus, two in the Last Battle), together with their alliance. Then the world resets. <b>Campaign</b> is practice. <b>Start</b> asks you to pick Quick (200 turns), Standard (400) or Epic (840).</div>
     </section>
     <section id="playerupdate" style="max-width:680px;margin:0 auto 14px">
       <a class="card" href="updates.html" target="_self" rel="noopener" style="display:block;text-decoration:none;color:inherit;margin:0 auto">
         <div class="row between wrap" style="gap:10px;align-items:center">
           <div style="min-width:0;flex:1">
-            <div><span class="mono" style="color:var(--gold);font-size:11px;letter-spacing:1px">PATCH 7.4 · CLEAR SCREENS</span> <span class="muted small">October 2026</span></div>
-            <div style="font-weight:700;margin-top:3px">Patch 7.4: Clear Screens</div>
-            <div class="muted small mt">Every screen now starts with what matters, and what repeated itself is gone. Know your odds before you strike: neutral garrisons show their strength and your chance, and a hopeless or blind attack asks first. Every battle gets its moment: a result screen with victory or defeat and what to do next, the last battle on Home, and battle reports first in Reports. Also: a living world. AI alliances grow, unite and form blocs, a coalition rises against whoever leads, allies answer the call and every hit gets an answer. See who leads on Diplomacy. Also: a calmer desk. An attack on your ground has one Front card on Home with your defence against what is coming. Alerts are one line, each screen starts with its own content, and on phones END TURN sits in the bottom bar. Share a battle to WhatsApp, Telegram or Discord, Messages is now Comms, and a build plan starts up to five builds by themselves.</div>
+            <div><span class="mono" style="color:var(--gold);font-size:11px;letter-spacing:1px">UPDATE 8.0 · SOLID GROUND</span> <span class="muted small">October 2026</span></div>
+            <div style="font-weight:700;margin-top:3px">Update 8.0: Solid Ground</div>
+            <div class="muted small mt">Update 8.0 is about solid ground. The middle of the season comes alive: weak nations break apart and leave land to take, a coalition rises against whoever runs away with the lead, and the prize is a race over the whole season that Home shows you. One turn report instead of a stream of pop-ups, cards with big buttons on the phone, and faster turns. Saved games work in every era, a new nation never replaces your running one without asking, and the season ends cleanly. Earlier: every screen starts with what matters, and what repeated itself is gone. Know your odds before you strike: neutral garrisons show their strength and your chance, and a hopeless or blind attack asks first. Every battle gets its moment: a result screen with victory or defeat and what to do next, the last battle on Home, and battle reports first in Reports. Also: a living world. AI alliances grow, unite and form blocs, a coalition rises against whoever leads, allies answer the call and every hit gets an answer. See who leads on Diplomacy. Also: a calmer desk. An attack on your ground has one Front card on Home with your defence against what is coming. Alerts are one line, each screen starts with its own content, and on phones END TURN sits in the bottom bar. Share a battle to WhatsApp, Telegram or Discord, Messages is now Comms, and a build plan starts up to five builds by themselves.</div>
           </div>
           <span class="btn ghost sm" style="flex:none;pointer-events:none">What is new</span>
         </div>
@@ -7323,7 +7937,7 @@ function renderLanding(){
   {const b=s.querySelector('#lpNews');if(b)b.onclick=()=>{const t=s.querySelector('#playerupdate');if(t)t.scrollIntoView({behavior:'smooth',block:'center'});};}
 }
 // ---- Legal identity: ONE place to change the operator / contact / copyright holder. Used by the Privacy, Terms and Credits tabs and the footer.
-const LEGAL={operator:'Wim Kamphorst',email:'wimkamphorst.coaching@gmail.com',author:'Wim Kamphorst',country:'the Netherlands',law:'Dutch law',dpa:'Autoriteit Persoonsgegevens (the Dutch data protection authority)',dpaUrl:'https://www.autoriteitpersoonsgegevens.nl',version:'1.0',updated:'September 2026',build:'Patch 7.4 · Oct 2026',minAge:16};
+const LEGAL={operator:'Wim Kamphorst',email:'wimkamphorst.coaching@gmail.com',author:'Wim Kamphorst',country:'the Netherlands',law:'Dutch law',dpa:'Autoriteit Persoonsgegevens (the Dutch data protection authority)',dpaUrl:'https://www.autoriteitpersoonsgegevens.nl',version:'1.0',updated:'September 2026',build:'Update 8.0 · Oct 2026',minAge:16};
 LEGAL.contact=`<b>${LEGAL.operator}</b>, <a href="mailto:${LEGAL.email}">${LEGAL.email}</a>`;
 // ---- Landing-page manual: beginner's handbook + combat formulae -------------
 const MANUAL={
@@ -7651,7 +8265,7 @@ const HELP=[
   warn:'High unrest risks sabotage or a revolt. Pacify or garrison restless ground.',
   see:['help-army','help-eco'],anchor:'map'},
  {id:'help-season',sec:'B',ic:'👑',title:'Season, Nexus & scores',short:'Win by holding the Nexus, or by holding it the longest in the Last Battle.',
-  bullets:['The Nexus is the single central region — capture it and build the Command Center.','Hold it long enough to win the season early.','Otherwise the Last Battle decides: whoever holds the Nexus the most ticks at the end of the season wins it. Only if nobody held it does the highest overall score win.','Renown from wars, goals and world projects feeds your standing.','Alliance win: one member holds the Nexus, but the victory is SHARED by the whole alliance. Concentrate your forces on one holder — allies who help win too, so never fight each other for it.','Fleets landing on the same tick fight as ONE combined army; only the biggest contributor takes the ground, the rest win alongside them.'],
+  bullets:['The Nexus is the single central region — capture it and build the Command Center.','Hold it long enough to win the season early.','Otherwise the Last Battle decides: whoever has the most hold points at the end of the season wins (a point for every turn holding the Nexus, two in the Last Battle) it. Only if nobody held it does the highest overall score win.','Renown from wars, goals and world projects feeds your standing.','Alliance win: one member holds the Nexus, but the victory is SHARED by the whole alliance. Concentrate your forces on one holder — allies who help win too, so never fight each other for it.','Fleets landing on the same tick fight as ONE combined army; only the biggest contributor takes the ground, the rest win alongside them.'],
   see:['help-rules-season','help-goals'],anchor:'rankings'},
  {id:'help-market',sec:'B',ic:'📈',title:'Market & bounties',short:'Trade resources on a live market; post and fulfil bounties.',
   bullets:['Prices move with supply and demand each tick.','Place buy/sell orders; they clear when the price meets.','Bounties let players pay others to hit a target.','Do not dump your whole stock at once — you move the price against yourself.'],
@@ -7663,7 +8277,7 @@ const HELP=[
   bullets:['🔴/🟠 bar = incoming attack, by urgency.','🛡 = shield or garrison; ⚔ = war/attack; 🕊 = peace/NAP.','🏙 status dot = Occupied / Pacified / Core on a region.','⏱ urgent tick = the tick is about to resolve — lock your orders.'],
   see:['help-where','help-occupy'],anchor:'dashboard'},
  {id:'help-faq',sec:'C',ic:'❓',title:'Common situations (FAQ)',short:'Quick answers to the questions that come up most.',
-  bullets:['I am under attack — reinforce from Homeland and call your alliance.','My region produces little — check food/energy, unrest and overextension.','Breaking a NAP — declaring war or attacking a member during a pact is betrayal.','Occupied vs Core — Occupied drags stability; a Provincial Capitol makes it Core.','Helping the alliance fastest — answer defence calls and feed the active goal.','When to pick a doctrine — once you know whether you fight fast or heavy.','End of season: hold the Nexus to win outright, or hold it the most ticks in the Last Battle.'],
+  bullets:['I am under attack — reinforce from Homeland and call your alliance.','My region produces little — check food/energy, unrest and overextension.','Breaking a NAP — declaring war or attacking a member during a pact is betrayal.','Occupied vs Core — Occupied drags stability; a Provincial Capitol makes it Core.','Helping the alliance fastest — answer defence calls and feed the active goal.','When to pick a doctrine — once you know whether you fight fast or heavy.','End of season: hold the Nexus to win outright, or collect the most hold points: a point per turn held, two in the Last Battle.'],
   see:['help-army','help-occupy','help-dip','help-goals'],anchor:'dashboard'},
  {id:'help-rules-season',sec:'D',ic:'📅',title:'Season rules',short:'Tick length, season length and the win condition for this season.',dyn:'season',see:['help-season'],anchor:'rankings'}
 ];
@@ -7673,7 +8287,7 @@ let _helpShowAll=false;
 // Dynamic lemma bodies are generated from live tables so the manual can never drift from the engine.
 function helpDynBody(kind){try{
   if(kind==='season'){const secs=(typeof SEASON_TICKS!=='undefined'?SEASON_TICKS:'—');const hold=(typeof NEXUS_HOLD!=='undefined'?NEXUS_HOLD:'—');const solo=(typeof window!=='undefined'&&!window.__MP__);
-    return `<ul><li><b>Tick length:</b> ${solo?'about one minute (single-player)':'one hour (live server)'}.</li><li><b>Season length:</b> ${secs} ticks.</li><li><b>Win condition:</b> capture the Nexus, build the Earth Command Center, and hold it ${hold} ticks. Otherwise the Last Battle decides: whoever holds the Nexus the most ticks in the final ${FINALE_WINDOW} ticks (plus up to ${FINALE_OT} ticks of overtime) wins. Only if nobody held it does the highest overall score win.</li><li><b>Winning with an alliance:</b> one member physically holds the Nexus, but the win is <b>shared by the whole alliance</b>. Pile your forces behind one holder — allies who help win too, so you never fight each other for it.</li><li>These numbers can change per season; everything else in Help stays the same.</li></ul>`;}
+    return `<ul><li><b>Tick length:</b> ${solo?'about one minute (single-player)':'one hour (live server)'}.</li><li><b>Season length:</b> ${secs} ticks.</li><li><b>Win condition:</b> capture the Nexus, build the Earth Command Center, and hold it ${hold} ticks. Otherwise the Last Battle decides: whoever has the most hold points wins: a point for every turn holding the Nexus once it awakens, two in the final ${FINALE_WINDOW} ticks (plus up to ${FINALE_OT} ticks of overtime). Only if nobody held it does the highest overall score win.</li><li><b>Winning with an alliance:</b> one member physically holds the Nexus, but the win is <b>shared by the whole alliance</b>. Pile your forces behind one holder — allies who help win too, so you never fight each other for it.</li><li>These numbers can change per season; everything else in Help stays the same.</li></ul>`;}
   if(kind==='units'){const CL=(typeof CLASS_NAME!=='undefined'?CLASS_NAME:{});const rows=Object.keys(UNIT||{}).map(k=>{const u=UNIT[k];return `<tr><td><b>${esc(u.n||k)}</b></td><td>${esc((CL[u.cls]||u.cls||'—'))}</td><td class="r">${u.tier||'—'}</td></tr>`;}).join('');
     return `<div class="scroll"><table><thead><tr><th>Unit</th><th>Class</th><th class="r">Tier</th></tr></thead><tbody>${rows||'<tr><td colspan="3" class="muted small">—</td></tr>'}</tbody></table></div>`;}
   if(kind==='buildings'){const rows=Object.keys(BUILD||{}).map(k=>{const b=BUILD[k];return `<tr><td><b>${esc(b.n||k)}</b></td><td class="small">${esc((b.d||'').slice(0,90))}</td></tr>`;}).join('');
@@ -7862,7 +8476,7 @@ function renderSetup(scenarioKey){const SC=scenarioKey?scenarioOf(scenarioKey):n
       const nx=b.querySelector('#wnext');if(nx)nx.onclick=()=>{if(!st.sel)return;st.step=3;render();};
     } else {
       b.innerHTML=`<div class="mono" style="color:var(--accent2);font-size:11px;letter-spacing:2px">STEP 3 OF 3</div>
-        <h3 style="margin:4px 0 2px">Pick a playstyle</h3><div class="small" style="border-left:3px solid var(--gold);padding:6px 10px;margin:6px 0 4px;background:var(--bg2);border-radius:6px"><b>🏛 The goal:</b> capture the Nexus, build the Earth Command Center, hold it ${NEXUS_HOLD} ticks, or hold it the most ticks in the Last Battle at the end of the ${SOLO_LENGTHS[st.len].ticks}-turn season. Everything below is a means to that.</div>
+        <h3 style="margin:4px 0 2px">Pick a playstyle</h3><div class="small" style="border-left:3px solid var(--gold);padding:6px 10px;margin:6px 0 4px;background:var(--bg2);border-radius:6px"><b>🏛 The goal:</b> capture the Nexus, build the Earth Command Center, hold it ${NEXUS_HOLD} ticks, or collect the most hold points by the end of the ${SOLO_LENGTHS[st.len].ticks}-turn season. Everything below is a means to that.</div>
         <p class="muted small" style="margin:2px 0 6px">New here? Pick one, it sets a sensible government and economy for you. You can fine-tune below.</p>
         <div class="grid g3" id="presets">${PLAY_PRESETS.map(pr=>`<div class="regi card${st.preset===pr.k?' sel':''}" data-preset="${pr.k}" style="padding:11px;cursor:pointer"><div class="row between"><strong>${pr.ic} ${esc(pr.n)}</strong></div><div class="muted small mt">${esc(pr.d)}</div></div>`).join('')}</div>
         <details class="mt"${st.preset?'':' open'}><summary class="small muted" style="cursor:pointer">⚙ Fine-tune government &amp; doctrine</summary>
@@ -8842,7 +9456,7 @@ VIEWS.dashboard=v=>{const c=you();const pj=projection(c),sc=scores(c);const sp=c
   const endsIn=Math.max(0,SEASON_TICKS-(G.tick-G.season.startTick));
   // Under a MAJOR assault, Home goes into crisis mode: the season banner, the expansion quest and the guided
   // First-Steps card are civilian noise while you are holding the line, so they collapse until the threat passes.
-  const _majorThreat=(()=>{try{return incomingTo(c.id).some(x=>x.threat>=0.5)||(c.fleets||[]).some(f=>f.status==='battle');}catch(e){return false;}})();
+  const _majorThreat=(()=>{try{return incomingTo(c.id).some(x=>x.threat>=0.5);}catch(e){return false;}})();
   v.appendChild(h(`<div class="ptitle"><h2>Home</h2><span class="h">${_majorThreat?'<span class="muted small">Crisis mode. </span>':nexusLine()}${esc(c.name)} · ${rankTitle(c.id).title} · Season ${G.season.num} · tick ${G.tick}</span></div>`));
   // v3.18 Home 3-zone layout. Zone 1 "Now" is full width on top; Zone 2 "Your nation" and Zone 3 "The world" sit side by side on wide
   // screens (stacked on mobile). Each card keeps its exact content and handlers, only its parent zone changes.
@@ -10024,7 +10638,7 @@ function landingBannerSVG(){const W=1920,H=480;const sc=H*1.35/MAP_H,mx=W-MAP_W*
 <g clip-path="url(#lbClip)"><g transform="translate(${mx.toFixed(1)} ${my.toFixed(1)}) scale(${sc.toFixed(4)})"><path d="${MAP_LAND}" fill="#3aa0ff" fill-opacity=".4" filter="url(#lbCoast)" fill-rule="evenodd"/><path d="${MAP_LAND}" fill="url(#lbLand)" stroke="#4aa4e0" stroke-width="0.7" fill-rule="evenodd"/></g>${links}${nodes}</g>
 <rect width="${W}" height="${H}" fill="url(#lbFade)"/>
 <g transform="translate(96 0)"><text x="-4" y="238" font-family="Archivo,sans-serif" font-weight="800" font-size="124" fill="#e7eef8" letter-spacing="4">TERRA<tspan fill="#4f8cff">STATE</tspan></text><rect x="0" y="262" width="360" height="5" rx="2.5" fill="url(#lbBar)"/>
-<text class="lb-sub" x="0" y="316" font-family="Archivo,sans-serif" font-weight="600" font-size="30" fill="#e7eef8">One planet. A thousand nations. One tick every hour.</text>
+<text class="lb-sub" x="0" y="316" font-family="Archivo,sans-serif" font-weight="600" font-size="30" fill="#e7eef8">One planet. 300 nations. Turn-based.</text>
 <text class="lb-sub" x="0" y="356" font-family="IBM Plex Mono,monospace" font-size="19" fill="#8ba0bb" letter-spacing="1">Build your economy · forge an alliance · take the Nexus · hold it ${NEXUS_HOLD} ticks · win the season</text>
 <text class="lb-sub" x="0" y="420" font-family="IBM Plex Mono,monospace" font-size="17" fill="#37d9a9">● ${SOLO_POP} nations · ${THEATERS.length} theaters · you set the length</text></g><text class="lb-sub" x="${W-24}" y="${H-16}" text-anchor="end" font-family="IBM Plex Mono,monospace" font-size="13" fill="#5f7590">© 2026 Wim Kamphorst · Terrastate</text></svg>`;}
 // [name, geo-code (naming pool), lon, lat], index = cluster-1. The first 11 keep their legacy names.
@@ -11613,7 +12227,7 @@ VIEWS.rankings=v=>{const c=you();const rt=rankTitle(c.id);const myS=scores(c);co
     const rows=top.map((o,i)=>{const gap=lead?Math.round((1-o.s/Math.max(1,lead.s))*100):0;const inC=i===0||gap<=15;const me=o.x.id===c.id;
       return `<tr${me?' style="background:rgba(79,140,255,.09)"':''}><td>${i+1}</td><td>${emblem(o.x)} ${me?'<b>You</b>':nationLink(o.x.id,esc(o.x.name))} <span class="tag">${esc(o.x.tag)}</span></td><td class="r">${full(o.s)}</td><td class="r">${i===0?'<span class="pill g">leads</span>':inC?'<span class="pill w">−'+gap+'% · in reach</span>':'<span class="muted">−'+gap+'%</span>'}</td></tr>`;}).join('');
     const nxLine=holder?`<div class="small" style="color:var(--gold);font-weight:600">🏛 ${holder.id===c.id?'You hold':esc(holder.name)+' holds'} the Nexus — an outright win in <b>${holdLeft}</b> tick${holdLeft===1?'':'s'} unless the Command Center is broken.</div>`:(nx?`<div class="small">🏛 The Nexus is ${nx.owner!=null?'held by '+esc((G.countries[nx.owner]||{}).name||'a rival')+' (no Command Center yet)':'unclaimed'} — take it, build the Center and hold ${NEXUS_HOLD} ticks for an instant win.</div>`:'');
-    v.appendChild(h(`<div class="card mb" style="border-left:3px solid var(--gold)"><h3>Who can still win <span class="muted small" style="text-transform:none;letter-spacing:0">${left} tick${left===1?'':'s'} to the end</span></h3>${nxLine}<div class="scroll mt"><table><thead><tr><th></th><th>Nation</th><th class="r">Score</th><th class="r">Gap to #1</th></tr></thead><tbody>${rows}</tbody></table></div><div class="muted small mt">Two ways to win: hold the Nexus long enough for an instant win, or hold the Nexus the most ticks in the Last Battle (the final ${FINALE_WINDOW} ticks). The score only decides if nobody held it, and it ranks everyone else.</div></div>`));}}catch(e){}}
+    v.appendChild(h(`<div class="card mb" style="border-left:3px solid var(--gold)"><h3>Who can still win <span class="muted small" style="text-transform:none;letter-spacing:0">${left} tick${left===1?'':'s'} to the end</span></h3>${nxLine}<div class="scroll mt"><table><thead><tr><th></th><th>Nation</th><th class="r">Score</th><th class="r">Gap to #1</th></tr></thead><tbody>${rows}</tbody></table></div><div class="muted small mt">Two ways to win: hold the Nexus long enough for an instant win, or collect the most hold points (a point for every turn holding the Nexus once it awakens, two in the Last Battle). The score only decides if nobody held it, and it ranks everyone else.</div></div>`));}}catch(e){}}
   // ---- PATHS TO VICTORY, every dimension crowns a champion at season end; chase the one that fits your path ----
   {const champs=victoryChampions();
    const bestC=champs.filter(x=>x.myPos).sort((a,b)=>a.myPos-b.myPos)[0];const bestDim=bestC?bestC.v.n+' #'+bestC.myPos:'—';
@@ -11775,7 +12389,7 @@ VIEWS.codex=v=>{
     <div class="grid g3 mt small">
       <div><b>Tick</b><br>${isSoloGame()?'Solo: you end each turn yourself (END TURN or Space), or auto-play at 1x / 5x / 20x · season '+SEASON_TICKS+' turns':(Math.round(TICK_MS/60000)>=60?Math.round(TICK_MS/3600000)+' h':Math.round(TICK_MS/60000)+' min')+' per tick in this build · season '+SEASON_TICKS+' ticks ('+Math.round(SEASON_TICKS/168)+' weeks live)'}</div>
       <div><b>Command Points</b><br>+${cpRegen()} per tick, max ${cpCap()} (large alliances regenerate slower)</div>
-      <div><b>Win</b><br>Hold the Nexus with an Earth Command Center for ${NEXUS_HOLD} ticks · else whoever holds the Nexus the most ticks in the Last Battle (the final ${FINALE_WINDOW} ticks)</div>
+      <div><b>Win</b><br>Hold the Nexus with an Earth Command Center for ${NEXUS_HOLD} ticks · else whoever has the most hold points (a point for every turn holding the Nexus once it awakens, two in the final ${FINALE_WINDOW} ticks)</div>
       <div><b>Beginner protection</b><br>${NEWBIE_PROTECT} ticks, regions can't be captured; ends early if you attack. Afterwards, Superpowers and the Hegemon still cannot attack you until you strike first.</div>
       <div><b>Safety nets</b><br>Auto-mobilise + emergency shield (RoE) are ON by default. Auto-build and auto-research are both OFF by default (you run your own economy and tech; turn either on in Home if you want the AI to help). Small nations (Emerging State) shield earlier. Rebuild relief +15% for ${REBUILD_TICKS} ticks after losing a region.</div>
       <div><b>Building</b><br>${BUILD_SLOTS} builds per region at once · ${REGION_DP} Development Points of footprint per region</div>
@@ -12039,10 +12653,10 @@ const LATE_SEASON_TICKS=40; // a softer, earlier heads-up so players position fo
 function endgameLeft(){try{return _ticksLeft();}catch(e){return 999;}}
 function endgameLine(){const left=endgameLeft();if(G._winner)return '';if(G._overtime&&!G._seasonEnd){const _nx=nexus();const _h=_nx&&_nx.owner!=null?G.countries[_nx.owner]:null;const _k=G.tick-G._overtime.start+1;return `<div class="alertbar"><div class="alertrow endgame" data-go="dashboard" style="border-left-color:var(--danger)"><span>⏱ <b>OVERTIME ${_k}/${FINALE_OT}, THE LAST BATTLE</b> · the season ends when the fight for the Nexus is over${_h?` · held by <b>${esc(_h.name)}</b> [${esc(_h.tag)}]`:''}${typeof finaleLeaderStr==='function'?finaleLeaderStr():''}</span><span class="arr">Watch →</span></div></div>`;}const nx=nexus();const h=nx&&nx.owner!=null?G.countries[nx.owner]:null;const c=you();const rt=c?rankTitle(c.id):null;
   const nxStr=(h?` · Nexus held by <b>${esc(h.name)}</b> [${esc(h.tag)}] ${nx.ccHeld||0}/${NEXUS_HOLD}`:(nx?' · the Nexus is unclaimed':''))+(typeof finaleLeaderStr==='function'&&endgameLeft()<=FINALE_WINDOW?finaleLeaderStr():'');
-  if(left<=FINALE_WINDOW)return `<div class="alertbar"><div class="alertrow endgame" data-go="dashboard"><span>⚔ <b>THE LAST BATTLE</b>, ${left} tick${left===1?'':'s'} left · hold the Nexus the most ticks to win the season${nxStr}</span><span class="arr">Watch →</span></div></div>`;
+  if(left<=FINALE_WINDOW)return `<div class="alertbar"><div class="alertrow endgame" data-go="dashboard"><span>⚔ <b>THE LAST BATTLE</b>, ${left} tick${left===1?'':'s'} left · the most hold points wins the season${nxStr}</span><span class="arr">Watch →</span></div></div>`;
   if(left<=ENDGAME_TICKS)return `<div class="alertbar"><div class="alertrow endgame" data-go="rankings"><span>⌛ <b>SEASON ENDGAME</b>, ${left} tick${left===1?'':'s'} left · the Last Battle starts in ${left-FINALE_WINDOW} tick${left-FINALE_WINDOW===1?'':'s'}${nxStr}${rt?` · you are #${rt.pos}`:''}</span><span class="arr">Rankings →</span></div></div>`;
   // 21–40 ticks left: a calmer amber "late season" nudge — position now, the Nexus is the only fast win.
-  if(left<=LATE_SEASON_TICKS)return `<div class="alertbar"><div class="alertrow" data-go="rankings" style="border-left:3px solid var(--alert);background:linear-gradient(90deg,rgba(224,165,42,.10),transparent 70%)"><span>🌆 <b>Late season</b>, ${left} ticks to go. The Last Battle starts ${FINALE_WINDOW} ticks before the end: whoever holds the Nexus the most ticks from then on wins the season. Position now${nxStr}${rt?` · you are #${rt.pos}`:''}.</span><span class="arr">Rankings →</span></div></div>`;
+  if(left<=LATE_SEASON_TICKS)return `<div class="alertbar"><div class="alertrow" data-go="rankings" style="border-left:3px solid var(--alert);background:linear-gradient(90deg,rgba(224,165,42,.10),transparent 70%)"><span>🌆 <b>Late season</b>, ${left} ticks to go. The Last Battle starts ${FINALE_WINDOW} ticks before the end: from then on every turn holding the Nexus counts double, and the most hold points wins the season. Position now${nxStr}${rt?` · you are #${rt.pos}`:''}.</span><span class="arr">Rankings →</span></div></div>`;
   return '';}
 // ---- Update 2: THE LAST BATTLE (finale) ------------------------------------------------------------------------
 // The season used to stop dead on its last tick, even with armies mid-fight at the Nexus. Now:
@@ -12104,12 +12718,12 @@ function finaleRecord(){try{if(G._winner!=null)return;const nx=finalePrimary();i
   const last=F.ticks[F.ticks.length-1];if(last&&last.tick===G.tick)F.ticks[F.ticks.length-1]=snap;else F.ticks.push(snap);if(F.ticks.length>40)F.ticks.shift();
   // HOLD RACE: bank one tick for every Nexus holder, once per tick
   if(F.holdTick!==G.tick){F.holdTick=G.tick;F.hold=F.hold||{};TT.forEach(r=>{if(r.owner!=null)F.hold[r.owner]=(F.hold[r.owner]||0)+1;});
-    const L=finaleLeader();if(L&&L.id!==F.leader){const lc=G.countries[L.id];if(lc&&F.leader!=null)news('nexus','👑 New leader in the Last Battle: '+leaderName(lc)+' of '+lc.name+' ['+lc.tag+'], '+L.t+' tick'+(L.t===1?'':'s')+' holding the Nexus. Whoever holds it longest wins the season.');F.leader=L.id;}}
+    const L=finaleLeader();if(L&&L.id!==F.leader){const lc=G.countries[L.id];if(lc&&F.leader!=null)news('nexus','👑 New leader in the Last Battle: '+leaderName(lc)+' of '+lc.name+' ['+lc.tag+'], '+L.t+' hold point'+(L.t===1?'':'s')+'. The most hold points wins the season.');F.leader=L.id;}}
   // world news: the build-up and every overtime tick, in plain words
   const hn=holder?(leaderName(holder)+' ['+holder.tag+']'):'nobody';const armies=m.list.filter(x=>x.atk);
   const say=(key,txt)=>{if(F.news[key])return;F.news[key]=1;news('nexus',txt);};
   if(!G._overtime){
-    if(left===FINALE_WINDOW)say('w','⚔ THE LAST BATTLE begins: '+left+' ticks on the clock. The Nexus ('+nx.coord+') is held by '+hn+'. '+(armies.length?armies.length+' armies ('+full(m.n)+' units) are marching on it.':'No army is marching on it yet.')+' Whoever holds it the most ticks from now on wins the season. Battles still running at the end are fought out.');
+    if(left===FINALE_WINDOW)say('w','⚔ THE LAST BATTLE begins: '+left+' ticks on the clock. The Nexus ('+nx.coord+') is held by '+hn+'. '+(armies.length?armies.length+' armies ('+full(m.n)+' units) are marching on it.':'No army is marching on it yet.')+' Every turn held from now on counts double, and the most hold points wins the season. Battles still running at the end are fought out.');
     else if(left===12||left===5)say('c'+left,'⏳ '+left+' ticks left. Nexus: '+hn+(nx.commandCenter?' · Command Center '+(nx.ccHeld||0)+'/'+NEXUS_HOLD:'')+' · garrison '+full(garrison)+' · '+armies.length+' armies ('+full(m.n)+' units) inbound.');
     else if(left===1)say('c1','🔔 FINAL TICK. '+(finaleNexusAction()?'Armies are still fighting for the Nexus: the Last Battle goes into overtime.':'Nothing is marching on the Nexus. The season ends with '+hn+' holding it.'));
   }else say('ot'+snap.ot,'⏱ OVERTIME '+snap.ot+'/'+FINALE_OT+': '+(fights?fights+' battle'+(fights>1?'s':'')+' at the Nexus this tick. ':'')+'Nexus held by '+hn+' · '+armies.length+' armies ('+full(m.n)+' units) still in the fight.');
@@ -12122,7 +12736,7 @@ function finaleClose(){try{const nx=finalePrimary();const TT=finaleTargets();con
   F.battles=F.ticks.reduce((t,x)=>t+(x.fights||0),0);
   {const L=finaleLeader();F.holdTable=finaleHoldTable().slice(0,8);if(L&&L.t>0){F.winner=L.id;F.winnerTicks=L.t;const wc=G.countries[L.id];F.winnerClan=wc&&wc.clan!=null?wc.clan:null;F.winnerName=wc?wc.name:null;F.winnerTag=wc?wc.tag:null;}}
   try{_rankTick=-1;_rankCache=null;}catch(e){}
-  if(F.winner!=null){const wc=G.countries[F.winner];news('nexus','🏆 THE LAST BATTLE IS OVER. '+leaderName(wc)+' of '+wc.name+' ['+wc.tag+'] held the Nexus '+F.winnerTicks+' ticks, longer than anyone, and WINS THE SEASON'+(F.winnerClan!=null?' together with their alliance':'')+'.');return;}
+  if(F.winner!=null){const wc=G.countries[F.winner];news('nexus','🏆 THE LAST BATTLE IS OVER. '+leaderName(wc)+' of '+wc.name+' ['+wc.tag+'] collected '+F.winnerTicks+' hold points at the Nexus, more than anyone, and WINS THE SEASON'+(F.winnerClan!=null?' together with their alliance':'')+'.');return;}
   news('nexus','🏁 THE LAST BATTLE IS OVER. Nobody held the Nexus during the finale, so the season is decided on score.');
 }catch(e){}}
 function finaleScoreBonus(c,overall){try{const F=G._finale;if(!F||!F.done||!c)return overall;const hs=F.holders||(F.holder!=null?[F.holder]:[]);const cs=F.holderClans||(F.holderClan!=null?[F.holderClan]:[]);
@@ -12131,7 +12745,7 @@ function finaleScoreBonus(c,overall){try{const F=G._finale;if(!F||!F.done||!c)re
 var LASTBATTLE_TEXTS=1;
 function endgameTick(){const left=endgameLeft();if(![LATE_SEASON_TICKS,30,ENDGAME_TICKS,10,5,1].includes(left))return;
   const late=left>ENDGAME_TICKS;
-  G.countries.forEach(c=>{if(c.isAI||c.retired)return;sitrep(c,'alert',left===1?'⌛ FINAL TICK. Scores lock next tick, unless armies are still fighting for the Nexus: then the Last Battle runs up to '+FINALE_OT+' ticks of overtime.':late?('🌆 Late season, '+left+' ticks to go. Position for the Nexus: the Last Battle starts '+FINALE_WINDOW+' ticks before the end, and whoever holds it the most ticks from then on wins the season.'):(left>=FINALE_WINDOW?'⚔ The Last Battle begins: hold the Nexus the most ticks from now on to win the season. The clock runs out at tick #'+(G.tick+left)+'.':'⌛ '+left+' ticks left in the Last Battle. The clock runs out at tick #'+(G.tick+left)+'. Check the hold race on Home.'),{sev:left<=5?3:late?1:2,go:'rankings'});});}
+  G.countries.forEach(c=>{if(c.isAI||c.retired)return;sitrep(c,'alert',left===1?'⌛ FINAL TICK. Scores lock next tick, unless armies are still fighting for the Nexus: then the Last Battle runs up to '+FINALE_OT+' ticks of overtime.':late?('🌆 Late season, '+left+' ticks to go. Position for the Nexus: the Last Battle starts '+FINALE_WINDOW+' ticks before the end, and from then on every turn holding it counts double, and the most hold points wins the season.'):(left>=FINALE_WINDOW?'⚔ The Last Battle begins: hold the Nexus: every turn counts double from now on, and the most hold points wins the season. The clock runs out at tick #'+(G.tick+left)+'.':'⌛ '+left+' ticks left in the Last Battle. The clock runs out at tick #'+(G.tick+left)+'. Check the hold race on Home.'),{sev:left<=5?3:late?1:2,go:'rankings'});});}
 // ---- NEXUS TEST MODE (only active when window.__NEXUSTEST__ is set by the nexus-test build) ----
 // Drops you straight into the endgame at the Nexus so the last-40-ticks features can be tested in seconds
 // instead of playing a whole season. Never runs in the normal solo or multiplayer builds.
@@ -12309,7 +12923,7 @@ if(PATCH_ON.loadingOverlay){
   let passthrough=false;
   document.addEventListener('click',e=>{const btn=e.target.closest('#go');if(!btn||passthrough||btn.disabled)return;
     e.stopImmediatePropagation();e.preventDefault();
-    const ov=document.createElement('div');ov.className='modal-bg p-loading';ov.innerHTML='<div class="modal" style="text-align:center;max-width:360px"><div class="mono small" style="letter-spacing:2px;color:var(--accent2)">ESTABLISHING COMMAND</div><h2 style="margin:8px 0">Building the world…</h2><div class="muted small">Generating ~1,000 nations, alliances and six ticks of history. This takes a few seconds.</div><div class="p-bar"><span></span></div></div>';
+    const ov=document.createElement('div');ov.className='modal-bg p-loading';ov.innerHTML='<div class="modal" style="text-align:center;max-width:360px"><div class="mono small" style="letter-spacing:2px;color:var(--accent2)">ESTABLISHING COMMAND</div><h2 style="margin:8px 0">Building the world…</h2><div class="muted small">Generating ~300 nations, alliances and six ticks of history. This takes a few seconds.</div><div class="p-bar"><span></span></div></div>';
     document.body.appendChild(ov);
     setTimeout(()=>{passthrough=true;try{btn.click();}finally{passthrough=false;setTimeout(()=>ov.remove(),150);}},60);
   },true);
@@ -16878,12 +17492,12 @@ function finaleSparkSVG(ticks){try{const T=(ticks||[]).slice(-22);if(T.length<2)
   return '<div class="fn-spark"><svg width="100%" height="40" preserveAspectRatio="none" role="img" aria-label="Units marching on the Nexus, tick by tick">'+bars+'</svg><div class="muted" style="font-size:11px;display:flex;justify-content:space-between"><span>t'+T[0].tick+'</span><span>units marching on the Nexus · grey = quiet · gold = battle · red = overtime</span><span>t'+T[T.length-1].tick+'</span></div></div>';}catch(e){return '';}}
 
 function finaleHoldRaceHTML(c,n){const T=finaleHoldTable();if(!T.length)return '<div class="muted small">Nobody has held the Nexus yet. The first to take it leads.</div>';const max=Math.max(1,T[0].t);
-  const row=(x,i)=>{const o=G.countries[x.id]||{};return '<div class="fn-row'+(x.id===c.id?' me':'')+'" style="align-items:center"><span style="min-width:74px">'+(i===0?'👑 ':'#'+(i+1)+' ')+esc(o.tag||'?')+(x.holding?' 🏛':'')+'</span><span style="flex:1;height:8px;background:var(--border);border-radius:4px;overflow:hidden;margin:0 8px"><span style="display:block;height:100%;width:'+Math.round(x.t/max*100)+'%;background:'+(i===0?'var(--gold,#e3b341)':'var(--accent,#4f8cff)')+'"></span></span><span class="mono">'+x.t+'t</span></div>';};
+  const row=(x,i)=>{const o=G.countries[x.id]||{};return '<div class="fn-row'+(x.id===c.id?' me':'')+'" style="align-items:center"><span style="min-width:74px">'+(i===0?'👑 ':'#'+(i+1)+' ')+esc(o.tag||'?')+(x.holding?' 🏛':'')+'</span><span style="flex:1;height:8px;background:var(--border);border-radius:4px;overflow:hidden;margin:0 8px"><span style="display:block;height:100%;width:'+Math.round(x.t/max*100)+'%;background:'+(i===0?'var(--gold,#e3b341)':'var(--accent,#4f8cff)')+'"></span></span><span class=\"mono\">'+x.t+' pts</span></div>';};
   const me=T.findIndex(x=>x.id===c.id);return T.slice(0,n||5).map(row).join('')+(me>=(n||5)?row(T[me],me):'');}
 function finaleLeadLine(c){const T=finaleHoldTable();const L=T[0];const left=endgameLeft();const room=(G._overtime&&!G._seasonEnd?Math.max(0,FINALE_OT-(G.tick-G._overtime.start)):left+FINALE_OT);
   if(!L)return '<div class="fn-lead">👑 Nobody has held the Nexus yet. Take it and every tick you keep it counts.</div>';
   const o=G.countries[L.id]||{};const mine=L.id===c.id||(c.clan!=null&&o.clan===c.clan);const me=T.find(x=>x.id===c.id);const my=me?me.t:0;
-  let you='';if(L.id===c.id)you='That is you. Keep holding.';else if(mine)you='That is your alliance: you share the win.';else{const need=L.t-my+1;you='You: '+my+' tick'+(my===1?'':'s')+'. '+(need>room?'Out of reach for you now. Back whoever can still catch up.':'You need '+need+' more to take the lead.');}
+  let you='';if(L.id===c.id)you='That is you. Keep holding.';else if(mine)you='That is your alliance: you share the win.';else{const need=L.t-my+1;you='You: '+my+' point'+(my===1?'':'s')+'. '+(need>room?'Out of reach for you now. Back whoever can still catch up.':'You need '+need+' more to take the lead.');}
   return '<div class="fn-lead">👑 If it ended now, <b>'+esc(o.name||'?')+' ['+esc(o.tag||'?')+']</b> wins the season: held the Nexus <b>'+L.t+' tick'+(L.t===1?'':'s')+'</b>. <span class="muted">'+you+'</span></div>';}
 function finalePanelHTML(c){try{if(!c||typeof finaleActive!=='function'||!finaleActive())return '';const nx=finalePrimary();if(!nx)return '';const TT=finaleTargets();const F=G._finale||{ticks:[]};
   const left=endgameLeft();const ot=G._overtime&&!G._seasonEnd?(G.tick-G._overtime.start+1):0;
@@ -16920,10 +17534,10 @@ function finalePanelHTML(c){try{if(!c||typeof finaleActive!=='function'||!finale
     ((mine||ally)?'<button class="btn sec sm" onclick="if(typeof BR_REINF===\'function\')BR_REINF('+nx.id+')">🛡 Reinforce it</button>':'')+
     '<button class="btn ghost sm" onclick="if(typeof GOTO_COORD===\'function\')GOTO_COORD(\''+nx.coord+'\')">🗺 Show on map</button></div>';
   return '<div class="card mb finale-card'+(ot?' ot':'')+'"><div class="fn-head"><div><div class="fn-kick">'+(ot?'⏱ OVERTIME · THE LAST BATTLE':'⚔ THE LAST BATTLE')+'</div><div class="fn-title">The Nexus · '+esc(nx.name)+' '+coordChip(nx.coord)+'</div></div><div class="fn-clock">'+clock+'</div></div>'+
-    '<div class="fn-sub">'+(ot?'The clock has run out, but the fight for the Nexus goes on, and every tick still counts in the hold race. The season ends when the last battle there is over, at most '+FINALE_OT+' ticks.':'Whoever holds the Nexus the most ticks in the Last Battle wins the season, together with their alliance. When the clock hits zero, battles still running are fought out (up to '+FINALE_OT+' extra ticks).')+'</div>'+finaleLeadLine(c)+
+    '<div class="fn-sub">'+(ot?'The clock has run out, but the fight for the Nexus goes on, and every tick still counts in the hold race. The season ends when the last battle there is over, at most '+FINALE_OT+' ticks.':'Whoever has the most hold points wins the season (a point for every turn holding the Nexus once it awakens, two in the Last Battle), together with their alliance. When the clock hits zero, battles still running are fought out (up to '+FINALE_OT+' extra ticks).')+'</div>'+finaleLeadLine(c)+
     (TT.length>1?'<div class="small" style="margin:-4px 0 8px">'+TT.map(r=>{const o=r.owner!=null?G.countries[r.owner]:null;return '<span style="margin-right:12px">'+(r.id===nx.id?'<b>':'')+esc(r.name)+(r.id===nx.id?'</b>':'')+': '+(o?esc(o.tag)+(o.id===c.id?' (you)':''):'nobody')+'</span>';}).join('')+'</div>':'')+tiles+finaleSparkSVG(F.ticks)+
     '<div class="fn-cols"><div class="fn-box"><h4>Marching on the Nexus</h4>'+march+'</div><div class="fn-box"><h4>Battles at the Nexus</h4>'+log+'</div></div>'+
-    '<div class="fn-cols"><div class="fn-box"><h4>Hold race · most ticks holding the Nexus wins</h4>'+finaleHoldRaceHTML(c,5)+'</div><div class="fn-you'+(late?' late':'')+'">'+youHtml+acts+'</div></div></div>';
+    '<div class="fn-cols"><div class="fn-box"><h4>Hold race · most hold points wins</h4>'+finaleHoldRaceHTML(c,5)+'</div><div class="fn-you'+(late?' late':'')+'">'+youHtml+acts+'</div></div></div>';
 }catch(e){return '';}}
 
 function lastBattleHTML(c){try{const F=G._finale;if(!F||!F.done)return '';
@@ -16931,16 +17545,293 @@ function lastBattleHTML(c){try{const F=G._finale;if(!F||!F.done)return '';
   const peak=(F.ticks||[]).reduce((m,x)=>Math.max(m,x.inbN||0),0);
   const logE=(G._nexusLog||[]).filter(e=>e&&e.atk!==e.def&&e.tick>=(F.start||0));const myPart=c?logE.filter(e=>e.atk===c.id||e.def===c.id).length:0;
   const T=F.holdTable||[];const max=Math.max(1,(T[0]||{}).t||1);const myRow=T.find(x=>c&&x.id===c.id);
-  const race=T.slice(0,5).map((x,i)=>{const o=G.countries[x.id]||{};return '<div class="small" style="display:flex;align-items:center;gap:8px;padding:2px 0'+(c&&x.id===c.id?';color:var(--accent2);font-weight:700':'')+'"><span style="min-width:70px">'+(i===0?'👑 ':'#'+(i+1)+' ')+esc(o.tag||'?')+'</span><span style="flex:1;height:7px;background:var(--border);border-radius:4px;overflow:hidden"><span style="display:block;height:100%;width:'+Math.round(x.t/max*100)+'%;background:'+(i===0?'var(--gold,#e3b341)':'var(--accent,#4f8cff)')+'"></span></span><span class="mono">'+x.t+'t</span></div>';}).join('');
+  const race=T.slice(0,5).map((x,i)=>{const o=G.countries[x.id]||{};return '<div class="small" style="display:flex;align-items:center;gap:8px;padding:2px 0'+(c&&x.id===c.id?';color:var(--accent2);font-weight:700':'')+'"><span style="min-width:70px">'+(i===0?'👑 ':'#'+(i+1)+' ')+esc(o.tag||'?')+'</span><span style="flex:1;height:7px;background:var(--border);border-radius:4px;overflow:hidden"><span style="display:block;height:100%;width:'+Math.round(x.t/max*100)+'%;background:'+(i===0?'var(--gold,#e3b341)':'var(--accent,#4f8cff)')+'"></span></span><span class=\"mono\">'+x.t+' pts</span></div>';}).join('');
   const title=W?'🏆 '+esc(W.name)+' ['+esc(W.tag)+'] wins the season':'Nobody held the Nexus: the season goes to the best score';
-  const sub=(W?'Held the Nexus '+F.winnerTicks+' tick'+(F.winnerTicks===1?'':'s')+' in the Last Battle, longer than anyone'+(F.winnerClan!=null?'. Their alliance shares the win':'')+'. ':'')+(F.ot?'Overtime ran '+F.ot+' extra tick'+(F.ot===1?'':'s')+'. ':'')+F.battles+' battle'+(F.battles===1?'':'s')+' at the Nexus · at the peak '+full(peak)+' units marching on it.';
-  const you=meWin?'<div class="lb-you good">🏆 That is you. You won the season.</div>':won?'<div class="lb-you good">🤝 Your alliance won the season. The victory is shared.</div>':(myRow?'<div class="lb-you">You held the Nexus '+myRow.t+' tick'+(myRow.t===1?'':'s')+'.</div>':myPart?'<div class="lb-you">You fought '+myPart+' battle'+(myPart===1?'':'s')+' for it.</div>':'');
+  const sub=(W?'Collected '+F.winnerTicks+' hold point'+(F.winnerTicks===1?'':'s')+' at the Nexus over the season, more than anyone'+(F.winnerClan!=null?'. Their alliance shares the win':'')+'. ':'')+(F.ot?'Overtime ran '+F.ot+' extra tick'+(F.ot===1?'':'s')+'. ':'')+F.battles+' battle'+(F.battles===1?'':'s')+' at the Nexus · at the peak '+full(peak)+' units marching on it.';
+  const you=meWin?'<div class="lb-you good">🏆 That is you. You won the season.</div>':won?'<div class="lb-you good">🤝 Your alliance won the season. The victory is shared.</div>':(myRow?'<div class="lb-you">You collected '+myRow.t+' hold point'+(myRow.t===1?'':'s')+' at the Nexus.</div>':myPart?'<div class="lb-you">You fought '+myPart+' battle'+(myPart===1?'':'s')+' for it.</div>':'');
   return '<div class="lastbattle"><div class="lb-kick">⚔ THE LAST BATTLE</div><div class="lb-title">'+title+'</div><div class="lb-sub">'+sub+'</div>'+you+(race?'<div class="mt"><div class="small muted" style="margin-bottom:3px">Hold race</div>'+race+'</div>':'')+'</div>';}catch(e){return '';}}
 
 (function(){try{
   const wrap=(k)=>{const orig=VIEWS[k];if(!orig||orig._fin)return;const w=function(v){const r=orig.apply(this,arguments);try{const html=finalePanelHTML(you());if(html){const el=h(html);const t=v.querySelector('.ptitle');if(t&&t.parentNode===v)v.insertBefore(el,t.nextSibling);else v.insertBefore(el,v.firstChild);}}catch(e){}return r;};w._fin=1;VIEWS[k]=w;};
   wrap('dashboard');wrap('rankings');wrap('self');
 }catch(e){}})();
+// ================= Update 8.0 "Solid Ground" · patch136: beta-test fixes (11 Oct 2026), shared by all three games =================
+// Runtime wrapping only (appended after BOOT, so it is client-side: the server engine never sees it). Every wrapper keeps the
+// original and only changes what the beta test found. Solo-only behaviour is guarded with isSoloGame().
+const P17=(()=>{const key=(typeof SLOT_KEYS!=='undefined'&&SLOT_KEYS[0])?String(SLOT_KEYS[0]).replace(/_auto$/,''):'earth2026';
+  const g=key==='ironfront'?'I':key==='romaterra'?'R':'T';
+  return {key,g,name:{T:'Terrastate',R:'Romaterra',I:'Ironfront'}[g],mini:'tactics/'+({T:'terrastate',R:'romaterra',I:'ironfront'}[g])+'.html',inTick:0};})();
+function p17Solo(){try{return isSoloGame()&&!window.__MP__;}catch(e){return false;}}
+function p17Wrap(name,mk){try{const o=window[name];if(typeof o!=='function'||o._p17)return;const w=mk(o);w._p17=1;window[name]=w;}catch(e){}}
+function p17LS(k,v){try{if(v===undefined)return localStorage.getItem(k);if(v===null)localStorage.removeItem(k);else localStorage.setItem(k,v);}catch(e){return null;}}
+function p17Me(){try{return you();}catch(e){return null;}}
+
+// ---------- 1 + 2. Saved games: names derived from the keys, a "Previous nation" slot, Resume first on the landing ----------
+const P17_PREV=P17.key+'_prev';
+function p17SlotName(k){if(k===P17_PREV)return 'Previous nation';if(/_auto$/.test(k))return 'Autosave';const m=/_slot(\d+)$/.exec(k);return m?'Slot '+m[1]:k;}
+try{SLOT_KEYS.concat([P17_PREV]).forEach(k=>{SLOT_NAMES[k]=p17SlotName(k);});}catch(e){}
+const P17_ICON=(()=>{try{const m=/auto\?'⟳ ':'([^']+)'/.exec(String(showSlots));return m?m[1]:'💾 ';}catch(e){return '💾 ';}})();
+function p17SaveInfo(raw){try{raw=raw||localStorage.getItem(P17.key);if(!raw)return null;const json=raw.slice(0,3)==='LZ1'?_LZ.d(raw.slice(3)):raw;const d=JSON.parse(json);
+  const c=d&&d.countries&&d.you!=null?d.countries[d.you]:null;return {tick:d.tick||0,name:c?c.name:'',tag:c?c.tag:'',season:(d.season&&d.season.num)||1};}catch(e){return null;}}
+p17Wrap('anySlot',o=>function(){let r=false;try{r=o.apply(this,arguments);}catch(e){}return r||!!p17LS(P17_PREV);});
+p17Wrap('showSlots',o=>function(mode){if(!p17Solo())return o.apply(this,arguments);mode=mode||'game';
+  const keys=SLOT_KEYS.concat(p17LS(P17_PREV)?[P17_PREV]:[]);
+  const rows=keys.map(k=>{const has=!!slotRead(k);const ro=/_auto$/.test(k)||k===P17_PREV;return `<div class="row between wrap" style="gap:8px;padding:8px 0;border-bottom:1px solid var(--border)"><div style="flex:1;min-width:220px"><div class="mono small" style="color:var(--accent2);letter-spacing:1px">${/_auto$/.test(k)?'⟳ ':k===P17_PREV?'↶ ':P17_ICON}${esc(p17SlotName(k).toUpperCase())}</div><div class="small">${slotLabel(k)}</div>${k===P17_PREV?'<div class="muted small">The nation you had before you started a new one.</div>':''}</div>
+    <div class="row wrap" style="gap:6px">${mode==='game'&&!ro?`<button class="btn sm" data-save="${k}">${has?'Overwrite':'Save here'}</button>`:''}${has?`<button class="btn sec sm" data-load="${k}">▶ Load</button><button class="btn ghost sm" data-exp="${k}">⬇ Export</button>${!/_auto$/.test(k)?`<button class="btn ghost sm" data-del="${k}">✕</button>`:''}`:''}</div></div>`;}).join('');
+  const bg=h(`<div class="modal-bg"><div class="modal" style="max-width:640px"><div class="row between"><h2 style="margin:0">${P17_ICON}Saved games</h2><button class="btn ghost sm" data-x>✕</button></div>
+    <p class="muted small">Three slots plus a rolling autosave (every 20 turns). When you start a new nation, the one you had is kept as "Previous nation". Saves live in this browser; Export downloads a file you can keep or move to another computer (load it with "Load back-up" in Settings). Loading replaces the game that is open now.</p>${rows}</div></div>`);
+  const close=()=>bg.remove();bg.querySelector('[data-x]').onclick=close;bg.onclick=e=>{if(e.target===bg)close();};
+  bg.querySelectorAll('[data-save]').forEach(b=>b.onclick=()=>{if(slotWrite(b.dataset.save)){toast('Saved to '+p17SlotName(b.dataset.save),'info');close();showSlots(mode);}});
+  bg.querySelectorAll('[data-load]').forEach(b=>b.onclick=()=>{if(mode==='game'&&!confirm('Load '+p17SlotName(b.dataset.load)+'? The game that is open now is replaced (save it to a slot first if you want to keep it).'))return;slotLoad(b.dataset.load);});
+  bg.querySelectorAll('[data-exp]').forEach(b=>b.onclick=()=>slotExport(b.dataset.exp));
+  bg.querySelectorAll('[data-del]').forEach(b=>b.onclick=()=>{if(!confirm('Delete '+p17SlotName(b.dataset.del)+'?'))return;slotDelete(b.dataset.del);close();showSlots(mode);});
+  document.body.appendChild(bg);});
+// keep the nation you had: copied to <game>_prev before a new nation overwrites the save
+function p17KeepPrev(){if(!p17Solo())return;try{const raw=localStorage.getItem(P17.key);if(!raw)return;const info=p17SaveInfo(raw);if(!info)return;
+  localStorage.setItem(P17_PREV,raw);localStorage.setItem(P17_PREV+'_meta',JSON.stringify({name:info.name,tag:info.tag,tick:info.tick,season:info.season,at:Date.now()}));}catch(e){}}
+function p17ConfirmNew(){const info=p17SaveInfo();if(!info)return true;
+  return confirm('Start a new nation? Your current nation'+(info.name?' ('+info.name+', turn '+info.tick+')':' (turn '+info.tick+')')+' will be replaced. A copy stays in Saved games as "Previous nation".');}
+function p17Landing(){if(!p17Solo())return;const s=document.getElementById('setup');if(!s)return;const has=!!p17LS(P17.key);
+  if(has){const lc2=s.querySelector('#lc2'),lp2=s.querySelector('#lp2');const info=p17SaveInfo();
+    if(lc2&&lp2&&!lc2._p17){lc2._p17=1;lc2.className='btn';lp2.className='btn sec';if(info)lc2.textContent='▶ Resume your nation (turn '+info.tick+')';if(lc2.nextSibling!==lp2)lp2.before(lc2);}
+    ['lp','lp2','lp3'].forEach(id=>{const b=s.querySelector('#'+id);if(!b||b._p17c)return;b._p17c=1;const o=b.onclick;b.onclick=function(e){if(!p17ConfirmNew())return;if(o)return o.call(this,e);};});}
+  try{p17Text(s);}catch(e){}}
+p17Wrap('renderLanding',o=>function(){const r=o.apply(this,arguments);try{p17Landing();}catch(e){}return r;});
+// the landing may already be on screen when this block runs (old browsers without IndexedDB boot synchronously)
+try{if(document.getElementById('setup')&&document.querySelector('#setup #lp2'))p17Landing();}catch(e){}
+
+// ---------- startGame / startNextSeason / enterApp ----------
+p17Wrap('startGame',o=>function(name,tag,col,gov,doc,region,regions){
+  if(p17Solo()){p17KeepPrev();G._p17over=null;G._p17seen=null;P17.home=region||null;
+    // 16: an invite code in solo is only a local copy of an alliance; a code that is not in the real format is dropped
+    try{const a=G._pendingAlliance;if(a&&!/^[A-Z0-9]{2,4}-[A-Z0-9]{4}$/.test(String(a.code||''))){G._pendingAlliance=null;setTimeout(()=>{try{toast('That is not an invite code (it looks like NWO-7F3K). You start without an alliance.','warn');}catch(e){}},800);}
+      else if(a){a.name=(a.tag||'ALY')+' Coalition';setTimeout(()=>{try{toast('In solo an invite code starts you in a local copy of that alliance, with AI members.','info');}catch(e){}},800);}}catch(e){}}
+  let r;try{r=o.apply(this,arguments);}finally{P17.home=null;}
+  if(p17Solo()){try{const c=p17Me();if(c){c._p17ord=0;c._p17lastOrd=G.tick;}p17FixNexus(region);G._p17home=(regionsOf(c)[0]||{}).id;save();}catch(e){}}
+  return r;});
+p17Wrap('startNextSeason',o=>function(){if(p17Solo()){G._p17over=null;G._p17seen=null;}const r=o.apply(this,arguments);
+  if(p17Solo()){try{const c=p17Me();if(c){c._p17ord=0;c._p17lastOrd=G.tick;G._p17home=(regionsOf(c)[0]||{}).id;}save();}catch(e){}}return r;});
+p17Wrap('enterApp',o=>function(){
+  if(p17Solo()){try{const c=p17Me();if(c&&!c.homeSec){const h0=regionsOf(c)[0];let hs=null;try{hs=homeSector(c);}catch(e){}c.homeSec=hs||(h0?h0.cluster+':'+(h0.sector||1):null);} // 12: the capital is Core from turn 0
+    if(c&&G._p17home==null)G._p17home=(regionsOf(c)[0]||{}).id;p17FixNames();}catch(e){}}
+  const r=o.apply(this,arguments);
+  try{p17MarkOver();}catch(e){}
+  try{p17SideLink();}catch(e){}
+  if(p17Solo()){try{if(p17Over())setTimeout(()=>{try{drawTop();go(view);}catch(e){}},50);}catch(e){}}
+  return r;});
+
+// ---------- 3. The season really ends: no more turns, the result once, then a calm "season over" state ----------
+function p17SKey(){return ((G.season&&G.season.num)||1)+':'+((G.season&&G.season.startTick)||0);}
+function p17Over(){try{return p17Solo()&&!!G.season&&G._p17over===p17SKey();}catch(e){return false;}}
+function p17MarkOver(){if(!p17Solo()||!G||!G.season)return;if((G._seasonEnd||G._winner!=null)&&G._p17over!==p17SKey())G._p17over=p17SKey();}
+function p17ShowEnd(){document.querySelectorAll('.modal-bg').forEach(e=>{if(e.querySelector('#ns'))e.remove();});G._p17seen=null;
+  try{if(G._winner!=null)showVictory();else showSeasonEnd();}catch(e){console.error(e);}}
+function p17NextSeason(){try{if(typeof showSeasonDonation==='function')showSeasonDonation(()=>openLobby(G.season.num+1));else openLobby(G.season.num+1);}catch(e){console.error(e);}}
+p17Wrap('runTick',o=>function(){if(p17Solo()&&p17Over())return;P17.inTick=1;let r;try{r=o.apply(this,arguments);}finally{P17.inTick=0;}
+  if(p17Solo()){try{p17MarkOver();}catch(e){}try{p17AfterTick();}catch(e){}}return r;});
+p17Wrap('loop',o=>function(){if(p17Over()){try{const el=document.getElementById('tickv');if(el&&el.textContent!=='SEASON OVER')el.textContent='SEASON OVER';G.nextAt=Date.now()+36e5;
+  if(G._p17seen!==p17SKey()&&!document.querySelector('.modal-bg'))p17ShowEnd();}catch(e){}return;}return o.apply(this,arguments);}); // the result opens as soon as nothing else is open
+p17Wrap('soloAdvance',o=>function(){if(p17Over()){if(!document.querySelector('.modal-bg'))p17ShowEnd();return;}return o.apply(this,arguments);});
+p17Wrap('maybeModal',o=>function(){if(p17Over()&&G._p17seen===p17SKey()&&(G._seasonEnd||G._winner!=null)){
+    // the season result was seen: only a scenario result may still open, never the season screen again by itself
+    if(G._scResult&&!G._scShown&&typeof showScenarioEnd==='function'&&!document.querySelector('.modal-bg')){try{showScenarioEnd();}catch(e){}}return;}
+  return o.apply(this,arguments);});
+function p17EndButtons(){const bg=[...document.querySelectorAll('.modal-bg')].reverse().find(e=>e.querySelector('#ns'));if(!bg||bg.querySelector('.p17endrow'))return;
+  const row=h(`<div class="row wrap p17endrow" style="gap:8px;margin-top:8px"><button class="btn ghost" data-p17map style="flex:1 1 160px">🗺 View final map</button><button class="btn ghost" data-p17close style="flex:1 1 120px">Close</button></div>`);
+  bg.querySelector('#ns').after(row);const seen=()=>{G._p17seen=p17SKey();try{save();}catch(e){}};
+  row.querySelector('[data-p17map]').onclick=()=>{seen();bg.remove();try{go('map');}catch(e){}};
+  row.querySelector('[data-p17close]').onclick=()=>{seen();bg.remove();try{go(view);}catch(e){}};
+  const ns=bg.querySelector('#ns');if(ns){const oc=ns.onclick;ns.onclick=function(e){seen();if(oc)return oc.call(this,e);};}
+  try{p17Text(bg);}catch(e){}}
+['showSeasonEnd','showVictory'].forEach(n=>p17Wrap(n,o=>function(){if(p17Solo()){try{p17MarkOver();}catch(e){}}const r=o.apply(this,arguments);if(p17Solo()){try{p17EndButtons();}catch(e){}}return r;}));
+// archive exactly once per season: the hall (archiveSeason) and YOUR HISTORY (pushPlayerLegacy)
+p17Wrap('archiveSeason',o=>function(){if(p17Solo()){const k=p17SKey();if(G._p17arch===k)return null;const r=o.apply(this,arguments);G._p17arch=k;return r;}return o.apply(this,arguments);});
+p17Wrap('pushPlayerLegacy',o=>function(){if(p17Solo()){const k=p17SKey();if(G._p17leg===k)return;G._p17leg=k;}return o.apply(this,arguments);});
+p17Wrap('playerLegacyHistory',o=>function(){const a=o.apply(this,arguments)||[];const out=[];a.forEach(x=>{const p=out[out.length-1];if(p&&x&&p.season===x.season&&p.title===x.title&&p.rank===x.rank&&p.won===x.won&&Math.abs((x.date||0)-(p.date||0))<6*36e5)return;out.push(x);});return out;});
+function p17OverBanner(v){if(!p17Over()||!v)return;let b=v.querySelector(':scope > .p17over');if(b)return;
+  b=h(`<div class="card mb p17over" style="position:sticky;top:0;z-index:5;border:1px solid var(--gold);background:var(--panel)"><div class="row between wrap" style="gap:8px;align-items:center"><div><b style="color:var(--gold)">🏁 Season over.</b> <span class="small">Start the next season: a new world with the same commander.</span></div><div class="row wrap" style="gap:6px"><button class="btn sm" data-p17next>Start the next season</button><button class="btn ghost sm" data-p17res>See the result</button></div></div></div>`);
+  v.prepend(b);b.querySelector('[data-p17next]').onclick=p17NextSeason;b.querySelector('[data-p17res]').onclick=p17ShowEnd;}
+function p17EndTurnLabels(){if(!p17Over())return;const m=document.getElementById('mEnd');if(m&&m.textContent!=='Season over')m.textContent='Season over';
+  document.querySelectorAll('#bottomnav [data-bk="__end"] span:last-child').forEach(s=>{if(s.textContent!=='Season over')s.textContent='Season over';});
+  const el=document.getElementById('tickv');if(el&&el.textContent!=='SEASON OVER')el.textContent='SEASON OVER';}
+
+// ---------- 4. End screen: every capture counts, real percentile, no titles for doing nothing ----------
+p17Wrap('battleDrama',o=>function(atkC,r,prevOwner,res){const ret=o.apply(this,arguments);
+  try{if(p17Solo()&&atkC&&atkC.id===G.you&&res){const defC=prevOwner!=null?G.countries[prevOwner]:null;
+    if(!(defC&&defC.isAI)){const L=slog(atkC);L.biggest=Math.max(L.biggest||0,Math.round(res.atkP||0));if(res.captured){L.captures++;L.battlesWon++;}else if(!res.success)L.battlesLost++;}}}catch(e){}
+  return ret;});
+// orders you give yourself (outside the tick): the measure of an active nation
+(function(){try{Object.keys(window).filter(k=>/^cmd[A-Z]/.test(k)&&typeof window[k]==='function').forEach(k=>p17Wrap(k,o=>function(c){const r=o.apply(this,arguments);
+  try{if(!P17.inTick&&p17Solo()&&c&&c.isAI===false&&c.id===G.you){const hit=x=>{if(x&&x.ok!==false&&!x.error){c._p17ord=(c._p17ord||0)+1;c._p17lastOrd=G.tick;}};if(r&&typeof r.then==='function')r.then(hit,()=>{});else hit(r);}}catch(e){}
+  return r;}));}catch(e){}})();
+function p17Orders(c){return c&&c._p17ord!=null?c._p17ord:null;}
+function p17Active(c){const n=p17Orders(c);return n==null||n>=6;} // unknown (a save from before 8.0) counts as active
+function p17Idle(c){if(!c||c._p17ord==null)return false;return G.tick-(c._p17lastOrd!=null?c._p17lastOrd:(c._born||0))>20;}
+function p17Pct(rt){if(!rt||!rt.total||!rt.pos)return '';const p=Math.max(1,Math.ceil(rt.pos/rt.total*100));return p<=50?'top '+p+'%':'';}
+p17Wrap('legacyTitle',o=>function(c,rt,won){const r=o.apply(this,arguments);if(!p17Solo()||!r)return r;
+  try{if(won)return r;if(!p17Active(c))return {t:P17.g==='R'?'The Quiet Tribe':'The Quiet Nation',rare:'',k:'a'};
+    const L=slog(c);const act=(L.captures||0)+(L.battlesWon||0)+(L.defended||0);
+    if(/Economic Titan|Merchant Prince|Iron Defender|Last Defender|Survivor/.test(r.t)&&act===0&&(p17Orders(c)!=null&&p17Orders(c)<15))return {t:P17.g==='R'?'The Quiet Tribe':'The Quiet Nation',rare:'',k:'a'};
+    return Object.assign({},r,{rare:/^top /.test(r.rare||'')?p17Pct(rt):(r.rare||'')});}catch(e){return r;}});
+
+// ---------- 5. War game: the real garrison of the weakest empty land next to you, and what you still need ----------
+function p17Weakest(c){let best=null,bd=1e18;const nx=new Set([G.nexusId].concat(G.nexusIds||[]));
+  (G.regions||[]).forEach(r=>{if(r.owner!=null||r.nexus||nx.has(r.id))return;let hm=null;try{hm=homeFor(c,r);}catch(e){}if(!hm)return;let t=99;try{t=travelFor(c,hm,r);}catch(e){}if(t>5)return;const d=regionDef(r);if(d<bd){bd=d;best=r;}});return best;}
+function p17NeedLine(c,r){const o=p14Odds(c,r,Object.assign({},c.units||{}));const def=Math.round(regionDef(r));if(!o)return `The weakest empty land next to you, <b>${esc(r.name)}</b>, has a neutral garrison of about <b>${full(def)}</b> defence. Train an army first.`;
+  const b=p14Band(o.ratio);if(o.ratio>=1.25)return `The weakest empty land next to you, <b>${esc(r.name)}</b>, has a neutral garrison of about <b>${full(def)}</b> defence. With your whole army at home: <b style="color:${b[1]}">${esc(b[0])}</b>.`;
+  const bu=p14BestUnit(c);const per=bu?power(c,'atk',{[bu]:1}):0;const need=Math.max(0,Math.round(o.atk*(1.25/Math.max(0.01,o.ratio))-o.atk));const more=bu&&per>0?Math.ceil(need/per):null;
+  return `The weakest empty land next to you, <b>${esc(r.name)}</b>, has a neutral garrison of about <b>${full(def)}</b> defence. Your whole army at home brings <b>${full(o.atk)}</b> attack: <b style="color:${b[1]}">${esc(b[0])}</b>. You need about <b>${full(need)}</b> more attack${more?`, roughly <b>${full(more)}</b> more ${esc((UBYK[bu]||{n:bu}).n)}`:''}.`;}
+p17Wrap('trainDrill',o=>function(){const r=o.apply(this,arguments);try{const c=p17Me();const bg=[...document.querySelectorAll('.modal-bg')].reverse().find(e=>/WAR GAME/.test(e.textContent||''));const t=p17Weakest(c);
+  if(bg&&c&&t){const ps=[...bg.querySelectorAll('p.small.muted')];const p=ps[ps.length-1];if(p)p.innerHTML='A real attack works the same way, but your army travels a few turns first and can lose units. '+p17NeedLine(c,t);}}catch(e){}return r;});
+
+// ---------- 6. One odds function for every label; attacks already on the way say so ----------
+const P17_ODDS=new Map();
+function p17EnRoute(c,r){return (c.fleets||[]).some(f=>f&&f.target===r.id&&(f.status==='outbound'||f.status==='battle'));}
+function p17Odds(c,r){const n=fleetSize(c.units||{});const k=G.tick+':'+r.id+':'+n+':'+r.owner;let v=P17_ODDS.get(k);if(v!==undefined)return v;
+  v=null;try{v=n>0?p14Odds(c,r,Object.assign({},c.units||{})):null;}catch(e){}if(P17_ODDS.size>800)P17_ODDS.clear();P17_ODDS.set(k,v);return v;}
+function p17Label(c,r){if(p17EnRoute(c,r))return ['attack en route','var(--accent2)','⚔'];const o=p17Odds(c,r);if(!o)return ['no army at home','var(--muted)','·'];if(o.blind)return ['not scouted','var(--muted)','?'];return p14Band(o.ratio);}
+window.p14Neutral=function(c,r){const def=Math.round(regionDef(r));const b=p17Label(c,r);return `<span class="mono">${full(def)}</span><div class="mono" style="font-size:11px;color:${b[1]}">${b[2]} ${esc(b[0])}</div>`;};
+window.p14NeutralLine=function(c,r){const def=Math.round(regionDef(r));const b=p17Label(c,r);const atk=p14Atk(c);
+  return `<span class="small">Neutral garrison <strong>${full(def)}</strong> <span style="color:${b[1]}">· ${b[0]==='attack en route'?'your attack is on its way':'with your whole army at home ('+full(atk)+'): '+esc(b[0])}</span></span>`;};
+window.p14AttackHTML=function(c,tgt){const n=fleetSize(c.units||{});if(!tgt||n<=0)return '';
+  if(tgt.owner!=null&&tgt.owner!==c.id&&!regionIntel(c,tgt.id))return `<div class="p14a small" style="margin:6px 0 10px;padding:8px 10px;border:1px dashed var(--warn);border-radius:8px">🔍 You do not know what stands at ${esc(tgt.name)} yet. Scout it first, then this panel shows how much you need.</div>`;
+  let enough=null;for(let f=0.1;f<=1.0001;f+=0.1){const com=p14Com(c,f);const o=p14Odds(c,tgt,com);if(o&&o.ratio>=1.25){enough={f,com,o};break;}}
+  const all=p14Odds(c,tgt,p14Com(c,1));const allB=all?p14Band(all.ratio):null;
+  const opts=[];if(enough&&enough.f<0.95)opts.push(['Enough to take it',enough.f]);opts.push(['Half',0.5]);opts.push(['Everything',1]);
+  const btn=([l,f])=>{const com=p14Com(c,f);const o=p14Odds(c,tgt,com);const b=o?p14Band(o.ratio):['?','var(--muted)','?'];
+    return `<button class="btn ${l==='Enough to take it'?'':'sec'}" data-p14a="${f}" style="flex:1 1 150px;min-height:58px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;text-transform:none;letter-spacing:0"><b>${l}</b><span class="small">${full(fleetSize(com))} units · <span style="color:${b[1]}">${esc(b[0])}</span></span></button>`;};
+  const head=enough?'':allB&&all.ratio>=0.95?`: <span style="color:var(--warn)">with your whole army it is ${esc(allB[0])}</span>`:`: <span style="color:var(--bad)">even your whole army is not enough yet</span>`;
+  const enr=p17EnRoute(c,tgt)?'<div class="small" style="margin-bottom:6px;color:var(--accent2)">⚔ An attack of yours is already on its way here.</div>':'';
+  return `<div class="p14a" style="margin:6px 0 12px">${enr}<div class="small" style="margin-bottom:6px">Pick a force${head}. It fills the units below, then press Launch.</div><div class="row wrap" style="gap:8px">${opts.map(btn).join('')}</div></div>`;};
+
+// ---------- 7. Honest battle results, nothing stale, and the result screen on every screen ----------
+function p17Stale(b){return !!(b&&b.youAtk&&b.outcome==='partial'&&!b.protected);}
+p17Wrap('battleBadge',o=>function(b){const r=o.apply(this,arguments);try{if(p17Stale(b))return {badge:'FIGHT WON, GROUND NOT HELD',bcol:r.bcol};}catch(e){}return r;});
+p17Wrap('p13Hero',o=>function(b){let s=o.apply(this,arguments);try{if(p17Stale(b))s=s.replace(/>DEFEAT</,'>STALEMATE<').replace(/color:var\(--bad\)">STALEMATE/,'color:var(--warn)">STALEMATE');}catch(e){}return s;});
+p17Wrap('p13HomeHTML',o=>function(){let s=o.apply(this,arguments);try{const L=(G.battles||[]).filter(b=>p13Mine(b)&&G.tick-b.tick<=P13_HOME_TICKS);if(L.length&&p17Stale(L[0]))s=s.replace('>Defeat at ','>Stalemate at ');}catch(e){}return s;});
+p17Wrap('battleReportHTML',o=>function(){let s=o.apply(this,arguments);try{s=String(s).replace('“GROUND WON”','“FIGHT WON, GROUND NOT HELD”').replace('You cleared the fight but not the hold, close.','You won the fight, but not enough to hold the ground. Close.');}catch(e){}return s;});
+p17Wrap('p13New',o=>function(){const a=o.apply(this,arguments)||[];return p17Solo()?a.filter(b=>b&&G.tick-b.tick<=2):a;}); // older results are in Reports, never a pop-up from long ago
+p17Wrap('p13NextHTML',o=>function(b){let s=o.apply(this,arguments);try{if(/It already counts as core ground\./.test(s))s=s.replace(/<li>Keep an eye on unrest: occupied ground can revolt\.<\/li>/,'');}catch(e){}return s;});
+function p17AfterTick(){setTimeout(()=>{try{if(typeof view==='undefined')return;if(view==='map'){try{p13After();}catch(e){}}
+  else if(view==='reports'){const y=window.scrollY;try{go('reports');}catch(e){}try{window.scrollTo(0,y);}catch(e){}}
+  p17EndTurnLabels();p17HomeFallen();}catch(e){}},80);}
+
+// ---------- 8. Small text fixes: grammar, plurals, doubled currency, unclaimed land, empty stock ----------
+const P17_RULES=[
+ [/([€£$Ð¥₽ƒ])\1+/g,'$1'],
+ [/\b([Aa]) army\b/g,'$1n army'],[/\barmys\b/g,'armies'],
+ [/(\d[\d,]*) tick\(s\)/g,(m,n)=>n+(n==='1'?' tick':' ticks')],[/tick\(s\)/g,'ticks'],
+ [/(\d[\d,]*) region\(s\)/g,(m,n)=>n+(n==='1'?' region':' regions')],[/region\(s\)/g,'regions'],
+ [/\b1 ticks\b/g,'1 tick'],[/\b1 turns\b/g,'1 turn'],[/\b1 armies out\b/g,'1 army out'],
+ [/ runs out in ~?0 ticks?/g,' is empty'],[/running out ~?0 ticks? left/g,'is empty'],[/\(~?0 ticks? of stock left\)/g,'(stock is empty)'],[/~0 ticks left/g,'empty'],
+ [/\bin ~?0 ticks?\b/g,'this turn'],
+ [/ from —(?=[\s.,;)]|$)/g,' (unclaimed)'],
+ [/GROUND WON at ([^(]+?) \(not captured\)( — )?/g,(m,p,d)=>'STALEMATE at '+p+', ground not held'+(d?': ':'')],
+ [/Coal Coal Power Plant/g,'Coal Power Plant'],
+ [/you vs AI · Season 0: the live world opens/g,'you vs AI · the live world opens'],
+ [/Founding Commander · Season 0/g,'Founding Commander'],
+ [/SEASON 0 · THE LIVE WORLD/g,'THE LIVE WORLD · WAITLIST'],
+ [/You are playing Season 0/g,'Solo play is Season 0 of the live world']];
+const P17_TEST=/([€£$Ð¥₽ƒ])\1|\b[Aa] army\b|armys|\(s\)|\b1 ticks\b|\b1 turns\b|\b1 armies out|~?0 ticks?|from —|GROUND WON at|Coal Coal|Season 0/;
+function p17Fix(t){let s=t;for(const [re,to] of P17_RULES)s=s.replace(re,to);return s;}
+function p17Text(root){if(!root)return;try{const w=document.createTreeWalker(root,NodeFilter.SHOW_TEXT,null);let n;const todo=[];while((n=w.nextNode())){const v=n.nodeValue;if(v&&v.length>2&&P17_TEST.test(v))todo.push(n);}
+  todo.forEach(n=>{const p=n.parentNode;if(p&&/^(SCRIPT|STYLE|TEXTAREA)$/.test(p.nodeName))return;const v=p17Fix(n.nodeValue);if(v!==n.nodeValue)n.nodeValue=v;});
+  if(root.querySelectorAll)root.querySelectorAll('[title]').forEach(e=>{const t=e.getAttribute('title');if(t&&P17_TEST.test(t)){const v=p17Fix(t);if(v!==t)e.setAttribute('title',v);}});}catch(e){}}
+p17Wrap('haulText',o=>function(){const r=o.apply(this,arguments);return typeof r==='string'?r.replace(/([€£$Ð])\1+/g,'$1'):r;}); // the loot line at the source too (it is also stored in the chronicle)
+// country names: "Holdings of Carthaginian" reads as "Carthaginian Holdings"
+const P17_FORMS=(()=>{try{return new Set([].concat(...Object.values(POL_FORMS)));}catch(e){return new Set();}})();
+function p17Name(n){const m=/^(.+?) of (.+)$/.exec(String(n||''));if(!m||!P17_FORMS.has(m[1]))return n;if(/a$/i.test(m[2]))return n;return (m[2]+' '+m[1]).slice(0,40);}
+p17Wrap('genCountryName',o=>function(){const r=o.apply(this,arguments);try{if(p17Solo()&&r&&r.name)r.name=p17Name(r.name);}catch(e){}return r;});
+function p17FixNames(){(G.countries||[]).forEach(c=>{if(c&&c.isAI!==false&&c.name){const n=p17Name(c.name);if(n!==c.name)c.name=n;}});}
+// Nothing finishes... while troops come home or train in batches: say what really arrives
+function p17SoonLine(){const v=document.getElementById('view');const c=p17Me();if(!v||!c||view!=='military')return;
+  const el=[...v.querySelectorAll('.muted.small')].find(e=>/Nothing finishes in the next 3 ticks\./.test(e.textContent||''));if(!el)return;
+  const back=(c.fleets||[]).filter(f=>f&&f.status==='returning'&&((f.rEta!=null?f.rEta:f.eta||G.tick)-G.tick)<=3).reduce((s,f)=>s+fleetSize(f.units||{}),0);
+  const q=(c.mq||[]).reduce((s,x)=>s+(x.count||0),0);let line=' Nothing finishes in the next 3 ticks.';
+  if(back||q){const bits=[];if(q)bits.push(full(q)+' units in training, up to '+full(trainCap(c))+' finish each tick');if(back)bits.push(full(back)+' units come home');line=' Next 3 ticks: '+bits.join(' · ')+'.';}
+  el.innerHTML=el.innerHTML.replace(' Nothing finishes in the next 3 ticks.',line);}
+// the Army tile says what it counts
+function p17ArmyTile(){const el=document.querySelector('#strip .res-army');const c=p17Me();if(!el||!c)return;let home=0;try{home=homeArmy(c).n||0;}catch(e){home=fleetSize(c.units||{});}
+  const out=(c.fleets||[]).reduce((s,f)=>s+fleetSize(f.units||{}),0);const t=home?('Units at home'+(out?', '+full(out)+' more in the field':'')):out?'Units in the field, none at home':'No units';if(el.title!==t)el.title=t;}
+// "Double the size of your army 0/1": with no army there is nothing to double
+p17Wrap('goalTarget',o=>function(g,base){const r=o.apply(this,arguments);try{if(g&&g.mul===2&&/army/i.test(g.t||'')&&base<100)return Math.max(r,100);}catch(e){}return r;});
+p17Wrap('phaseGoals',o=>function(){const r=o.apply(this,arguments);try{for(const k in r){const g=r[k];if(g&&g.mul===2&&/^Double the size of your army$/.test(g.t||''))g.t='Double your army (at least 100 units)';}}catch(e){}return r;});
+
+// ---------- 9. Fuel: a start that does not bleed, a morale penalty only when the stock really runs low ----------
+p17Wrap('foundingBalance',o=>function(c){const r=o.apply(this,arguments);
+  try{if(p17Solo()&&c&&c.isAI===false){const region=regionsOf(c)[0];if(!region)return r;const B=c.buildings;const get=k=>B.find(b=>b.rid===region.id&&b.k===k);
+    for(let i=0;i<60;i++){const pj=projection(c);if(pj.net.fuel>=1500)break;
+      const pw=get('power');if(pw&&pw.lv>1&&pj.net.energy>18000+2500){pw.lv--;continue;}           // a power plant level burns fuel: drop the ones energy does not need
+      if((region.en||0)<100){region.en=Math.min(100,(region.en||0)+2);continue;}                   // the home region gets a small fuel surplus of its own
+      let g=get('renewable_grid');if(!g){g={rid:region.id,k:'renewable_grid',lv:0};B.push(g);}g.lv++;} // last resort: a clean grid level
+  }}catch(e){}return r;});
+p17Wrap('moraleOf',o=>function(c){if(!p17Solo()||!c)return o.apply(this,arguments);
+  try{const admiral=(c.commanders||[]).includes('admiral')?.1:0;const p=projection(c);let s=0;if(p.net.food<0||p.net.energy<0)s+=.15;
+    if(p.net.fuel<0&&(c.res.fuel||0)<3*(-p.net.fuel))s+=.15; // a fuel deficit only bites when less than ~3 turns of stock are left
+    return clamp(.45+.4*(c.stab/100)+admiral-s,.1,1);}catch(e){return o.apply(this,arguments);}});
+try{const pw=(typeof BUILD!=='undefined'?BUILD:[]).find(b=>b.k==='power');if(pw&&/^Coal Coal /.test(pw.n))pw.n=pw.n.replace(/^Coal Coal /,'Coal ');}catch(e){}
+
+// ---------- 10. Titles by real size, the comeback bonus only for those who play ----------
+const P17_LADDER={T:['Emerging State','Regional Power','Major Power','Great Power','Superpower','Hegemon'],R:['Rising Tribe','Regional Power','Major Power','Great Power','Imperator','Hegemon'],I:['Rising Nation','Regional Power','Major Power','Great Power','Great Power','Hegemon']}[P17.g];
+p17Wrap('rankTitle',o=>function(cid){const r=o.apply(this,arguments);if(!p17Solo()||!r||!r.pos||cid!==G.you)return r; // your own title only: AI titles also steer AI rules (bully guard), those stay as they are
+  try{const lv=P17_LADDER.indexOf(r.title);if(lv<=0)return r;const c=G.countries[cid];const n=c?regionsOf(c).length:0;
+    const byLand=n>=8?4:n>=5?3:n>=3?2:n>=2?1:0;let fin=r.pos===1&&n>=3?5:Math.min(lv,byLand);if(lv>=2&&fin<1)fin=1;
+    if(lv===5&&fin<5)fin=Math.min(4,Math.max(fin,byLand));return Object.assign({},r,{title:P17_LADDER[fin]});}catch(e){return r;}});
+p17Wrap('catchup',o=>function(c){const v=o.apply(this,arguments);try{if(p17Solo()&&c&&c.isAI===false&&p17Idle(c))return Math.min(v,1);}catch(e){}return v;});
+p17Wrap('catchupMult',o=>function(c){const v=o.apply(this,arguments);try{if(p17Solo()&&c&&c.isAI===false&&p17Idle(c))return Math.min(v,1);}catch(e){}return v;});
+p17Wrap('p5SumHTML',o=>function(c){let s=o.apply(this,arguments);try{if(p17Solo()&&c){const rt=rankTitle(c.id);if(rt.total&&rt.pos<=Math.ceil(rt.total*0.1))s=String(s).replace(/<div class="small p5cb"[\s\S]*?<\/span><\/div>/,'');}}catch(e){}return s;});
+
+// ---------- 14. Never start on a Capital Sector, and a clear message if your homeland falls ----------
+p17Wrap('pickNexusRegions',o=>function(regions){try{const hm=P17.home;if(p17Solo()&&hm){const pool=regions.filter(r=>r.id!==hm.id&&r.cluster!==hm.cluster);if(pool.length>=10)return o.call(this,pool);}}catch(e){}return o.apply(this,arguments);});
+function p17FixNexus(region){ // Terrastate / Romaterra: one prize, chosen up front; never in the homeland's own cluster
+  if(!region||typeof pickNexusRegions==='function')return;const nx=(G.regions||[]).find(r=>r.id===G.nexusId);if(!nx||nx.cluster!==region.cluster)return;
+  const alt=(G.regions||[]).filter(r=>r.owner==null&&!r.nexus&&r.cluster!==region.cluster).sort((a,b)=>b.sv-a.sv)[0];if(!alt)return;
+  ['nexus','commandCenter','ccHeld','ccHolder','ccBuild'].forEach(k=>{alt[k]=nx[k];});nx.nexus=false;nx.commandCenter=false;nx.ccHeld=0;nx.ccHolder=null;nx.ccBuild=null;G.nexusId=alt.id;
+  (G.regions||[]).forEach(r=>{if(r!==alt&&r.nexus&&r.id!==alt.id)r.nexus=false;});try{homeClusterInvalidate();}catch(e){}try{if(typeof _defCache!=='undefined'&&_defCache&&_defCache.clear)_defCache.clear();}catch(e){}}
+function p17HomeFallen(){if(!p17Solo()||p17Over())return;const c=p17Me();if(!c||G._p17home==null)return;const r=(G.regions||[]).find(x=>x.id===G._p17home);if(!r||r.owner===c.id)return;
+  const mine=regionsOf(c);if(!mine.length){G._p17home=null;return;}let nw=null;try{nw=homeRegionOf(c);}catch(e){}nw=nw||mine[0];G._p17home=nw.id;
+  const by=r.owner!=null&&G.countries[r.owner]?G.countries[r.owner].name:'the enemy';
+  const show=()=>{if(document.querySelector('.modal-bg'))return false;const bg=h(`<div class="modal-bg p17fall"><div class="modal" style="max-width:460px"><div class="mono small" style="letter-spacing:2px;color:var(--bad)">YOUR HOMELAND HAS FALLEN</div><h2 style="margin:6px 0 10px">You regroup at ${esc(nw.name)}</h2><p class="small" style="line-height:1.6">${esc(r.name)} was taken by ${esc(by)}. Your government and your army regroup at <b>${esc(nw.name)}</b>. Take ${esc(r.name)} back while the new owner is still weak there, or hold what you have.</p><div class="row wrap" style="gap:6px;justify-content:flex-end"><button class="btn ghost" data-a="back">⚔ Plan a counter-attack</button><button class="btn" data-x>Continue</button></div></div></div>`);
+    document.body.appendChild(bg);bg.querySelector('[data-x]').onclick=()=>bg.remove();bg.querySelector('[data-a="back"]').onclick=()=>{bg.remove();try{selTarget=r.id;warTab='offence';go('fleets');}catch(e){}};return true;};
+  let n=0;const t=()=>{if(show()||++n>40)return;setTimeout(t,700);};setTimeout(t,900);}
+
+// ---------- 15. Field training: the "complete" card once; Help opens once per browser, right after Skip ----------
+p17Wrap('trainFinish',o=>function(c){const was=!!(c&&c._train&&c._train.end);const r=o.apply(this,arguments);if(!was&&p17Solo()){try{save();}catch(e){}}return r;});
+p17Wrap('trainShowCard',o=>function(){const c=p17Me();if(p17Solo()&&c&&c._train){if(c._train._p17card){window._trainCard=null;return false;}const r=o.apply(this,arguments);if(r){c._train._p17card=G.tick;try{save();}catch(e){}}return r;}return o.apply(this,arguments);});
+p17Wrap('maybeQuickstart',o=>function(){if(p17Solo())return;return o.apply(this,arguments);});
+try{document.addEventListener('click',e=>{try{if(e.target&&e.target.closest&&e.target.closest('[data-trn="skip"],[data-skip]'))P17.skipClick=Date.now();}catch(x){}},true);}catch(e){} // a real tap on Skip training
+p17Wrap('trainSkip',o=>function(){const r=o.apply(this,arguments);try{if(p17Solo()&&Date.now()-(P17.skipClick||0)<3000&&!p17LS('p17quick_'+P17.key)){p17LS('p17quick_'+P17.key,'1');setTimeout(()=>{if(!document.querySelector('.modal-bg'))showHelp('help-quick');},700);}}catch(e){}return r;});
+
+// ---------- 13 + 19. Season 0 wording, the gift popup checkbox ----------
+p17Wrap('showMpSupport',o=>function(){const r=o.apply(this,arguments);try{const bg=document.getElementById('donatebg');if(bg){p17Text(bg);const h2=bg.querySelector('h2');if(h2&&!bg.querySelector('.p17s0'))h2.after(h(`<p class="small muted p17s0" style="margin:0 0 8px">Season 0 is the name of this solo phase before the live world opens. Your own solo seasons count 1, 2, 3 within it.</p>`));}}catch(e){}return r;});
+function p17Css(){if(document.getElementById('p17css'))return;const st=document.createElement('style');st.id='p17css';
+  st.textContent=['#donatebg label,.modal label:has(> input[type=checkbox]){display:flex!important;align-items:center;gap:6px;text-transform:none!important;letter-spacing:0!important;font-family:inherit!important;font-size:12px!important;margin:0!important;white-space:nowrap}',
+   '#donatebg label input[type=checkbox],.modal label > input[type=checkbox]{width:auto!important;min-height:0!important;margin:0!important;flex:none!important}',
+   'body.solo #setup details:has(> #ally){display:none}',
+   '.p17mini{display:block;margin:10px 8px 4px;padding:8px 10px;border:1px dashed var(--border2);border-radius:9px;font-size:12px;color:var(--accent2);text-decoration:none;line-height:1.35}.p17mini:hover{border-color:var(--accent2)}'].join('\n');
+  document.head.appendChild(st);}
+try{p17Css();}catch(e){}
+try{if(p17Solo()){document.body.classList.add('solo');DONATE.paypal=String(DONATE.paypal).replace(/\(via%20[A-Za-z]+\)/,'(via%20'+P17.name+')');}}catch(e){}
+
+// ---------- 20. AI chatter: the same line at most once per 20 turns ----------
+p17Wrap('aiSay',o=>function(ai,text){if(p17Solo()){try{const k=String(text||'').replace(/\d[\d,.]*/g,'#');const m=G._p17say||(G._p17say={});const last=m[k];if(last!=null&&G.tick-last<20)return false;
+  const r=o.apply(this,arguments);if(r!==false){m[k]=G.tick;const ks=Object.keys(m);if(ks.length>200)ks.forEach(x=>{if(G.tick-m[x]>=20)delete m[x];});}return r;}catch(e){}}return o.apply(this,arguments);});
+
+// ---------- 21. A way to the mini game: in the menu and on the end screen ----------
+function p17MiniHTML(cls){return `<a class="p17mini ${cls||''}" href="${P17.mini}" target="_blank" rel="noopener">⚔ Quick battle? Try the mini game</a>`;}
+function p17SideLink(){if(!p17Solo())return;const s=document.getElementById('side');if(s&&!s.querySelector('.p17mini'))s.appendChild(h(p17MiniHTML()));}
+p17Wrap('openMore',o=>function(){const r=o.apply(this,arguments);try{if(p17Solo()){const sh=document.querySelector('#moresheet .sheet');if(sh&&!sh.querySelector('.p17mini')){const last=sh.lastElementChild;const a=h(p17MiniHTML());if(last)last.before(a);else sh.appendChild(a);}}}catch(e){}return r;});
+p17Wrap('seasonFinaleHTML',o=>function(){const s=o.apply(this,arguments);try{if(p17Solo())return s+p17MiniHTML();}catch(e){}return s;});
+
+// ---------- after every render (hooked after p16After) and on everything that appears later ----------
+function p17After(){const v=document.getElementById('view');if(!v)return;
+  try{p17OverBanner(v);}catch(e){}try{p17EndTurnLabels();}catch(e){}try{p17SoonLine();}catch(e){}try{p17ArmyTile();}catch(e){}
+  try{p17Text(v);}catch(e){}try{p17SideLink();}catch(e){}}
+p17Wrap('drawTop',o=>function(){const r=o.apply(this,arguments);try{p17ArmyTile();p17EndTurnLabels();const t=document.querySelector('header.top');if(t)p17Text(t);const st=document.getElementById('strip');if(st)p17Text(st);}catch(e){}return r;});
+(function(){try{if(typeof MutationObserver==='undefined'||!document.body)return;let q=[],pend=false;
+  const run=()=>{pend=false;const list=q;q=[];list.forEach(n=>{if(!n.isConnected)return;if(n.nodeType===3){const v=p17Fix(n.nodeValue);if(v!==n.nodeValue)n.nodeValue=v;}else p17Text(n);});};
+  new MutationObserver(ms=>{for(const m of ms){if(m.type==='characterData'){const t=m.target.nodeValue;if(t&&P17_TEST.test(t))q.push(m.target);continue;}for(const n of m.addedNodes){if(n.nodeType===1||n.nodeType===3){const t=n.nodeType===3?n.nodeValue:n.textContent;if(t&&P17_TEST.test(t))q.push(n);}}}if(q.length&&!pend){pend=true;(window.queueMicrotask||setTimeout)(run);}}).observe(document.body,{childList:true,subtree:true,characterData:true});}catch(e){}})();
+
 </script>
 
 
