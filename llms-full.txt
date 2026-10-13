@@ -26,6 +26,7 @@ Current version: 8.0. The game is updated regularly. Language: English. Platform
 - [Discord community and live-world waitlist](https://discord.gg/TRgERXq4u)
 
 ## Good to know
+- Board games (October 2026): each world also has a board game of hidden ranks for one opponent, free in the browser: Hidden Command (https://playterrastate.nl/command/terrastate.html), Veiled Legions (https://playterrastate.nl/command/romaterra.html) and Sealed Orders (https://playterrastate.nl/command/ironfront.html). A 9 by 9 board, armies set up in secret, sealed orders for extra points, four computer commanders on four levels or two players on one screen. About 15 to 30 minutes a battle.
 - Update 8.0 (October 2026), Solid Ground, for all three games: weak nations can break apart into land to take; holding the prize earns hold points over the whole season (two per turn in the Last Battle) and the most points wins, unless a nation wins outright first; a coalition forms against a runaway leader; one turn report replaces pop-ups; phone screens use cards with big buttons; Romaterra plays on a map of the Roman world and Ironfront on a map of Europe in 1944; saved games, the season end and the end screen are fixed. The mini games link to their grand strategy game and have a daily battle.
 - Tactics games (October 2026): each world also has a short turn-based hex tactics game, free in the browser: Terrastate: Conquer (https://playterrastate.nl/tactics/terrastate.html), Romaterra: Imperium (https://playterrastate.nl/tactics/romaterra.html) and Ironfront: D-Day (https://playterrastate.nl/tactics/ironfront.html). Overview: https://playterrastate.nl/tactics/
 - Patch 7.4 (October 2026), Clear Screens, for all three games: regions outside your home sector get half of your home army as defence plus the troops stationed there; every screen starts with what matters most (Homeland with the attacks on you, Nearby with your army and nearest targets, Diplomacy with your wars and pacts, Economy with what you make); information shown twice is shown once; background blocks fold under More on this screen; the website has a new front page and logo.
@@ -110,6 +111,9 @@ Romaterra is the same game set in the age of Rome. You gather denarii, grain, ti
 
 ### What games is Terrastate like?
 Terrastate is inspired by tick-based browser strategy games such as Planetarion, with the alliances, scouting and timed attacks of that genre, plus the map and diplomacy of a grand strategy or 4X game. The difference: you play against hundreds of AI nations, at your own pace, without waiting for other players.
+
+### What are the board games?
+Each world has a board game of hidden ranks for one opponent: Hidden Command (Terrastate), Veiled Legions (Romaterra) and Sealed Orders (Ironfront). You set up your army in secret on a 9 by 9 board, and the enemy only sees the backs of your pieces. Play against four computer commanders on four levels, or with two players on one screen. Before the battle you open a sealed order for extra points. A battle takes about 15 to 30 minutes. Free, in the browser, also on a phone.
 
 ### What is new in version 8.0?
 Update 8.0 (October 2026) is called Solid Ground, for Terrastate, Romaterra and Ironfront. The middle of the season comes alive with collapsing nations, coalitions and a race for the prize over the whole season; one turn report replaces the pop-ups; the phone layout uses cards with big buttons; Romaterra has a map of the Roman world and Ironfront a map of Europe in 1944; and many fixes, such as saved games and a clean season end.

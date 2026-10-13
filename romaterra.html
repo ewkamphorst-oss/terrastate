@@ -899,6 +899,26 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,su
   .side .lbl,.clabel{letter-spacing:2px}
   body{background-image:radial-gradient(1100px 520px at 78% -12%, #2b1f14 0%, rgba(18,13,10,0) 60%),radial-gradient(900px 500px at 5% 110%, #24170f 0%, rgba(18,13,10,0) 60%)}
 </style>
+<style id="patch141">select,select.btn,select.rolesel{color-scheme:dark}select option,select optgroup{background:var(--bg2,#151a22);color:var(--text,#e8e8e8);font:500 14px/1.4 system-ui,-apple-system,"Segoe UI",sans-serif;text-transform:none;letter-spacing:normal}select.rolesel{text-transform:none;letter-spacing:.3px;min-height:34px}</style>
+<style id="patch142">.rolemenu{position:relative;display:inline-block;vertical-align:middle}.rolemenu>summary{list-style:none;cursor:pointer;white-space:nowrap}.rolemenu>summary::-webkit-details-marker{display:none}.rolepop{position:absolute;right:0;top:calc(100% + 4px);z-index:40;display:flex;flex-direction:column;gap:4px;min-width:150px;padding:6px;background:var(--bg2,#151a22);border:1px solid var(--border,#333);border-radius:9px;box-shadow:0 12px 28px rgba(0,0,0,.55)}.rolepop .btn{width:100%;text-align:left}.rolepop .btn.on{box-shadow:inset 3px 0 0 var(--accent,#4f8cff)}</style>
+<script>document.addEventListener("click",function(e){document.querySelectorAll("details.rolemenu[open]").forEach(function(d){if(!d.contains(e.target))d.removeAttribute("open");});});</script>
+<style id="patch143">
+.rolemenu .rolepop{position:fixed;right:auto;top:auto;max-width:calc(100vw - 16px);z-index:80}
+#p19d.col.ev .p19dh{background:rgba(227,179,65,.12)}
+#p19d.col.ev .p19ds{color:var(--warn,#e3b341)}
+@media (max-width:760px){.helpq{min-width:34px;min-height:34px}input[type=checkbox]{width:20px;height:20px}}
+</style>
+<script>(function(){
+function place(d){var sm=d.querySelector('summary'),pop=d.querySelector('.rolepop');if(!sm||!pop)return;var r=sm.getBoundingClientRect(),w=Math.max(150,pop.offsetWidth),h=pop.offsetHeight,vw=innerWidth,vh=innerHeight;
+ var left=Math.min(Math.max(8,r.right-w),vw-w-8),top=r.bottom+4;if(top+h>vh-8&&r.top-h-4>8)top=r.top-h-4;if(top+h>vh-8)top=Math.max(8,vh-h-8);pop.style.left=left+'px';pop.style.top=top+'px';}
+document.addEventListener('toggle',function(e){var d=e.target;if(!d||!d.classList||!d.classList.contains('rolemenu')||!d.open)return;document.querySelectorAll('details.rolemenu[open]').forEach(function(x){if(x!==d)x.removeAttribute('open');});place(d);},true);
+addEventListener('scroll',function(){document.querySelectorAll('details.rolemenu[open]').forEach(place);},true);
+addEventListener('resize',function(){document.querySelectorAll('details.rolemenu[open]').forEach(place);});
+document.addEventListener('keydown',function(e){if(e.key!=='Escape')return;var open=document.querySelectorAll('details.rolemenu[open]');if(open.length){open.forEach(function(d){d.removeAttribute('open');});return;}
+ var bgs=document.querySelectorAll('.modal-bg');var bg=bgs[bgs.length-1];if(!bg)return;var x=bg.querySelector('[data-close],.close,.modal-x,button[aria-label="Close"],.x');if(x)x.click();});
+document.addEventListener('click',function(e){var el=document.getElementById('p19d');if(!el||el.classList.contains('col')||el.contains(e.target))return;if(innerWidth<=760)return;if(e.target.closest&&e.target.closest('.modal-bg'))return;
+ try{if(typeof P19!=='undefined'&&P19.d){P19.autoCol=P19.d.tick;P19.openTick=null;}}catch(x){}el.classList.add('col');var c=el.querySelector('.p19dc');if(c)c.textContent='▸';},true);
+})();</script>
 </head>
 <body>
 <noscript><div style="max-width:720px;margin:40px auto;padding:0 16px;font-family:sans-serif;color:#ddd"><h1>Romaterra</h1><p>Free Roman grand strategy in your browser. Rule a people of the ancient world against hundreds of AI rivals, take Roma, raise the Imperial Palace and hold it. No account, no download.</p><p>Gather denarii, grain, timber, iron, livestock and bronze, train legionaries, cataphracts, ballistae and war elephants, and march with your allies on Roma.</p><p>Romaterra needs JavaScript to run. <a href="index.html" style="color:#8bf">Read more about the game</a>.</p></div></noscript>
@@ -7396,7 +7416,7 @@ function p19DRender(){if(!p19Calm())return;let el=document.getElementById('p19d'
   if(!rows.length&&!evh){if(el)el.remove();return;}
   let act=null;try{if(!p19Training())act=soloNextAction(you());}catch(e){} // during training the training bar is the one next step
   const nb=rows.filter(r=>r.btn).length;const nn=rows.reduce((a,r)=>a+(r.btn?0:(r.cnt||1)),0);const sum=[nb?nb+' battle'+(nb>1?'s':''):'',evh?'1 choice':'',nn?nn+' note'+(nn>1?'s':''):''].filter(Boolean).join(' · ');
-  const tn=p19TurnNo();const hot=rows.some(r=>r.sev>=2);const col=!evh&&((()=>{try{return localStorage.getItem('p19dcol')==='1';}catch(e){return false;}})()||(p19Phone()&&!hot));
+  const tn=p19TurnNo();const hot=rows.some(r=>r.sev>=2);const col=P19.openTick===d.tick?false:(p19Phone()||(!evh&&(()=>{try{return localStorage.getItem('p19dcol')==='1';}catch(e){return false;}})())||P19.autoCol===d.tick);
   const html=`<div class="p19dh" data-p19t="1"><span class="p19dt">${esc(P19_DNAME.toUpperCase())} · TURN ${d.tick>=0?Math.max(0,d.tick-((G.season&&G.season.startTick)||0)):tn.n}</span><span class="p19ds">${esc(sum)}</span><span class="p19dc">${col?'▸':'▾'}</span><button class="p19dx" data-p19x="1" title="Close until next turn" aria-label="Close">✕</button></div>
     <div class="p19db">${evh}${rows.slice(0,9).map(r=>`<div class="p19r${r.sev>=2?' hot':''}"><span class="p19i">${r.ic}</span><div class="p19x">${r.h}</div>${r.btn||''}</div>`).join('')}${rows.length>9?`<div class="small muted" style="padding:4px 2px">+${rows.length-9} more in Reports</div>`:''}</div>
     ${act&&!evh?`<div class="p19df"><span class="small muted">Next:</span> <b class="small">${esc(act.what)}</b><button class="btn sm" data-p19go="${esc(act.go||'dashboard')}">${esc(act.btn||'Go')}</button></div>`:''}`;
@@ -7406,8 +7426,8 @@ function p19DRender(){if(!p19Calm())return;let el=document.getElementById('p19d'
       if(t.dataset.p19ev!=null){p19EventPick(+t.dataset.p19ev);return;}
       if(t.dataset.p19b){const b=(G.battles||[]).find(y=>p13Key(y)===t.dataset.p19b);if(b){P19.userBattle=1;try{p13Show([b],0);}finally{P19.userBattle=0;}}return;}
       if(t.dataset.p19go){go(t.dataset.p19go);if(p19Phone())el.classList.add('col');return;}
-      if(t.dataset.p19t){const c=!el.classList.contains('col');el.classList.toggle('col',c);try{localStorage.setItem('p19dcol',c?'1':'0');}catch(_){}const s=el.querySelector('.p19dc');if(s)s.textContent=c?'▸':'▾';}});}
-  el.innerHTML=html;el.classList.toggle('col',col);el.classList.toggle('ev',!!evh);d.shown=true;}
+      if(t.dataset.p19t){const c=!el.classList.contains('col');el.classList.toggle('col',c);P19.openTick=c?null:P19.d.tick;P19.autoCol=c?P19.d.tick:null;try{localStorage.setItem('p19dcol',c?'1':'0');}catch(_){}const s=el.querySelector('.p19dc');if(s)s.textContent=c?'▸':'▾';}});}
+  el.innerHTML=html;el.classList.toggle('col',col);el.classList.toggle('ev',!!evh);if(col&&evh){const ss=el.querySelector('.p19ds');if(ss)ss.textContent='A choice is waiting, tap to open';}d.shown=true;}
 // after the turn: show what came in
 function p19TurnDone(){if(!p19Calm())return;P19.turnUntil=performance.now()+900;setTimeout(()=>{try{p19DRender();}catch(e){}},950);}
 
@@ -7572,7 +7592,7 @@ body.turnmode header.top .tspeed{margin-left:22px;padding-left:12px;border-left:
 // Update 8.0: no long dashes on screen. Older game texts used " — " as a pause; it reads as ", " now. A lone dash (no value) reads as "-".
 (function(){if(typeof document==='undefined'||typeof MutationObserver==='undefined')return;const SK=/^(SCRIPT|STYLE|TEXTAREA|INPUT|CODE)$/;
   const fix=v=>v.indexOf('\u2014')<0?v:(v.trim()==='\u2014'?v.replace('\u2014','-'):v.replace(/\s*\u2014\s*/g,', ').replace(/^, /,'').replace(/, ([.,;:!?])/g,'$1'));
-  const tn=n=>{const pn=n.parentNode;if(!pn||(pn.nodeType===1&&SK.test(pn.tagName)))return;const v=n.nodeValue;if(v&&v.indexOf('\u2014')>=0){const t=fix(v);if(t!==v)n.nodeValue=t;}};
+  const tn=n=>{const pn=n.parentNode;if(!pn||(pn.nodeType===1&&SK.test(pn.tagName)))return;const v=n.nodeValue;if(v&&v.indexOf('\u2014')>=0){let t=/^\s*\u2014\s*\S/.test(v)&&n.previousSibling?v.replace(/^\s*\u2014\s*/,': '):v;t=fix(t);if(t!==v)n.nodeValue=t;}};
   const walk=r=>{if(!r)return;if(r.nodeType===3){tn(r);return;}if(r.nodeType!==1||SK.test(r.tagName))return;const w=document.createTreeWalker(r,NodeFilter.SHOW_TEXT);let n;while((n=w.nextNode()))tn(n);
     ['title','placeholder','aria-label'].forEach(a=>{const v=r.getAttribute&&r.getAttribute(a);if(v&&v.indexOf('\u2014')>=0)r.setAttribute(a,fix(v));});};
   let busy=false;const mo=new MutationObserver(rs=>{if(busy)return;busy=true;try{rs.forEach(x=>{if(x.type==='characterData')tn(x.target);else x.addedNodes.forEach(walk);});}catch(e){}mo.takeRecords();busy=false;});
@@ -11771,7 +11791,7 @@ VIEWS.clans=v=>{const c=you();const cl=clanOf(c);
     const tss=v.querySelector('#tgsave');if(tss)tss.onclick=async ()=>{const r=await cmdSetTelegram(c,$('tgtoken').value,$('tgchat').value,collectTOpts());if(r.ok){toast(r.data&&r.data.cleared?'Telegram disconnected':'\u2705 Telegram bot saved');go('clans');save();}else toast(r.error,'bad');};
     const tclb=v.querySelector('#tgclear');if(tclb)tclb.onclick=async ()=>{const r=await cmdSetTelegram(c,'','',null);if(r.ok){toast('Telegram disconnected');go('clans');save();}else toast(r.error,'bad');};}
   const mrows=mem.slice().sort(p6by(x=>scores(x).overall)).map(m=>{const role=cl.roles[m.id]||'member';const me=m.id===c.id;const pj=projection(m);const short=pj.net.food<0||pj.net.energy<0;const rd=READY[m.ready]||READY.standby;const inc=incomingTo(m.id).filter(x=>x.threat>=0.02).length;
-    let act='';if(isLead&&!me)act=`<select class="btn ghost sm rolesel" data-roleid="${m.id}" style="width:auto;padding:3px 5px" title="Set alliance role">${['member','officer','diplomat','recruiter'].map(rk=>`<option value="${rk}" ${role===rk?'selected':''}>${ROLE[rk]}</option>`).join('')}</select> ${m.isAI?'':`<button class="btn ghost sm" data-lead="${m.id}">Lead</button> `}<button class="btn ghost sm" data-kick="${m.id}">Kick</button>`;
+    let act='';if(isLead&&!me)act=`<details class="rolemenu"><summary class="btn ghost sm" title="Set alliance role">${ROLE[role]||role} ▾</summary><span class="rolepop">${['member','officer','diplomat','recruiter'].map(rk=>`<button class="btn ghost sm${role===rk?' on':''}" data-setrole="${m.id}:${rk}">${ROLE[rk]}</button>`).join('')}</span></details> ${m.isAI?'':`<button class="btn ghost sm" data-lead="${m.id}">Lead</button> `}<button class="btn ghost sm" data-kick="${m.id}">Kick</button>`;
     else if(isOff&&!me&&role==='member')act=`<button class="btn ghost sm" data-kick="${m.id}">Kick</button>`;
     if(!me){const eq=(m.queue||[]).find(x=>x.ticks>1&&!x._eng);if(eq){const ed=BUILD.find(b=>b.k===eq.k);act+=` <button class="btn sec sm" data-eng="${m.id}" title="Spend 1 CP: their ${esc(ed?ed.n:eq.k)} finishes 1 tick sooner (once per building)">🔧 Engineers</button>`;}}
     const ac=memberActivity(m);
@@ -11890,7 +11910,7 @@ VIEWS.clans=v=>{const c=you();const cl=clanOf(c);
   v.querySelectorAll('button[data-plandef]').forEach(b=>b.onclick=()=>{const hit=findFleet(+b.dataset.plandef);if(hit){_defPlan={atk:Object.assign({},hit.f.units)};toast('Loaded the incoming force into the Frontier combat simulator.');go('fleets');}});
   v.querySelectorAll('button[data-eng]').forEach(b=>b.onclick=async ()=>{const r=await cmdSendEngineers(c,+b.dataset.eng);if(r.ok){toast('🔧 Engineers sent, 1 tick saved');go('clans');save();}else toast(r.error,'bad');});
   v.querySelectorAll('button[data-promote]').forEach(b=>b.onclick=async ()=>{const id=+b.dataset.promote;const cur=cl.roles[id];const r=await cmdClanRole(c,id,cur==='member'?'officer':'member');if(r.ok){go('clans');save();}else toast(r.error,'bad');});
-  v.querySelectorAll('select.rolesel').forEach(s=>s.onchange=async ()=>{const r=await cmdClanRole(c,+s.dataset.roleid,s.value);if(r.ok){toast('Role updated');go('clans');save();}else toast(r.error,'bad');});
+  v.querySelectorAll('button[data-setrole]').forEach(s=>s.onclick=async ()=>{const q=s.dataset.setrole.split(':');const r=await cmdClanRole(c,+q[0],q[1]);if(r.ok){toast('Role updated');go('clans');save();}else toast(r.error,'bad');});
   v.querySelectorAll('button[data-lead]').forEach(b=>b.onclick=async ()=>{const r=await cmdClanRole(c,+b.dataset.lead,'leader');if(r.ok){toast('Leadership transferred');go('clans');save();}else toast(r.error,'bad');});
   v.querySelectorAll('button[data-kick]').forEach(b=>b.onclick=async ()=>{const r=await cmdKick(c,+b.dataset.kick);if(r.ok){toast('Member removed');go('clans');save();}else toast(r.error,'bad');});
   const don=v.querySelector('#donate');if(don)don.onclick=async ()=>{const r=await cmdDonate(c,$('dres').value,+$('damt').value);if(r.ok){toast('Donated to treasury');go('clans');drawTop();save();}else toast(r.error,'bad');};
