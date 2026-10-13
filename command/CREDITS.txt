@@ -1,0 +1,19 @@
+Hidden Command (Sealed Orders, Veiled Legions, Hidden Command) for playterrastate.nl
+Made by Wim Kamphorst with the help of AI tools.
+
+Artwork created with Google Gemini.
+  The standees, board tiles, frames, river, bridges, hedgerows, minefields, jamming terrain, fog, table and box lids
+  are renders made by Wim Kamphorst with Google Gemini, cut out and resized for the game (art-pipeline.py).
+
+Game rules, board layouts, units, icons, the drawn fallback art and code are original to this game.
+
+Sound effects: Kenney.nl, CC0 (public domain), https://kenney.nl
+  Packs Interface Sounds, RPG Audio, Impact Sounds and Sci-fi Sounds, mixed and re-encoded to mono mp3,
+  some shortened with a fade out. Files used (names from the playterrastate.nl sound set):
+  Ironfront: inslag, punt, gevlucht, fout
+  Romaterra: gevecht, inslag, gevlucht, punt, fout
+  Terrastate: gevecht, inslag, schot, breuk, punt, fout
+
+The soft wooden click of a piece being placed is synthesized in the browser (Web Audio), no recording.
+
+Fonts: Archivo, IBM Plex Mono and Cinzel, SIL Open Font License 1.1.

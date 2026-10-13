@@ -1,0 +1,24 @@
+{
+  "name": "Sealed Orders (Ironfront)",
+  "short_name": "Sealed Orders",
+  "start_url": "./ironfront.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#121614",
+  "theme_color": "#121614",
+  "description": "A hidden-rank battle game in Normandy, summer 1944. Deploy your army in secret, scout, bluff with decoys and take the enemy command post. Free, solo against the computer, works offline.",
+  "icons": [
+    {
+      "src": "icons/ironfront-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icons/ironfront-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

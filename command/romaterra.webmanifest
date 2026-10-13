@@ -1,0 +1,24 @@
+{
+  "name": "Veiled Legions (Romaterra)",
+  "short_name": "Veiled Legions",
+  "start_url": "./romaterra.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#150e09",
+  "theme_color": "#150e09",
+  "description": "A hidden-rank battle game between two Roman legions at a river. Deploy in secret, read the omens, bluff with phantom cohorts and hold the bridges. Free, solo against the computer, works offline.",
+  "icons": [
+    {
+      "src": "icons/romaterra-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icons/romaterra-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

@@ -1,0 +1,24 @@
+{
+  "name": "Hidden Command (Terrastate)",
+  "short_name": "Hidden Command",
+  "start_url": "./terrastate.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#0a0e16",
+  "theme_color": "#0a0e16",
+  "description": "A hidden-rank battle game in 2026 between invented nations. Deploy in secret, scan, jump with your drone and fight through the jamming zone. Free, solo against the computer, works offline.",
+  "icons": [
+    {
+      "src": "icons/terrastate-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icons/terrastate-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
