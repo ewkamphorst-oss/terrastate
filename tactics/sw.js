@@ -2,7 +2,7 @@
 // Update 8.0: the game pages and the music open straight from the cache and refresh in the background
 // (stale-while-revalidate), so a slow phone connection no longer makes the player wait. Everything else: network
 // first with a short timeout, then the cache.
-const VERSIE = 'tactics-v3.4-0';
+const VERSIE = 'tactics-v3.5-0';
 const BESTANDEN = ['./', './index.html', './romaterra.html', './ironfront.html', './terrastate.html',
   './music/terrastate.mp3', './music/romaterra.mp3', './music/ironfront.mp3',
   './terrastate.webmanifest', './romaterra.webmanifest', './ironfront.webmanifest',

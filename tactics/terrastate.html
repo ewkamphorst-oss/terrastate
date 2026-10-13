@@ -251,6 +251,7 @@
   #t8Part a { text-decoration: underline; text-underline-offset: 2px; }
   @media (max-width: 700px) { .plaat { min-width: 0; } #beurtVan { font-size: 11px; } }
 </style>
+<meta name="x-fixes" content="tactics-fixes3">
 </head>
 <body>
 <canvas id="kaart"></canvas>
@@ -451,7 +452,7 @@
     <p class="een">Zet je eenheden op de gouden vlaggen en houd ze daar. Wie op een vlag staat, krijgt elke beurt een punt. Staat er een vijand naast, dan telt de vlag niet. Eerste bij het puntenaantal wint.</p>
     <ol class="stappen">
       <li><b>Klik op een eenheid.</b> Gele tegels zijn waar hij deze beurt heen kan; het cijfer is wat het kost.</li>
-      <li><b>Klik op een gele tegel</b> om te marcheren, of <b>op een vijand</b> om aan te vallen. Elke mars kost 1 zet. Je krijgt 3 zetten per beurt, dus niet iedereen hoeft elke beurt te bewegen.</li>
+      <li><b>Klik op een gele tegel</b> om te marcheren, of <b>op een vijand</b> om aan te vallen. Elke mars kost 1 zet. Je begint met 6 zetten en krijgt er elke beurt 3 bij, dus niet iedereen hoeft elke beurt te bewegen.</li>
       <li><b>Kies een formatie:</b> Verdedigend houdt stand, Aanvallend slaat hard, Marsklaar is snel maar kwetsbaar.</li>
       <li><b>Beëindig beurt.</b> Dan marcheert iedereen tegelijk, schieten de schutters, botsen de linies en wankelt het moreel. Je ziet het als een korte film.</li>
       <li><b>Let op:</b> hoogte geeft kracht en zicht, buiten de wegen raakt de proviant op, en een eenheid met laag moreel breekt en luistert niet meer. Het verslag rechts zegt per eenheid wat er gebeurde.</li>
@@ -1232,7 +1233,7 @@ const EN = {
   'Zet je eenheden op de gouden vlaggen en houd ze daar. Wie op een vlag staat, krijgt elke beurt een punt. Staat er een vijand naast, dan telt de vlag niet. Eerste bij het puntenaantal wint.': 'Put your units on the golden flags and keep them there. Whoever stands on a flag scores a point every turn. If an enemy stands next to it, the flag does not count. First to the target score wins.',
   'Klik op een eenheid.': 'Click a unit.', 'Gele tegels zijn waar hij deze beurt heen kan; het cijfer is wat het kost.': 'Yellow tiles are where it can go this turn; the number is the cost.',
   'Klik op een gele tegel': 'Click a yellow tile', 'om te marcheren, of': 'to march, or', 'op een vijand': 'an enemy',
-  'om aan te vallen. Elke mars kost 1 zet. Je krijgt 3 zetten per beurt, dus niet iedereen hoeft elke beurt te bewegen.': 'to attack. Each march costs 1 move. You get 3 moves per turn, so not everyone has to move every turn.',
+  'om aan te vallen. Elke mars kost 1 zet. Je begint met 6 zetten en krijgt er elke beurt 3 bij, dus niet iedereen hoeft elke beurt te bewegen.': 'to attack. Each march costs 1 move. You start with 6 moves and get 3 more every turn, so not everyone has to move every turn.',
   'Kies een formatie:': 'Choose a formation:', 'Verdedigend houdt stand, Aanvallend slaat hard, Marsklaar is snel maar kwetsbaar.': 'Defend holds, Attack hits hard, March is fast but vulnerable.',
   'Beëindig beurt.': 'End turn.', 'Dan marcheert iedereen tegelijk, schieten de schutters, botsen de linies en wankelt het moreel. Je ziet het als een korte film.': 'Then everyone marches at once, the archers shoot, the lines clash and morale wavers. You watch it as a short film.',
   'Let op:': 'Beware:', 'hoogte geeft kracht en zicht, buiten de wegen raakt de proviant op, en een eenheid met laag moreel breekt en luistert niet meer. Het verslag rechts zegt per eenheid wat er gebeurde.': 'height gives strength and sight, off the roads provisions run out, and a unit with low morale breaks and stops obeying. The report on the right says what happened to each unit.',
@@ -5651,7 +5652,7 @@ function newGame(sc, { seed, level, army, state: given = null, enemyFaction = nu
   const home = aliveUnits(state).find((u) => u.owner === ME);
   const c = centerOf(getTile(state.map, home ? home.q + 2 : 0, home ? home.r : 0));
   view.cam.x = c.x; view.cam.y = c.y;
-  note(`${sc.title}. ${state.layoutId ? tl`Opstelling: ${LAYOUTS.find((l) => l.id === state.layoutId)?.name}. ${LAYOUTS.find((l) => l.id === state.layoutId)?.text} ` : ''}${state.mode && state.mode !== 'veldtekens' ? MODES[state.mode].text : sc.goal}`);
+  note(`${sc.title}. ${state.layoutId ? tl`Opstelling: ${LAYOUTS.find((l) => l.id === state.layoutId)?.name}. ${LAYOUTS.find((l) => l.id === state.layoutId)?.text} ` : ''}${state.mode && state.mode !== 'veldtekens' ? MODES[state.mode].text : String(sc.goal).replace(/\b(15|20|25|30)(?= (punten|points))/, String(state.pointsToWin))}`);
   if (el.eind) el.eind.hidden = true;
   if (el.start) el.start.hidden = true;
   music(state.map.season, state.night);
@@ -6157,6 +6158,7 @@ function duelHandover(side) {
   el.overdrachtKnop.textContent = tl`Ik ben ${d.names[side]}`;
   el.overdrachtKnop.onclick = () => { el.overdracht.hidden = true; setSide(side); updateAll(); };
   el.overdracht.hidden = false;
+  try { updateAll(); } catch (e) { /* niets */ }
   drawAll();
 }
 function duelResolve() {
@@ -6563,6 +6565,7 @@ function tutorialPanel() {
   el.training.hidden = false;
   el.trainingStap.textContent = step.id === 'klaar' ? tl('Veldtraining afgerond') : tl`Veldtraining, stap ${game.tutorial + 1} van ${TUTORIAL.length - 1}`;
   el.trainingTekst.textContent = step.text;
+  if (step.id === 'formation' && el.panel && el.panel.classList.contains('ingeklapt')) { el.panel.classList.remove('ingeklapt'); if (el.paneelKnop) el.paneelKnop.textContent = tl('Minder'); }
   el.trainingStop.textContent = step.id === 'klaar' ? tl('Sluiten') : tl('Overslaan');
 }
 
@@ -7909,7 +7912,7 @@ window.T8={"full": {"name": "Terrastate", "href": "../play.html"}, "hq": {"en": 
     if (game.t8hard && won && CAMPAIGN.indexOf(sc) >= 0) { setHardStar(sc.id); el.eindSterren.textContent += ' ★'; }
     // Daily battle: a result line to share.
     if (game.t8daily) {
-      var line = tl`${THEME ? THEME.title.split(':')[1].trim() : 'Imperium'} slag van de dag #${game.t8daily.no}: ${won ? '★'.repeat(Math.max(1, stars)) + '☆'.repeat(3 - Math.max(1, stars)) : tl('verloren')} in ${s.turn - 1} beurten, ${unitsLost === 1 ? tl('1 eenheid verloren') : tl`${unitsLost} eenheden verloren`}`;
+      var line = tl`${THEME ? THEME.title : 'Romaterra: Imperium'} slag van de dag #${game.t8daily.no}: ${won ? '★'.repeat(Math.max(1, stars)) + '☆'.repeat(3 - Math.max(1, stars)) : tl('verloren')} in ${s.turn - 1} beurten, ${unitsLost === 1 ? tl('1 eenheid verloren') : tl`${unitsLost} eenheden verloren`}`;
       LS.set(K('daily'), JSON.stringify({ date: today(), share: line }));
       el.eindSterren.textContent = won ? '★'.repeat(Math.max(1, stars)) + '☆'.repeat(3 - Math.max(1, stars)) : '';
       var sh = document.createElement('button'); sh.className = 't8end'; sh.textContent = tl('Kopieer je uitslag');
