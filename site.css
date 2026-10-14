@@ -336,3 +336,13 @@ a:focus-visible,button:focus-visible,.endturn:focus-visible{outline:2px solid #4
 section[id],.w9[id]{scroll-margin-top:72px}
 .g9-play{white-space:nowrap}
 @media (max-width:520px){.g9-play{white-space:normal}}
+
+/* fin21: phone section links */
+@media(max-width:640px){
+  .topbar .row{height:auto;min-height:56px;flex-wrap:wrap;row-gap:0;padding-top:6px}
+  .topbar .navlinks{order:3;width:100%;overflow-x:auto;gap:18px;padding:4px 0 9px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+  .topbar .navlinks::-webkit-scrollbar{display:none}
+  .topbar .navlinks a{flex:0 0 auto;white-space:nowrap}
+  .topbar .navlinks a:not(.pill-new){display:inline-block;font-size:14px;padding:6px 0}
+  section[id],.w9[id]{scroll-margin-top:90px}
+}
