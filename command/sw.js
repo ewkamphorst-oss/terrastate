@@ -1,5 +1,5 @@
 // Hidden Command service worker. Raise the cache name with every new build.
-const CACHE = 'command-v1.1-2';
+const CACHE = 'command-v1.1-3';
 const FILES = ["./", "./index.html", "./ironfront.html", "./romaterra.html", "./terrastate.html", "./ironfront.webmanifest", "./romaterra.webmanifest", "./terrastate.webmanifest", "./index.webmanifest", "../icons/ironfront-192.png", "../icons/ironfront-512.png", "../icons/romaterra-192.png", "../icons/romaterra-512.png", "../icons/terrastate-192.png", "../icons/terrastate-512.png"];
 const GAME_HTML = /\/(ironfront|romaterra|terrastate|index)\.html$|\/$/;
 

@@ -6252,6 +6252,23 @@ function revealHTML(list) {
 // (behind the standee) is where the selected unit can go: then the move wins, as on a real table
 function tokTapSq(tok, e) {
   const own = +tok.dataset.sq;
+  // setup: a standee's body hides the square behind it; a tap above its own square on an empty square of your zone
+  // moves the chosen standee there (a tap on its own square still swaps the two)
+  if (S.screen === 'setup' && S.setup && S.setup.sel != null && S.setup.sel !== own && e && e.clientY != null) {
+    try {
+      const oc = document.querySelector(`.cell[data-sq='${own}']`), r = oc && oc.getBoundingClientRect();
+      if (r && e.clientY < r.top) {
+        for (const el of document.elementsFromPoint(e.clientX, e.clientY)) {
+          if (el.classList && el.classList.contains('cell')) {
+            const q = +el.dataset.sq, cfg = S.setup;
+            if (q !== own && HC.zone(cfg.g, cfg.side).indexOf(q) >= 0 && !cfg.placement.some(p => p.sq === q)) return q;
+            break;
+          }
+        }
+      }
+    } catch (er) {}
+    return own;
+  }
   if (S.screen !== 'game' || S.sel == null || !S.st || S.st.over) return own;
   const legal = HC.actionsFor(S.st, S.viewer).filter(a => a.pid === S.sel);
   const ok = (sq) => legal.some(a => a.kind === 'move' ? a.to === sq : (S.st.pieces[a.target] && S.st.pieces[a.target].sq === sq));
