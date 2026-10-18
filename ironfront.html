@@ -16,7 +16,7 @@
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="https://playterrastate.nl/img/ironfront-share.jpg">
 <meta name="author" content="Wim Kamphorst">
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"VideoGame","@id":"https://playterrastate.nl/ironfront.html#game","name":"Ironfront","url":"https://playterrastate.nl/ironfront.html","description":"Free WW2-style grand strategy in your browser. Lead one invented nation in a 1940s world at war, hold 2 of the 3 Capital Sectors, and make every tick a decision: battle orders, field works, radio intel and feints. No account, no download.","image":"https://playterrastate.nl/img/ironfront-share.jpg","genre":["Strategy","Grand strategy","Turn-based strategy","War game","Browser game"],"gamePlatform":["Web browser","Windows","macOS","Linux","Android","iOS"],"applicationCategory":"Game","operatingSystem":"Any (web browser)","playMode":"SinglePlayer","inLanguage":"en","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"EUR","availability":"https://schema.org/InStock"},"author":{"@type":"Person","@id":"https://playterrastate.nl/#wim","name":"Wim Kamphorst","url":"https://wimkamphorst.nl"},"publisher":{"@type":"Person","@id":"https://playterrastate.nl/#wim","name":"Wim Kamphorst","url":"https://wimkamphorst.nl"},"softwareVersion":"9.0","dateModified":"2026-10-18","sameAs":["https://wimkamphorstcoaching.itch.io/ironfront"]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"VideoGame","@id":"https://playterrastate.nl/ironfront.html#game","name":"Ironfront","url":"https://playterrastate.nl/ironfront.html","description":"Free WW2-style grand strategy in your browser. Lead one invented nation in a 1940s world at war, hold 2 of the 3 Capital Sectors, and make every tick a decision: battle orders, field works, radio intel and feints. No account, no download.","image":"https://playterrastate.nl/img/ironfront-share.jpg","genre":["Strategy","Grand strategy","Turn-based strategy","War game","Browser game"],"gamePlatform":["Web browser","Windows","macOS","Linux","Android","iOS"],"applicationCategory":"Game","operatingSystem":"Any (web browser)","playMode":"SinglePlayer","inLanguage":"en","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"EUR","availability":"https://schema.org/InStock"},"author":{"@type":"Person","@id":"https://playterrastate.nl/#wim","name":"Wim Kamphorst","url":"https://wimkamphorst.nl"},"publisher":{"@type":"Person","@id":"https://playterrastate.nl/#wim","name":"Wim Kamphorst","url":"https://wimkamphorst.nl"},"softwareVersion":"9.1","dateModified":"2026-10-18","sameAs":["https://wimkamphorstcoaching.itch.io/ironfront"]}</script>
 <link rel="manifest" href="ironfront.webmanifest"><meta name="theme-color" content="#14160c"><link rel="icon" href="icons/ironfront-64.png"><link rel="apple-touch-icon" href="icons/ironfront-180.png">
 <script>window.__MP_URL__=''; /* '' = live multiplayer not open yet */ if('serviceWorker' in navigator)addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));</script>
 <script data-goatcounter="https://playterrastate.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
@@ -18558,5 +18558,207 @@ hook();
 // one button per screen: War Room showed the same screen as Homeland
 try{var i=NAV.findIndex(function(x){return x[0]==='fleets';});if(i>=0)NAV.splice(i,1);}catch(e){}
 })();</script>
+<script id="ifxjs">(function(){
+// ===========================================================================
+// IRONFRONT 9.1 "Supply, Seasons and Veterans" (Ironfront only, single player)
+//  1 SUPPLY      an army fights best next to its own ground. Another sector of the same front: -5%.
+//                Another front: -15% (half of that at a Capital Sector). Supply Trucks (10% of the army) cancel it.
+//                A nation with ground on a sector outside the defender's reach can cut an outpost off: pocket, -8%.
+//  2 SEASONS     a calendar from June 1944 on: 40 turns per season. Spring mud, summer sun, autumn rain, winter frost.
+//                Every unit class feels the weather in its own way, for both sides in the same way.
+//  3 VETERANS    your attack armies are led by named divisions. A division that survives battles earns up to three
+//                stars (+4% attack each). An army wiped out takes its division with it.
+// Everything here wraps the existing engine from outside (resolveBattle, cmdOp, finalizeBattle, runTick), so the
+// computer nations follow the same supply and weather rules, and the multiplayer engine is untouched.
+// ===========================================================================
+if(typeof window==='undefined'||window.__MP__||window.__ifx)return;
+if(typeof process!=='undefined'&&process.versions&&process.versions.node)return;
+if(typeof GAME_CFG==='undefined'||GAME_CFG.track!=='ironfront'||typeof resolveBattle!=='function')return;
+window.__ifx=1;
+
+var IFX={VER:'9.1',PH:40,MAXV:6,VETMIN:30,STAR_AT:[3,8,15],STAR_BONUS:0.04,NEAR:0.05,FAR:0.15,NEXUS_HALF:0.5,TRUCK_FULL:0.10,POCKET:0.92};
+var ORDER=['spring','summer','autumn','winter'];
+var WX={
+ spring:{n:'Spring thaw',ic:'🌧',m:{armor:.85,arty:.90,support:.90},def:1,
+   line:'Mud on every road: armour -15%, guns -10%, trucks -10%. Infantry and aircraft are not held back.'},
+ summer:{n:'Summer',ic:'☀️',m:{air:1.10,airdef:1.05},def:1,
+   line:'Clear skies: strike aircraft and bombers +10%, interceptors +5%.'},
+ autumn:{n:'Autumn rains',ic:'🌦',m:{air:.90,armor:.95,arty:.95},def:1,
+   line:'Low cloud and soft ground: aircraft -10%, armour and guns -5%.'},
+ winter:{n:'Winter',ic:'❄️',m:{air:.80,airdef:.90,armor:.88,arty:.95,support:.90},def:1.05,
+   line:'Snow and frost: aircraft -20%, interceptors -10%, armour -12%, guns -5%, trucks -10%. Defenders dug into frozen ground +5%.'}
+};
+var SEASON_LABEL={spring:'Spring',summer:'Summer',autumn:'Autumn',winter:'Winter'};
+var NICKS=['Iron Hawks','Steel Rats','Night Owls','Black Foxes','Thunder Guard','Frost Riders','Red Lancers','Storm Vanguard','Old Guard','Bridge Breakers','Hedgerow Ghosts','Mud Dogs','Silent Boots','Ash Wardens','Copper Lions','River Crossers'];
+var KIND_WORD={inf:'Infantry Division',armor:'Armoured Division',arty:'Artillery Corps',air:'Air Wing',raid:'Raiding Group'};
+var KIND_OF={inf:'inf',armor:'armor',arty:'arty',air:'air',airdef:'air',sam:'air',recon:'raid',cyber:'raid',support:'raid'};
+
+function on(){try{return !window.__MP__&&IFX.on!==false&&!!G&&Array.isArray(G.regions);}catch(e){return false;}}
+function ordinal(n){var s=['th','st','nd','rd'],v=n%100;return n+(s[(v-20)%10]||s[v]||s[0]);}
+function pct(x){var p=Math.round((x-1)*100);return (p>0?'+':'')+p+'%';}
+
+// ---------------------------------------------------------------- calendar and weather
+function seasonKey(){return ((G.season&&G.season.num)||1)+':'+((G.season&&G.season.startTick)||0);}
+function state(){var s=G._ifx,k=seasonKey();
+  if(!s||s.key!==k){var st=(window.__ifxStart!=null)?window.__ifxStart:[0,1,1,2][Math.floor(Math.random()*4)];s=G._ifx={key:k,start:st,last:-1,warn:-1};}
+  return s;}
+function cal(t){if(t==null)t=G.tick;var st=state();var rel=Math.max(0,t-((G.season&&G.season.startTick)||0));
+  var n=st.start+Math.floor(rel/IFX.PH);var idx=n%4;var year=1944+Math.floor(n/4);var key=ORDER[idx];
+  var label=(key==='winter')?('Winter '+year+'/'+String((year+1)%100).padStart(2,'0')):(SEASON_LABEL[key]+' '+year);
+  return {n:n,idx:idx,key:key,year:year,left:IFX.PH-(rel%IFX.PH),label:label,wx:WX[key]};}
+// how much of a side's power survives the weather: the stat-weighted average of its classes' multipliers
+function sideMult(units,kind,m){var num=0,den=0;for(var k in units){var n=units[k]||0;if(n<=0)continue;var u=UBYK[k];if(!u)continue;var w=n*(kind==='atk'?u.atk:u.def);den+=w;num+=w*(m[u.cls]||1);}return den>0?num/den:1;}
+
+// ---------------------------------------------------------------- supply
+var SC={t:-1,v:-1,m:new Map()};
+function rv(){try{return (typeof P19!=='undefined'&&P19)?P19.rv:0;}catch(e){return 0;}}
+// nearest own ground to r, not counting r itself: 1 same sector, 10 same theater, 100 elsewhere, 0 none
+function dist(c,r){var t=G.tick,v=rv();if(SC.t!==t||SC.v!==v){SC.t=t;SC.v=v;SC.m.clear();}
+  var key=c.id*100000+r.id,hit=SC.m.get(key);if(hit!==undefined)return hit;
+  var best=0,R=regionsOf(c);for(var i=0;i<R.length;i++){var x=R[i];if(x.id===r.id)continue;var d=travelDist(x,r);if(best===0||d<best)best=d;if(best===1)break;}
+  SC.m.set(key,best);return best;}
+function supplyOf(c,units,r){var d=dist(c,r);var pen=(d<=1)?0:(d<=10?IFX.NEAR:IFX.FAR);if(r.nexus)pen*=IFX.NEXUS_HALF;
+  var n=0;for(var k in units)n+=units[k]||0;var share=n>0?((units.supply_truck||0)/n):0;var relief=Math.min(1,share/IFX.TRUCK_FULL);
+  return {d:d,pen:pen,relief:relief,share:share,mult:1-pen*(1-relief)};}
+function pocketed(defC,atkC,r){if(!defC||!atkC||defC.id===atkC.id)return false;try{if(regionInHome(defC,r))return false;}catch(e){}
+  if(dist(atkC,r)!==1)return false;return dist(defC,r)>=10;}
+
+// ---------------------------------------------------------------- veterans
+function vets(c){var v=c._vets;if(!v||!Array.isArray(v.list)){v=c._vets={n:0,list:[]};}return v;}
+function vetById(c,id){var L=vets(c).list;for(var i=0;i<L.length;i++)if(L[i].id===id)return L[i];return null;}
+function vetFleet(c,id){var F=c.fleets||[];for(var i=0;i<F.length;i++){if(F[i]&&F[i]._div===id&&F[i].status!=='done')return F[i];}return null;}
+function vetName(d){return ordinal(d.ord)+' '+KIND_WORD[d.kind]+(d.nick?' “'+d.nick+'”':'');}
+function stars(d){return '★'.repeat(d.stars)+'☆'.repeat(3-d.stars);}
+function kindOf(u){var s={};for(var k in u){var x=UBYK[k];if(!x)continue;var kd=KIND_OF[x.cls]||'inf';s[kd]=(s[kd]||0)+(u[k]||0)*x.atk;}
+  var best='inf',bv=-1;for(var kd in s){if(s[kd]>bv){bv=s[kd];best=kd;}}return best;}
+function betterVet(a,b){if(!a)return b;if(!b)return a;if(b.stars!==a.stars)return b.stars>a.stars?b:a;return b.xp>a.xp?b:a;}
+function raise(c,kind){var V=vets(c);V.n++;var d={id:V.n,ord:V.n,kind:kind,nick:null,xp:0,stars:0,fights:0,wins:0,caps:0};V.list.push(d);return d;}
+function peek(c,units){var V=vets(c);if(!units||fleetSize(units)<IFX.VETMIN)return null;var kind=kindOf(units),best=null,any=null;
+  V.list.forEach(function(d){if(vetFleet(c,d.id))return;any=betterVet(any,d);if(d.kind===kind)best=betterVet(best,d);});
+  if(best)return best;if(V.list.length>=IFX.MAXV)return any;return null;}
+function attach(c,f){if(!f||f._div||f.acs)return;var n=fleetSize(f.units||{});if(n<IFX.VETMIN)return;
+  var kind=kindOf(f.units),d=peek(c,f.units);if(!d)d=raise(c,kind);if(!d)return;f._div=d.id;
+  var r=null;try{r=_rgId(f.target);}catch(e){}
+  try{sitrep(c,'fleet','🎖 '+vetName(d)+' '+(d.stars?stars(d)+' ':'')+'leads this army'+(r?' against '+r.name:'')+(d.stars?': +'+Math.round(d.stars*IFX.STAR_BONUS*100)+'% attack.':'. New division, no stars yet.'),{coord:r?r.coord:null,go:'military'});}catch(e){}}
+// the attack bonus of the veteran armies in the fight at r, weighted by their share of every attacker there
+function vetBonus(r){var tot=0,w=0,lead=null;
+  G.countries.forEach(function(o){if(!o||o.retired)return;(o.fleets||[]).forEach(function(f){if(!f||f.status!=='battle'||f.target!==r.id)return;var s=fleetSize(f.units||{});tot+=s;
+    if(o.isAI===false&&f._div){var d=vetById(o,f._div);if(d&&d.stars>0){w+=s*d.stars*IFX.STAR_BONUS;if(!lead||d.stars>lead.stars)lead=d;}}});});
+  return tot>0&&w>0?{b:w/tot,lead:lead}:null;}
+function grade(c,f,r,R,retreated,start){var d=vetById(c,f._div);if(!d)return;var V=vets(c);var left=fleetSize(f.units||{});
+  var dead=left<1||(!retreated&&start>0&&left/start<=0.15);
+  if(dead){V.list=V.list.filter(function(x){return x!==d;});
+    var t='☠ '+vetName(d)+(d.stars?' ('+d.stars+' star'+(d.stars>1?'s':'')+')':'')+' was destroyed at '+r.name+'.';
+    try{chronicle(t,'war');}catch(e){}try{sitrep(c,'battle',t,{coord:r.coord,sev:2,go:'military'});}catch(e){}try{if(c.id===G.you)toast(t,'bad');}catch(e){}return;}
+  d.fights++;var win=!retreated&&R&&R.ratio>=1,cap=!retreated&&r.owner===c.id;if(win)d.wins++;if(cap)d.caps++;
+  var gain=retreated?0:((start>0&&left/start>=0.5?1:0)+(win?1:0)+(cap?1:0));d.xp+=gain;
+  var ns=0;for(var i=0;i<IFX.STAR_AT.length;i++)if(d.xp>=IFX.STAR_AT[i])ns=i+1;
+  if(ns>d.stars){d.stars=ns;if(!d.nick){var used={};V.list.forEach(function(x){if(x.nick)used[x.nick]=1;});var free=NICKS.filter(function(x){return !used[x];});d.nick=(free.length?free[Math.floor(Math.random()*free.length)]:null);}
+    var m='⭐ '+vetName(d)+' earned '+(ns===1?'its first star':ns===2?'its second star':'its third star')+' at '+r.name+': +'+Math.round(ns*IFX.STAR_BONUS*100)+'% attack from now on.';
+    try{chronicle(m,'war');}catch(e){}try{sitrep(c,'battle',m,{coord:r.coord,go:'military'});}catch(e){}try{if(c.id===G.you)toast(m);}catch(e){}}}
+
+// ---------------------------------------------------------------- the battle rules: weather, supply, pocket, veterans
+function factors(atkC,atkU,r,defC,defOver,withVets){
+  var cl=cal(),wx=cl.wx,ma=1,md=1,notes=[],out={cl:cl};
+  var defU=defOver||(defC?defC.units:garrisonUnits(r));atkU=atkU||{};
+  var wa=sideMult(atkU,'atk',wx.m),wd=sideMult(defU,'def',wx.m)*(wx.def||1);out.wa=wa;out.wd=wd;
+  if(Math.abs(wa-1)>0.004||Math.abs(wd-1)>0.004){ma*=wa;md*=wd;
+    notes.push({p:'Weather',t:wx.n+': attackers '+pct(wa)+', defenders '+pct(wd),win:wa>=wd});}
+  var sp=supplyOf(atkC,atkU,r);out.sup=sp;
+  if(sp.pen>0){ma*=sp.mult;
+    var tier=sp.d<=10?'in another sector of the same front':'on another front';
+    notes.push({p:'Supply',t:sp.mult<1?('Attackers fight '+tier+', away from their own ground: '+pct(sp.mult)+(sp.relief>0?' (their supply trucks cut the loss)':'')):('Attackers fight '+tier+', but their supply trucks carry the load'),win:sp.mult>=1});}
+  if(pocketed(defC,atkC,r)){md*=IFX.POCKET;out.pocket=true;notes.push({p:'Pocket',t:'Defenders are cut off from their other ground: '+pct(IFX.POCKET),win:true});}
+  if(withVets){var vb=vetBonus(r);if(vb){ma*=1+vb.b;out.vet=vb;notes.push({p:'Veterans',t:vetName(vb.lead)+' '+stars(vb.lead)+' leads the attack: '+pct(1+vb.b),win:true});}}
+  out.ma=ma;out.md=md;out.notes=notes;return out;}
+function applyFactors(R,F){var ma=F.ma,md=F.md;if(!(ma>0)||!(md>0)||(ma===1&&md===1))return;
+  var ratio=R.ratio*ma/md;if(!isFinite(ratio))return;R.ratio=Math.min(9,Math.max(0,ratio));R.atkP=Math.round(R.atkP*ma);R.defP=Math.round(R.defP*md);
+  var d=R.detail;if(d){d.aRaw=Math.round((d.aRaw||0)*ma);d.dRaw=Math.round((d.dRaw||0)*md);d.ratio=+R.ratio.toFixed(3);d.needSuccess=Math.round(d.dRaw);d.needCapture=Math.round(d.dRaw*1.25);}
+  var mo=d?(d.atkM>0.3):true;R.success=R.ratio>=1;R.captured=R.ratio>=1.25&&mo;
+  var P=R.phases||(R.phases=[]),gi=-1;
+  for(var i=0;i<P.length;i++){if(P[i].p==='Ground')gi=i;}
+  if(gi>=0){P[gi].t='Force '+full(R.atkP)+' vs '+full(R.defP)+' (ratio '+R.ratio.toFixed(2)+')';P[gi].win=R.success;}
+  for(var j=0;j<P.length;j++){if(P[j].p==='Occupation'){P[j].t=R.captured?'Defence broke, region captured':R.success?'Defence bloodied but held':'Assault repelled';P[j].win=R.captured;}}
+  if(F.notes.length){var at=gi>=0?gi:P.length;P.splice.apply(P,[at,0].concat(F.notes));}}
+function install(name,make){try{var o=window[name];if(typeof o!=='function'||o._ifx)return false;var w=make(o);w._ifx=1;window[name]=w;return true;}catch(e){console.error('ifx install '+name,e);return false;}}
+
+install('resolveBattle',function(o){return function(atkC,atkU0,r,defC,coord,defOver){var R=o.apply(this,arguments);
+  try{if(on()&&R&&r&&atkC&&typeof R.ratio==='number'){var F=factors(atkC,atkU0,r,defC,defOver,true);applyFactors(R,F);}}catch(e){}return R;};});
+install('cmdOp',function(o){return function(c){var n0=(c&&c.fleets)?c.fleets.length:0;var res=o.apply(this,arguments);
+  try{if(on()&&res&&res.ok&&c&&c.isAI===false&&c.fleets&&c.fleets.length>n0)attach(c,c.fleets[c.fleets.length-1]);}catch(e){}return res;};});
+install('finalizeBattle',function(o){return function(c,f,r,defC,R,retreated){var start=0,id=null;try{id=f&&f._div;start=fleetSize((f&&f.bStart)||{});}catch(e){}
+  var res=o.apply(this,arguments);try{if(on()&&id&&c&&c.isAI===false)grade(c,f,r,R,retreated,start);}catch(e){console.error('ifx grade',e);}return res;};});
+install('runTick',function(o){return function(){var res=o.apply(this,arguments);try{tick();}catch(e){}return res;};});
+
+// ---------------------------------------------------------------- radio bulletins when the weather turns
+function tick(){if(!on())return;var me=G.countries[G.you];if(!me||me.retired||me.isAI!==false||G.tick<1)return;
+  var st=state(),cl=cal();
+  if(st.last!==cl.n){var first=(st.last===-1);st.last=cl.n;
+    var msg=first?('📻 The campaign opens in '+cl.label+'. '+cl.wx.ic+' '+cl.wx.n+'. '+cl.wx.line):('📻 '+cl.wx.ic+' '+cl.label+' begins. '+cl.wx.line);
+    try{sitrep(me,'event',msg,{go:'dashboard'});}catch(e){}if(!first){try{toast(cl.wx.ic+' '+cl.wx.n+' begins on the front.');}catch(e){}}}
+  else if(cl.left===5&&st.warn!==cl.n){st.warn=cl.n;var nx=WX[ORDER[(cl.idx+1)%4]];
+    try{sitrep(me,'event','📻 Forecast: '+nx.ic+' '+nx.n+' in 5 turns. '+nx.line,{go:'dashboard'});}catch(e){}}}
+
+// ---------------------------------------------------------------- screens
+function put(v,key,html,anchor){var old=v.querySelector(':scope > [data-ifx="'+key+'"]');
+  if(!html){if(old)old.remove();return;}
+  if(old){if(old._k!==html){var n=h(html);n._k=html;old.replaceWith(n);old=n;}
+    if(anchor&&old.previousElementSibling!==anchor)anchor.after(old);return;}
+  var n2=h(html);n2._k=html;if(anchor)anchor.after(n2);else v.prepend(n2);}
+function condHTML(me){var cl=cal(),wx=cl.wx,nx=WX[ORDER[(cl.idx+1)%4]];
+  return '<div class="card mb ifxcard" data-ifx="cond" style="border-left:3px solid #7fb2ff;padding:12px 14px">'
+   +'<div class="row between wrap" style="gap:8px"><div><span class="mono small" style="color:#7fb2ff;letter-spacing:1px">FRONT CONDITIONS</span> &nbsp;<b>'+wx.ic+' '+esc(cl.label)+' · '+esc(wx.n)+'</b></div>'
+   +'<span class="muted small">'+cl.left+' turn'+(cl.left===1?'':'s')+' left, then '+nx.ic+' '+esc(nx.n)+'</span></div>'
+   +'<div class="small" style="margin-top:6px">'+esc(wx.line)+'</div>'
+   +'<details class="small" style="margin-top:8px"><summary style="cursor:pointer;color:var(--muted)">Supply and seasons, how they work</summary><div style="margin-top:6px;line-height:1.6">'
+   +'<b>Supply.</b> An army fights at full strength next to your own ground. Attacking a different sector of the same front costs <b>-5%</b>, a different front <b>-15%</b> (half of that at a Capital Sector). Capture a region first and the whole sector around it is in supply. <b>Supply Trucks</b> make up 10% of the army and the loss is gone. A defender with a lone outpost in a sector where the attacker already stands is cut off: <b>-8%</b>.<br>'
+   +'<b>Seasons.</b> Every 40 turns the weather changes: spring mud, summer sun, autumn rain, winter frost. Each unit class feels it in its own way, for you and for the computer nations alike. The battle report shows the weather and supply lines.<br>'
+   +'<b>Veteran divisions.</b> Your attacks are led by named divisions. See them under Armed Forces.</div></details></div>';}
+function vetsHTML(me){var V=vets(me);var rows=V.list.slice().sort(function(a,b){return b.stars-a.stars||b.xp-a.xp||a.id-b.id;}).map(function(d){
+    var f=vetFleet(me,d.id),st='in reserve';if(f){var r=null;try{r=_rgId(f.target);}catch(e){}
+      st=f.status==='battle'?('fighting at '+(r?r.name:'the front')):f.status==='returning'?'marching home':f.status==='staged'?('ready to march on '+(r?r.name:'a target')):('marching on '+(r?r.name:'a target'));}
+    var nxt=d.stars<3?IFX.STAR_AT[d.stars]:null;
+    return '<div class="row between wrap" style="gap:6px;padding:6px 0;border-top:1px solid var(--border)"><div><b style="color:#d4b451">'+stars(d)+'</b> <b>'+esc(vetName(d))+'</b>'
+     +'<div class="muted small">'+(nxt?('experience '+d.xp+' of '+nxt+' for the next star · '):'full strength, three stars · ')+d.fights+' battle'+(d.fights===1?'':'s')+', '+d.wins+' won, '+d.caps+' region'+(d.caps===1?'':'s')+' taken</div></div>'
+     +'<span class="small'+(f?'':' muted')+'">'+esc(st)+'</span></div>';}).join('');
+  var intro=V.list.length?'':'<div class="small muted" style="margin-top:6px">No divisions yet. Your first attack raises one.</div>';
+  return '<div class="card mb ifxcard" data-ifx="vets" style="border-left:3px solid #d4b451;padding:12px 14px">'
+   +'<div class="row between wrap" style="gap:8px"><div><span class="mono small" style="color:#d4b451;letter-spacing:1px">VETERAN DIVISIONS</span></div><span class="muted small">up to '+IFX.MAXV+' at once</span></div>'
+   +'<div class="small" style="margin-top:4px">Every attack army is led by a division. It earns a star for surviving and winning battles: <b>+4% attack per star</b>, up to <b>+12%</b>. If its army is wiped out, the division is gone for good.</div>'
+   +intro+rows+'</div>';}
+function nearNote(me){var cl=cal(),wx=cl.wx;return '<div class="small muted" data-ifx="nearnote" style="margin:0 0 12px;padding:8px 12px;border:1px solid var(--border);border-radius:8px;line-height:1.55">\uD83D\uDE9A <b>Supply</b>: an attack in another sector of your front costs <b>-5%</b>, on another front <b>-15%</b>. Supply Trucks (10% of the army) remove it, and a captured region puts its whole sector in supply. Weather now: '+wx.ic+' '+esc(wx.n)+', see Home.</div>';}
+// each target in the Nearest targets table shows what supply would cost before any trucks
+function tagTargets(v){var card=[].slice.call(v.children).filter(function(e){return /^nearest targets/i.test((e.textContent||'').trim());})[0];if(!card)return;
+  var me=you(),byC=null;[].slice.call(card.querySelectorAll('tbody tr')).forEach(function(tr){if(tr.querySelector('.ifxsup'))return;
+    var m=(tr.textContent||'').match(/\d+:\d+:\d+/);if(!m)return;if(!byC){byC={};G.regions.forEach(function(r){byC[r.coord]=r;});}
+    var r=byC[m[0]];if(!r)return;var sp=supplyOf(me,{},r);var tds=tr.querySelectorAll('td');var td=tds[3]||tds[tds.length-1];if(!td)return;
+    var t=sp.pen>0?('<span style="color:var(--warn)">supply '+pct(1-sp.pen)+'</span>'):'<span style="color:var(--good)">in supply</span>';
+    var d=document.createElement('div');d.className='ifxsup small';d.style.cssText='font-size:11px;margin-top:2px';d.innerHTML=t;td.appendChild(d);});}
+function kid(v,sel){return v.querySelector(':scope > '+sel);}
+function after(){if(!on())return;var v=document.getElementById('view');if(!v)return;var me=null;try{me=you();}catch(e){}if(!me||me.isAI!==false)return;
+  if(view==='dashboard'){put(v,'cond',condHTML(me),kid(v,'.p7digest')||kid(v,'.ptitle'));}
+  else if(view==='military'){put(v,'vets',vetsHTML(me),kid(v,'.p14rec')||kid(v,'.ptitle'));}
+  else if(view==='around'){put(v,'nearnote',nearNote(me),kid(v,'.p15')||kid(v,'.ptitle'));tagTargets(v);}}
+install('phase2After',function(o){return function(){var r=o.apply(this,arguments);try{after();}catch(e){console.error('ifx after',e);}
+  setTimeout(function(){try{after();}catch(e){}},300);setTimeout(function(){try{after();}catch(e){}},800);return r;};});
+
+// the launch panel: what supply and veterans mean for the army you have typed in
+install('battleForecast',function(o){return function(c,tgt,units){var html=o.apply(this,arguments);
+  try{if(on()&&html&&tgt&&c&&units&&fleetSize(units)>0&&tgt.owner!==c.id){var cl=cal(),wx=cl.wx,wa=sideMult(units,'atk',wx.m),sp=supplyOf(c,units,tgt),parts=[];
+    if(Math.abs(wa-1)>=0.01)parts.push(wx.ic+' '+esc(wx.n)+' on your mix of units: <b>'+pct(wa)+'</b>');else parts.push(wx.ic+' '+esc(wx.n)+': no effect on your mix of units');
+    if(sp.pen>0){parts.push('🚚 supply: '+(sp.d<=10?'another sector of the same front':'another front')+', <b>'+pct(sp.mult)+'</b>'+(sp.mult<1?', Supply Trucks (10% of the army) remove it':', your trucks carry the load'));}
+    else parts.push('🚚 supply: next to your own ground, full strength');
+    var pk=peek(c,units);if(pk)parts.push('🎖 '+esc(vetName(pk))+' '+stars(pk)+(pk.stars?' will lead it: <b>+'+Math.round(pk.stars*IFX.STAR_BONUS*100)+'%</b> on top of the odds above':' will lead it (no stars yet)'));
+    else if(fleetSize(units)>=IFX.VETMIN)parts.push('🎖 a new division will lead this army');
+    html+='<div class="small mt" style="line-height:1.55">'+parts.join(' · ')+'</div>';}}catch(e){}return html;};});
+
+// the Field Manual page
+try{if(typeof HELP!=='undefined'&&Array.isArray(HELP)&&!HELP.some(function(x){return x.id==='help-ifx';})){HELP.push({id:'help-ifx',sec:'B',ic:'🌦',title:'Supply, seasons and veteran divisions',short:'Where your army stands, what time of year it is, and who leads it, all change how a battle goes.',
+  bullets:['Supply: an army fights at full strength next to your own ground. A different sector of the same front costs 5%, a different front 15% (half of that at a Capital Sector). Capture a region first and the sector around it is in supply.','Supply Trucks: when trucks are 10% of the army, the supply loss is gone. They also still carry loot.','Pocket: a lone outpost in a sector where the enemy already stands is cut off, and defends 8% weaker.','Seasons: every 40 turns the weather turns. Spring mud slows armour, summer favours aircraft, autumn rain hurts both, winter grounds aircraft and helps the defender. The computer nations feel the same weather.','The Front conditions card on Home shows the weather and how long it lasts. A radio bulletin warns 5 turns ahead.','Veteran divisions: every attack army is led by a named division. It earns a star for each battle it survives and wins, up to three stars and +12% attack. An army wiped out takes its division with it. See Armed Forces.'],
+  see:['help-first3','help-quick'],anchor:'military'});}}catch(e){}
+
+window.IFX91=IFX;window.ifxFactors=factors;window.ifxCal=cal;window.ifxVets=vets;
+})();
+</script>
 </body>
 </html>
