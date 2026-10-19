@@ -16,7 +16,7 @@
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="https://playterrastate.nl/img/v4/romaterra-share.jpg">
 <meta name="author" content="Wim Kamphorst">
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"VideoGame","@id":"https://playterrastate.nl/romaterra.html#game","name":"Romaterra","url":"https://playterrastate.nl/romaterra.html","description":"Free Roman grand strategy in your browser. Rule a people of the ancient world against hundreds of AI rivals, take Roma, raise the Imperial Palace and hold it. No account, no download.","image":"https://playterrastate.nl/img/v4/romaterra-share.jpg","genre":["Strategy","Grand strategy","Turn-based strategy","4X","Browser game"],"gamePlatform":["Web browser","Windows","macOS","Linux","Android","iOS"],"applicationCategory":"Game","operatingSystem":"Any (web browser)","playMode":"SinglePlayer","inLanguage":"en","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"EUR","availability":"https://schema.org/InStock"},"author":{"@type":"Person","@id":"https://playterrastate.nl/#wim","name":"Wim Kamphorst","url":"https://wimkamphorst.nl"},"publisher":{"@type":"Person","@id":"https://playterrastate.nl/#wim","name":"Wim Kamphorst","url":"https://wimkamphorst.nl"},"softwareVersion":"9.0","sameAs":["https://wimkamphorstcoaching.itch.io/romaterra"]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"VideoGame","@id":"https://playterrastate.nl/romaterra.html#game","name":"Romaterra","url":"https://playterrastate.nl/romaterra.html","description":"Free Roman grand strategy in your browser. Rule a people of the ancient world against hundreds of AI rivals, take Roma, raise the Imperial Palace and hold it. No account, no download.","image":"https://playterrastate.nl/img/v4/romaterra-share.jpg","genre":["Strategy","Grand strategy","Turn-based strategy","4X","Browser game"],"gamePlatform":["Web browser","Windows","macOS","Linux","Android","iOS"],"applicationCategory":"Game","operatingSystem":"Any (web browser)","playMode":"SinglePlayer","inLanguage":"en","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"EUR","availability":"https://schema.org/InStock"},"author":{"@type":"Person","@id":"https://playterrastate.nl/#wim","name":"Wim Kamphorst","url":"https://wimkamphorst.nl"},"publisher":{"@type":"Person","@id":"https://playterrastate.nl/#wim","name":"Wim Kamphorst","url":"https://wimkamphorst.nl"},"softwareVersion":"9.2","sameAs":["https://wimkamphorstcoaching.itch.io/romaterra"]}</script>
 <link rel="manifest" href="romaterra.webmanifest"><meta name="theme-color" content="#1a1410"><link rel="icon" href="icons/romaterra-64.png"><link rel="apple-touch-icon" href="icons/romaterra-180.png">
 <script>window.__MP_URL__=''; /* '' = live multiplayer not open yet */ if('serviceWorker' in navigator)addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));</script>
 <script data-goatcounter="https://playterrastate.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
@@ -3785,6 +3785,36 @@ function cmdClanVisibility(c,field,val){const cl=clanOf(c);if(!cl)return err('No
 const ACS_MAX_FLEETS=5; // hard cap on fleets per coordinated assault (anti dummy-swarm)
 const ACS_MAX_WINDOW=12; // furthest-out landing tick an initiator can set (ticks from launch)
 function isClanOfficer(c){const cl=clanOf(c);return !!(cl&&['leader','officer','commander'].includes(cl.roles[c.id]));}
+// Update 9.2: which AI clan-mates join an ACS. Outside solo this is exactly the 9.1 rule (same random draws, same order).
+// In solo: the human-ratio drag is off (every solo alliance has one human), a member under heavy attack stays home,
+// good odds or the alliance target make a member join, hopeless odds make it say no. roll=false is the dry run for the panel.
+function acsOdds(c,r,units,kd){try{if(!units||fleetSize(units)<=0)return 0;const defC=r.owner!=null?G.countries[r.owner]:null;const g=garrisonUnits(r);const gp=power(GARRISON_DUMMY,'def',g)||1;
+  const est=kd!=null?kd:regionDef(r);const k=est/gp;const defU={};for(const u in g)defU[u]=Math.max(0,Math.round(g[u]*k));const R=resolveBattle(c,Object.assign({},units),r,defC,1,defU);return +R.ratio||0;}catch(e){return 0;}}
+function acsAiPick(c,cl,r,com,off,am,roll){const out=[],dec=[];const solo=(typeof isSoloGame==='function'&&isSoloGame());
+  let wm=am.willMod,cm=am.commitMod;if(solo){const ls=am.leaderShare;wm=ls<0.15?0.35:ls<0.30?0.70:1;cm=ls<0.15?0.5:ls<0.30?0.8:1;}
+  let atk=0;try{atk=power(c,'atk',com);}catch(e){}
+  const B=cl&&cl._brain;const own=r.owner!=null?G.countries[r.owner]:null;const onPlan=!!(own&&B&&B.target!=null&&own.clan===B.target);
+  const inv=c._p153inv&&c._p153inv.rid===r.id&&G.tick-c._p153inv.t<=4?c._p153inv.by:null;
+  let potU=Object.assign({},com||{});if(solo){clanMembers(cl).forEach(m=>{if(m.id===c.id||!m.isAI||!regionsOf(m).length)return;const mh=homeFor(m,r);if(!mh||travelFor(m,mh,r)>off)return;
+      try{if(incomingTo(m.id).some(x=>x.threat>=0.5))return;}catch(e){}UNIT.forEach(u=>{const n=Math.floor((m.units[u.k]||0)*Math.min(0.5,(0.4+m.pers.aggression/300)*cm));if(n>0)potU[u.k]=(potU[u.k]||0)+n;});});}
+  const _od={};
+  clanMembers(cl).forEach(m=>{if(m.id===c.id||!m.isAI||!regionsOf(m).length)return;const mh=homeFor(m,r);if(!mh){dec.push({id:m.id,why:'far'});return;}
+    const tv=travelFor(m,mh,r);if(tv>off){dec.push({id:m.id,why:'far',tv});return;}
+    const p0=clamp((0.35+m.pers.loyalty/200+m.pers.aggression/300)*wm,0.05,0.9);
+    if(!solo){if(!(Math.random()<p0))return;const mcom={};UNIT.forEach(u=>{const n=m.units[u.k]||0;if(n>0)mcom[u.k]=Math.floor(n*(0.4+m.pers.aggression/300)*cm);});
+      if(Object.values(mcom).some(n=>n>0))out.push({owner:m.id,home:mh.id,travel:tv,units:mcom});return;}
+    const mcom={};UNIT.forEach(u=>{const n=m.units[u.k]||0;if(n>0)mcom[u.k]=Math.floor(n*Math.min(0.5,(0.4+m.pers.aggression/300)*cm));}); // solo: half the army stays home to defend
+    if(!Object.values(mcom).some(n=>n>0)||fleetSize(mcom)<20){dec.push({id:m.id,why:'army'});return;}
+    let busy=false;try{busy=incomingTo(m.id).some(x=>x.threat>=0.5);}catch(e){}
+    if(busy&&m.id!==inv){dec.push({id:m.id,why:'defending'});return;}
+    let mp=0;try{mp=power(m,'atk',mcom);}catch(e){}let kd=null;try{kd=aiKnownDef(m,r);if(kd==null)kd=aiGuessDef(m,r);}catch(e){}
+    const ratio=kd?(_od[Math.round(kd)]!=null?_od[Math.round(kd)]:(_od[Math.round(kd)]=acsOdds(c,r,potU,kd))):1;let p=p0;
+    if(m.id===inv)p=1;else if(ratio>=1.1||(onPlan&&ratio>=0.8))p=Math.max(p,0.85*wm);else if(ratio<0.7)p=Math.min(p,0.12);
+    const go=roll?Math.random()<p:p>=0.5;
+    if(!go){dec.push({id:m.id,why:ratio<0.7?'odds':'no'});return;}
+    out.push({owner:m.id,home:mh.id,travel:tv,units:mcom});atk+=mp;});
+  if(inv!=null){const i=out.findIndex(p=>p.owner===inv);if(i>0)out.unshift(out.splice(i,1)[0]);} // the ally who proposed the strike is never cut by the fleet limit
+  return {parts:out,declined:dec,atk};}
 function cmdLaunchACS(c,rid,committed,landOffset){const cl=clanOf(c);if(!cl)return err('Join a clan to coordinate an assault');{const r=_rgId(rid);if(typeof coldPeaceBlocks==='function'&&coldPeaceBlocks(c,r))return err('Cold Peace: no attacks on nations before turn '+(((G.season&&G.season.startTick)||0)+60)+'. Empty land is fair game.');}
   if(!isClanOfficer(c))return err('Only alliance officers can launch a coordinated assault (it commits members\' armies). Ask a leader/officer, or run a solo attack.');
   const r=_rgId(rid);if(!r||r.owner===c.id)return err('Invalid target');
@@ -3804,11 +3834,7 @@ function cmdLaunchACS(c,rid,committed,landOffset){const cl=clanOf(c);if(!cl)retu
   // v3.20 skin-in-the-game: AI won't be "the meat" for a leader who commits only a token force, and an AI-heavy human
   // farm gets less AI enthusiasm than a real team. (helper below, so it can be unit-tested)
   const _am=acsAiMods(cl,com,fleetSize(c.units||{}));const willMod=_am.willMod,commitMod=_am.commitMod;
-  clanMembers(cl).forEach(m=>{if(m.id===c.id||!m.isAI||!regionsOf(m).length)return;const mh=homeFor(m,r);if(!mh)return;
-    if(travelFor(m,mh,r)>off)return; // can't reach the fixed impact tick, left out, not slowed to
-    const willing=Math.random()<clamp((0.35+m.pers.loyalty/200+m.pers.aggression/300)*willMod,0.05,0.9);if(!willing)return;
-    const mcom={};UNIT.forEach(u=>{const n=m.units[u.k]||0;if(n>0)mcom[u.k]=Math.floor(n*(0.4+m.pers.aggression/300)*commitMod);});
-    if(Object.values(mcom).some(n=>n>0))parts.push({owner:m.id,home:mh.id,travel:travelFor(m,mh,r),units:mcom});});
+  {const _pk=acsAiPick(c,cl,r,com,off,_am,true);_pk.parts.forEach(p=>parts.push(p));if(typeof isSoloGame==='function'&&isSoloGame())c._p153last={rid:r.id,t:G.tick,declined:_pk.declined};}
   if(parts.length>ACS_MAX_FLEETS)parts.length=ACS_MAX_FLEETS; // hard cap: no dummy-account swarm wipes
   c.res.influence-=1200;c.cp-=3;for(const k in com)c.units[k]-=com[k];
   parts.forEach(p=>{if(p.owner!==c.id){const m=G.countries[p.owner];for(const k in p.units)m.units[k]-=p.units[k];}});
@@ -7896,9 +7922,9 @@ function renderLanding(){
       <a class="card" href="updates.html" target="_self" rel="noopener" style="display:block;text-decoration:none;color:inherit;margin:0 auto">
         <div class="row between wrap" style="gap:10px;align-items:center">
           <div style="min-width:0;flex:1">
-            <div><span class="mono" style="color:var(--gold);font-size:11px;letter-spacing:1px">UPDATE 9.0 · EVERYTHING IN ITS PLACE</span> <span class="muted small">October 2026</span></div>
-            <div style="font-weight:700;margin-top:3px">Update 9.0: Everything in its place</div>
-            <div class="muted small mt">Update 9.0 puts every piece of information on the screen it is about. Armed Forces shows only your army, Production only what you build, Homeland your defence, Reports what happened and Rankings the wider world. A panel no longer turns up on three screens at once, each adviser now sits on the screen of its field, and War Room left the menu because it opened Homeland a second time. Update 8.1 adds Veiled Legions, a board game of hidden ranks in the Romaterra world, free at playterrastate.nl/command. This game got fixes from a full test round: a clear role menu in the alliance, a turn report that folds away, and bigger buttons on the phone. Update 8.0 is about solid ground. Romaterra now plays on its own map of the Roman world, with Roman provinces, towns and rivals. The middle of the season comes alive: weak nations break apart and leave land to take, a coalition rises against whoever runs away with the lead, and the prize is a race over the whole season that Home shows you. One turn report instead of a stream of pop-ups, cards with big buttons on the phone, and faster turns. Saved games work in every era, a new nation never replaces your running one without asking, and the season ends cleanly. Earlier: every screen starts with what matters, and what repeated itself is gone. Know your odds before you strike: neutral garrisons show their strength and your chance, and a hopeless or blind attack asks first. Every battle gets its moment: a result screen with victory or defeat and what to do next, the last battle on Home, and battle reports first in Reports. Also: a living world. AI alliances grow, unite and form blocs, a coalition rises against whoever leads, allies answer the call and every hit gets an answer. See who leads on Diplomacy. Also: a calmer desk. An attack on your ground has one Front card on Home with your defence against what is coming. Alerts are one line, each screen starts with its own content, and on phones END TURN sits in the bottom bar. Share a battle to WhatsApp, Telegram or Discord, Messages is now Comms, and a build plan starts up to five builds by themselves.</div>
+            <div><span class="mono" style="color:var(--gold);font-size:11px;letter-spacing:1px">UPDATE 9.2 · ALLIES THAT FIGHT WITH YOU</span> <span class="muted small">October 2026</span></div>
+            <div style="font-weight:700;margin-top:3px">Update 9.2: Allies that fight with you</div>
+            <div class="muted small mt">Update 9.2 makes your AI allies fight with you. Before a joint strike (ACS) you see which allies join, your force together against the defence and your odds. Allies join when the odds are good and say why when they stay home. An ally who sees a chance proposes a joint strike on Home, and after the landing one line says who did what. When you lead an alliance, you pick its target at the war council and the AI members follow it, also to the Nexus. Your S.O.S. gets a real answer and the alliance chat is quieter. Update 9.0 puts every piece of information on the screen it is about. Armed Forces shows only your army, Production only what you build, Homeland your defence, Reports what happened and Rankings the wider world. A panel no longer turns up on three screens at once, each adviser now sits on the screen of its field, and War Room left the menu because it opened Homeland a second time. Update 8.1 adds Veiled Legions, a board game of hidden ranks in the Romaterra world, free at playterrastate.nl/command. This game got fixes from a full test round: a clear role menu in the alliance, a turn report that folds away, and bigger buttons on the phone. Update 8.0 is about solid ground. Romaterra now plays on its own map of the Roman world, with Roman provinces, towns and rivals. The middle of the season comes alive: weak nations break apart and leave land to take, a coalition rises against whoever runs away with the lead, and the prize is a race over the whole season that Home shows you. One turn report instead of a stream of pop-ups, cards with big buttons on the phone, and faster turns. Saved games work in every era, a new nation never replaces your running one without asking, and the season ends cleanly. Earlier: every screen starts with what matters, and what repeated itself is gone. Know your odds before you strike: neutral garrisons show their strength and your chance, and a hopeless or blind attack asks first. Every battle gets its moment: a result screen with victory or defeat and what to do next, the last battle on Home, and battle reports first in Reports. Also: a living world. AI alliances grow, unite and form blocs, a coalition rises against whoever leads, allies answer the call and every hit gets an answer. See who leads on Diplomacy. Also: a calmer desk. An attack on your ground has one Front card on Home with your defence against what is coming. Alerts are one line, each screen starts with its own content, and on phones END TURN sits in the bottom bar. Share a battle to WhatsApp, Telegram or Discord, Messages is now Comms, and a build plan starts up to five builds by themselves.</div>
           </div>
           <span class="btn ghost sm" style="flex:none;pointer-events:none">What is new</span>
         </div>
@@ -7966,7 +7992,7 @@ function renderLanding(){
   {const b=s.querySelector('#lpNews');if(b)b.onclick=()=>{const t=s.querySelector('#playerupdate');if(t)t.scrollIntoView({behavior:'smooth',block:'center'});};}
 }
 // ---- Legal identity: ONE place to change the operator / contact / copyright holder. Used by the Privacy, Terms and Credits tabs and the footer.
-const LEGAL={operator:'Wim Kamphorst',email:'wimkamphorst.coaching@gmail.com',author:'Wim Kamphorst',country:'the Netherlands',law:'Dutch law',dpa:'Autoriteit Persoonsgegevens (the Dutch data protection authority)',dpaUrl:'https://www.autoriteitpersoonsgegevens.nl',version:'1.0',updated:'September 2026',build:'Update 9.0 · Oct 2026',minAge:16};
+const LEGAL={operator:'Wim Kamphorst',email:'wimkamphorst.coaching@gmail.com',author:'Wim Kamphorst',country:'the Netherlands',law:'Dutch law',dpa:'Autoriteit Persoonsgegevens (the Dutch data protection authority)',dpaUrl:'https://www.autoriteitpersoonsgegevens.nl',version:'1.0',updated:'September 2026',build:'Update 9.2 · Oct 2026',minAge:16};
 LEGAL.contact=`<b>${LEGAL.operator}</b>, <a href="mailto:${LEGAL.email}">${LEGAL.email}</a>`;
 // ---- Landing-page manual: beginner's handbook + combat formulae -------------
 const MANUAL={
@@ -18327,5 +18353,172 @@ hook();
 // one button per screen: War Room showed the same screen as Homeland
 try{var i=NAV.findIndex(function(x){return x[0]==='fleets';});if(i>=0)NAV.splice(i,1);}catch(e){}
 })();</script>
+<script id="p153js">(function(){
+if(typeof window==='undefined'||window.__MP__||window.__p153)return;
+if(typeof process!=='undefined'&&process.versions&&process.versions.node)return;
+if(typeof runTick!=='function'||typeof acsAiPick!=='function')return;
+window.__p153=1;
+const ST=()=>{G._p153=G._p153||{inv:null,lastInv:-99,ops:{},sos:null,council:null,seen:null};return G._p153;};
+const me=()=>{try{return you();}catch(e){return null;}};
+const nm=id=>{const c=G.countries[id];return c?c.name:'?';};
+const fu=n=>{try{return full(Math.round(n));}catch(e){return String(Math.round(n));}};
+const solo=()=>{try{return isSoloGame();}catch(e){return false;}};
+const mix=(a,b)=>{const o=Object.assign({},a);for(const k in b)o[k]=(o[k]||0)+(b[k]||0);return o;};
+const comOf=(c,f)=>{const o={};for(const k in (c.units||{})){const n=Math.floor((c.units[k]||0)*f);if(n>0)o[k]=n;}return o;};
+const aiCom=m=>{const o={};UNIT.forEach(u=>{const n=m.units[u.k]||0;if(n>0)o[u.k]=Math.floor(n*Math.min(0.5,0.4+m.pers.aggression/300));});return o;};
+const odds=(c,r,units)=>{try{const o=p14Odds(c,r,units);return o;}catch(e){return null;}};
+const band=o=>{if(!o)return ['unknown','var(--muted)'];if(o.blind)return ['not scouted','var(--muted)'];const b=p14Band(o.ratio);return [b[0],b[1]];};
+const WHY={far:'too far to land in time',defending:'defending its own ground',odds:'thinks the odds are too low',army:'has no army to spare',no:'declined'};
+function phaseOf(){try{const st=(G.season&&G.season.startTick)||0,prog=(G.tick-st)/Math.max(1,SEASON_TICKS);let fin=false;try{fin=finaleActive();}catch(e){}
+  const unl=G.tick>=ccUnlockTick();return fin?'finale':(unl||prog>=0.62)?'nexus':prog<0.15?'opening':'conquest';}catch(e){return 'conquest';}}
+const PHASE={opening:'Opening',conquest:'Conquest',nexus:'Nexus',finale:'Last battle'};
+function canHit(c,r){if(!r||r.owner==null||r.owner===c.id)return false;const o=G.countries[r.owner];if(!o||o.retired)return false;
+  if(c.clan!=null&&o.clan===c.clan)return false;
+  try{if(typeof sameTheaterAlly==='function'&&sameTheaterAlly(c,r))return false;}catch(e){}
+  try{if(typeof bullyBlocked==='function'&&bullyBlocked(c,r))return false;}catch(e){}
+  try{if(typeof coldPeaceBlocks==='function'&&coldPeaceBlocks(c,r))return false;}catch(e){}
+  try{const cl=clanOf(c),oc=o.clan!=null?(G.clans||[]).find(x=>x.id===o.clan):null;if(cl&&oc&&typeof dipStatus==='function'&&dipStatus(cl.id,oc.id)==='allied')return false;}catch(e){}
+  return true;}
+
+// ---------- A. ACS panel: who comes, together against the defence, a better landing turn ----------
+function acsPrev(){try{const v=document.getElementById('view');if(!v)return;const ab=v.querySelector('#acs');if(!ab){return;}
+  const row0=ab.closest('.row')||ab.parentElement;const sc=(row0&&row0.querySelector('[data-scout]'))||null;let rid0=sc?+sc.dataset.scout:(typeof selTarget!=='undefined'&&selTarget!=null?+selTarget:null);if(rid0==null||isNaN(rid0))return;const r=_rgId(rid0);const c=me();const cl=c&&clanOf(c);if(!r||!cl)return;
+  const com=readInputs(v.querySelector('#ui'))||{};const home=homeFor(c,r);if(!home)return;const myT=travelFor(c,home,r);
+  const ws=v.querySelector('#acswin');const sel=ws?(+ws.value||0):0;const off=sel>0?sel:Math.min(ACS_MAX_WINDOW,myT+2);
+  let box0=v.querySelector('.p153prev');const mk=()=>{let b=v.querySelector('.p153prev');if(!b){b=document.createElement('div');b.className='p153prev';b.style.cssText='margin:8px 0 4px;padding:8px 10px;border:1px solid var(--border2,#2a4666);border-radius:8px';const row=ab.closest('.row')||ab.parentElement;row.after(b);}return b;};
+  {let why='';try{if(typeof sameTheaterAlly==='function'&&sameTheaterAlly(c,r))why="it is in your own sector, sector-mates are your team";else if(typeof sameAllianceMember==='function'&&sameAllianceMember(c,r))why='it belongs to your own alliance';else if(typeof bullyBlocked==='function'&&bullyBlocked(c,r))why='great powers cannot lead an assault on a nation that never attacked';else if(typeof coldPeaceBlocks==='function'&&coldPeaceBlocks(c,r))why='Cold Peace still protects nations';}catch(e){}
+    if(why){const b=mk();const h1='<div class="small muted">No joint strike possible here: '+esc(why)+'.</div>';if(b._h!==h1){b._h=h1;b.innerHTML=h1;}return;}}
+  if(!fleetSize(com)){const b=mk();const h0='<div class="small muted">Put units in the attack to see which allies join you. Allies match a real commitment: send at least a third of your army.</div>';if(b._h!==h0){b._h=h0;b.innerHTML=h0;}return;}
+  const am=acsAiMods(cl,com,fleetSize(c.units||{}));const pk=acsAiPick(c,cl,r,com,off,am,false);const share=fleetSize(com)/Math.max(1,fleetSize(c.units||{}));
+  const capN=Math.max(0,(typeof ACS_MAX_FLEETS==='number'?ACS_MAX_FLEETS:5)-1);const over=pk.parts.length-capN;if(over>0)pk.parts=pk.parts.slice(0,capN);
+  let all=Object.assign({},com);pk.parts.forEach(p=>{all=mix(all,p.units);});
+  const o=fleetSize(all)?odds(c,r,all):null;const b=band(o);
+  let best=null;for(let k=Math.max(1,myT);k<=ACS_MAX_WINDOW;k++){const q=acsAiPick(c,cl,r,com,k,am,false).parts.length;if(!best||q>best.q)best={k,q};}
+  const groups={};pk.declined.forEach(d=>{groups[d.why]=(groups[d.why]||0)+1;});
+  const coming=pk.parts.map(p=>esc(nm(p.owner))+' '+fu(fleetSize(p.units))).join(', ')+(over>0?' <span class="muted">(fleet limit reached, '+over+' more ready)</span>':'');
+  const not=Object.keys(groups).map(k=>groups[k]+' '+(k==='no'&&share<0.3?'wait for a bigger share of your army':(WHY[k]||k))).join(', ');
+  let h=`<div class="small" style="margin-bottom:4px"><b>With you:</b> ${coming||'no allies'}${not?` <span class="muted">· not coming: ${esc(not)}</span>`:''}</div>`;
+  if(o&&!o.blind)h+=`<div class="small">Together about <b>${fu(o.atk)}</b> against <b>${fu(o.def)}</b> defence: <b style="color:${b[1]}">${esc(b[0])}</b>${o.ratio<0.95?' <span class="muted">· the allies who check the odds will stay home</span>':''}</div>`;
+  else if(o&&o.blind)h+=`<div class="small muted">Scout ${esc(r.name)} first to see the odds together.</div>`;
+  if(best&&Math.min(best.q,capN)>pk.parts.length&&best.k!==off)h+=`<button class="btn ghost sm" data-p153off="${best.k}" style="margin-top:6px;min-height:36px">Land at T+${best.k}: ${Math.min(best.q,capN)} all${Math.min(best.q,capN)===1?'y':'ies'} can join</button>`;
+  const box=mk();
+  if(box._h!==h){box._h=h;box.innerHTML=h;const bb=box.querySelector('[data-p153off]');if(bb&&ws)bb.onclick=()=>{ws.value=bb.dataset.p153off;acsPrev();};}
+}catch(e){}}
+let _pt=null;document.addEventListener('input',e=>{if(e.target&&e.target.closest&&e.target.closest('#view')){clearTimeout(_pt);_pt=setTimeout(acsPrev,150);}},true);
+document.addEventListener('change',e=>{if(e.target&&e.target.closest&&e.target.closest('#view')){clearTimeout(_pt);_pt=setTimeout(acsPrev,80);}},true);
+
+// ---------- B. An AI ally proposes a joint strike ----------
+function makeInvite(){const c=me();if(!c||c.isAI!==false)return;const cl=clanOf(c);if(!cl)return;const S=ST();
+  if(S.inv&&G.tick<=S.inv.exp)return;S.inv=null;if(G.tick-(S.lastInv||-99)<8)return;if(phaseOf()==='opening')return;
+  if(fleetSize(c.units||{})<60)return;const lead=isClanOfficer(c);
+  if(lead&&((c.res.influence||0)<1200||(c.cp||0)<3))return;
+  const B=cl._brain;const tgtClan=B&&B.target!=null?B.target:null;
+  const pros=clanMembers(cl).filter(m=>m.isAI&&!m.retired&&regionsOf(m).length&&fleetSize(m.units||{})>=150&&(lead||(isClanOfficer(m)&&(m.res.influence||0)>=1200&&(m.cp||0)>=3))&&!incomingTo(m.id).some(x=>x.threat>=0.5)).sort((a,b)=>fleetSize(b.units)-fleetSize(a.units)).slice(0,4);
+  if(!pros.length){S.lastInv=G.tick-3;return;}const myC=comOf(c,0.5);let best=null;const ph=phaseOf();
+  const mine=regionsOf(c);const near=G.regions.filter(r=>r.owner!=null&&r.owner!==c.id).map(r=>{let d=1e9;for(const m of mine){const q=Math.hypot(r.x-m.x,r.y-m.y);if(q<d)d=q;}return {r,d};}).sort((a,b)=>a.d-b.d).slice(0,40).map(o=>o.r).filter(r=>canHit(c,r)&&!(r.nexus&&ph==='conquest'));
+  pros.forEach(pr=>{const pc=aiCom(pr);if(fleetSize(pc)<20)return;
+    near.forEach(r=>{if(!canHit(pr,r))return;
+      const hc=homeFor(c,r),hp=homeFor(pr,r);if(!hc||!hp)return;const tc=travelFor(c,hc,r),tp=travelFor(pr,hp,r);if(tc>ACS_MAX_WINDOW-1||tp>ACS_MAX_WINDOW-1)return;
+      let kd=null;try{kd=aiKnownDef(pr,r);if(kd==null)kd=aiGuessDef(pr,r);}catch(e){}if(kd==null)return; // the ally's own estimate of the defence
+      const atk=power(c,'atk',myC)+power(pr,'atk',pc);const ratio=acsOdds(c,r,mix(myC,pc),kd);if(ratio<1.15)return;
+      const o=G.countries[r.owner];const onPlan=tgtClan!=null&&o&&o.clan===tgtClan;
+      let hits=0;(G.battles||[]).forEach(b=>{if(b&&b.tick>=G.tick-30&&b.atkId===r.owner&&G.countries[b.defId]&&G.countries[b.defId].clan===cl.id)hits++;});
+      const v=(onPlan?60:0)+hits*12+Math.min(30,(r.sv||0)/3)+(r.nexus?40:0)-Math.max(tc,tp)*3+Math.min(20,(ratio-1.15)*10);
+      if(!best||v>best.v)best={v,pr,r,tc,tp,ratio,kd,atk,onPlan,hits,pc};});});
+  if(!best){S.lastInv=G.tick-3;return;}const off=Math.min(ACS_MAX_WINDOW,Math.max(best.tc,best.tp)+1);
+  S.inv={by:best.pr.id,rid:best.r.id,off,land:G.tick+off,exp:G.tick+2,our:fleetSize(best.pc),you:fleetSize(myC),
+    ratio:best.ratio,why:best.r.nexus?'the Nexus':best.onPlan?'our alliance target':best.hits?'they have been hitting us':'their ground is weakly held',owner:best.r.owner,lead};
+  S.lastInv=G.tick;try{sitrep(c,'alert','⚔ '+best.pr.name+' proposes a joint strike on '+best.r.name+' ('+best.r.coord+'). See Home.',{coord:best.r.coord,sev:2,go:'dashboard'});}catch(e){}}
+function inviteCard(){const S=ST();const I=S.inv;if(!I||G.tick>I.exp)return '';const c=me();const r=_rgId(I.rid);if(!c||!r)return '';const pr=G.countries[I.by];if(!pr)return '';
+  let o=odds(c,r,mix(comOf(c,0.5),aiCom(pr)));if(!o||o.blind)o={ratio:I.ratio};const b=band(o);const own=G.countries[I.owner];
+  return `<div class="card p153card" data-p153c="inv" style="border-left:3px solid var(--accent2);margin-bottom:12px"><div class="small mono" style="letter-spacing:1px;color:var(--accent2)">JOINT STRIKE PROPOSAL</div>
+  <div style="margin:6px 0"><b>${esc(pr.name)}</b>: "Together on <b>${esc(r.name)}</b> (${esc(r.coord)}), ${esc(I.why)}. We bring ${fu(I.our)} units, you bring half your army (${fu(I.you)} units). Landing in about ${I.off} turns."</div>
+  <div class="small muted">Defender: ${esc(own?own.name+' ['+own.tag+']':'?')} · odds together: <b style="color:${b[1]}">${esc(b[0])}</b></div>
+  <div class="row wrap" style="gap:8px;margin-top:8px"><button class="btn" data-p153="join" style="min-height:44px">⚔ Join</button><button class="btn ghost" data-p153="no" style="min-height:44px">Not now</button></div></div>`;}
+function acceptInvite(){const S=ST();const I=S.inv;S.inv=null;const c=me();const r=I&&_rgId(I.rid);const pr=I&&G.countries[I.by];if(!c||!r||!pr){toast('The proposal expired','warn');return;}
+  const com=comOf(c,0.5);if(!fleetSize(com)){toast('No units at home','warn');return;}
+  const hc=homeFor(c,r),hp=homeFor(pr,r);if(!hc||!hp){toast('Cannot reach '+r.name+' any more','warn');return;}
+  const off=Math.min(ACS_MAX_WINDOW,Math.max(travelFor(c,hc,r),travelFor(pr,hp,r))+1);let res;
+  if(isClanOfficer(c)){c._p153inv={rid:r.id,by:pr.id,t:G.tick};res=cmdLaunchACS(c,r.id,com,off);c._p153inv=null;
+    if(res&&res.ok)toast('⚔ Joint strike set: '+res.data.parts+' fleets, impact tick #'+res.data.landTick,'');}
+  else{const r0=isClanOfficer(pr)?cmdLaunchACS(pr,r.id,aiCom(pr),off):{ok:false,error:pr.name+' cannot lead an assault'};
+    if(r0&&r0.ok){const op=(G.acs||[]).slice().reverse().find(x=>x.leader===pr.id&&x.target===r.id);res=op?cmdJoinACS(c,op.id,com):{ok:false,error:'Operation not found'};
+      if(res&&res.ok)toast('⚔ You joined '+pr.name+"'s strike on "+r.name,'');}else res=r0;}
+  if(!res||!res.ok)toast((res&&res.error)||'Not possible','bad');
+  try{save();}catch(e){}try{drawTop();}catch(e){}try{go(view);}catch(e){}}
+
+// ---------- B2. one line after a joint strike that had you in it ----------
+function trackOps(){const S=ST();const c=me();if(!c)return;(G.acs||[]).forEach(op=>{if(!op||S.ops[op.id])return;if(!(op.fleets||[]).some(f=>f.owner===c.id))return;
+  S.ops[op.id]={coord:op.coord,land:op.landTick,f:op.fleets.map(f=>[f.owner,fleetSize(f.units||{})])};});
+  for(const id in S.ops){const o=S.ops[id];if(G.tick<o.land)continue;const bt=(G.battles||[]).find(b=>b&&b.coord===o.coord&&b.tick>=o.land-1&&b.tick<=o.land+6);
+    if(!bt&&G.tick<o.land+7)continue;delete S.ops[id];if(!bt)continue;
+    const res=bt.outcome==='captured'?'taken':bt.outcome==='partial'?'battle won, but the region could not be held':'held by the defender';
+    const who=o.f.map(([id2,n])=>(id2===c.id?'you':nm(id2))+' '+fu(n)).join(', ');
+    try{sitrep(c,'battle','⚔ Joint strike on '+bt.region+' ('+o.coord+'): '+res+'. Together: '+who+'.',{coord:o.coord,sev:bt.outcome==='captured'?1:2,go:'reports'});}catch(e){}}}
+
+// ---------- C. less chatter, and a real answer to an S.O.S. ----------
+const IMP=/S\.O\.S|IMPACT|War council|Nexus|WAR WON|War lost|NAP|declined|Strategy|under attack|peace|declare/i;
+const _cp=window.clanPost;if(typeof _cp==='function'){window.clanPost=function(cl,by,text,ch){try{if(solo()&&cl&&G.you!=null&&clanMembers(cl).some(m=>m.id===G.you)&&by!==G.you){const a=G.countries[by];
+    if(a&&a.isAI){const k=cl._p153k=(cl._p153k&&cl._p153k.t===G.tick)?cl._p153k:{t:G.tick,n:0,i:0};const imp=IMP.test(String(text));
+      if(imp){if(k.i>=2)return;k.i++;}else{if(k.n>=1)return;k.n++;}}}}catch(e){}return _cp.apply(this,arguments);};try{clanPost=window.clanPost;}catch(e){}}
+const _ch=window.cmdCallHelp;if(typeof _ch==='function'){window.cmdCallHelp=function(c,rid){const r=_ch.apply(this,arguments);try{if(r&&r.ok&&c&&c.id===G.you){const rg=_rgId(rid);
+    const inc=incomingTo(c.id).filter(x=>x.region.id===rid);ST().sos={rid,t:G.tick,eta:inc.length?Math.min.apply(null,inc.map(x=>x.eta)):0,help:[]};}}catch(e){}return r;};try{cmdCallHelp=window.cmdCallHelp;}catch(e){}}
+const _cs=window.cmdStation;if(typeof _cs==='function'){window.cmdStation=function(c,rid,com){const r=_cs.apply(this,arguments);try{const S=ST();if(r&&r.ok&&S.sos&&S.sos.rid===rid&&c&&c.id!==G.you){const rg=_rgId(rid);const h=homeFor(c,rg);
+    S.sos.help.push([c.id,fleetSize(com||{}),h?travelFor(c,h,rg):0]);}}catch(e){}return r;};try{cmdStation=window.cmdStation;}catch(e){}}
+function sosAnswer(){const S=ST();const q=S.sos;if(!q||G.tick<q.t+1)return;S.sos=null;const c=me();const r=_rgId(q.rid);if(!c||!r||r.owner!==c.id)return;
+  let atk=0;try{atk=p5AtkOn(G.you,r.id);}catch(e){}let dp=0;try{dp=regionDef(r)+(typeof regionReinforce==='function'?regionReinforce(r):0);}catch(e){}
+  if(q.help.length){const who=q.help.map(([id,n,t])=>nm(id)+' '+fu(n)+(t?' (lands in '+t+'t)':'')).join(', ');
+    sitrep(c,'alert','🛡 Answer to your S.O.S. at '+r.name+': '+who+'. With help '+fu(dp)+' against '+fu(atk)+' coming in.',{coord:r.coord,sev:dp>=atk?1:3,go:'self'});}
+  else sitrep(c,'alert','🛡 Nobody in reach can get to '+r.name+' ('+r.coord+') before the attack lands. Reinforce it yourself or pull your army back.',{coord:r.coord,sev:3,go:'self'});}
+
+// ---------- D. war council: the alliance target, and the Nexus ----------
+function councilOptions(cl){const myS=brainScore(cl);const ph=phaseOf();let nxHolder=null;try{const nx=aiNexusList()[0];if(nx&&nx.owner!=null){const o=G.countries[nx.owner];if(o)nxHolder=o.clan;}}catch(e){}
+  const ranked=(G.clans||[]).filter(x=>clanMembers(x).length).map(x=>({x,s:brainScore(x)})).sort((a,b)=>b.s-a.s);const run=ranked.length>1&&ranked[0].s>ranked[1].s*1.4?ranked[0].x.id:null;
+  return (G.clans||[]).filter(x=>x.id!==cl.id&&clanMembers(x).length).map(x=>{let st='';try{st=dipStatus(cl.id,x.id);}catch(e){}if(st==='allied')return null;
+    let d=9;try{d=brainDist(cl,x);}catch(e){}const s=brainScore(x);let hits=0;(G.battles||[]).forEach(b=>{if(!b||b.tick<G.tick-30)return;const a=G.countries[b.atkId],df=G.countries[b.defId];if(a&&df&&a.clan===x.id&&df.clan===cl.id)hits++;});
+    let v=-d*6+hits*10+(myS/Math.max(1,s))*10;let why='';
+    if((ph==='nexus'||ph==='finale')&&x.id===nxHolder){v+=100;why='they hold the Nexus';}
+    else if(x.id===run&&d<=3){v+=30;why='they are running away with the season';}
+    else if(hits>=2){why='they hit us '+hits+' times lately';}
+    else if(d<=1&&s<myS){why='a weaker neighbour';}
+    else if(d<=1){why='our neighbour';}
+    else{v-=40;why='far away';}
+    return {x,v,why};}).filter(Boolean).sort((a,b)=>b.v-a.v).slice(0,3);}
+function councilCard(){const c=me();const cl=c&&clanOf(c);if(!cl||phaseOf()==='opening')return '';const S=ST();const ph=phaseOf();const B=brainOf(cl);const lead=G.countries[cl.leader];
+  if(lead&&lead.isAI){if(B.target==null)return '';const key=B.target+':'+ph;if(S.seen===key)return '';const t=(G.clans||[]).find(x=>x.id===B.target);if(!t)return '';
+    return `<div class="card p153card" data-p153c="cs" style="border-left:3px solid var(--warn);margin-bottom:12px"><div class="small mono" style="letter-spacing:1px;color:var(--warn)">WAR COUNCIL · ${esc(PHASE[ph])}</div>
+      <div style="margin:6px 0">${esc(lead.name)} set our target: <b>${esc(t.name)} [${esc(t.tag)}]</b>. Strike their ground; allies join strikes on it and propose them to you.</div>
+      <button class="btn ghost sm" data-p153="seen" data-k="${esc(key)}" style="min-height:40px">Got it</button></div>`;}
+  if(cl.leader!==c.id)return '';
+  if(S.council&&S.council.phase===ph&&(B.target==null||(G.clans||[]).some(x=>x.id===B.target&&clanMembers(x).length)))return '';
+  const opts=councilOptions(cl);if(!opts.length)return '';
+  return `<div class="card p153card" data-p153c="cc" style="border-left:3px solid var(--warn);margin-bottom:12px"><div class="small mono" style="letter-spacing:1px;color:var(--warn)">WAR COUNCIL · ${esc(PHASE[ph])}</div>
+    <div style="margin:6px 0">Pick our alliance target. AI members focus their attacks there, join your strikes on it and propose strikes to you.</div>
+    <div class="row wrap" style="gap:8px">${opts.map(o=>`<button class="btn sec" data-p153="tg" data-c="${o.x.id}" style="flex:1 1 180px;min-height:52px;text-transform:none;letter-spacing:0;display:flex;flex-direction:column;align-items:flex-start;gap:2px"><b>${esc(o.x.name)} [${esc(o.x.tag)}]</b><span class="small muted">${esc(o.why)}</span></button>`).join('')}
+    <button class="btn ghost" data-p153="tg" data-c="-1" style="min-height:52px">No target</button></div></div>`;}
+function pickTarget(id){const c=me();const cl=clanOf(c);if(!cl)return;const B=brainOf(cl);const S=ST();B.target=id>=0?id:null;B.since=G.tick;B.op=null;S.council={phase:phaseOf(),t:G.tick};
+  const t=(G.clans||[]).find(x=>x.id===id);if(t)try{clanPost(cl,c.id,'🎯 War council: our target is '+t.name+' ['+t.tag+']. Strike their ground, defend ours.','war');}catch(e){}
+  toast(t?'🎯 Target set: '+t.name:'No alliance target','');try{save();}catch(e){}try{go(view);}catch(e){}}
+function nexusGuard(){const c=me();const cl=c&&clanOf(c);if(!cl||cl.leader!==c.id)return;const ph=phaseOf();if(ph!=='nexus'&&ph!=='finale')return;
+  let L=[];try{L=aiNexusList().filter(n=>n&&n.owner!=null&&G.countries[n.owner]&&G.countries[n.owner].clan===cl.id);}catch(e){}if(!L.length)return;const nx=L[0];
+  clanMembers(cl).forEach(m=>{if(!m.isAI||G.tick-(m._p153nx||-99)<10)return;if(fleetSize(m.units||{})<150)return;if((m.fleets||[]).filter(f=>f&&f.target===nx.id).length>=2)return;try{if(incomingTo(m.id).some(x=>x.threat>=0.5))return;}catch(e){}
+    const h=homeFor(m,nx);if(!h||travelFor(m,h,nx)>(typeof ACS_MAX_WINDOW==='number'?ACS_MAX_WINDOW:12))return;const com=comOf(m,ph==='finale'?0.3:0.2);if(fleetSize(com)<40)return;
+    try{const r=cmdStation(m,nx.id,com);if(r&&r.ok)m._p153nx=G.tick;}catch(e){}});}
+
+// ---------- hooks ----------
+function cards(){try{if(typeof view==='undefined'||view!=='dashboard')return;if(document.getElementById('view_p9hold'))return;const v=document.getElementById('view');if(!v)return;
+  document.querySelectorAll('.p153wrap').forEach(x=>{if(x.parentElement!==v)x.remove();});const ws=v.querySelectorAll(':scope > .p153wrap');for(let i=1;i<ws.length;i++)ws[i].remove();
+  const h=councilCard()+inviteCard();let w=v.querySelector('.p153wrap');
+  if(!h){if(w)w.remove();return;}if(!w||!w.isConnected){w=document.createElement('div');w.className='p153wrap';const t=v.querySelector(':scope > .ptitle');if(t)t.after(w);else v.prepend(w);}
+  if(w._h!==h){w._h=h;w.innerHTML=h;}}catch(e){}}
+document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('[data-p153]');if(!b)return;const a=b.dataset.p153;
+  if(a==='join')acceptInvite();else if(a==='no'){const S=ST();S.inv=null;S.lastInv=G.tick;try{save();}catch(_){}cards();}
+  else if(a==='tg')pickTarget(+b.dataset.c);else if(a==='seen'){ST().seen=b.dataset.k;try{save();}catch(_){}cards();}},true);
+const _rt=window.runTick;window.runTick=function(){const r=_rt.apply(this,arguments);try{if(solo()){trackOps();sosAnswer();nexusGuard();makeInvite();}}catch(e){}return r;};try{runTick=window.runTick;}catch(e){}
+const _go=window.go;if(typeof _go==='function'){window.go=function(){const r=_go.apply(this,arguments);try{cards();setTimeout(acsPrev,0);}catch(e){}return r;};try{go=window.go;}catch(e){}}
+setInterval(()=>{cards();acsPrev();},1000);
+window.p153={accept:acceptInvite,state:ST,pick:pickTarget,options:()=>{const c=me();const cl=c&&clanOf(c);return cl?councilOptions(cl):[];}};
+})();
+</script>
 </body>
 </html>
