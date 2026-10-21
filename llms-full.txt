@@ -14,6 +14,9 @@ Current version: 9.4. The game is updated regularly. Language: English. Platform
 
 ## Guides
 - [How to play](https://playterrastate.nl/how-to-play.html): a beginner's guide to your first season
+- [Free browser strategy games](https://playterrastate.nl/free-browser-strategy-game.html): the three games side by side, no download, no account
+- [Roman strategy game](https://playterrastate.nl/roman-strategy-game.html): Romaterra, its armies, formations and the fight for Roma
+- [Tick-based strategy](https://playterrastate.nl/tick-based-strategy-game.html): what a tick-based strategy game is and how it plays here
 - [Games like Planetarion](https://playterrastate.nl/games-like-planetarion.html): for players looking for games like Planetarion or OGame
 - [Gratis strategiespel (Nederlands)](https://playterrastate.nl/gratis-strategiespel.html): Dutch introduction to the game
 - [Ironfront, WW2-style strategy](https://playterrastate.nl/ww2-strategy-game.html): what makes the third era different
