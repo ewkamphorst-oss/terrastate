@@ -16,7 +16,7 @@
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="https://playterrastate.nl/img/ironfront-share.jpg">
 <meta name="author" content="Wim Kamphorst">
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"VideoGame","@id":"https://playterrastate.nl/ironfront.html#game","name":"Ironfront","url":"https://playterrastate.nl/ironfront.html","description":"Free WW2-style grand strategy in your browser. Lead one invented nation in a 1940s world at war, hold 2 of the 3 Capital Sectors, and make every tick a decision: battle orders, field works, radio intel and feints. No account, no download.","image":"https://playterrastate.nl/img/ironfront-share.jpg","genre":["Strategy","Grand strategy","Turn-based strategy","War game","Browser game"],"gamePlatform":["Web browser","Windows","macOS","Linux","Android","iOS"],"applicationCategory":"Game","operatingSystem":"Any (web browser)","playMode":"SinglePlayer","inLanguage":"en","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"EUR","availability":"https://schema.org/InStock"},"author":{"@type":"Person","@id":"https://playterrastate.nl/#wim","name":"Wim Kamphorst","url":"https://wimkamphorst.nl"},"publisher":{"@type":"Person","@id":"https://playterrastate.nl/#wim","name":"Wim Kamphorst","url":"https://wimkamphorst.nl"},"softwareVersion":"9.3","dateModified":"2026-10-21","sameAs":["https://wimkamphorstcoaching.itch.io/ironfront"]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"VideoGame","@id":"https://playterrastate.nl/ironfront.html#game","name":"Ironfront","url":"https://playterrastate.nl/ironfront.html","description":"Free WW2-style grand strategy in your browser. Lead one invented nation in a 1940s world at war, hold 2 of the 3 Capital Sectors, and make every tick a decision: battle orders, field works, radio intel and feints. No account, no download.","image":"https://playterrastate.nl/img/ironfront-share.jpg","genre":["Strategy","Grand strategy","Turn-based strategy","War game","Browser game"],"gamePlatform":["Web browser","Windows","macOS","Linux","Android","iOS"],"applicationCategory":"Game","operatingSystem":"Any (web browser)","playMode":"SinglePlayer","inLanguage":"en","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"EUR","availability":"https://schema.org/InStock"},"author":{"@type":"Person","@id":"https://playterrastate.nl/#wim","name":"Wim Kamphorst","url":"https://wimkamphorst.nl"},"publisher":{"@type":"Person","@id":"https://playterrastate.nl/#wim","name":"Wim Kamphorst","url":"https://wimkamphorst.nl"},"softwareVersion":"9.4","dateModified":"2026-10-21","sameAs":["https://wimkamphorstcoaching.itch.io/ironfront"]}</script>
 <link rel="manifest" href="ironfront.webmanifest"><meta name="theme-color" content="#14160c"><link rel="icon" href="icons/ironfront-64.png"><link rel="apple-touch-icon" href="icons/ironfront-180.png">
 <script>window.__MP_URL__=''; /* '' = live multiplayer not open yet */ if('serviceWorker' in navigator)addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));</script>
 <script data-goatcounter="https://playterrastate.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
@@ -4580,14 +4580,14 @@ function advanceBattle(c,f){const r=_rgId(f.target);
     const coordMax=Math.max.apply(null,parts.map(p=>p.f.coord||1));
       (pool.excess||[]).forEach(ct=>{if(ct.fleet._overNoted===G.tick)return;ct.fleet._overNoted=G.tick;const oc=G.countries[ct.owner];if(oc&&oc.isAI===false)sitrep(oc,'alliance','⚠ Your garrison at '+r.name+' is OVERCROWDED, not in the line (foreign garrisons fight up to 2× the owner\'s own defence). Station it elsewhere.',{coord:r.coord,sev:2,go:'fleets'});});
     if(defC&&defC.isAI===false&&(pool.excess||[]).length){r._satOut={t:G.tick,n:pool.excess.length};}if(defC&&defC.isAI===false&&(pool.excess||[]).length&&defC._overNoted!==G.tick){defC._overNoted=G.tick;sitrep(defC,'alliance','⚠ '+pool.excess.length+' allied army(s) at '+r.name+' are overcrowded and sit out, the garrison cap is 2× your own defence; more of your own units raise it',{coord:r.coord,sev:2,go:'fleets'});}
-  const R=resolveBattle(lead.c,merged,r,defC,coordMax,pool.units);try{ifrWorksApply(R,r,defC,tt);}catch(e){}try{ifrOrders(R,lead,r,defC,tt);}catch(e){}
+  const R=resolveBattle(lead.c,merged,r,defC,coordMax,pool.units);try{if(typeof p168Adj==='function')p168Adj(R,lead.c,lead.f,defC,r,parts,merged,pool.units);}catch(e){}try{ifrWorksApply(R,r,defC,tt);}catch(e){}try{ifrOrders(R,lead,r,defC,tt);}catch(e){}
     // v3.13 SIEGE ATTRITION — the offensive "scissor" for a defensive "rock": an assault that breaks through (success) but
     // can't quite capture (ratio 1.0–1.25) grinds the region's hardening down. Fortress Network and Planetary Shield lose a
     // level under sustained pressure, so a turtle that survives one blow still crumbles under a coordinated, repeated siege.
     if(defC&&R.success&&!R.captured){const grind=k=>{const b=(defC.buildings||[]).find(x=>x.rid===r.id&&x.k===k);if(!b||b.lv<=0)return;b.lv-=1;if(b.lv<=0)defC.buildings=defC.buildings.filter(x=>x!==b);if(defC.isAI===false)sitrep(defC,'battle','🧱 The siege at '+r.name+' ground your '+((BUILD.find(x=>x.k===k)||{}).n||k)+' down a level — relieve it or the wall falls.',{coord:r.coord,sev:2,go:'production'});};
       if(Math.random()<0.34)grind('fortress_network');if(Math.random()<0.34)grind('shield');}
     const aFrac=Math.min(BATTLE_CAP.a[tt-1],BATTLE_W.a[tt-1]*Math.min(1.4,1/Math.max(.5,R.ratio)));
-    const dFrac=Math.min(BATTLE_CAP.d[tt-1],BATTLE_W.d[tt-1]*Math.min(1.6,Math.max(.3,R.ratio)));
+    const dFrac=Math.min(BATTLE_CAP.d[tt-1],BATTLE_W.d[tt-1]*Math.min(1.6,Math.max(.3,R.ratio)))*(typeof p168DefLm==='function'?p168DefLm(defC):1);
     const TL=targetedLosses(merged,pool.units,aFrac,dFrac);
     const dLostTick=(defC||pool.contribs.length)?applyTypedLoss([...(defC?[defC.units]:[]),...pool.contribs.map(ct=>ct.fleet.units)],TL.dLost):TL.dLost;
     // split attacker losses per fleet, proportional to what each fleet brought of that type
@@ -4595,7 +4595,7 @@ function advanceBattle(c,f){const r=_rgId(f.target);
     for(const k in TL.aLost){let left=TL.aLost[k];const tot=merged[k]||0;if(!tot)continue;parts.forEach((p,idx)=>{const n=p.f.units[k]||0;if(!n)return;const take=idx===parts.length-1?Math.min(n,left):Math.min(n,Math.round(TL.aLost[k]*n/tot));perFleet.get(p.f.id)[k]=take;left-=take;});}
     const totPw=shares.reduce((s,x)=>s+x.pw,0)||1;const shareOf={};shares.forEach(x=>shareOf[x.p.f.id]=x.pw/totPw);
     EG=G._btl[r.id]={R,aFrac,dFrac,perFleet,dLostTick,shareOf,captorId:lead.f.id,reinforced:pool.contribs.length,parts:parts.length};}
-  const mine=EG.perFleet.get(f.id)||{};const before=fleetSize(f.units);
+  const mine=(typeof p168Mine==='function'?p168Mine(EG.perFleet.get(f.id)||{},f):(EG.perFleet.get(f.id)||{}));const before=fleetSize(f.units);
   for(const k in mine)f.units[k]=Math.max(0,(f.units[k]||0)-mine[k]);
   const sh=EG.shareOf[f.id]!=null?EG.shareOf[f.id]:1;
   for(const k in EG.dLostTick){const v=Math.round(EG.dLostTick[k]*sh);if(v>0)f.bDefLost[k]=(f.bDefLost[k]||0)+v;} // your share of the kills (spoils, report)
@@ -8235,9 +8235,9 @@ function renderLanding(){
       <a class="card" href="updates.html#if1" target="_self" rel="noopener" style="display:block;text-decoration:none;color:inherit;margin:0 auto">
         <div class="row between wrap" style="gap:10px;align-items:center">
           <div style="min-width:0;flex:1">
-            <div><span class="mono" style="color:var(--gold);font-size:11px;letter-spacing:1px">UPDATE 9.3 · THE WORLD AROUND YOU</span> <span class="muted small">October 2026</span></div>
-            <div style="font-weight:700;margin-top:3px">Update 9.3: The world around you</div>
-            <div class="muted small mt">Update 9.3 shows the world around you, without the flood. Report now tells you in at most five lines what needs you, what happened at home, what changed next door and what the world is talking about; the rest waits under More details. The paper tells real stories of the day. Regions that changed hands near you get an orange ring on the map, and you can watch the changes replay. Heavy fighting nearby pushes some raw materials up a little, and a neighbour that falls can send refugees to your border. Update 9.2 made your AI allies fight with you.</div>
+            <div><span class="mono" style="color:var(--gold);font-size:11px;letter-spacing:1px">UPDATE 9.4 · BATTLES YOU PLAN</span> <span class="muted small">October 2026</span></div>
+            <div style="font-weight:700;margin-top:3px">Update 9.4: Battles you plan</div>
+            <div class="muted small mt">Update 9.4 makes a battle something you plan. An army that fought in the last six turns hits softer, and a tired defender holds worse, so resting and timing your strikes pays. Your battle orders work as before. Update 9.3 showed you the world around you in a five line Report.</div>
           </div>
           <span class="btn ghost sm" style="flex:none;pointer-events:none">What is new</span>
         </div>
@@ -8305,7 +8305,7 @@ function renderLanding(){
   {const b=s.querySelector('#lpNews');if(b)b.onclick=()=>{const t=s.querySelector('#playerupdate');if(t)t.scrollIntoView({behavior:'smooth',block:'center'});};}
 }
 // ---- Legal identity: ONE place to change the operator / contact / copyright holder. Used by the Privacy, Terms and Credits tabs and the footer.
-const LEGAL={operator:'Wim Kamphorst',email:'wimkamphorst.coaching@gmail.com',author:'Wim Kamphorst',country:'the Netherlands',law:'Dutch law',dpa:'Autoriteit Persoonsgegevens (the Dutch data protection authority)',dpaUrl:'https://www.autoriteitpersoonsgegevens.nl',version:'1.1',updated:'October 2026',build:'Update 9.3 · Front Line',minAge:16};
+const LEGAL={operator:'Wim Kamphorst',email:'wimkamphorst.coaching@gmail.com',author:'Wim Kamphorst',country:'the Netherlands',law:'Dutch law',dpa:'Autoriteit Persoonsgegevens (the Dutch data protection authority)',dpaUrl:'https://www.autoriteitpersoonsgegevens.nl',version:'1.1',updated:'October 2026',build:'Update 9.4 · Front Line',minAge:16};
 LEGAL.contact=`<b>${LEGAL.operator}</b>, <a href="mailto:${LEGAL.email}">${LEGAL.email}</a>`;
 // ---- Landing-page manual: beginner's handbook + combat formulae -------------
 const MANUAL={
@@ -10739,7 +10739,7 @@ VIEWS.fleets=v=>{const c=you();const inc=incomingTo(c.id);const cl0=clanOf(c);
       <div class="seg" id="wavesel">${[1,2,3,4,5,6].map(n=>`<button class="${n===1?'on':''}" data-waves="${n}">${n===1?'1 army':n+'×'}</button>`).join('')}</div>
       <label class="small mt" style="display:flex;align-items:center;gap:7px;margin:6px 0 0"><input type="checkbox" id="wavestagger" checked style="width:auto"> Land on consecutive ticks <span class="muted">rolling assault, off = all leave now</span></label>
       <div class="small muted mt" id="waveinfo"></div></details>
-      <div class="row mt wrap" style="gap:8px"><button class="btn sm" id="launch">⚔ Launch attack</button>${clanOf(c)?(isClanOfficer(c)?'<button class="btn sec sm" id="acs">🤝 Coordinate assault (ACS)</button>'+(travel!=null?`<label class="small muted" style="display:flex;align-items:center;gap:4px">Impact <select id="acswin" style="width:auto"><option value="0">Auto (T+${Math.min(ACS_MAX_WINDOW,travel+2)})</option>${(()=>{let o='';for(let n=Math.max(1,travel);n<=ACS_MAX_WINDOW;n++)o+=`<option value="${n}">T+${n}</option>`;return o;})()}</select></label>`:''):'<button class="btn sec sm" disabled title="Officers only, they commit members\' armies">🤝 ACS (officers only)</button>'):''}<button class="btn ghost sm" data-scout="${tgt.id}" title="Scout this region for a real defence estimate: ${SCOUT_COST} influence + 1 command point">🔍 Scout (${SCOUT_COST} · 1 CP)</button><button class="btn ghost sm" id="clr">Clear target</button></div>
+      ${typeof p168Launch==='function'?p168Launch(c,tgt,travel):''}<div class="row mt wrap" style="gap:8px"><button class="btn sm" id="launch">⚔ Launch attack</button>${clanOf(c)?(isClanOfficer(c)?'<button class="btn sec sm" id="acs">🤝 Coordinate assault (ACS)</button>'+(travel!=null?`<label class="small muted" style="display:flex;align-items:center;gap:4px">Impact <select id="acswin" style="width:auto"><option value="0">Auto (T+${Math.min(ACS_MAX_WINDOW,travel+2)})</option>${(()=>{let o='';for(let n=Math.max(1,travel);n<=ACS_MAX_WINDOW;n++)o+=`<option value="${n}">T+${n}</option>`;return o;})()}</select></label>`:''):'<button class="btn sec sm" disabled title="Officers only, they commit members\' armies">🤝 ACS (officers only)</button>'):''}<button class="btn ghost sm" data-scout="${tgt.id}" title="Scout this region for a real defence estimate: ${SCOUT_COST} influence + 1 command point">🔍 Scout (${SCOUT_COST} · 1 CP)</button><button class="btn ghost sm" id="clr">Clear target</button></div>
       ${clanOf(c)?'<div class="muted small mt">🤝 <b>Coordinate (ACS):</b> you pick a <b>fixed impact tick</b>, every alliance army that can reach it lands together as one combined force (1200 influence · 3 CP, officers only). Armies too far to make the window simply can\'t join. A later impact gives more allies time to arrive.</div>':''}
       <div class="muted small mt">Committed units leave home while travelling, your defence drops until they return. A scheduled army reserves its units now and departs automatically on the chosen tick.</div></div>`));
   } else {
@@ -10752,9 +10752,10 @@ VIEWS.fleets=v=>{const c=you();const inc=incomingTo(c.id);const cl0=clanOf(c);
   if((TAB==='defence'||TAB==='offence')&&battling.length){let rows=battling.map(f=>{const r=_rgId(f.target);const rt=f._lastR?f._lastR.ratio:null;const t=Math.min(3,f.bTick||1);
     const wp=rt==null?'a':rt>=1.25?'g':rt>=1?'w':'b';
     return `<div class="warnrow" style="border-color:rgba(224,165,42,.5)"><div class="row between wrap" style="gap:8px"><div><strong>⚔ ${r?esc(r.name):'—'}</strong> <span class="tag">${r?r.coord:''}</span> <span class="pill a">Tick ${t} of 3</span> ${rt!=null?`<span class="pill ${wp}">ratio ${rt.toFixed(2)}</span>`:''}${f.acs?' <span class="pill a">🤝 ACS</span>':''}</div><span class="muted small">${full(fleetSize(f.units))} units left</span></div>
-      <div class="row mt wrap" style="gap:6px"><button class="btn sm ${f.order!=='retreat'?'':'sec'}" data-press="${f.id}" title="${f.order!=='retreat'?'Current order':'Switch to pressing on'}">${f.order!=='retreat'?'✓ Pressing on':'▶ Press on'}</button><button class="btn sm ${f.order==='retreat'?'':'sec'}" data-retreat="${f.id}" title="${f.order==='retreat'?'Current order':'Withdraw next tick'}">${f.order==='retreat'?'✓ Retreating next tick':'↩ Retreat'}</button><span class="muted small" style="align-self:center">${f.order==='retreat'?'Withdraws next tick, the earlier you pull out, the more troops you keep.':'Fights on to the next phase; capture is decided on Tick 3.'}</span></div></div>`;}).join('');
+      <div class="row mt wrap" style="gap:6px"><button class="btn sm ${f.order!=='retreat'?'':'sec'}" data-press="${f.id}" title="${f.order!=='retreat'?'Current order':'Switch to pressing on'}">${f.order!=='retreat'?'✓ Pressing on':'▶ Press on'}</button><button class="btn sm ${f.order==='retreat'?'':'sec'}" data-retreat="${f.id}" title="${f.order==='retreat'?'Current order':'Withdraw next tick'}">${f.order==='retreat'?'✓ Retreating next tick':'↩ Retreat'}</button><span class="muted small" style="align-self:center">${f.order==='retreat'?'Withdraws next tick, the earlier you pull out, the more troops you keep.':'Fights on to the next phase; capture is decided on Tick 3.'}</span></div>${typeof p168Row==='function'?p168Row(c,f):''}</div>`;}).join('');
     v.appendChild(h(`<div class="card mb" style="border-left:3px solid var(--warn)"><h3>Active engagements, Retreat or Press On</h3>${rows}<div class="muted small mt">Battles last up to 3 ticks (Recon skirmish → main clash → occupation). Retreat after Tick 1 keeps ~85% of your force; after Tick 2, about half.</div></div>`));}
 
+  try{if(typeof p168Card==='function'){const _x=p168Card(c,TAB);if(_x)v.appendChild(h(_x));}}catch(e){}
   // ---- ALLIANCE IS ATTACKING, one-tap join, right where you command your fleets ----
   if(TAB==='alliance'){const cl=clanOf(c);if(cl){const joinable=(G.acs||[]).filter(op=>op.clan===cl.id&&!op.fleets.some(f=>f.owner===c.id)&&op.fleets.length<ACS_MAX_FLEETS).map(op=>{const r=_rgId(op.target);const home=r?homeFor(c,r):null;const tv=home?travelFor(c,home,r):99;return {op,r,travel:tv,left:op.landTick-G.tick};}).filter(o=>o.travel<=o.left);
     if(joinable.length){const rows=joinable.slice(0,4).map(o=>`<div class="row between wrap" style="gap:6px;padding:5px 0"><div class="small"><b>⚑ ${o.r?esc(o.r.name):'target'}</b> ${o.r?coordChip(o.r.coord):''} <span class="muted">· lands in ${o.left}t · your army needs ${o.travel}t</span></div><button class="btn sm" data-joinnav="${o.op.id}">✅ Join</button></div>`).join('');
@@ -10927,6 +10928,7 @@ VIEWS.fleets=v=>{const c=you();const inc=incomingTo(c.id);const cl0=clanOf(c);
   v.querySelectorAll('button[data-detail]').forEach(b=>b.onclick=()=>{const id=+b.dataset.detail;const row=v.querySelector('[data-drow="'+id+'"]');if(!row)return;const willOpen=row.hidden;row.hidden=!willOpen;if(willOpen)warDetailOpen.add(id);else warDetailOpen.delete(id);b.innerHTML=(willOpen?'▾':'▸')+' Scan/plan'+(b.dataset.unid&&+b.dataset.unid>0?' <span class="pill n">'+b.dataset.unid+'?</span>':'');});
   // 3-tick battle orders + defensive deployment
   v.querySelectorAll('button[data-press]').forEach(b=>b.onclick=async ()=>{const r=await cmdBattleOrder(c,+b.dataset.press,'press');if(r.ok){toast('Press on confirmed: your army fights the next phase.');go('fleets');save();}else toast(r.error,'bad');});
+  try{if(typeof p168Bind==='function')p168Bind(v,c);}catch(e){}
   v.querySelectorAll('button[data-retreat]').forEach(b=>b.onclick=async ()=>{const r=await cmdBattleOrder(c,+b.dataset.retreat,'retreat');if(r.ok){toast('Retreat confirmed: your army withdraws on the next battle tick.','warn');go('fleets');save();}else toast(r.error,'bad');});
   v.querySelectorAll('button[data-defend]').forEach(b=>b.onclick=()=>{selDefend=+b.dataset.defend;warTab='defence';go('fleets');setTimeout(()=>{const el=document.getElementById('dui');if(el)el.scrollIntoView({behavior:'smooth',block:'center'});},80);});
   v.querySelectorAll('button[data-wtjump]').forEach(b=>b.onclick=()=>{warTab=b.dataset.wtjump;go('fleets');});
@@ -14155,6 +14157,102 @@ try{const o=runTick;runTick=function(){const D=p166D();D.tclu={};const res=o.app
 try{const o=eventPick;eventPick=function(){try{const D=p166D();if(D.refDue!=null&&G.tick-D.refDue<=12&&typeof EVENTS!=='undefined'){const i=EVENTS.findIndex(e=>e&&e.k==='refugees');
     if(i>=0&&!(G._evRecent||[]).includes(i)){D.refDue=null;G._evRecent=G._evRecent||[];G._evRecent.push(i);if(G._evRecent.length>6)G._evRecent.shift();return i;}}}catch(e){}return o.apply(this,arguments);};}catch(e){}
 function p166Market(){try{const D=p166D();const M=D.mk;if(!M||M.ticks<3||!G.prices||!M.steel0)return null;const pct=Math.round((G.prices.steel/M.steel0-1)*100);if(pct<2)return null;return {clu:M.clu,pct};}catch(e){return null;}}
+
+/*p168*/
+// ---- p168 Update 9.4: battles you plan for ----
+// All three games: fatigue (an army that fought in the last 6 turns hits softer, a tired defender holds worse).
+// Terrastate: the scout report ages (fresh scan at landing = bigger strike edge) and ONE air wing at home flies
+// support over one battle per turn (attack or defence). Romaterra: formations (Line, Triple line, Wedge) for
+// attack and defence. Ironfront keeps its own orders and only gets fatigue.
+function p168T(){try{return (typeof GAME_CFG!=='undefined'&&GAME_CFG.track)||'terrastate';}catch(e){return 'terrastate';}}
+const P168F={line:{n:'Line',am:1,lm:1,d:'Balanced. The standard.'},
+  deep:{n:'Triple line',am:.93,lm:.82,d:'Fresh ranks rotate in: a little less punch, far fewer losses.'},
+  wedge:{n:'Wedge',am:1.10,lm:1.25,brk:.80,d:'Hits hardest, bleeds most. Breaks and falls back if the fight turns against it.'}};
+const P168_FAT_A=0.04,P168_FAT_D=0.03,P168_AIR_MAX=0.10;
+function p168Fatigue(c){if(!c||!c._p168f)return 0;const s=new Set();c._p168f.forEach(t=>{const d=G.tick-t;if(d>=1&&d<=6)s.add(t);});return Math.min(3,s.size);}
+function p168Fought(c){if(!c)return;const a=(c._p168f||[]).filter(t=>G.tick-t<=6);if(a[a.length-1]!==G.tick)a.push(G.tick);c._p168f=a.slice(-7);}
+// --- battles by region, once per tick (not stored in the save) ---
+let _p168M=null;
+function p168Map(){if(_p168M&&_p168M.t===G.tick)return _p168M.m;const m={};
+  (G.countries||[]).forEach(o=>{if(!o||o.retired)return;(o.fleets||[]).forEach(f=>{if(f.status!=='battle'||f.target==null)return;(m[f.target]=m[f.target]||[]).push({c:o,f});});});
+  _p168M={t:G.tick,m};return m;}
+function p168Battles(c){if(!c)return [];const m=p168Map(),out=[];
+  for(const rid in m){const L=m[rid];const mine=L.filter(x=>x.c===c||x.c.id===c.id);const r=_rgId(+rid);if(!r)continue;
+    if(mine.length){const R=mine[0].f._lastR;out.push({rid:+rid,side:'atk',name:r.name,coord:r.coord,ratio:R&&R.ratio!=null?R.ratio:null,size:mine.reduce((s,x)=>s+fleetSize(x.f.units||{}),0)});}
+    else if(r.owner===c.id){let rt=null,sz=0;L.forEach(x=>{const R=x.f._lastR;if(R&&R.ratio!=null)rt=Math.max(rt==null?0:rt,R.ratio);sz+=fleetSize(x.f.units||{});});out.push({rid:+rid,side:'def',name:r.name,coord:r.coord,ratio:rt,size:sz});}}
+  return out;}
+function p168HomeAir(c){try{return c&&c.units?sumCls(c.units,'air'):0;}catch(e){return 0;}}
+// Where the air wing flies this turn: your pick if that battle is still on, else the closest fight that can still swing.
+function p168AirTarget(c){if(!c)return null;const B=p168Battles(c);if(!B.length)return null;
+  if(c._p168air!=null){if(B.some(b=>b.rid===c._p168air))return c._p168air;delete c._p168air;}
+  if(c._p168auto&&c._p168auto.t===G.tick)return c._p168auto.rid;
+  let best=null,bs=1e9;B.forEach(b=>{const rt=b.ratio==null?1.1:b.ratio;const s=Math.abs(rt-(b.side==='atk'?1.2:1.25))+(b.side==='def'?-0.05:0);if(s<bs){bs=s;best=b.rid;}});
+  c._p168auto={t:G.tick,rid:best};return best;}
+function p168AirFor(c,rid,sideSize){if(!c||p168T()!=='terrastate')return null;const air=p168HomeAir(c);if(air<1)return null;
+  if(p168AirTarget(c)!==rid)return null;const share=clamp(air/Math.max(1,0.10*sideSize),0,1);const mult=1+P168_AIR_MAX*share;
+  if(c._p168airT!==G.tick){c._p168airT=G.tick;UNIT.forEach(u=>{if(u.cls==='air'&&(c.units[u.k]||0)>=50)c.units[u.k]-=Math.floor(c.units[u.k]*0.01);});} // a sortie costs ~1% of the planes that fly it
+  return {mult,air};}
+// --- applied once per region per battle tick, after the engine resolved the clash ---
+function p168Adj(R,lc,lf,defC,r,parts,merged,defU){if(!R)return;const T=p168T();let am=1,dm=1;const ph=[];
+  const fa=p168Fatigue(lc);if(fa){am*=1-P168_FAT_A*fa;ph.push({p:'Fatigue',t:'Tired troops: fought in '+fa+' of the last 6 turns, attack −'+Math.round(P168_FAT_A*fa*100)+'%',win:false});}
+  if(defC){const fd=p168Fatigue(defC);if(fd){dm*=1-P168_FAT_D*fd;ph.push({p:'Fatigue',t:'Defenders tired: fought in '+fd+' of the last 6 turns, defence −'+Math.round(P168_FAT_D*fd*100)+'%',win:true});}}
+  if(T==='terrastate'){
+    const age=lf&&lf._p168age;if(age!=null&&age<=12){const ex=age<=2?1.04:age<=6?1:0.98;am*=ex;ph.push({p:'Recon',t:'Scout report '+age+' turn'+(age===1?'':'s')+' old at landing: strike edge +'+Math.round((1.04*ex-1)*100)+'%',win:true});}
+    let best=null;(parts||[{c:lc}]).forEach(p=>{const a=p168AirFor(p.c,r.id,fleetSize(merged||{}));if(a&&(!best||a.mult>best.mult))best=a;});
+    if(best){am*=best.mult;ph.push({p:'Air wing',t:full(best.air)+' aircraft flew support over the attack, +'+Math.round((best.mult-1)*100)+'%',win:true});}
+    const da=defC?p168AirFor(defC,r.id,fleetSize(defU||{})):null;if(da){dm*=da.mult;ph.push({p:'Air wing',t:'Defender air wing over the region, defence +'+Math.round((da.mult-1)*100)+'%',win:false});}}
+  if(T==='romaterra'){const fa2=P168F[(lf&&lf._p168form)||'line']||P168F.line,fd2=P168F[(defC&&defC._p168def)||'line']||P168F.line;am*=fa2.am;dm*=fd2.am;
+    if(fa2!==P168F.line||fd2!==P168F.line)ph.push({p:'Formation',t:'Attack in '+fa2.n+' vs defence in '+fd2.n,win:fa2.am>=fd2.am});}
+  if(am===1&&dm===1&&!ph.length)return;
+  R.ratio=Math.max(0,R.ratio*am/dm);R.success=R.ratio>=1;R.captured=R.ratio>=1.25&&moraleOf(lc)>.3;
+  const P=R.phases||[];const gi=P.findIndex(x=>x.p==='Ground');
+  P.forEach(x=>{if(x.p==='Ground'){x.t=String(x.t).replace(/\(ratio [0-9.]+\)/,'(ratio '+R.ratio.toFixed(2)+')');x.win=R.success;}
+    if(x.p==='Occupation'){x.t=R.captured?'Defence broke, region captured':R.success?'Defence bloodied but held':'Assault repelled';x.win=R.captured;}});
+  if(gi>=0)P.splice(gi,0,...ph);else P.push(...ph);R.phases=P;}
+function p168DefLm(defC){if(p168T()!=='romaterra'||!defC)return 1;return (P168F[defC._p168def||'line']||P168F.line).lm;}
+function p168Mine(m,f){if(p168T()!=='romaterra'||!f)return m;const F=P168F[f._p168form||'line']||P168F.line;if(F.lm===1)return m;const o={};for(const k in m)o[k]=Math.min((f.units[k]||0),Math.round(m[k]*F.lm));return o;}
+// --- landing: remember how old the scout report is (Terrastate), pick formations (Romaterra) ---
+function p168Start(c,f,r,defC){const T=p168T();
+  if(T==='terrastate'){const it=typeof regionIntel==='function'?regionIntel(c,r.id):null;f._p168age=it?Math.max(0,G.tick-(it.tick||0)):null;}
+  if(T==='romaterra'){let est=1;try{est=(f._atkP!=null?f._atkP:power(c,'atk',f.units))/Math.max(1,regionDef(r));}catch(e){}
+    if(c.isAI!==false){const risk=(c.pers&&c.pers.risk)||50;f._p168form=est>=1.8?'deep':(est<1.0&&risk>45)?'wedge':'line';}
+    else f._p168form=f._p168form||c._p168atk||'line';
+    if(defC&&defC.isAI!==false){defC._p168def=est>=1.6?'deep':est<0.85?'wedge':'line';}}}
+{const _sb=startBattle;startBattle=function(c,f,r,prevOwner,defC){const out=_sb.apply(this,arguments);try{if(f&&f.status==='battle')p168Start(c,f,r,defC);}catch(e){}return out;};}
+{const _ab=advanceBattle;advanceBattle=function(c,f){const out=_ab.apply(this,arguments);
+  try{if(p168T()==='romaterra'&&f&&f.status==='battle'&&f._p168form==='wedge'&&f._lastR&&f._lastR.ratio<P168F.wedge.brk&&f.order!=='retreat'){f.order='retreat';f._p168broke=G.tick;const r=_rgId(f.target);
+    if(c.isAI===false)sitrep(c,'battle','⚔ Your wedge at '+(r?r.name:'the front')+' broke (ratio '+f._lastR.ratio.toFixed(2)+'). It falls back next turn.',{coord:r?r.coord:null,sev:2,go:'fleets'});}}catch(e){}
+  return out;};}
+{const _fb=finalizeBattle;finalizeBattle=function(c,f,r,defC){try{p168Fought(c);if(defC)p168Fought(defC);}catch(e){}return _fb.apply(this,arguments);};}
+// --- commands ---
+function cmdAirTask(c,rid){if(p168T()!=='terrastate')return err('Not in this game');if(rid==null||rid==='auto'){delete c._p168air;return ok({auto:true});}
+  rid=+rid;if(!Number.isSafeInteger(rid))return err('Region not found');if(!p168Battles(c).some(b=>b.rid===rid))return err('Your air wing can only fly over a battle you are in');c._p168air=rid;return ok({rid});}
+function cmdSetFormation(c,side,form){if(p168T()!=='romaterra')return err('Not in this game');if(!P168F[form]||(side!=='atk'&&side!=='def'))return err('Unknown formation');
+  if(side==='atk')c._p168atk=form;else c._p168def=form;return ok({side,form});}
+function cmdBattleFormation(c,fid,form){if(p168T()!=='romaterra')return err('Not in this game');if(!P168F[form])return err('Unknown formation');
+  const f=(c.fleets||[]).find(x=>x.id===fid);if(!f||(f.owner!=null&&f.owner!==c.id))return err('Army not found');
+  if(!['battle','outbound','staged'].includes(f.status)||(f.status==='battle'&&(f.bTick||0)>=BATTLE_TICKS))return err('Only for an army on its way or in battle');
+  f._p168form=form;return ok({form});}
+// --- small UI pieces (strings only; handlers bound in the browser) ---
+function p168Launch(c,tgt,travel){try{const T=p168T();let s='';const n=p168Fatigue(c);
+  if(n)s+=`<div class="small mt" style="color:var(--warn)">😓 Your army fought in ${n} of the last 6 turns: attack −${Math.round(P168_FAT_A*n*100)}%. A turn or two of rest gives it back.</div>`;
+  if(T==='terrastate'&&tgt&&tgt.owner!=null){const it=regionIntel(c,tgt.id);
+    if(it){const age=G.tick-(it.tick||0)+(travel||0);const b=age<=2?8:age<=6?4:age<=12?2:0;s+=`<div class="small mt muted">🔍 At landing your scout report will be ${age} turn${age===1?'':'s'} old: strike edge ${b?'+'+b+'%':'none'}. A new scan just before impact gives +8%.</div>`;}
+    else s+=`<div class="small mt muted">🔍 No scout report on this region. Scan it shortly before impact for up to +8%.</div>`;}
+  if(T==='romaterra'){const F=P168F[c._p168atk||'line'];s+=`<div class="small mt muted">⚔ Attacks in <b>${F.n}</b>. Change it under Formations, or per battle once it starts.</div>`;}
+  return s;}catch(e){return '';}}
+function p168Seg(cur,attr,pre){return `<div class="seg" style="margin-top:4px">${Object.keys(P168F).map(k=>`<button class="${cur===k?'on':''}" data-${attr}="${pre}${k}" title="${P168F[k].d}">${P168F[k].n}</button>`).join('')}</div>`;}
+function p168Row(c,f){try{if(p168T()!=='romaterra')return '';return `<div class="small mt">Formation this battle: ${p168Seg(f._p168form||c._p168atk||'line','p168bf',f.id+':')}${f._p168broke?'<span class="muted">The wedge broke and falls back.</span>':''}</div>`;}catch(e){return '';}}
+function p168Card(c,TAB){try{if(TAB!=='offence'&&TAB!=='defence')return '';const T=p168T();
+  if(T==='terrastate'){const B=p168Battles(c);if(!B.length)return '';const air=p168HomeAir(c);const cur=p168AirTarget(c);const manual=c._p168air!=null;
+    const rows=B.map(b=>`<div class="row between wrap" style="gap:6px;padding:4px 0;border-top:1px solid var(--border)"><span class="small">${b.side==='atk'?'⚔ Attacking':'🛡 Defending'} <b>${esc(b.name)}</b> ${b.coord?coordChip(b.coord):''}${b.ratio!=null?` <span class="muted">· ratio ${b.ratio.toFixed(2)}</span>`:''}</span>${cur===b.rid?`<span class="pill g">✈ ${manual?'Your pick':'Auto pick'}</span>`:`<button class="btn sm sec" data-p168air="${b.rid}">✈ Fly here</button>`}</div>`).join('');
+    return `<div class="card mb" style="border-left:3px solid var(--accent)"><h3>✈ Air wing <span class="muted small" style="text-transform:none;letter-spacing:0">one battle per turn</span></h3><div class="small">${air>=1?full(air)+' aircraft at home fly support over <b>one</b> battle each turn: up to +10% for that side, about 1% of the planes lost per sortie.':'No aircraft at home. Fighters and bombers kept home can fly support over one battle per turn.'}</div>${air>=1?rows:''}${air>=1&&manual?'<div class="row mt"><button class="btn sm sec" data-p168air="auto">Let it pick (closest fight)</button></div>':''}</div>`;}
+  if(T==='romaterra'){return `<div class="card mb" style="border-left:3px solid var(--accent)"><h3>⚔ Formations</h3><div class="small"><b>Attack</b>${p168Seg(c._p168atk||'line','p168form','atk:')}</div><div class="small mt"><b>Defence</b>${p168Seg(c._p168def||'line','p168form','def:')}</div><div class="muted small mt">Line: balanced. Triple line: a little less punch, far fewer losses. Wedge: hits hardest, bleeds most, falls back if the fight turns. You can change it per battle under Active engagements.</div></div>`;}
+  return '';}catch(e){return '';}}
+function p168Bind(v,c){try{const after=r=>{if(r&&r.ok){try{go('fleets');save();}catch(e){}}else if(r)toast(r.error,'bad');};
+  v.querySelectorAll('[data-p168air]').forEach(b=>b.onclick=async()=>{const x=b.dataset.p168air;const r=await cmdAirTask(c,x==='auto'?'auto':+x);if(r&&r.ok)toast(x==='auto'?'✈ The air wing picks the closest fight each turn.':'✈ Air wing tasked to this battle.');after(r);});
+  v.querySelectorAll('[data-p168form]').forEach(b=>b.onclick=async()=>{const [s,f]=b.dataset.p168form.split(':');const r=await cmdSetFormation(c,s,f);if(r&&r.ok)toast((s==='atk'?'Attack':'Defence')+' formation: '+P168F[f].n);after(r);});
+  v.querySelectorAll('[data-p168bf]').forEach(b=>b.onclick=async()=>{const [id,f]=b.dataset.p168bf.split(':');const r=await cmdBattleFormation(c,+id,f);if(r&&r.ok)toast('Formation for this battle: '+P168F[f].n);after(r);});}catch(e){}}
 
 // ---- BOOT ------------------------------------------------------------------
 // GitHub serves the brochure as index.html and this file as play.html.
