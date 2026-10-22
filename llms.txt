@@ -54,7 +54,7 @@ Current version: 9.9. The game is updated regularly. Language: English. Platform
 - Update 5.0 (October 2026), Every Turn Counts: AI allies defend commanders who play, a fair defender's bounty, prestige projects for a full treasury (influence only, no military power), a sharper Warlord with the same resources, one clear comeback bonus capped at +150% production, a shorter Home and a calmer phone screen.
 - Genre: grand strategy, turn-based strategy, 4X, browser game, single-player against AI.
 - Free and non-commercial: no payments, no ads, no account.
-- Turn-based, or auto-play at 1x, 5x or 20x. Seasons: Quick (200 turns), Standard (400) or Epic (840). Difficulty: Recruit, Veteran or Warlord. Six campaign scenarios plus a Veteran round.
+- Turn-based, or auto-play with one turn every 1, 5 or 15 minutes. Seasons: Quick (200 turns), Standard (400) or Epic (840). Difficulty: Recruit, Veteran or Warlord. Six campaign scenarios plus a Veteran round.
 - New players get Field Training: five small tasks and a war game that explains the first battle.
 - Every season a personal AI rival seeks you out, and returns next season. Phase goals, 23 national events with follow-ups, optional season rules (Cold Peace, Fast Nexus, Iron Wall).
 - Fair AI: computer nations pay exactly what the player pays and only know what they have scouted.

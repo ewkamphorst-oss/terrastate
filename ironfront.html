@@ -6639,7 +6639,7 @@ function ifrCardHTML(me){const rows=ifrRows(me);if(!rows.length)return '';
       ${near?`<div class="row wrap mt" style="gap:6px;margin-top:6px">${Object.entries(IFR_ATK).map(([k,o])=>btn(x.cur===k,'data-ifra="'+x.id+'" data-o="'+k+'"',o)).join('')}</div>`:''}<div class="small" style="margin-top:4px">${seen}</div>${ex}</div>`;
     return `<div class="ifrrow" style="padding:8px 0;border-top:1px solid var(--border)"><div class="small"><b>🛡 ${esc(x.r.name)}</b> <span class="tag">${x.r.coord}</span> · ${x.foe?esc(x.foe.name||'enemy')+' · ':''}${when}</div>
       ${near?`<div class="row wrap mt" style="gap:6px;margin-top:6px">${Object.entries(IFR_DEF).map(([k,o])=>btn(x.cur===k,'data-ifrd="'+x.id+'" data-o="'+k+'"',o)).join('')}</div>`:''}<div class="small" style="margin-top:4px">${seen}</div>${ex}</div>`;}).join('');
-  return `<div class="card mb ifrcard" style="border-left:3px solid #c9b458"><div class="mono small" style="color:#c9b458;letter-spacing:1px">FRONT · BATTLE ORDERS</div>${typeof p8FrontHead==='function'?p8FrontHead(me,true):''}
+  return `<div class="card mb ifrcard" style="border-left:3px solid #c9b458"><div class="mono small" style="color:#c9b458;letter-spacing:1px">FRONT · BATTLE ORDERS</div>${typeof p8FrontHead==='function'?p8FrontHead(me):''}
     <div class="small muted" style="margin:4px 0 2px">Pick an order before END TURN. Guess their order right: +25% this tick.</div>${body}
     <details class="small" style="margin-top:8px"><summary style="cursor:pointer;color:var(--muted)">Which order beats which</summary><div style="margin-top:6px;line-height:1.6">⛏ Dig in beats ⚔ Assault · 💥 Barrage beats ⛏ Dig in · ⚡ Counter-attack beats 💥 Barrage · ↪ Flank beats ⚡ Counter-attack · 🎯 Ambush beats ↪ Flank · ⚔ Assault beats 🎯 Ambush. 🛡 Hold the line gives no edge to either side. The computer nations follow the same rules and see no more than you do.</div></details></div>`;}
 function ifrHome(){try{if(!ifrOn()||!(_p3solo()||mpClient()))return;if(view!=='dashboard'&&view!=='self')return;const v=document.getElementById('view');const me=you();if(!v||!me)return;
@@ -19800,6 +19800,37 @@ function card(){try{if(!window.__MP__||typeof view==='undefined'||view!=='dashbo
   const z=v.querySelector('.dash-zone')||v;const hz=z.querySelector('.zone-h');if(hz&&hz.nextSibling)z.insertBefore(el,hz.nextSibling);else z.prepend(el);}catch(e){}}
 let t=null;function soon(){if(t)return;t=setTimeout(()=>{t=null;card();},70);}
 try{const mo=new MutationObserver(()=>soon());const st=()=>{if(document.body)mo.observe(document.body,{childList:true,subtree:true});else setTimeout(st,500);};st();}catch(e){}
+})();
+
+</script>
+<script>/*p182ui*/
+
+// 9.9.1: "Play now" on step 1 of the new-game setup (sensible defaults, three clicks less),
+// and counting how far new players get through the three setup steps (GoatCounter events, once per page).
+(function(){
+  const P182_SEEN={};
+  function p182Count(n){try{if(window.__MP__||P182_SEEN[n])return;P182_SEEN[n]=1;const g=(typeof _trkGame==='function')?_trkGame():'game';
+    const send=k=>{const gc=window.goatcounter;if(gc&&typeof gc.count==='function'){gc.count({path:'event/'+g+'/'+n,title:g+' · '+n,event:true});return;}if(k<20)setTimeout(()=>send(k+1),1000);};send(0);}catch(e){}}
+  const wait=ms=>new Promise(r=>setTimeout(r,ms));
+  async function p182Quick(){p182Count('quick-play');P182_SEEN['setup-2']=P182_SEEN['setup-3']=1;
+    try{let b=document.getElementById('wnext');if(b)b.click();await wait(120);
+      const r=document.querySelector('#rg [data-rid]');if(r){r.click();await wait(120);}
+      b=document.getElementById('wnext');if(b&&!b.disabled)b.click();await wait(150);
+      if(!document.querySelector('#presets .sel')){const pr=document.querySelector('#presets [data-preset]');if(pr){pr.click();await wait(120);}}
+      const go=document.getElementById('go');if(go)go.click();}catch(e){}}
+  function p182Tick(){try{
+    const nx=document.getElementById('wnext'),tg=document.getElementById('tg');
+    if(nx&&tg){p182Count('setup-1');
+      if(!document.getElementById('p182quick')){const q=document.createElement('button');q.id='p182quick';q.className='btn';q.type='button';
+        q.textContent='▶ Play now';q.title='Start right away with a recommended homeland and a ready-made government. You can change everything later.';
+        q.onclick=p182Quick;const row=nx.parentElement;const sp=row.querySelector('span.muted');
+        const box=document.createElement('div');box.className='row';box.style.cssText='gap:8px;flex-wrap:wrap;justify-content:flex-end';
+        row.insertBefore(box,nx);box.appendChild(nx);box.appendChild(q);nx.classList.add('ghost');if(sp)sp.textContent='Step 1 of 3, or play now';}}
+    if(document.getElementById('rg')&&document.getElementById('wnext'))p182Count('setup-2');
+    if(document.getElementById('go')&&document.getElementById('presets'))p182Count('setup-3');
+  }catch(e){}}
+  try{const mo=new MutationObserver(()=>{p182Tick();try{if(typeof G!=='undefined'&&G&&typeof you==='function'&&you()&&!document.getElementById('wnext'))mo.disconnect();}catch(e){}});mo.observe(document.documentElement,{childList:true,subtree:true});}catch(e){}
+  setTimeout(p182Tick,300);
 })();
 
 </script>
