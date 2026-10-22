@@ -16,7 +16,7 @@
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="https://playterrastate.nl/img/v4/romaterra-share.jpg">
 <meta name="author" content="Wim Kamphorst">
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"VideoGame","@id":"https://playterrastate.nl/romaterra.html#game","name":"Romaterra","url":"https://playterrastate.nl/romaterra.html","description":"Free Roman grand strategy in your browser. Rule a people of the ancient world against hundreds of AI rivals, take Roma, raise the Imperial Palace and hold it. No account, no download.","image":"https://playterrastate.nl/img/v4/romaterra-share.jpg","genre":["Strategy","Grand strategy","Turn-based strategy","4X","Browser game"],"gamePlatform":["Web browser","Windows","macOS","Linux","Android","iOS"],"applicationCategory":"Game","operatingSystem":"Any (web browser)","playMode":"SinglePlayer","inLanguage":"en","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"EUR","availability":"https://schema.org/InStock"},"author":{"@type":"Person","@id":"https://playterrastate.nl/#wim","name":"Wim Kamphorst","url":"https://wimkamphorst.nl"},"publisher":{"@type":"Person","@id":"https://playterrastate.nl/#wim","name":"Wim Kamphorst","url":"https://wimkamphorst.nl"},"softwareVersion":"9.8","sameAs":["https://wimkamphorstcoaching.itch.io/romaterra"]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"VideoGame","@id":"https://playterrastate.nl/romaterra.html#game","name":"Romaterra","url":"https://playterrastate.nl/romaterra.html","description":"Free Roman grand strategy in your browser. Rule a people of the ancient world against hundreds of AI rivals, take Roma, raise the Imperial Palace and hold it. No account, no download.","image":"https://playterrastate.nl/img/v4/romaterra-share.jpg","genre":["Strategy","Grand strategy","Turn-based strategy","4X","Browser game"],"gamePlatform":["Web browser","Windows","macOS","Linux","Android","iOS"],"applicationCategory":"Game","operatingSystem":"Any (web browser)","playMode":"SinglePlayer","inLanguage":"en","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"EUR","availability":"https://schema.org/InStock"},"author":{"@type":"Person","@id":"https://playterrastate.nl/#wim","name":"Wim Kamphorst","url":"https://wimkamphorst.nl"},"publisher":{"@type":"Person","@id":"https://playterrastate.nl/#wim","name":"Wim Kamphorst","url":"https://wimkamphorst.nl"},"softwareVersion":"9.9","sameAs":["https://wimkamphorstcoaching.itch.io/romaterra"]}</script>
 <link rel="manifest" href="romaterra.webmanifest"><meta name="theme-color" content="#1a1410"><link rel="icon" href="icons/romaterra-64.png"><link rel="apple-touch-icon" href="icons/romaterra-180.png">
 <script>window.__MP_URL__=''; /* '' = live multiplayer not open yet */ if('serviceWorker' in navigator)addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));</script>
 <script data-goatcounter="https://playterrastate.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
@@ -1320,7 +1320,7 @@ function soloDiffLabel(){const s=soloCfg();if(!s)return '';const d=SOLO_DIFFS[s.
 // dislodge and can actually reach 12. It also rewards the CC builder: they are the first holder, so their momentum starts first.
 const NEXUS_MOMENTUM_PER=0.0375,NEXUS_MOMENTUM_CAP=1.5; // ROMATERRA: same +150% cap, reached after 40 ticks (10 h) instead of 10
 const SURPRISE_ATK=1.35,SURPRISE_INFL=1200; // v3.13.1: breaking an active NAP grants a one-time surprise strike (+35% coord) + influence windfall — betrayal must be tempting so top blocs can't freeze the map with a truce
-const WORLD_POP=1000;          // a full world of ~1,000 nations (bots fill the empty slots; humans replace them as they join)
+const WORLD_POP=700;/*p180: live world 700 nations on 1200 regions, newcomers find empty land for longer (was 1000)*/          // a full world of ~1,000 nations (bots fill the empty slots; humans replace them as they join)
 const WORLD_REGIONS=1200;      // enough territory for a 1,000-nation world (25 theaters × 48 regions), 200 spare for expansion
 // v3.28 SOLO runs a smaller world: the whole tick is processed in the player's browser, and 1,000 nations made each tick
 // take ~1.3s (visible lag vs a server-side Planetarion tick). ~300 nations is still an epic, lively world across all 25
@@ -7639,7 +7639,7 @@ body.turnmode header.top .tspeed{margin-left:22px;padding-left:12px;border-left:
 
 // Update 8.0: no long dashes on screen. Older game texts used " — " as a pause; it reads as ", " now. A lone dash (no value) reads as "-".
 (function(){if(typeof document==='undefined'||typeof MutationObserver==='undefined')return;const SK=/^(SCRIPT|STYLE|TEXTAREA|INPUT|CODE)$/;
-  const fix=v=>v.indexOf('\u2014')<0?v:(v.trim()==='\u2014'?v.replace('\u2014','-'):v.replace(/\s*\u2014\s*/g,', ').replace(/^, /,'').replace(/, ([.,;:!?])/g,'$1'));
+  const fix=v=>{if(v.indexOf('\u2014')<0)return v;v=v.replace(/ from \u2014(?=[\s.,;)]|$)/g,' (unclaimed)');/*p180: unclaimed land, not 'from.'*/if(v.indexOf('\u2014')<0)return v;return (v.trim()==='\u2014'?v.replace('\u2014','-'):v.replace(/\s*\u2014\s*/g,', ').replace(/^, /,'').replace(/, ([.,;:!?])/g,'$1'));};
   const tn=n=>{const pn=n.parentNode;if(!pn||(pn.nodeType===1&&SK.test(pn.tagName)))return;const v=n.nodeValue;if(v&&v.indexOf('\u2014')>=0){let t=/^\s*\u2014\s*\S/.test(v)&&n.previousSibling?v.replace(/^\s*\u2014\s*/,': '):v;t=fix(t);if(t!==v)n.nodeValue=t;}};
   const walk=r=>{if(!r)return;if(r.nodeType===3){tn(r);return;}if(r.nodeType!==1||SK.test(r.tagName))return;const w=document.createTreeWalker(r,NodeFilter.SHOW_TEXT);let n;while((n=w.nextNode()))tn(n);
     ['title','placeholder','aria-label'].forEach(a=>{const v=r.getAttribute&&r.getAttribute(a);if(v&&v.indexOf('\u2014')>=0)r.setAttribute(a,fix(v));});};
@@ -7942,9 +7942,9 @@ function renderLanding(){
       <a class="card" href="updates.html" target="_self" rel="noopener" style="display:block;text-decoration:none;color:inherit;margin:0 auto">
         <div class="row between wrap" style="gap:10px;align-items:center">
           <div style="min-width:0;flex:1">
-            <div><span class="mono" style="color:var(--gold);font-size:11px;letter-spacing:1px">UPDATE 9.8 · SMARTER GENERALS</span> <span class="muted small">October 2026</span></div>
-            <div style="font-weight:700;margin-top:3px">Update 9.8: Smarter generals</div>
-            <div class="muted small mt">Update 9.8 gives the computer nations smarter generals. They no longer march into a battle they can see they will lose, so their armies last longer and grow. When your own army is mostly militia, the advice tells you how to turn it into a conquering army. In the live world, Home shows what you can line up before you go. Auto-play is calmer: one turn every 1, 5 or 15 minutes, and END TURN still works any time. Update 9.7 brought armies and politics.</div>
+            <div><span class="mono" style="color:var(--gold);font-size:11px;letter-spacing:1px">UPDATE 9.9 · FAIR FIGHTS</span> <span class="muted small">October 2026</span></div>
+            <div style="font-weight:700;margin-top:3px">Update 9.9: Fair fights</div>
+            <div class="muted small mt">Update 9.9 keeps the fights fair. A huge home guard of cheap troops now costs extra upkeep, alliances only lead or join a joint strike they can win, and on Veteran and Warlord the spies of your rival alliance may act between strikes too. The Field Manual explains the newer rules. Small border probes from your neighbours are back. In the live world there is a daily order with a small reward. Update 9.8 gave the rival nations smarter generals.</div>
           </div>
           <span class="btn ghost sm" style="flex:none;pointer-events:none">What is new</span>
         </div>
@@ -8012,7 +8012,7 @@ function renderLanding(){
   {const b=s.querySelector('#lpNews');if(b)b.onclick=()=>{const t=s.querySelector('#playerupdate');if(t)t.scrollIntoView({behavior:'smooth',block:'center'});};}
 }
 // ---- Legal identity: ONE place to change the operator / contact / copyright holder. Used by the Privacy, Terms and Credits tabs and the footer.
-const LEGAL={operator:'Wim Kamphorst',email:'wimkamphorst.coaching@gmail.com',author:'Wim Kamphorst',country:'the Netherlands',law:'Dutch law',dpa:'Autoriteit Persoonsgegevens (the Dutch data protection authority)',dpaUrl:'https://www.autoriteitpersoonsgegevens.nl',version:'1.1',updated:'October 2026',build:'Update 9.8 · Oct 2026',minAge:16};
+const LEGAL={operator:'Wim Kamphorst',email:'wimkamphorst.coaching@gmail.com',author:'Wim Kamphorst',country:'the Netherlands',law:'Dutch law',dpa:'Autoriteit Persoonsgegevens (the Dutch data protection authority)',dpaUrl:'https://www.autoriteitpersoonsgegevens.nl',version:'1.1',updated:'October 2026',build:'Update 9.9 · Oct 2026',minAge:16};
 LEGAL.contact=`<b>${LEGAL.operator}</b>, <a href="mailto:${LEGAL.email}">${LEGAL.email}</a>`;
 // ---- Landing-page manual: beginner's handbook + combat formulae -------------
 const MANUAL={
@@ -13930,7 +13930,7 @@ function p175Excess(u){if(!u)return 0;const m=Math.floor(+u.militia||0);let othe
 {const _rp=rawPower;rawPower=function(units,c,kind,extra){return _rp.call(this,kind==='atk'?p175March(units):units,c,kind,extra);};}
 {const _pw=power;power=function(c,kind,committed){if(kind!=='atk'||!c||(c._fog&&!committed))return _pw.apply(this,arguments);return _pw.call(this,c,kind,p175March(committed||c.units||{}));};}
 function p175Tell(fn,idx){return function(){const r=fn.apply(this,arguments);try{const c=arguments[0];const ex=p175Excess(arguments[idx]);
-  if(r&&r.ok&&ex>0&&c&&c.isAI===false&&typeof toast==='function'&&typeof window!=='undefined'&&c.id===G.you&&(!c._p175told||G.tick-c._p175told>=30)){c._p175told=G.tick;toast('Militia are a home guard: in an attack, militia beyond the number of your other troops fight at a quarter of their strength. Add infantry or heavier units.','warn');}}catch(e){}return r;};}
+  if(r&&r.ok&&ex>0&&c&&c.isAI===false&&typeof toast==='function'&&typeof window!=='undefined'&&c.id===G.you&&(!c._p175told||G.tick-c._p175told>=30)){c._p175told=G.tick;toast(((UBYK.militia||{}).n||'Militia')+' are a home guard: in an attack, those beyond the number of your other troops fight at a quarter of their strength. Add '+(((UBYK.infantry||{}).n)||'infantry').toLowerCase()+' or heavier units.','warn');}}catch(e){}return r;};}
 cmdOp=p175Tell(cmdOp,2);cmdLaunchACS=p175Tell(cmdLaunchACS,2);cmdJoinACS=p175Tell(cmdJoinACS,2);
 // 2. Silent fixes: odd arguments never throw.
 {const _f=cmdFoundClan;cmdFoundClan=function(c,name,tag){return _f.call(this,c,typeof name==='string'?name:'',typeof tag==='string'?tag:'');};}
@@ -13980,9 +13980,52 @@ function p175Expand(c){const A=p7A(c);if(!A.on||!A.exp)return null;if((c.cp||0)<
 // Computer nations no longer march into a battle they can see they will lose: an attack whose strength is below the
 // target's defence is called off before it leaves. Before, a quarter of all AI attacks failed and those failures cost
 // more than half of all units the AI lost, so AI armies bled away in hopeless fights against each other.
-const P177_MIN=1.0;
-{const _op=cmdOp;cmdOp=function(c,rid,committed,opts){try{if(c&&c.isAI){const r=_rgId(rid);if(r&&r.owner!==c.id){const com=committed||{};
+const P177_MIN=1.0;let P177_SKIP=0; // small border probes (p7Probes) are meant to be small: they are never called off
+{const _op=cmdOp;cmdOp=function(c,rid,committed,opts){try{if(c&&c.isAI&&!P177_SKIP){const r=_rgId(rid);if(r&&r.owner!==c.id){const com=committed||{};
   const est=power(c,'atk',com)/Math.max(1,regionDef(r));if(est<P177_MIN){c._p177off=(c._p177off||0)+1;return err('Called off: this force would not break the defence.');}}}}catch(e){}return _op.apply(this,arguments);};}
+
+if(typeof p7Probes==='function'){const _pp=p7Probes;p7Probes=function(){P177_SKIP=1;try{return _pp.apply(this,arguments);}finally{P177_SKIP=0;}};}
+// coalition waves against a runaway leader are joint pressure: each army alone is small on purpose
+if(typeof p18CoalWave==='function'){const _cw=p18CoalWave;p18CoalWave=function(){P177_SKIP=1;try{return _cw.apply(this,arguments);}finally{P177_SKIP=0;}};}
+
+/*p180*/
+// ---- p180 Update 9.9 ----
+// 1. Levy strain: a huge militia costs more to keep. Militia beyond twice your other troops cost extra upkeep, rising with the
+//    ratio (up to three times the normal upkeep). A big home guard stays possible, a militia-only empire gets expensive.
+const P180_FREE=2,P180_MAXX=3;
+function p180Strain(c){if(!c||!c.units)return 0;const m=+c.units.militia||0;if(m<=0)return 0;let other=0;for(const k in c.units)if(k!=='militia')other+=Math.max(0,+c.units[k]||0);
+  const free=Math.max(200,other*P180_FREE);if(m<=free)return 0;const r=m/Math.max(1,free);const x=Math.min(P180_MAXX-1,(r-1)*0.5);
+  const up=((UBYK.militia||{}).up||{}).money||90;return (m-free)*up*x;}
+{const _pj=projection;projection=function(c){const p=_pj.apply(this,arguments);try{if(!c||!p||!p.cons||c._fog)return p;const ex=p180Strain(c);if(ex>0){p.cons.money=(p.cons.money||0)+ex;if(p.net)p.net.money=(p.net.money||0)-ex;p._p180=ex;}}catch(e){}return p;};}
+// 2. Smarter generals for alliance strikes too: an AI nation leads or joins a joint assault only when its alliance
+//    together can break the target (9.8 did this for single attacks).
+function p180AllianceCan(c,r,cl){try{if(!cl||typeof p173ClanPunch!=='function')return true;return p173ClanPunch(cl,0.5)>=regionDef(r)*1.0;}catch(e){return true;}}
+{const _l=cmdLaunchACS;cmdLaunchACS=function(c,rid){try{if(c&&c.isAI){const r=_rgId(rid);const cl=clanOf(c);if(r&&!p180AllianceCan(c,r,cl)){c._p180off=(c._p180off||0)+1;return err('Called off: the alliance would not break the defence.');}}}catch(e){}return _l.apply(this,arguments);};}
+{const _j=cmdJoinACS;cmdJoinACS=function(c,opId){try{if(c&&c.isAI){const op=(G.acs||[]).find(o=>o.id===opId);const r=op?_rgId(op.target):null;const cl=clanOf(c);if(r&&!p180AllianceCan(c,r,cl)){c._p180off=(c._p180off||0)+1;return err('Called off: the alliance would not break the defence.');}}}catch(e){}return _j.apply(this,arguments);};}
+// 3. The rival's spies work between strikes too: about every 30 turns they try one covert operation on you (raid, unrest or radar),
+//    under the normal covert rules (Covert Ops Center, agents, influence, command points).
+const P180_SPY_EVERY=30;function p180A(n,cap){const a=/^[aeiou]/i.test(n)?'an':'a';return (cap?a[0].toUpperCase()+a.slice(1):a)+' '+n;}
+function p180RivalSpy(){try{if(typeof isSoloGame!=='function'||!isSoloGame())return;const me=G.you!=null?G.countries[G.you]:null;if(!me||me.isAI!==false)return;
+  const cl=G._p173riv!=null?(G.clans||[]).find(x=>x.id===G._p173riv):null;if(!cl)return;if(G.tick-(G._p180spy||0)<P180_SPY_EVERY)return;
+  const spy=clanMembers(cl).find(m=>m&&m.isAI&&!m.retired&&bTotal(m,'covert')>=1&&(m.agents||0)>=12&&(m.cp||0)>=1);if(!spy)return;
+  const ops=['steal','unrest','radar'];const mk=ops[Math.floor(G.tick/P180_SPY_EVERY)%ops.length];const op=COVERT_OPS.find(x=>x.k===mk);if(!op||(spy.res.influence||0)<op.infl)return;
+  G._p180spy=G.tick;const r=cmdCovert(spy,me.id,mk,Math.min(spy.agents||0,14));if(r&&r.ok){G._p180spyN=(G._p180spyN||0)+1;try{sitrep(me,'intel','🕵 Agents of your rival '+cl.name+' ['+cl.tag+'] ran an operation against you. '+p180A((BUILD.find(x=>x.k==='radar')||{}).n||'radar',true)+' and '+p180A((BUILD.find(x=>x.k==='intel')||{}).n||'intelligence office')+' make that harder.',{sev:1,go:'covert'});}catch(e){}}}catch(e){}}
+// 4. Live world: a daily order. Every 24 turns each player gets one small task; finishing it pays influence and two turns of income.
+const P180_DAY=24;const P180_TASKS=[
+  {k:'build',n:'Finish a building',d:'Let one building or upgrade finish today.',v:c=>(c.buildings||[]).reduce((s,b)=>s+(b.lv||0),0)},
+  {k:'tech',n:'Finish a research topic',d:'Let one research topic finish today.',v:c=>(c.tech||[]).length},
+  {k:'land',n:'Gain a region',d:'Take one more region today, empty land counts.',v:c=>regionsOf(c).length},
+  {k:'army',n:'Grow your army by a tenth',d:'Train troops until your army is 10% bigger than this morning.',v:c=>{let n=0;for(const k in (c.units||{}))n+=c.units[k]||0;return n;},need:b=>Math.max(50,Math.ceil(b*0.1))},
+  {k:'ally',n:'Help your alliance',d:'Donate to your alliance treasury today.',v:c=>c._contributed||0,need:()=>1,cmp:'changed'}];
+function p180Daily(){try{if(typeof isSoloGame==='function'&&isSoloGame())return;const day=Math.floor(G.tick/P180_DAY);
+  (G.countries||[]).forEach(c=>{if(!c||c.retired||c.isAI!==false||!regionsOf(c).length)return;const D=c._p180d;
+    if(!D||D.day!==day){const list=P180_TASKS.filter(t=>t.k!=='ally'||c.clan!=null);const t=list[(c.id+day)%list.length];c._p180d={day,k:t.k,base:t.v(c),done:false};return;}
+    if(D.done)return;const t=P180_TASKS.find(x=>x.k===D.k);if(!t)return;const now=t.v(c);const need=t.need?t.need(D.base):1;
+    const ok=t.cmp==='changed'?now!==D.base:now-D.base>=need;
+    if(ok){D.done=true;let inc=0;try{inc=Math.max(0,(projection(c).net.money||0))*2;}catch(e){}c.res.influence=(c.res.influence||0)+400;c.res.money=Math.min(CAP.money,(c.res.money||0)+inc);
+      try{sitrep(c,'event','✅ Daily order done: '+t.n+'. +400 influence'+(inc>0?' and two turns of income':'')+'.',{sev:1,go:'dashboard'});}catch(e){}}});}catch(e){}}
+function p180DailyOf(c){const D=c&&c._p180d;if(!D)return null;const t=P180_TASKS.find(x=>x.k===D.k);if(!t)return null;const left=P180_DAY-(G.tick%P180_DAY);return {n:t.n,d:t.d,done:!!D.done,left};}
+{const _rt=runTick;runTick=function(){const o=_rt.apply(this,arguments);p180RivalSpy();p180Daily();return o;};}
 
 // ---- BOOT ------------------------------------------------------------------
 // GitHub serves the brochure as index.html and this file as play.html.
@@ -19242,10 +19285,10 @@ function nexusCard(v,c){try{if(v.querySelector('.p171nx'))return;const nx=typeof
   const rank=L.findIndex(x=>x.id===c.id);if(rank<0||rank>2)return;
   const holder=nx.owner!=null?G.countries[nx.owner]:null;
   const el=document.createElement('div');el.className='card mb p171nx';el.style.cssText='border-left:4px solid var(--gold);padding:12px 14px';
-  el.innerHTML='<div class="mono small" style="letter-spacing:1.4px;color:var(--gold)">THE SEASON IS WON AT THE NEXUS</div>'+
+  el.innerHTML='<div class="mono small" style="letter-spacing:1.4px;color:var(--gold)">THE SEASON IS WON AT '+esc(nx.name).toUpperCase()+'</div>'+
     '<div style="font-weight:800;font-size:17px;margin:4px 0 2px">You are one of the three biggest nations</div>'+
     '<div class="small muted">Size alone does not win. Take '+esc(nx.name)+' '+(holder?'from '+esc(holder.name)+' ':'')+'and hold it, or hold it longest when the Last Battle comes.</div>'+
-    '<div class="row mt" style="gap:8px;margin-top:8px"><button class="btn sm" data-p171nx="1">Show the Nexus</button></div>';
+    '<div class="row mt" style="gap:8px;margin-top:8px"><button class="btn sm" data-p171nx="1">Show '+esc(nx.name)+'</button></div>';
   const z=v.querySelector('.dash-zone')||v;const hz=z.querySelector('.zone-h');if(hz&&hz.nextSibling)z.insertBefore(el,hz.nextSibling);else z.prepend(el);
   el.querySelector('[data-p171nx]').onclick=()=>{try{if(typeof selRegion!=='undefined')selRegion=nx.id;}catch(e){}go('map');};}catch(e){}}
 function calm(){if(!onHome()||training())return;const v=document.getElementById('view');if(!v)return;const c=typeof you==='function'?you():null;if(!c)return;
@@ -19291,6 +19334,35 @@ function planCard(){try{if(!live()||typeof view==='undefined'||view!=='dashboard
     items.map(([t,d,g])=>'<div class="row between wrap" style="gap:8px;padding:6px 0;border-top:1px solid var(--border)"><span class="small"><b>'+t+'</b> <span class="muted">'+d+'</span></span><button class="btn ghost sm" data-p177="'+g+'">Open</button></div>').join('');
   const z=v.querySelector('.dash-zone')||v;z.appendChild(el);el.querySelectorAll('[data-p177]').forEach(b=>b.onclick=()=>go(b.dataset.p177));}catch(e){}}
 let t=null;function soon(){if(t)return;t=setTimeout(()=>{t=null;planCard();},60);}
+try{const mo=new MutationObserver(()=>soon());const st=()=>{if(document.body)mo.observe(document.body,{childList:true,subtree:true});else setTimeout(st,500);};st();}catch(e){}
+})();
+
+</script>
+<script>/*p180ui*/
+/* p180 Update 9.9, browser only: Field Manual pages for the newer rules, the quick tick page updated for the calm tempo,
+   and the daily order card on Home in the live world. */
+(function(){
+if(typeof window==='undefined'||typeof document==='undefined')return;
+const MIL=(typeof UBYK!=='undefined'&&UBYK.militia&&UBYK.militia.n)||'Militia';const mil=MIL.toLowerCase();
+const BN=k=>{try{const b=BUILD.find(x=>x.k===k);return b?b.n:k;}catch(e){return k;}};const RADAR=BN('radar'),INTEL=BN('intel');const art=n=>(/^[aeiou]/i.test(n)?'an ':'a ')+n;
+try{if(typeof HELP!=='undefined'&&Array.isArray(HELP)){
+  const q=HELP.find(x=>x.id==='help-quick');if(q&&Array.isArray(q.bullets))q.bullets=q.bullets.map(b=>/Single-player ticks are fast/.test(b)?'In single player the world waits for you: press END TURN (or Space). Auto-play can run one turn every 1, 5 or 15 minutes. The live world ticks every hour.':b);
+  const add=(o)=>{if(!HELP.some(x=>x.id===o.id))HELP.push(o);};
+  add({id:'help-homeguard',sec:'B',ic:'🛡',title:MIL+' are a home guard',short:MIL+' are the cheapest defence, but a conquering army needs other troops.',
+    bullets:['In an attack, '+mil+' beyond the number of your other troops fight at a quarter of their strength.','At home they defend at full strength, so they stay the best value for guarding your regions.','A very large '+mil+' (more than twice your other troops) costs extra upkeep, up to three times as much.','Mix in infantry and heavier units before you march. The battle odds on the attack screen already count this.'],
+    see:['help-quick'],anchor:'military'});
+  add({id:'help-rival',sec:'B',ic:'⚔',title:'The rival alliance',short:'On Veteran and Warlord one strong alliance picks you as its rival.',
+    bullets:['Its members strike one of your far regions together when they can break it.','Before a strike, and now and then in between, its spies may raid your treasury, stir unrest or sabotage your '+RADAR+'.','Keep a garrison in regions far from home, and build '+art(RADAR)+' and '+art(INTEL)+'.','On Recruit nobody hunts you. Any alliance may also turn on the nation that clearly leads the world.'],
+    see:['help-homeguard'],anchor:'diplomacy'});
+  add({id:'help-generals',sec:'B',ic:'🎖',title:'How rival generals decide',short:'Rival nations call off attacks they can see they will lose.',
+    bullets:['A single attack is called off when its force would not break the defence.','A joint alliance strike is only led or joined when the alliance together can break the target.','So when a rival nation does attack you, it expects to win: answer with garrisons and a counter-strike.','Rival nations also run their own politics: taxes, a national charter that changes with war and peace, and alliance wonders.'],
+    see:['help-rival'],anchor:'rankings'});}}catch(e){}
+function card(){try{if(!window.__MP__||typeof view==='undefined'||view!=='dashboard')return;const v=document.getElementById('view');if(!v||v.querySelector('.p180day'))return;
+  const c=typeof you==='function'?you():null;if(!c||typeof p180DailyOf!=='function')return;const d=p180DailyOf(c);if(!d)return;
+  const el=document.createElement('div');el.className='card mb p180day';el.style.cssText='border-left:4px solid var(--gold);padding:10px 14px';
+  el.innerHTML='<div class="row between wrap" style="gap:8px"><span><span class="mono small" style="letter-spacing:1.4px;color:var(--gold)">DAILY ORDER</span> <b>'+(d.done?'✅ ':'')+d.n+'</b> <span class="muted small">'+(d.done?'Done. A new order comes in '+d.left+' turn'+(d.left===1?'':'s')+'.':d.d+' Reward: 400 influence and two turns of income. '+d.left+' turn'+(d.left===1?'':'s')+' left.')+'</span></span></div>';
+  const z=v.querySelector('.dash-zone')||v;const hz=z.querySelector('.zone-h');if(hz&&hz.nextSibling)z.insertBefore(el,hz.nextSibling);else z.prepend(el);}catch(e){}}
+let t=null;function soon(){if(t)return;t=setTimeout(()=>{t=null;card();},70);}
 try{const mo=new MutationObserver(()=>soon());const st=()=>{if(document.body)mo.observe(document.body,{childList:true,subtree:true});else setTimeout(st,500);};st();}catch(e){}
 })();
 
