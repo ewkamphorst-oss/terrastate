@@ -16,7 +16,7 @@
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="https://playterrastate.nl/img/v4/romaterra-share.jpg">
 <meta name="author" content="Wim Kamphorst">
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"VideoGame","@id":"https://playterrastate.nl/romaterra.html#game","name":"Romaterra","url":"https://playterrastate.nl/romaterra.html","description":"Free Roman grand strategy in your browser. Rule a people of the ancient world against hundreds of AI rivals, take Roma, raise the Imperial Palace and hold it. No account, no download.","image":"https://playterrastate.nl/img/v4/romaterra-share.jpg","genre":["Strategy","Grand strategy","Turn-based strategy","4X","Browser game"],"gamePlatform":["Web browser","Windows","macOS","Linux","Android","iOS"],"applicationCategory":"Game","operatingSystem":"Any (web browser)","playMode":"SinglePlayer","inLanguage":"en","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"EUR","availability":"https://schema.org/InStock"},"author":{"@type":"Person","@id":"https://playterrastate.nl/#wim","name":"Wim Kamphorst","url":"https://wimkamphorst.nl"},"publisher":{"@type":"Person","@id":"https://playterrastate.nl/#wim","name":"Wim Kamphorst","url":"https://wimkamphorst.nl"},"softwareVersion":"9.7","sameAs":["https://wimkamphorstcoaching.itch.io/romaterra"]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"VideoGame","@id":"https://playterrastate.nl/romaterra.html#game","name":"Romaterra","url":"https://playterrastate.nl/romaterra.html","description":"Free Roman grand strategy in your browser. Rule a people of the ancient world against hundreds of AI rivals, take Roma, raise the Imperial Palace and hold it. No account, no download.","image":"https://playterrastate.nl/img/v4/romaterra-share.jpg","genre":["Strategy","Grand strategy","Turn-based strategy","4X","Browser game"],"gamePlatform":["Web browser","Windows","macOS","Linux","Android","iOS"],"applicationCategory":"Game","operatingSystem":"Any (web browser)","playMode":"SinglePlayer","inLanguage":"en","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"EUR","availability":"https://schema.org/InStock"},"author":{"@type":"Person","@id":"https://playterrastate.nl/#wim","name":"Wim Kamphorst","url":"https://wimkamphorst.nl"},"publisher":{"@type":"Person","@id":"https://playterrastate.nl/#wim","name":"Wim Kamphorst","url":"https://wimkamphorst.nl"},"softwareVersion":"9.8","sameAs":["https://wimkamphorstcoaching.itch.io/romaterra"]}</script>
 <link rel="manifest" href="romaterra.webmanifest"><meta name="theme-color" content="#1a1410"><link rel="icon" href="icons/romaterra-64.png"><link rel="apple-touch-icon" href="icons/romaterra-180.png">
 <script>window.__MP_URL__=''; /* '' = live multiplayer not open yet */ if('serviceWorker' in navigator)addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));</script>
 <script data-goatcounter="https://playterrastate.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
@@ -1242,7 +1242,7 @@ const SOLO_DIFFS={
   veteran:{n:'Veteran',ic:'⚔',d:'The standard game, exactly the live-world balance. Fair AI, 24 ticks of protection.',aiEcon:1,humBias:0,needAdj:0,protect:24},
   warlord:{n:'Warlord',ic:'💀',d:'The AI never gets extra resources, it just plays sharper: better choices, faster joint strikes, scouts that remember your army, rivals actively hunt you, only 8 ticks of protection. For veterans.',aiEcon:1,humBias:25,needAdj:-0.08,protect:8,skill:0.12,opPace:0.7,scoutMem:1}};
 const SOLO_LENGTHS={quick:{n:'Quick',ticks:200,d:'≈200 turns, a session or two'},standard:{n:'Standard',ticks:400,d:'≈400 turns, the sweet spot'},epic:{n:'Epic',ticks:840,d:'840 turns, the full live-world season'}};
-const SOLO_SPEEDS={1:20000,5:4000,20:500}; // auto-play: ms per tick at 1x / 5x / 20x (20x ≈ 1 tick/s in practice: the 1 s loop plus tick time)
+const SOLO_SPEEDS={1:60000,5:300000,15:900000};/*p179*/ // auto-play: 1, 5 or 15 minutes per turn (calm; you can always press END TURN sooner) // auto-play: ms per tick at 1x / 5x / 20x (20x ≈ 1 tick/s in practice: the 1 s loop plus tick time)
 let SOLO_DIFF={aiEcon:1,humBias:0,needAdj:0,skill:0}; // live multipliers read by the engine; identity outside solo
 function isSoloGame(){return typeof window!=='undefined'&&!window.__MP__&&!(typeof process!=='undefined'&&process.versions&&process.versions.node);} // browser + not the MP client (the headless server shims `window`, hence the Node check)
 function soloCfg(){if(!isSoloGame())return null;G.solo=G.solo||{};const s=G.solo;if(!SOLO_DIFFS[s.diff])s.diff='veteran';if(!SOLO_LENGTHS[s.len])s.len=s.len||'epic';if(!SOLO_LENGTHS[s.len])s.len='epic';if(s.mode!=='turn'&&s.mode!=='auto')s.mode='turn';if(!SOLO_SPEEDS[s.speed])s.speed=1;return s;}
@@ -7942,9 +7942,9 @@ function renderLanding(){
       <a class="card" href="updates.html" target="_self" rel="noopener" style="display:block;text-decoration:none;color:inherit;margin:0 auto">
         <div class="row between wrap" style="gap:10px;align-items:center">
           <div style="min-width:0;flex:1">
-            <div><span class="mono" style="color:var(--gold);font-size:11px;letter-spacing:1px">UPDATE 9.7 · ARMIES AND POLITICS</span> <span class="muted small">October 2026</span></div>
-            <div style="font-weight:700;margin-top:3px">Update 9.7: Armies and politics</div>
-            <div class="muted small mt">Update 9.7 makes armies and politics count. Militia are a home guard: in an attack, militia beyond the number of your other troops fight at a quarter of their strength, so a conquering army needs real troops. Computer nations now run their own politics: they raise taxes in calm times, change their national charter in war and peace, and their alliances save up for wonders. A new standing order claims empty land next to you while you are away. Update 9.6 made alliances fight as one.</div>
+            <div><span class="mono" style="color:var(--gold);font-size:11px;letter-spacing:1px">UPDATE 9.8 · SMARTER GENERALS</span> <span class="muted small">October 2026</span></div>
+            <div style="font-weight:700;margin-top:3px">Update 9.8: Smarter generals</div>
+            <div class="muted small mt">Update 9.8 gives the computer nations smarter generals. They no longer march into a battle they can see they will lose, so their armies last longer and grow. When your own army is mostly militia, the advice tells you how to turn it into a conquering army. In the live world, Home shows what you can line up before you go. Auto-play is calmer: one turn every 1, 5 or 15 minutes, and END TURN still works any time. Update 9.7 brought armies and politics.</div>
           </div>
           <span class="btn ghost sm" style="flex:none;pointer-events:none">What is new</span>
         </div>
@@ -8012,7 +8012,7 @@ function renderLanding(){
   {const b=s.querySelector('#lpNews');if(b)b.onclick=()=>{const t=s.querySelector('#playerupdate');if(t)t.scrollIntoView({behavior:'smooth',block:'center'});};}
 }
 // ---- Legal identity: ONE place to change the operator / contact / copyright holder. Used by the Privacy, Terms and Credits tabs and the footer.
-const LEGAL={operator:'Wim Kamphorst',email:'wimkamphorst.coaching@gmail.com',author:'Wim Kamphorst',country:'the Netherlands',law:'Dutch law',dpa:'Autoriteit Persoonsgegevens (the Dutch data protection authority)',dpaUrl:'https://www.autoriteitpersoonsgegevens.nl',version:'1.1',updated:'October 2026',build:'Update 9.7 · Oct 2026',minAge:16};
+const LEGAL={operator:'Wim Kamphorst',email:'wimkamphorst.coaching@gmail.com',author:'Wim Kamphorst',country:'the Netherlands',law:'Dutch law',dpa:'Autoriteit Persoonsgegevens (the Dutch data protection authority)',dpaUrl:'https://www.autoriteitpersoonsgegevens.nl',version:'1.1',updated:'October 2026',build:'Update 9.8 · Oct 2026',minAge:16};
 LEGAL.contact=`<b>${LEGAL.operator}</b>, <a href="mailto:${LEGAL.email}">${LEGAL.email}</a>`;
 // ---- Landing-page manual: beginner's handbook + combat formulae -------------
 const MANUAL={
@@ -9026,9 +9026,9 @@ function soloAdvance(){if(window.__MP__)return;if(document.querySelector('.modal
 function wireSoloFF(){if(window.__MP__)return;const tb=document.querySelector('header .tick');if(!tb||tb._ff)return;tb._ff=1;
   try{if(window.matchMedia&&window.matchMedia('(pointer:coarse)').matches){const s=soloCfg();if(s&&s.mode!=='turn'&&!s._mobTurn){s.mode='turn';s._mobTurn=1;G.nextAt=Date.now()+soloTickMs();try{save(true);}catch(e){}}}}catch(e){}
 tb.style.cursor='pointer';tb.title='End the turn: run the next tick now (Space)';tb.onclick=p6EndTurn;try{wireMobileEndTurn();}catch(e){}
-  // v3.31 tempo: Turn (you end each turn) or auto-play at 1x / 5x / 20x. Solo only; the server owns the clock in multiplayer.
-  const sp=document.createElement('div');sp.className='tspeed';sp.innerHTML='<button data-t="turn" title="Turn-based: the world waits for you">⏸</button><button data-t="1" title="Auto-play, 1 tick per 20 s">▶</button><button data-t="5" title="Auto-play, 1 tick per 4 s">▶▶</button><button data-t="20" title="Auto-play, 1 tick per second">▶▶▶</button><button data-t="until" title="Run turns until something happens (stops at events, battles, finished builds; at most 20)">⏩</button><button data-t="cycle" class="cyc" title="Tempo: turn-based → 1x → 5x → 20x (click to cycle)">⏸</button>';
-  sp.querySelectorAll('button').forEach(b=>b.onclick=e=>{e.stopPropagation();if(b.dataset.t==='until'){runUntil();return;}if(b.dataset.t==='cycle'){const s=soloCfg();const cur=s.mode==='turn'?'turn':String(s.speed);const order=['turn','1','5','20'];setSoloTempo(order[(order.indexOf(cur)+1)%order.length]);}else setSoloTempo(b.dataset.t);});tb.insertAdjacentElement('afterend',sp);
+  // v3.31 tempo: Turn (you end each turn) or auto-play every 1, 5 or 15 minutes. Solo only; the server owns the clock in multiplayer.
+  const sp=document.createElement('div');sp.className='tspeed';sp.innerHTML='<button data-t="turn" title="Turn-based: the world waits for you">⏸</button><button data-t="1" title="Auto-play: 1 turn every minute">1m</button><button data-t="5" title="Auto-play: 1 turn every 5 minutes">5m</button><button data-t="15" title="Auto-play: 1 turn every 15 minutes">15m</button><button data-t="cycle" class="cyc" title="Tempo: turn-based → every minute → every 5 minutes → every 15 minutes (click to cycle)">⏸</button>';
+  sp.querySelectorAll('button').forEach(b=>b.onclick=e=>{e.stopPropagation();if(b.dataset.t==='until'){runUntil();return;}if(b.dataset.t==='cycle'){const s=soloCfg();const cur=s.mode==='turn'?'turn':String(s.speed);const order=['turn','1','5','15'];setSoloTempo(order[(order.indexOf(cur)+1)%order.length]);}else setSoloTempo(b.dataset.t);});tb.insertAdjacentElement('afterend',sp);
   if(!window._soloKeys){window._soloKeys=1;document.addEventListener('keydown',e=>{if(window.__MP__)return;if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='s'){e.preventDefault();if(slotWrite('romaterra_slot1'))toast('🏺 Quick-saved to Slot 1 (Ctrl+S)','info');return;}if(e.code!=='Space')return;const t=e.target;if(t&&(t.tagName==='INPUT'||t.tagName==='TEXTAREA'||t.tagName==='SELECT'||t.isContentEditable))return;if(!document.getElementById('app')?.classList.contains('on'))return;e.preventDefault();p6EndTurn();});}}
 // ---- v3.32 campaign UI (solo only) ----
 function showCampaign(){const d=campaignLoad();const nx=campaignNext();
@@ -9083,8 +9083,8 @@ function showAchievements(){const c=(()=>{try{return you();}catch(e){return null
     <div class="row wrap" style="gap:6px;margin-bottom:10px">${sc}</div>
     <div class="grid g2">${cards}</div></div></div>`);
   bg.querySelector('[data-x]').onclick=()=>bg.remove();bg.onclick=e=>{if(e.target===bg)bg.remove();};document.body.appendChild(bg);}
-function setSoloTempo(t){const s=soloCfg();if(!s)return;if(t==='turn'){s.mode='turn';}else{s.mode='auto';s.speed=+t;}G.nextAt=Date.now()+soloTickMs();drawSoloTempo();try{save(true);}catch(e){}toast(s.mode==='turn'?'⏸ Turn-based: press END TURN (or Space) to advance':'▶ Auto-play at '+s.speed+'x, 1 tick every '+(SOLO_SPEEDS[s.speed]/1000)+' s','info');}
-function drawSoloTempo(){const s=soloCfg();if(!s)return;const tb=document.querySelector('header .tick');if(!tb)return;const cur=s.mode==='turn'?'turn':String(s.speed);document.querySelectorAll('header .tspeed button').forEach(b=>{if(b.dataset.t==='cycle'){b.textContent=cur==='turn'?'⏸':cur==='1'?'▶':cur==='5'?'▶▶':'▶▶▶';b.classList.toggle('on',cur!=='turn');}else b.classList.toggle('on',b.dataset.t===cur);});tb.classList.toggle('turnmode',s.mode==='turn');}
+function setSoloTempo(t){const s=soloCfg();if(!s)return;if(t==='turn'){s.mode='turn';}else{s.mode='auto';s.speed=+t;}G.nextAt=Date.now()+soloTickMs();drawSoloTempo();try{save(true);}catch(e){}toast(s.mode==='turn'?'⏸ Turn-based: press END TURN (or Space) to advance':'▶ Auto-play: 1 turn every '+(s.speed===1?'minute':s.speed+' minutes')+'. END TURN still works any time.','info');}
+function drawSoloTempo(){const s=soloCfg();if(!s)return;const tb=document.querySelector('header .tick');if(!tb)return;const cur=s.mode==='turn'?'turn':String(s.speed);document.querySelectorAll('header .tspeed button').forEach(b=>{if(b.dataset.t==='cycle'){b.textContent=cur==='turn'?'⏸':cur+'m';b.classList.toggle('on',cur!=='turn');}else b.classList.toggle('on',b.dataset.t===cur);});tb.classList.toggle('turnmode',s.mode==='turn');}
 function maybeModal(){if(document.querySelector('.modal-bg'))return;if(isSoloGame()&&G._scResult&&!G._scShown){showScenarioEnd();return;}if(isSoloGame()&&G._mpSupportDue&&G._winner==null){const r=G._mpSupportDue;G._mpSupportDue=null;showMpSupport(null,r);return;}if(isSoloGame()&&G._scBrief){G._scBrief=false;showScenarioBrief();return;}if(G._winner!=null)showVictory();else if(G._seasonEnd)showSeasonEnd();else if(evPending()!=null)showEvent();}
 function showVictory(){sfx('victory');const w=G._winner;const c=G.countries[w];const wcl=c&&c.clan!=null?(G.clans||[]).find(x=>x.id===c.clan):null;
   const me=you();const youHeld=w===G.you;const youShared=!!(wcl&&me&&me.clan===wcl.id&&!youHeld);const youWin=youHeld||youShared;
@@ -12470,7 +12470,7 @@ VIEWS.codex=v=>{
     'Capture the central <b>Roma</b> region, build the ruinously expensive <b>Imperial Palace</b>, and hold it for '+NEXUS_HOLD+' ticks to win the season early. If nobody manages that, the season runs an outer clock of '+SEASON_TICKS+' ticks ('+seasonLiveLabel()+' at '+Math.round(TICK_MS/60000)+' minutes per tick) and the nation with the highest <b>overall score</b> wins. Either way there\'s a pre-season lobby, then the world resets so everyone starts equal, this deliberate reset stops any alliance from snowballing into an unbeatable dynasty. Your titles and records are kept in the <b>Hall of Fame</b>. Same rules for everyone, no pay-to-win.')));
   v.appendChild(h(`<div class="card mb" style="border-left:3px solid var(--tech)"><h3>📐 The numbers that matter <span class="muted small" style="text-transform:none;letter-spacing:0">straight from the rules, always current</span></h3>
     <div class="grid g3 mt small">
-      <div><b>Tick</b><br>${isSoloGame()?'Solo: you end each turn yourself (END TURN or Space), or auto-play at 1x / 5x / 20x · season '+SEASON_TICKS+' turns':(Math.round(TICK_MS/60000)>=60?Math.round(TICK_MS/3600000)+' h':Math.round(TICK_MS/60000)+' min')+' per tick in this build · season '+SEASON_TICKS+' ticks ('+seasonLiveLabel()+' live)'}</div>
+      <div><b>Tick</b><br>${isSoloGame()?'Solo: you end each turn yourself (END TURN or Space), or auto-play every 1, 5 or 15 minutes · season '+SEASON_TICKS+' turns':(Math.round(TICK_MS/60000)>=60?Math.round(TICK_MS/3600000)+' h':Math.round(TICK_MS/60000)+' min')+' per tick in this build · season '+SEASON_TICKS+' ticks ('+seasonLiveLabel()+' live)'}</div>
       <div><b>Command Points</b><br>+${cpRegen()} per tick, max ${cpCap()} (large alliances regenerate slower)</div>
       <div><b>Win</b><br>Hold Roma with an Imperial Palace for ${NEXUS_HOLD} ticks · else whoever has the most hold points (a point for every turn holding Roma once it awakens, two in the final ${FINALE_WINDOW} ticks)</div>
       <div><b>Beginner protection</b><br>${NEWBIE_PROTECT} ticks, regions can't be captured; ends early if you attack. Afterwards, Superpowers and the Hegemon still cannot attack you until you strike first.</div>
@@ -13974,6 +13974,15 @@ function p175Expand(c){const A=p7A(c);if(!A.on||!A.exp)return null;if((c.cp||0)<
 {const _so=cmdSetOrders;cmdSetOrders=function(c,cfg){const r=_so.apply(this,arguments);try{if(r&&r.ok&&cfg&&typeof cfg==='object')p7A(c).exp=cfg.exp===true;}catch(e){}return r;};}
 {const _po=p11OrdersOf;p11OrdersOf=function(c){const o=_po.apply(this,arguments);try{o.exp=!!p7A(c).exp;}catch(e){}return o;};}
 {const _rt=runTick;runTick=function(){p175Politics();return _rt.apply(this,arguments);};}
+
+/*p177*/
+// ---- p177 Update 9.8: smarter generals ----
+// Computer nations no longer march into a battle they can see they will lose: an attack whose strength is below the
+// target's defence is called off before it leaves. Before, a quarter of all AI attacks failed and those failures cost
+// more than half of all units the AI lost, so AI armies bled away in hopeless fights against each other.
+const P177_MIN=1.0;
+{const _op=cmdOp;cmdOp=function(c,rid,committed,opts){try{if(c&&c.isAI){const r=_rgId(rid);if(r&&r.owner!==c.id){const com=committed||{};
+  const est=power(c,'atk',com)/Math.max(1,regionDef(r));if(est<P177_MIN){c._p177off=(c._p177off||0)+1;return err('Called off: this force would not break the defence.');}}}}catch(e){}return _op.apply(this,arguments);};}
 
 // ---- BOOT ------------------------------------------------------------------
 // GitHub serves the brochure as index.html and this file as play.html.
@@ -19253,6 +19262,36 @@ let _t=null;function soon(){if(_t)return;_t=setTimeout(()=>{_t=null;calm();calmF
 window.p171Calm=calm;
 if(typeof window.go==='function'){const _g=window.go;window.go=function(){const r=_g.apply(this,arguments);soon();setTimeout(calm,80);return r;};}
 try{const mo=new MutationObserver(()=>soon());const start=()=>{if(document.body)mo.observe(document.body,{childList:true,subtree:true});else setTimeout(start,500);};start();}catch(e){}
+})();
+
+</script>
+<script>/*p177ui*/
+/* p177 Update 9.8, browser only:
+   1. When your army is mostly militia, the next-step advice says so (militia fight at a quarter of their strength in an attack
+      beyond the number of your other troops).
+   2. Live world: a "Before you go" card on Home when nothing is lined up for the hours you are away. */
+(function(){
+if(typeof window==='undefined'||typeof document==='undefined')return;
+function sz(u){let n=0;for(const k in (u||{}))n+=Math.max(0,+u[k]||0);return n;}
+const MIL=(typeof UBYK!=='undefined'&&UBYK.militia&&UBYK.militia.n)||'Militia';
+if(typeof window._p7Next0==='function'){const _n=window._p7Next0;window._p7Next0=function(c){const r=_n.apply(this,arguments);
+  try{if(c&&c.isAI===false&&(!r||(r.sev||0)>=2)){const m=+((c.units||{}).militia)||0;const other=sz(c.units)-m;
+    if(m>=200&&m>2*Math.max(1,other)&&regionsOf(c).length<6){const inf=(typeof UBYK!=='undefined'&&UBYK.infantry&&UBYK.infantry.n)||'infantry';
+      return {sev:2,what:'Your army is mostly '+MIL.toLowerCase(),why:MIL+' guard your home well, but in an attack, '+MIL.toLowerCase()+' beyond the number of your other troops fight at a quarter of their strength. Train '+inf.toLowerCase()+' to conquer.',go:'military',btn:'Train '+inf.toLowerCase()};}}}catch(e){}
+  return r;};}
+function live(){return !!window.__MP__;}
+function planCard(){try{if(!live()||typeof view==='undefined'||view!=='dashboard')return;const v=document.getElementById('view');if(!v||v.querySelector('.p177go'))return;const c=typeof you==='function'?you():null;if(!c)return;
+  const P=(typeof p11B==='function')?p11B(c):[];const A=(typeof p7A==='function')?p7A(c):{};const items=[];
+  if(P.length<2)items.push(['🏗 Line up builds ('+P.length+'/5)','They start by themselves when you can pay, also while you are away.','production']);
+  if(!(A.plan||[]).length&&!(c.rq||[]).length)items.push(['🔬 Plan your research','The next topic starts by itself when the current one is done.','research']);
+  if(!A.on)items.push(['⚙ Turn on standing orders','Scan attacks, bring garrisons home and claim empty land next to you.','military']);
+  if(!items.length)return;
+  const el=document.createElement('div');el.className='card mb p177go';el.style.cssText='border-left:4px solid var(--accent,#5aa0ff);padding:12px 14px';
+  el.innerHTML='<div class="mono small" style="letter-spacing:1.4px;opacity:.8">BEFORE YOU GO</div><div style="font-weight:800;font-size:16px;margin:4px 0 6px">The world moves on every hour. Line up what happens while you are away.</div>'+
+    items.map(([t,d,g])=>'<div class="row between wrap" style="gap:8px;padding:6px 0;border-top:1px solid var(--border)"><span class="small"><b>'+t+'</b> <span class="muted">'+d+'</span></span><button class="btn ghost sm" data-p177="'+g+'">Open</button></div>').join('');
+  const z=v.querySelector('.dash-zone')||v;z.appendChild(el);el.querySelectorAll('[data-p177]').forEach(b=>b.onclick=()=>go(b.dataset.p177));}catch(e){}}
+let t=null;function soon(){if(t)return;t=setTimeout(()=>{t=null;planCard();},60);}
+try{const mo=new MutationObserver(()=>soon());const st=()=>{if(document.body)mo.observe(document.body,{childList:true,subtree:true});else setTimeout(st,500);};st();}catch(e){}
 })();
 
 </script>

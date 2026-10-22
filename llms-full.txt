@@ -2,7 +2,7 @@
 
 > Terrastate is a free, Planetarion-style grand strategy game that runs in the web browser. You lead one nation against 300 AI nations on a world map, form alliances and fight for the Nexus, the one region that decides the season. No account, no download, no ads, no pay-to-win. Romaterra is the same game set in the age of Rome, and Ironfront in Europe at war in 1944. Made by Wim Kamphorst, a hobby developer from the Netherlands.
 
-Current version: 9.7. The game is updated regularly. Language: English. Platforms: any modern browser on desktop or phone; installable and playable offline.
+Current version: 9.8. The game is updated regularly. Language: English. Platforms: any modern browser on desktop or phone; installable and playable offline.
 
 ## Play
 - [Play Terrastate](https://playterrastate.nl/play.html): modern world, alternative 2026, 25 theaters from Europe to Oceania
@@ -30,6 +30,7 @@ Current version: 9.7. The game is updated regularly. Language: English. Platform
 
 ## Good to know
 - Board games (October 2026): each world also has a board game of hidden ranks for one opponent, free in the browser: Hidden Command (https://playterrastate.nl/command/terrastate.html), Veiled Legions (https://playterrastate.nl/command/romaterra.html) and Sealed Orders (https://playterrastate.nl/command/ironfront.html). A 9 by 9 board, armies set up in secret, sealed orders for extra points, four computer commanders on four levels or two players on one screen. About 15 to 30 minutes a battle.
+- Update 9.8 (October 2026), Smarter generals, for Terrastate, Romaterra and Ironfront: computer nations call off attacks they would lose; advice for militia-heavy armies; a before-you-go card in the live world; auto-play every 1, 5 or 15 minutes.
 - Update 9.7 (October 2026), Armies and politics, for Terrastate, Romaterra and Ironfront: militia beyond the number of other troops fight at a quarter of their strength in an attack; computer nations adjust taxes and their national charter and their alliances build wonders; a standing order claims empty land next to you.
 - Update 9.6 (October 2026), Alliances fight as one, for Terrastate, Romaterra and Ironfront: computer alliance members join joint assaults; alliance treasuries pay for troops; a clear world leader draws strikes from whole alliances; in single player on Veteran and Warlord a rival alliance strikes your far regions together and may sabotage your radar and power first. Recruit stays without a rival.
 - Update 9.5 (October 2026), The world pushes back, for Terrastate, Romaterra and Ironfront: computer nations with a full treasury raise armies; far regions get less of the home army as an empire sprawls, so garrisons matter; the nation with clearly the most ground becomes the front-runner; Home shows one next step after Field Training and says when the season is won at the prize.
@@ -126,6 +127,9 @@ Terrastate is inspired by tick-based browser strategy games such as Planetarion,
 
 ### What are the board games?
 Each world has a board game of hidden ranks for one opponent: Hidden Command (Terrastate), Veiled Legions (Romaterra) and Sealed Orders (Ironfront). You set up your army in secret on a 9 by 9 board, and the enemy only sees the backs of your pieces. Play against four computer commanders on four levels, or with two players on one screen. Before the battle you open a sealed order for extra points. A battle takes about 15 to 30 minutes. Free, in the browser, also on a phone.
+
+### What is new in version 9.8?
+Update 9.8 (October 2026), Smarter generals, for Terrastate, Romaterra and Ironfront: computer nations call off attacks they can see they will lose, so their armies last longer; the advice tells you when your army is mostly militia; in the live world Home shows what you can line up before you go; auto-play now runs one turn every 1, 5 or 15 minutes.
 
 ### What is new in version 9.7?
 Update 9.7 (October 2026), Armies and politics, for Terrastate, Romaterra and Ironfront: militia are a home guard, in an attack militia beyond the number of your other troops fight at a quarter of their strength; computer nations raise taxes in calm times, change their national charter in war and peace, and their alliances save up for wonders; a new standing order claims empty land next to you while you are away.
