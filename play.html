@@ -16,7 +16,7 @@
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="https://playterrastate.nl/img/v4/terrastate-share.jpg">
 <meta name="author" content="Wim Kamphorst">
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"VideoGame","@id":"https://playterrastate.nl/play.html#game","name":"Terrastate","url":"https://playterrastate.nl/play.html","description":"Free Planetarion-style grand strategy in your browser. Lead one nation against 300 AI nations on a world map, form alliances and fight for the Nexus. No account, no download, no pay-to-win.","image":"https://playterrastate.nl/img/v4/terrastate-share.jpg","genre":["Strategy","Grand strategy","Turn-based strategy","4X","Browser game"],"gamePlatform":["Web browser","Windows","macOS","Linux","Android","iOS"],"applicationCategory":"Game","operatingSystem":"Any (web browser)","playMode":"SinglePlayer","inLanguage":"en","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"EUR","availability":"https://schema.org/InStock"},"author":{"@type":"Person","@id":"https://playterrastate.nl/#wim","name":"Wim Kamphorst","url":"https://wimkamphorst.nl"},"publisher":{"@type":"Person","@id":"https://playterrastate.nl/#wim","name":"Wim Kamphorst","url":"https://wimkamphorst.nl"},"softwareVersion":"9.9","sameAs":["https://wimkamphorstcoaching.itch.io/terrastate"]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"VideoGame","@id":"https://playterrastate.nl/play.html#game","name":"Terrastate","url":"https://playterrastate.nl/play.html","description":"Free Planetarion-style grand strategy in your browser. Lead one nation against 300 AI nations on a world map, form alliances and fight for the Nexus. No account, no download, no pay-to-win.","image":"https://playterrastate.nl/img/v4/terrastate-share.jpg","genre":["Strategy","Grand strategy","Turn-based strategy","4X","Browser game"],"gamePlatform":["Web browser","Windows","macOS","Linux","Android","iOS"],"applicationCategory":"Game","operatingSystem":"Any (web browser)","playMode":"SinglePlayer","inLanguage":"en","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"EUR","availability":"https://schema.org/InStock"},"author":{"@type":"Person","@id":"https://playterrastate.nl/#wim","name":"Wim Kamphorst","url":"https://wimkamphorst.nl"},"publisher":{"@type":"Person","@id":"https://playterrastate.nl/#wim","name":"Wim Kamphorst","url":"https://wimkamphorst.nl"},"softwareVersion":"10.0","sameAs":["https://wimkamphorstcoaching.itch.io/terrastate"]}</script>
 <link rel="manifest" href="terrastate.webmanifest"><meta name="theme-color" content="#0d1420"><link rel="icon" href="icons/terrastate-64.png"><link rel="apple-touch-icon" href="icons/terrastate-180.png">
 <script>window.__MP_URL__=''; /* '' = live multiplayer not open yet */ if('serviceWorker' in navigator)addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));</script>
 <script data-goatcounter="https://playterrastate.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
@@ -4242,7 +4242,7 @@ function aiDecide(c){
       const nearWin=nxR.commandCenter&&(NEXUS_HOLD-(nxR.ccHeld||0))<=5;
       if(nearWin)return 2;
       return (p.aggression>25||(oc&&warFoes&&warFoes.has(oc.id))||nxR.commandCenter||nxR.ccBuild)?1:0;};
-    let _p6pa;const _dm=new Map();const _cl0=clanOf(c);const _wgC=_cl0?_cl0._wg:null;const _bt=(_cl0&&_cl0._brain)?_cl0._brain.target:null;let _x0=1e9,_x1=-1e9,_y0=1e9,_y1=-1e9;for(const o of rg){if(o.x<_x0)_x0=o.x;if(o.x>_x1)_x1=o.x;if(o.y<_y0)_y0=o.y;if(o.y>_y1)_y1=o.y;}const _sp=r=>{const ow=r.owner;if(ow==null)return false;if(ow===G.you&&grudge>0)return true;if(foc!=null&&ow===foc)return true;if((c._wg&&c._wg[ow])||(_wgC&&_wgC[ow]))return true;const oc=G.countries[ow]?G.countries[ow].clan:null;return oc!=null&&((warFoes&&warFoes.has(oc))||oc===_bt);};const _DT=_aiDist(c,rg);const targets=G.regions.filter((r,_i)=>{if(r.owner===c.id)return false;const bx=r.x<_x0?_x0-r.x:r.x>_x1?r.x-_x1:0,by=r.y<_y0?_y0-r.y:r.y>_y1?r.y-_y1:0;const _lim=r.owner===G.you&&r.owner!=null?420:220;if((bx>=_lim||by>=_lim)&&!r.nexus&&!_sp(r))return false;const _m2=_DT.m2[_i];const _bo=_DT.bi[_i]>=0?_DT.rg[_DT.bi[_i]]:null;if(_m2>=_lim*_lim*1.0001&&!r.nexus&&!_sp(r))return false;const d=_bo?Math.hypot(r.x-_bo.x,r.y-_bo.y):1e9;_dm.set(r.id,d);if(d<_lim||r.nexus)return true;return _sp(r);}).filter(r=>r.owner!==c.id&&!(typeof coldPeaceBlocks==='function'&&coldPeaceBlocks(c,r))&&!sameTheaterAlly(c,r)&&!sameAllianceMember(c,r)&&!napActive(c,r.owner)&&!aiPactBlocks(c,r)&&!fledglingHuman(r.owner)&&(r.nexus||!regionOverwhelmed(r))).map(r=>{let d=_dm.get(r.id);const rev=(grudge>0&&r.owner===G.you)?grudge:0;const over=!rev&&(res[r.id]||0)>=regionDef(r)*1.4;const war=isWarFoe(r);
+    let _p6pa;const _dm=new Map();const _cl0=clanOf(c);const _wgC=_cl0?_cl0._wg:null;const _bt=(_cl0&&_cl0._brain)?_cl0._brain.target:null;let _x0=1e9,_x1=-1e9,_y0=1e9,_y1=-1e9;for(const o of rg){if(o.x<_x0)_x0=o.x;if(o.x>_x1)_x1=o.x;if(o.y<_y0)_y0=o.y;if(o.y>_y1)_y1=o.y;}const _sp=r=>{const ow=r.owner;if(ow==null)return false;if(ow===G.you&&grudge>0)return true;if(foc!=null&&ow===foc)return true;if((c._wg&&c._wg[ow])||(_wgC&&_wgC[ow]))return true;const oc=G.countries[ow]?G.countries[ow].clan:null;return oc!=null&&((warFoes&&warFoes.has(oc))||oc===_bt);};const _DT=_aiDist(c,rg);const targets=G.regions.filter((r,_i)=>{if(r.owner===c.id)return false;if(r._p183s&&r.owner==null&&G.tick<120)return false;const bx=r.x<_x0?_x0-r.x:r.x>_x1?r.x-_x1:0,by=r.y<_y0?_y0-r.y:r.y>_y1?r.y-_y1:0;const _lim=r.owner===G.you&&r.owner!=null?420:220;if((bx>=_lim||by>=_lim)&&!r.nexus&&!_sp(r))return false;const _m2=_DT.m2[_i];const _bo=_DT.bi[_i]>=0?_DT.rg[_DT.bi[_i]]:null;if(_m2>=_lim*_lim*1.0001&&!r.nexus&&!_sp(r))return false;const d=_bo?Math.hypot(r.x-_bo.x,r.y-_bo.y):1e9;_dm.set(r.id,d);if(d<_lim||r.nexus)return true;return _sp(r);}).filter(r=>r.owner!==c.id&&!(typeof coldPeaceBlocks==='function'&&coldPeaceBlocks(c,r))&&!sameTheaterAlly(c,r)&&!sameAllianceMember(c,r)&&!napActive(c,r.owner)&&!aiPactBlocks(c,r)&&!fledglingHuman(r.owner)&&(r.nexus||!regionOverwhelmed(r))).map(r=>{let d=_dm.get(r.id);const rev=(grudge>0&&r.owner===G.you)?grudge:0;const over=!rev&&(res[r.id]||0)>=regionDef(r)*1.4;const war=isWarFoe(r);
       // At war, a warring alliance hunts the enemy's ground first, distance matters far less, so wars are actually fought (beta finding: wars stalemated because members never met).
       const rc=race(r);const hum=((SOLO_DIFF.humBias&&r.owner===G.you&&G.countries[G.you]&&G.countries[G.you].isAI===false)?SOLO_DIFF.humBias:0)+(typeof rivalBias==='function'?rivalBias(c,r):0); // v3.31 solo difficulty
       const _kd=aiKnownDef(c,r);const bf=brainFocusBonus(c,r)+worldBias(c,r);return {r,d:war||rc||bf?d*0.4:d,margin:(_p6pa===undefined?(_p6pa=power(c,'atk')):_p6pa)/Math.max(1,_kd==null?aiGuessDef(c,r):_kd),unk:_kd==null,rev,over:over&&!rc,foc:(foc!=null&&r.owner===foc)?1:0,war,rc,hum,bf};})
@@ -7935,9 +7935,9 @@ function renderLanding(){
       <a class="card" href="updates.html" target="_self" rel="noopener" style="display:block;text-decoration:none;color:inherit;margin:0 auto">
         <div class="row between wrap" style="gap:10px;align-items:center">
           <div style="min-width:0;flex:1">
-            <div><span class="mono" style="color:var(--gold);font-size:11px;letter-spacing:1px">UPDATE 9.9 · FAIR FIGHTS</span> <span class="muted small">October 2026</span></div>
-            <div style="font-weight:700;margin-top:3px">Update 9.9: Fair fights</div>
-            <div class="muted small mt">Update 9.9 keeps the fights fair. A huge home guard of cheap troops now costs extra upkeep, alliances only lead or join a joint strike they can win, and on Veteran and Warlord the spies of your rival alliance may act between strikes too. The Field Manual explains the newer rules. Small border probes from your neighbours are back. In the live world there is a daily order with a small reward. Update 9.8 gave the rival nations smarter generals.</div>
+            <div><span class="mono" style="color:var(--gold);font-size:11px;letter-spacing:1px">UPDATE 10.0 · CLEAR START</span> <span class="muted small">October 2026</span></div>
+            <div style="font-weight:700;margin-top:3px">Update 10.0: Clear start</div>
+            <div class="muted small mt">Update 10.0 makes the start quicker and calmer. Your first task is a real attack: three empty regions next to you are lightly guarded, so you can take land in your first turns. Six menus to start with, the rest under More menus. No more empty messages after every turn, and world news only shows what happens around you. Update 9.9 made the fights fair.</div>
           </div>
           <span class="btn ghost sm" style="flex:none;pointer-events:none">What is new</span>
         </div>
@@ -8005,7 +8005,7 @@ function renderLanding(){
   {const b=s.querySelector('#lpNews');if(b)b.onclick=()=>{const t=s.querySelector('#playerupdate');if(t)t.scrollIntoView({behavior:'smooth',block:'center'});};}
 }
 // ---- Legal identity: ONE place to change the operator / contact / copyright holder. Used by the Privacy, Terms and Credits tabs and the footer.
-const LEGAL={operator:'Wim Kamphorst',email:'wimkamphorst.coaching@gmail.com',author:'Wim Kamphorst',country:'the Netherlands',law:'Dutch law',dpa:'Autoriteit Persoonsgegevens (the Dutch data protection authority)',dpaUrl:'https://www.autoriteitpersoonsgegevens.nl',version:'1.1',updated:'October 2026',build:'Update 9.9 · Oct 2026',minAge:16};
+const LEGAL={operator:'Wim Kamphorst',email:'wimkamphorst.coaching@gmail.com',author:'Wim Kamphorst',country:'the Netherlands',law:'Dutch law',dpa:'Autoriteit Persoonsgegevens (the Dutch data protection authority)',dpaUrl:'https://www.autoriteitpersoonsgegevens.nl',version:'1.1',updated:'October 2026',build:'Update 10.0 · Oct 2026',minAge:16};
 LEGAL.contact=`<b>${LEGAL.operator}</b>, <a href="mailto:${LEGAL.email}">${LEGAL.email}</a>`;
 // ---- Landing-page manual: beginner's handbook + combat formulae -------------
 const MANUAL={
@@ -19013,6 +19013,156 @@ try{const mo=new MutationObserver(()=>soon());const st=()=>{if(document.body)mo.
   }catch(e){}}
   try{const mo=new MutationObserver(()=>{p182Tick();try{if(typeof G!=='undefined'&&G&&typeof you==='function'&&you()&&!document.getElementById('wnext'))mo.disconnect();}catch(e){}});mo.observe(document.documentElement,{childList:true,subtree:true});}catch(e){}
   setTimeout(p182Tick,300);
+})();
+
+</script>
+<script>/*p183*/
+// ===== p183 · Update 10.0 "Clear start" (solo) =====
+// A. A real first win: the three nearest empty regions start lightly held, so turn 1 can already take land.
+//    The AI leaves them alone for a while (source edit in aiDecide targets).
+// B. Fewer menus: six core menus, the rest behind "More menus". Remembered per browser.
+// C. Less noise: no empty tick toasts, no 20-turn pop-up, world news only about you and your neighbours,
+//    fewer unprompted messages from AI nations.
+// D. Shorter, plainer texts. No long dashes on screen.
+(function(){
+if(typeof window==='undefined'||window.__MP__)return;
+const SOLO=()=>{try{return typeof isSoloGame!=='function'||isSoloGame();}catch(e){return true;}};
+const ME=()=>{try{return typeof you==='function'?you():null;}catch(e){return null;}};
+
+// ---------- A. soft frontier ----------
+const SOFT=[0.4,3,7];
+function p183Home(c){try{return (typeof homeRegionOf==='function'&&homeRegionOf(c))||regionsOf(c)[0];}catch(e){return null;}}
+function p183Setup(){try{
+  if(typeof G==='undefined'||!G||!G.regions||G._p183)return;const app=document.getElementById('app');if(!app||!app.classList.contains('on'))return;const c=ME();if(!c||c.isAI!==false)return;
+  G._p183=1;if(G.tick>2||!SOLO())return;
+  const home=p183Home(c);if(!home)return;const nx=new Set([G.nexusId].concat(G.nexusIds||[]));
+  const a0=Math.max(60,power(c,'atk'));
+  const cand=G.regions.filter(r=>r.owner==null&&!r.nexus&&!nx.has(r.id)).map(r=>{let t=99;try{const hm=(typeof homeFor==='function'&&homeFor(c,r))||home;t=travelFor(c,hm,r);}catch(e){}return {r,t,d:Math.hypot((r.x||0)-(home.x||0),(r.y||0)-(home.y||0))};})
+    .sort((a,b)=>a.t-b.t||a.d-b.d).slice(0,SOFT.length);
+  cand.forEach((x,i)=>{const full=_p183orig(x.r);x.r._p183s=Math.max(20,Math.min(full,Math.round(a0*SOFT[i])));});
+  try{if(typeof _defCache!=='undefined'&&_defCache&&_defCache.clear)_defCache.clear();}catch(e){}
+}catch(e){console.error('p183 setup',e);}}
+const _p183orig=_regionDef;
+_regionDef=function(r){const d=_p183orig(r);if(r&&r._p183s&&r.owner==null&&G.tick<200)return Math.min(d,r._p183s);return d;};
+function p183First(c){const s=G.regions.filter(r=>r._p183s&&r.owner==null).sort((a,b)=>a._p183s-b._p183s);
+  const mine=(c.fleets||[]).filter(f=>f&&f.status!=='done').map(f=>f.target);return s.find(r=>!mine.includes(r.id))||s[0]||null;}
+window.p183First=p183First;
+if(typeof garrisonUnits==='function'){const _gu=garrisonUnits;garrisonUnits=function(r){const g=_gu.apply(this,arguments);try{if(r&&r._p183s&&r.owner==null&&G.tick<200&&g){const full=_p183orig(r);const f=Math.min(1,r._p183s/Math.max(1,full));if(f<1){const o={};for(const k in g){o[k]=Math.max(k==='militia'||k==='infantry'?1:0,Math.round((g[k]||0)*f));}return o;}}}catch(e){}return g;};}
+
+// ---------- training: the first battle is real ----------
+try{if(typeof TRAIN_TASKS!=='undefined'){
+  const T=k=>TRAIN_TASKS.find(x=>x.k===k);
+  const dr=T('drill'),rs=T('research'),bd=T('build'),ar=T('army'),et=T('endturn');
+  if(dr){dr.t='Take your first land';dr.btn='Attack';
+    Object.defineProperty(dr,'d',{configurable:true,get(){const c=ME();const r=c&&p183First(c);return r?(r.name+' next to you is empty and lightly guarded. Send your army and take it.'):'Send your army to take empty land next to you.';}});
+    dr.ok=c=>!!c._train.drill||regionsOf(c).length>1;}
+  if(rs){rs.d='Pick any project in R&D. It makes your army or your economy stronger.';}
+  if(bd){bd.d='Pick any building in Production. It is ready in a few turns.';}
+  if(ar){ar.t='Train troops';ar.d='More troops means bigger targets. Open Armed Forces and train a batch.';}
+  if(et){et.t='End your turn';et.d='Press END TURN. Everything moves one step: your army marches, buildings grow.';
+    et.ok=c=>(!!c._train.drill||regionsOf(c).length>1)&&G.tick>c._train.t0;}
+  if(dr){const i=TRAIN_TASKS.indexOf(dr);TRAIN_TASKS.splice(i,1);TRAIN_TASKS.unshift(dr);}
+}}catch(e){console.error('p183 train',e);}
+const _p183drill=typeof trainDrill==='function'?trainDrill:null;
+trainDrill=function(){const c=ME();if(!c)return;const r=p183First(c);
+  if(!r||!SOLO()){return _p183drill&&_p183drill();}
+  const com={};for(const k in (c.units||{})){if((c.units[k]||0)>0)com[k]=c.units[k];}
+  let res=null;try{res=cmdOp(c,r.id,com,{});}catch(e){res={ok:false,error:String(e)};}
+  if(res&&res.ok){if(c._train)c._train.drill={tick:G.tick,real:1};
+    const eta=(res.data&&res.data.land!=null)?Math.max(1,res.data.land-G.tick):null;
+    try{toast('⚔ Your army marches to '+r.name+(eta?'. It arrives in '+eta+' turn'+(eta===1?'':'s')+'.':'.'),'good');sfx('ok');}catch(e){}
+    try{save();}catch(e){}try{go(view);}catch(e){}}
+  else{try{toast((res&&res.error)||'Your army cannot march right now.','warn');}catch(e){}if(_p183drill)_p183drill();}};
+
+// ---------- B. fewer menus ----------
+const CORE=['dashboard','map','around','military','production','research'];
+function p183Pref(){try{return localStorage.getItem('p183menus');}catch(e){return null;}}
+function p183SetPref(v){try{localStorage.setItem('p183menus',v);}catch(e){}}
+function p183Simple(){const p=p183Pref();if(p==='all')return false;if(p==='simple')return true;try{return !(G&&G.tick>100);}catch(e){return true;}}
+const css=document.createElement('style');
+css.textContent='body.p183s #side .navsec{display:none!important}'+
+  'body.p183s #side .nav[data-k]:not(.p183k){display:none!important}'+
+  '.p183more{display:flex;align-items:center;gap:10px;margin:10px 8px 4px;padding:9px 12px;border:1px dashed var(--border2,#334);border-radius:10px;color:var(--muted,#9ab);cursor:pointer;font-size:13px;user-select:none}'+
+  '.p183more:hover{color:var(--text,#fff);border-color:var(--accent,#4af)}'+
+  '.solo-lesson{display:none!important}';
+document.head.appendChild(css);
+function p183Menus(){try{const side=document.getElementById('side');if(!side)return;const simple=p183Simple();
+  document.body.classList.toggle('p183s',simple);
+  let hidden=0;side.querySelectorAll('.nav[data-k]').forEach(n=>{const k=n.dataset.k;let keep=CORE.includes(k)||(typeof view!=='undefined'&&view===k);
+    if(!keep){const b=n.querySelector('.badge');if(b&&b.style.display!=='none'&&k==='self')keep=true;}
+    n.classList.toggle('p183k',keep);if(!keep)hidden++;});
+  let m=side.querySelector('.p183more');if(!m){m=document.createElement('div');m.className='p183more';m.onclick=e=>{e.stopPropagation();p183SetPref(p183Simple()?'all':'simple');p183Menus();};
+    const nv=side.querySelectorAll('.nav[data-k]');const last=nv[nv.length-1];if(last)last.insertAdjacentElement('afterend',m);else side.appendChild(m);}
+  m.textContent=simple?('▸ More menus ('+hidden+')'):'▾ Fewer menus';
+}catch(e){}}
+window.p183Menus=p183Menus;
+
+// ---------- C. less noise ----------
+if(typeof toast==='function'){const _t=toast;toast=function(msg,kind){try{const s=String(msg||'');
+    if(/^World tick #\d+ processed$/.test(s))return;
+    if(/^Tick #\d+ processed/.test(s))return;
+    if(/^Tick #\d+: CP full$/.test(s))return;
+    if(/^Tick #\d+: /.test(s)){msg=s.replace(/ · CP full|CP full · /,'');}
+    if(/^💡/.test(s)&&p183Simple())return;
+  }catch(e){}return _t.apply(this,[msg].concat([].slice.call(arguments,1)));};}
+if(typeof showPulse==='function'){const _sp=showPulse;showPulse=function(title,body){if(title==='A small reckoning')return false;return _sp.apply(this,arguments);};}
+// world news: only about you, your alliance or your theater; the rest folds into one line per turn
+function p183Mine(head){try{const c=ME();if(!c)return true;const h=String(head||'');if(h.includes(c.name)||(c.tag&&h.includes('['+c.tag+']')))return true;
+  const cl=typeof clanOf==='function'?clanOf(c):null;if(cl&&(h.includes(cl.name)||(cl.tag&&h.includes(cl.tag))))return true;
+  const n=typeof nexus==='function'?nexus():null;if(n&&h.includes(n.name))return true;return false;}catch(e){return true;}}
+if(typeof news==='function'){const _n=news;news=function(cat,head){try{if(SOLO()&&G.tick>0){const h=String(head||'');
+    const war=cat==='war'&&/declared WAR on|is at war with/.test(h);const dip=cat==='diplomacy';
+    const mass=/is massing a coordinated assault on the Nexus/.test(h);
+    let far=false;if(cat==='territory'&&/ captured /.test(h)){const m=/\((\d+):\d+:\d+\)\.?$/.exec(h);const hm=p183Home(ME());if(m&&hm&&hm.cluster!=null&&String(hm.cluster)!==m[1])far=true;}
+    if((war||dip||mass||far)&&!p183Mine(h)){const k='el|'+G.tick;let it=(G.news||[]).find(x=>x&&x._p183===k);
+      if(!it){_n.call(this,'world','');it=G.news[0];it._p183=k;it.w=0;it.p=0;}
+      if(war)it.w++;else if(mass)it.m=(it.m||0)+1;else if(far)it.c=(it.c||0)+1;else it.p++;
+      const bits=[];if(it.w)bits.push(it.w+' new war'+(it.w>1?'s':''));if(it.p)bits.push(it.p+' new pact'+(it.p>1?'s':''));if(it.c)bits.push(it.c+' region'+(it.c>1?'s':'')+' changed hands');if(it.m)bits.push(it.m+' alliance'+(it.m>1?'s':'')+' preparing a Nexus attack');
+      it.head='Elsewhere this turn: '+bits.join(', ')+'.';return;}}}catch(e){}
+  return _n.apply(this,arguments);};}
+// sitrep: shorter AI lines, no long dashes
+if(typeof sitrep==='function'){const _s=sitrep;sitrep=function(c,cls,head,opts){try{head=p183Txt(String(head||''));}catch(e){}return _s.call(this,c,cls,head,opts);};}
+// AI nations: at most one unprompted message every 20 turns, none in the first 6 turns
+function p183Mail(){try{const c=ME();if(!c||!c.mail)return;const seen=c.mail.filter(m=>m&&!m._p183v);seen.forEach(m=>{m._p183v=1;});const fresh=seen.filter(m=>!m.mine&&m.kind==='direct'&&G.tick-(m.tick||0)<=1&&!m.offer);if(!fresh.length)return;
+  const asked=id=>c.mail.some(m=>m&&m.mine&&m.peerId===id&&G.tick-m.tick<=12);
+  const drop=[];fresh.forEach(m=>{if(asked(m.peerId))return;const ok=G.tick>=6&&G.tick-(c._p183mail==null?-99:c._p183mail)>=20;if(ok){c._p183mail=G.tick;}else drop.push(m);});
+  if(!drop.length)return;c.mail=c.mail.filter(m=>!drop.includes(m));
+  const names=drop.map(m=>'✉ Message from '+m.peerName);if(c.sitrep)c.sitrep=c.sitrep.filter(s=>!(s&&G.tick-(s.tick||0)<=1&&names.some(n=>String(s.head||'').startsWith(n))));
+  try{if(typeof refreshBadges==='function')refreshBadges();}catch(e){}}catch(e){}}
+
+// ---------- D. plainer texts ----------
+const RX=[
+  [/ — /g,', '],[/—/g,', '],
+  [/The first attack you launch drops it\./g,'Attacking another nation drops it. Taking empty land does not.'],
+  [/; if nobody holds it 12 turns, whoever held it longest wins/g,''],
+  [/ against hundreds of fair AI rivals\. The world advances on a shared tick\. No real governments or events\./g,'. Pick a name, or press Play now and start right away.'],
+  [/has marked you as a rival/g,'sees you as a threat'],
+  [/Training skipped\. Every menu is open\./g,'Training skipped.'],
+];
+function p183Txt(s){for(const [a,b] of RX)s=s.replace(a,b);return s;}
+window.p183Txt=p183Txt;
+const SKIP={SCRIPT:1,STYLE:1,TEXTAREA:1,INPUT:1,svg:1,SVG:1,CANVAS:1};
+function p183Walk(root){try{if(!root)return;if(root.nodeType===3){const v=root.nodeValue;if(v&&(v.indexOf('—')>=0||v.indexOf('fair AI')>=0||v.indexOf('first attack you')>=0||v.indexOf('whoever held')>=0||v.indexOf('marked you')>=0)){const n=p183Txt(v);if(n!==v)root.nodeValue=n;}return;}
+  if(root.nodeType!==1||SKIP[root.nodeName])return;const w=document.createTreeWalker(root,NodeFilter.SHOW_TEXT,{acceptNode:n=>{const p=n.parentNode;return p&&SKIP[p.nodeName]?2:1;}});
+  let n;const L=[];while((n=w.nextNode()))L.push(n);L.forEach(p183Walk);}catch(e){}}
+let _q=new Set(),_raf=0;
+const mo=new MutationObserver(ms=>{for(const m of ms){m.addedNodes.forEach(n=>_q.add(n));}if(!_raf)_raf=requestAnimationFrame(()=>{_raf=0;const q=_q;_q=new Set();q.forEach(n=>{if(n.isConnected!==false)p183Walk(n);});p183Intro();});});
+function p183Intro(){try{const m=[...document.querySelectorAll('.modal-bg .modal')].find(x=>/Learn by doing/.test(x.textContent));if(!m||m._p183)return;m._p183=1;
+  const tag=m.querySelector('.mono');if(tag)tag.textContent='WELCOME';const h2=m.querySelector('h2');if(h2)h2.textContent='Five quick tasks, then you are playing';
+  const ps=m.querySelectorAll('p');if(ps[0])ps[0].innerHTML='First you <b>take a piece of empty land</b> next to you, for real. Then research, build and train. About three minutes.';
+  if(ps[1])ps[1].innerHTML='Each time you press <b>END TURN</b>, the whole world moves one step.';}catch(e){}}
+
+if(typeof onboardSteps==='function'){const _ob=onboardSteps;onboardSteps=function(c){const L=_ob.apply(this,arguments);try{if(SOLO()&&Array.isArray(L)&&G.regions.some(r=>r._p183s)){const r=p183First(c);
+  L.unshift({k:'p183land',label:'Take your first land',why:(r?r.name+' next to you is empty and lightly guarded.':'Empty land next to you is lightly guarded.')+' Send your army from Nearby.',cta:'Nearby',go:'around',done:regionsOf(c).length>1||(c.fleets||[]).some(f=>f&&f.status!=='done')||G.tick>40});}}catch(e){}return L;};}
+function p183Quiet(){try{if(!p183Simple())return;document.querySelectorAll('.p7digest').forEach(e=>{e.style.display=/nothing coming at you/.test(e.textContent)&&!/battle|captured|lost/i.test(e.textContent)?'none':'';});}catch(e){}}
+// ---------- hooks ----------
+if(typeof go==='function'){const _g=go;go=function(){const r=_g.apply(this,arguments);try{p183Menus();p183Quiet();}catch(e){}return r;};}
+if(typeof runTick==='function'){const _rt=runTick;runTick=function(){const r=_rt.apply(this,arguments);try{if(SOLO())p183Mail();}catch(e){}return r;};}
+function boot(){try{mo.observe(document.body,{childList:true,subtree:true});}catch(e){}
+  setInterval(()=>{try{p183Setup();if(SOLO())p183Mail();}catch(e){}},400);
+  setInterval(()=>{try{p183Menus();}catch(e){}},1500);
+  try{p183Walk(document.body);}catch(e){}}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot);else boot();
 })();
 
 </script>
