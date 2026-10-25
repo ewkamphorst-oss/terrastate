@@ -7944,7 +7944,7 @@ function renderLanding(){
           <div style="min-width:0;flex:1">
             <div><span class="mono" style="color:var(--gold);font-size:11px;letter-spacing:1px">UPDATE 10.0 · CLEAR START</span> <span class="muted small">October 2026</span></div>
             <div style="font-weight:700;margin-top:3px">Update 10.0: Clear start</div>
-            <div class="muted small mt">Update 10.0 makes the start quicker and calmer. Your first task is a real attack: three empty regions next to you are lightly guarded, so you can take land in your first turns. Six menus to start with, the rest under More menus. No more empty messages after every turn, and world news only shows what happens around you. Update 9.9 made the fights fair.</div>
+            <div class="muted small mt">Update 10.0 makes the start quicker and calmer. Your first task is a real attack: three empty regions next to you are lightly guarded, so you can take land in your first turns. Six menus to start with, the rest under More menus. No more empty messages after every turn, and world news only shows what happens around you. The world now moves by what nations do, not by what they say: no invented chatter, wars that last, peace that holds for a while, and Around you on Home shows the marches, retreats, captures, wars and pacts in your part of the world. Fewer choice events, one rival who is replaced when they fall, and one word for one thing: a turn. Update 9.9 made the fights fair.</div>
           </div>
           <span class="btn ghost sm" style="flex:none;pointer-events:none">What is new</span>
         </div>
@@ -19429,6 +19429,7 @@ _regionDef=function(r){const d=_p183orig(r);if(r&&r._p183s&&r.owner==null&&G.tic
 function p183First(c){const s=G.regions.filter(r=>r._p183s&&r.owner==null).sort((a,b)=>a._p183s-b._p183s);
   const mine=(c.fleets||[]).filter(f=>f&&f.status!=='done').map(f=>f.target);return s.find(r=>!mine.includes(r.id))||s[0]||null;}
 window.p183First=p183First;
+if(typeof cmdOp==='function'){const _op=cmdOp;cmdOp=function(c,rid){try{if(c&&c.isAI&&SOLO()&&G.tick<120){const r=_rgId(rid);if(r&&r._p183s&&r.owner==null)return err('Reserved');}}catch(e){}return _op.apply(this,arguments);};}
 if(typeof garrisonUnits==='function'){const _gu=garrisonUnits;garrisonUnits=function(r){const g=_gu.apply(this,arguments);try{if(r&&r._p183s&&r.owner==null&&G.tick<200&&g){const full=_p183orig(r);const f=Math.min(1,r._p183s/Math.max(1,full));if(f<1){const o={};for(const k in g){o[k]=Math.max(k==='militia'||k==='infantry'?1:0,Math.round((g[k]||0)*f));}return o;}}}catch(e){}return g;};}
 
 // ---------- training: the first battle is real ----------
@@ -19489,7 +19490,7 @@ if(typeof toast==='function'){const _t=toast;toast=function(msg,kind){try{const 
   }catch(e){}return _t.apply(this,[msg].concat([].slice.call(arguments,1)));};}
 if(typeof showPulse==='function'){const _sp=showPulse;showPulse=function(title,body){if(title==='A small reckoning')return false;return _sp.apply(this,arguments);};}
 // world news: only about you, your alliance or your theater; the rest folds into one line per turn
-function p183Mine(head){try{const c=ME();if(!c)return true;const h=String(head||'');if(h.includes(c.name)||(c.tag&&h.includes('['+c.tag+']')))return true;
+function p183Mine(head){try{const c=ME();if(!c)return true;const h=String(head||'');if(window.p185Near&&window.p185Near(h))return true;if(h.includes(c.name)||(c.tag&&h.includes('['+c.tag+']')))return true;
   const cl=typeof clanOf==='function'?clanOf(c):null;if(cl&&(h.includes(cl.name)||(cl.tag&&h.includes(cl.tag))))return true;
   const n=typeof nexus==='function'?nexus():null;if(n&&h.includes(n.name))return true;return false;}catch(e){return true;}}
 if(typeof news==='function'){const _n=news;news=function(cat,head){try{if(SOLO()&&G.tick>0){const h=String(head||'');
@@ -19507,7 +19508,7 @@ if(typeof sitrep==='function'){const _s=sitrep;sitrep=function(c,cls,head,opts){
 // AI nations: at most one unprompted message every 20 turns, none in the first 6 turns
 function p183Mail(){try{const c=ME();if(!c||!c.mail)return;const seen=c.mail.filter(m=>m&&!m._p183v);seen.forEach(m=>{m._p183v=1;});const fresh=seen.filter(m=>!m.mine&&m.kind==='direct'&&G.tick-(m.tick||0)<=1&&!m.offer);if(!fresh.length)return;
   const asked=id=>c.mail.some(m=>m&&m.mine&&m.peerId===id&&G.tick-m.tick<=12);
-  const drop=[];fresh.forEach(m=>{if(asked(m.peerId))return;const ok=G.tick>=6&&G.tick-(c._p183mail==null?-99:c._p183mail)>=20;if(ok){c._p183mail=G.tick;}else drop.push(m);});
+  const drop=[];fresh.forEach(m=>{if(asked(m.peerId)||m.peerId===G._rival)return;const ok=G.tick>=6&&G.tick-(c._p183mail==null?-99:c._p183mail)>=20;if(ok){c._p183mail=G.tick;}else drop.push(m);});
   if(!drop.length)return;c.mail=c.mail.filter(m=>!drop.includes(m));
   const names=drop.map(m=>'✉ Message from '+m.peerName);if(c.sitrep)c.sitrep=c.sitrep.filter(s=>!(s&&G.tick-(s.tick||0)<=1&&names.some(n=>String(s.head||'').startsWith(n))));
   try{if(typeof refreshBadges==='function')refreshBadges();}catch(e){}}catch(e){}}
@@ -19518,13 +19519,18 @@ const RX=[
   [/The first attack you launch drops it\./g,'Attacking another nation drops it. Taking empty land does not.'],
   [/; if nobody holds it 12 turns, whoever held it longest wins/g,''],
   [/ against hundreds of fair AI rivals\. The world advances on a shared tick\. No real governments or events\./g,'. Pick a name, or press Play now and start right away.'],
-  [/has marked you as a rival/g,'sees you as a threat'],
+  [/ has marked you as a rival/g,' is now your rival'],
   [/Training skipped\. Every menu is open\./g,'Training skipped.'],
+  // one word for one thing: a turn
+  [/TURN tick #(\d+)/g,'TURN $1'],[/One turn is one tick:? ?/g,''],[/One turn is one <b>tick<\/b>:? ?/g,''],
+  [/\bticks\b/g,'turns'],[/\btick\b/g,'turn'],[/\bTicks\b/g,'Turns'],[/\bTick\b/g,'Turn'],[/\bTICKS\b/g,'TURNS'],[/\bTICK\b/g,'TURN'],
+  [/\b([Tt]urn) #(\d+)/g,'$1 $2'],[/\bturns? \(one turn\)/g,'turn'],[/\bturn-based/g,'turn-based'],
 ];
 function p183Txt(s){for(const [a,b] of RX)s=s.replace(a,b);return s;}
 window.p183Txt=p183Txt;
 const SKIP={SCRIPT:1,STYLE:1,TEXTAREA:1,INPUT:1,svg:1,SVG:1,CANVAS:1};
-function p183Walk(root){try{if(!root)return;if(root.nodeType===3){const v=root.nodeValue;if(v&&(v.indexOf('—')>=0||v.indexOf('fair AI')>=0||v.indexOf('first attack you')>=0||v.indexOf('whoever held')>=0||v.indexOf('marked you')>=0)){const n=p183Txt(v);if(n!==v)root.nodeValue=n;}return;}
+const TRIG=/—|fair AI|first attack you|whoever held|marked you|tick|Tick|TICK|Training skipped/;
+function p183Walk(root){try{if(!root)return;if(root.nodeType===3){const v=root.nodeValue;if(v&&root.parentNode&&root.parentNode.id==='ticknow'){const n=v.replace(/^tick #/,'');if(n!==v)root.nodeValue=n;return;}if(v&&TRIG.test(v)){const n=p183Txt(v);if(n!==v)root.nodeValue=n;}return;}
   if(root.nodeType!==1||SKIP[root.nodeName])return;const w=document.createTreeWalker(root,NodeFilter.SHOW_TEXT,{acceptNode:n=>{const p=n.parentNode;return p&&SKIP[p.nodeName]?2:1;}});
   let n;const L=[];while((n=w.nextNode()))L.push(n);L.forEach(p183Walk);}catch(e){}}
 let _q=new Set(),_raf=0;
@@ -19537,14 +19543,124 @@ function p183Intro(){try{const m=[...document.querySelectorAll('.modal-bg .modal
 if(typeof onboardSteps==='function'){const _ob=onboardSteps;onboardSteps=function(c){const L=_ob.apply(this,arguments);try{if(SOLO()&&Array.isArray(L)&&G.regions.some(r=>r._p183s)){const r=p183First(c);
   L.unshift({k:'p183land',label:'Take your first land',why:(r?r.name+' next to you is empty and lightly guarded.':'Empty land next to you is lightly guarded.')+' Send your army from Nearby.',cta:'Nearby',go:'around',done:regionsOf(c).length>1||(c.fleets||[]).some(f=>f&&f.status!=='done')||G.tick>40});}}catch(e){}return L;};}
 function p183Quiet(){try{if(!p183Simple())return;document.querySelectorAll('.p7digest').forEach(e=>{e.style.display=/nothing coming at you/.test(e.textContent)&&!/battle|captured|lost/i.test(e.textContent)?'none':'';});}catch(e){}}
+// season goal in plain words
+if(typeof nexusLine==='function'){const _nl=nexusLine;nexusLine=function(compact){let h=_nl.apply(this,arguments);try{if(!compact&&typeof h==='string'&&h.indexOf('SEASON GOAL')>=0){
+  h=h.replace(/<b>🏛 SEASON GOAL<\/b> · ([^<]*?) (<[\s\S]*?)<b>([^<]*)<\/b> · held by /,'<b>🏛 Your goal:</b> take and hold <b>$3</b> $2· now held by ');
+  h=h.replace(/([A-Z][A-Za-z ]+?) unlocks at tick #(\d+)/,'you can build the $1 there from turn $2');
+  h=h.replace(/held (\d+)\/(\d+) ticks/,'held $1 of $2 turns');}}catch(e){}return h;};}
+// after each turn: fewer choice events, and a fallen rival is replaced
+function p183After(){try{if(!SOLO())return;
+  if(G._nextEvent!=null&&G._nextEvent!==G._p183ne){const t0=(G.season&&G.season.startTick)||0;let n=G.tick+Math.max(G._nextEvent-G.tick,14+Math.floor(Math.random()*7));if(n<t0+20)n=t0+20+Math.floor(Math.random()*4);G._nextEvent=n;G._p183ne=n;}
+  if(G._rival!=null&&typeof rivalOf==='function'&&!rivalOf()){const me=ME();const old=G.countries[G._rival];G._rival=null;
+    if(me&&old)sitrep(me,'intel','⚔ Your rival '+leaderName(old)+' of '+old.name+' has fallen. Someone new will take their place.',{go:'dashboard'});}
+}catch(e){}}
 // ---------- hooks ----------
 if(typeof go==='function'){const _g=go;go=function(){const r=_g.apply(this,arguments);try{p183Menus();p183Quiet();}catch(e){}return r;};}
-if(typeof runTick==='function'){const _rt=runTick;runTick=function(){const r=_rt.apply(this,arguments);try{if(SOLO())p183Mail();}catch(e){}return r;};}
+if(typeof runTick==='function'){const _rt=runTick;runTick=function(){const r=_rt.apply(this,arguments);try{if(SOLO()){p183Mail();p183After();}}catch(e){}return r;};}
 function boot(){try{mo.observe(document.body,{childList:true,subtree:true});}catch(e){}
   setInterval(()=>{try{p183Setup();if(SOLO())p183Mail();}catch(e){}},400);
   setInterval(()=>{try{p183Menus();}catch(e){}},1500);
   try{p183Walk(document.body);}catch(e){}}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot);else boot();
+})();
+
+</script>
+<script>/*p185*/
+// ===== p185 · Update 10.0 "Clear start", part 2: a living world (solo) =====
+// The world moves by what nations DO, not by what they say.
+// A. No fake chatter: no invented forum posts, no theater chat from AI nations, no AI talk inside alliances you are not in,
+//    and only world events that really change something (prices, unrest).
+// B. Steadier diplomacy: wars last, a peace holds for a while, no pile-ons of five alliances on one target in one turn.
+// C. You see the world move around you: a short "Around you" list on Home with real actions in your theater:
+//    marches, called-off attacks, retreats, captures, wars, peace, pacts, nations joining or leaving alliances.
+(function(){
+if(typeof window==='undefined'||window.__MP__)return;
+const SOLO=()=>{try{return typeof isSoloGame!=='function'||isSoloGame();}catch(e){return true;}};
+const ME=()=>{try{return typeof you==='function'?you():null;}catch(e){return null;}};
+const W=(n,fn)=>{try{if(typeof window[n]==='function')window[n]=fn(window[n]);}catch(e){}};
+
+// ---------- neighbourhood ----------
+let _nb=null;
+function NB(){const me=ME();if(!me||typeof G==='undefined'||!G)return null;if(_nb&&_nb.t===G.tick&&_nb.me===me.id)return _nb;
+  let hc=null;try{hc=homeCluster(me);}catch(e){}const cs=new Set(),cl=new Set(),names=[],cc={};
+  G.countries.forEach(c=>{if(!c||c.retired)return;let h=null;try{h=homeCluster(c);}catch(e){}if(h!=null&&h===hc&&c.id!==me.id){cs.add(c.id);names.push(c.name);if(c.clan!=null)cc[c.clan]=(cc[c.clan]||0)+1;}});
+  for(const k in cc){if(cc[k]>=2)cl.add(+k);}
+  if(me.clan!=null)cl.add(me.clan);(G.clans||[]).forEach(x=>{if(cl.has(x.id))names.push(x.name);});
+  _nb={t:G.tick,me:me.id,hc,cs,cl,names:names.filter(n=>n&&n.length>3)};return _nb;}
+function nearC(c){const n=NB();return !!(n&&c&&(n.cs.has(c.id)||(ME()&&c.id===ME().id)));}
+function nearCl(id){const n=NB();return !!(n&&id!=null&&n.cl.has(id));}
+window.p185Near=function(h){const n=NB();if(!n)return false;h=String(h||'');return n.names.some(x=>h.includes(x));};
+
+// ---------- the "around you" log ----------
+function LOG(kind,txt,key){try{if(!SOLO())return;G._p185=G._p185||[];if(key&&G._p185.some(x=>x.k===key&&G.tick-x.t<6))return;
+  G._p185.unshift({t:G.tick,kind,txt:String(txt).slice(0,160),k:key||null});if(G._p185.length>40)G._p185.length=40;}catch(e){}}
+const cN=c=>c?c.name:'Someone';
+const clN=id=>{const x=(G.clans||[]).find(k=>k.id===id);const me=ME();if(x&&me&&me.clan===x.id)return 'your alliance';return x?x.name:'an alliance';};
+const rN=r=>r?r.name:'a region';
+
+// ---------- A. no fake chatter ----------
+if(SOLO()){
+  W('seedForumChatter',o=>function(){});
+  W('forumPost',o=>function(who){try{if(typeof FORUM_HANDLES!=='undefined'&&FORUM_HANDLES.includes(who))return;}catch(e){}return o.apply(this,arguments);});
+  W('clusterPost',o=>function(clu,byId){const c=G.countries[byId];if(c&&c.isAI)return;return o.apply(this,arguments);});
+  W('clanPost',o=>function(cl,byId){try{const by=G.countries[byId];const me=ME();if(by&&by.isAI!==false&&cl&&me&&me.clan!==cl.id)return;
+      if(by&&by.isAI!==false&&me&&cl&&me.clan===cl.id){const k=G.tick;cl._p185p=cl._p185p&&cl._p185p.t===k?cl._p185p:{t:k,n:0};if(++cl._p185p.n>3)return;}}catch(e){}
+    return o.apply(this,arguments);});
+  try{if(typeof WORLD_EVENTS!=='undefined'){for(let i=WORLD_EVENTS.length-1;i>=0;i--){if(!['shock','unrest'].includes(WORLD_EVENTS[i].k))WORLD_EVENTS.splice(i,1);}}}catch(e){}
+  W('worldEventTick',o=>function(){const before=G._nextWorldEvent;const r=o.apply(this,arguments);if(G._nextWorldEvent!==before)G._nextWorldEvent=G.tick+8+Math.floor(Math.random()*7);return r;});
+}
+
+// ---------- B. steadier diplomacy (AI leaders only) ----------
+function lastPeace(a,b){return (G.wars||[]).filter(w=>!w.active&&((w.a===a&&w.b===b)||(w.a===b&&w.b===a))).reduce((m,w)=>Math.max(m,w.ended||0),-999);}
+function topClan(){try{const L=(G.clans||[]).filter(x=>clanMembers(x).length).map(x=>({x,s:clanMembers(x).reduce((s,m)=>s+(m._lastScore||0),0)})).sort((a,b)=>b.s-a.s);return L[0]?L[0].x.id:null;}catch(e){return null;}}
+W('cmdDeclareWar',o=>function(c,tid){
+  if(SOLO()&&c&&c.isAI){const cl=clanOf(c);if(cl){
+    if(G.tick-lastPeace(cl.id,tid)<25)return err('A recent peace still holds');
+    if(G.tick-(cl._p185war==null?-99:cl._p185war)<12)return err('Not ready for another war yet');
+    const pile=(G.wars||[]).filter(w=>(w.a===tid||w.b===tid)&&G.tick-(w.start||0)<6).length;if(pile>=(tid===topClan()?3:2))return err('Others are already at war with them');
+    if(G._p185wt===G.tick&&G._p185wn>=2)return err('The world holds its breath');}}
+  const r=o.apply(this,arguments);
+  try{if(r&&r.ok&&SOLO()){const cl=clanOf(c);if(c.isAI&&cl){cl._p185war=G.tick;G._p185wn=(G._p185wt===G.tick?G._p185wn:0)+1;G._p185wt=G.tick;}
+    if(cl&&(nearCl(cl.id)||nearCl(tid)))LOG('war','⚔ '+clN(cl.id)+' declared war on '+clN(tid)+'.','w'+cl.id+'-'+tid);}}catch(e){}
+  return r;});
+W('cmdSuePeace',o=>function(c,tid){
+  if(SOLO()&&c&&c.isAI){const cl=clanOf(c);const w=cl&&(G.wars||[]).find(x=>x.active&&((x.a===cl.id&&x.b===tid)||(x.a===tid&&x.b===cl.id)));if(w&&G.tick-(w.start||0)<8)return err('Too early to give up');}
+  const r=o.apply(this,arguments);
+  try{if(r&&r.ok&&SOLO()){const cl=clanOf(c);if(cl&&(nearCl(cl.id)||nearCl(tid)))LOG('peace','🕊 '+clN(cl.id)+' made peace with '+clN(tid)+'.','p'+cl.id+'-'+tid);}}catch(e){}
+  return r;});
+W('cmdDipRevoke',o=>function(c,oid){const cl=clanOf(c);const r=o.apply(this,arguments);try{if(r&&r.ok&&cl&&(nearCl(cl.id)||nearCl(oid)))LOG('pact','✂ '+clN(cl.id)+' broke its pact with '+clN(oid)+'.','b'+cl.id+'-'+oid);}catch(e){}return r;});
+W('cmdJoinClan',o=>function(c,id){const r=o.apply(this,arguments);try{if(r&&r.ok&&c&&c.isAI&&nearC(c))LOG('clan','🤝 '+cN(c)+' joined '+clN(id)+'.','j'+c.id);}catch(e){}return r;});
+W('cmdLeaveClan',o=>function(c){const id=c&&c.clan;const r=o.apply(this,arguments);try{if(r&&r.ok&&c&&c.isAI&&nearC(c)&&id!=null)LOG('clan','🚪 '+cN(c)+' left '+clN(id)+'.','l'+c.id);}catch(e){}return r;});
+W('cmdOp',o=>function(c,rid){const r=o.apply(this,arguments);try{if(r&&r.ok&&SOLO()&&c&&c.isAI){const reg=_rgId(rid);const n=NB();
+    if(reg&&n&&reg.cluster===n.hc&&reg.owner!==G.you){G._p185m=G._p185m&&G._p185m.t===G.tick?G._p185m:{t:G.tick,n:0};if(G._p185m.n<2){G._p185m.n++;
+      const ow=reg.owner!=null?G.countries[reg.owner]:null;LOG('march','➜ '+cN(c)+' marches on '+rN(reg)+(ow?' ('+cN(ow)+')':' (empty land)')+'.','m'+c.id+'-'+reg.id);}}}}catch(e){}return r;});
+// pacts, ceasefires, captures and collapses come through the news
+W('news',o=>function(cat,head){try{if(SOLO()){const h=String(head||'');const n=NB();
+    let m=/^(.+?) and (.+?) signed (a NAP|an alliance)/.exec(h);if(m&&(window.p185Near(m[1])||window.p185Near(m[2]))){const _a=m[1].replace(/^[^A-Za-z]+/,'');LOG('pact','📜 '+_a+' and '+m[2]+' signed '+(m[3]==='a NAP'?'a non-aggression pact':'an alliance')+'.','n'+m[1]+m[2]);}
+    m=/^(.+?) and (.+?) signed a ceasefire/.exec(h);if(m&&(window.p185Near(m[1])||window.p185Near(m[2])))LOG('peace','🕊 '+m[1]+' and '+m[2]+' signed a ceasefire.','c'+m[1]+m[2]);
+    if(cat==='territory'&&/ captured /.test(h)&&n){const k=/\((\d+):\d+:\d+\)\.?$/.exec(h);if(k&&String(n.hc)===k[1])LOG('capture','🏴 '+h.replace(/\s*\(\d+:\d+:\d+\)\.?$/,'.'),'x'+h);}
+    if(/has collapsed/.test(h)&&window.p185Near(h))LOG('capture','💥 '+h.split('.')[0].replace(/^[^A-Za-z]+/,'')+'.','k'+h.slice(0,40));}}catch(e){}
+  return o.apply(this,arguments);});
+// retreats: fleets near you that turn around
+function scanFleets(){try{const n=NB();if(!n)return;const prev=G._p185f||{};const now={};
+  G.countries.forEach(c=>{if(!c||!c.isAI||c.retired)return;(c.fleets||[]).forEach(f=>{if(!f||f.id==null)return;now[f.id]=f.status;const p=prev[f.id];if(!p||p===f.status)return;
+    const reg=_rgId(f.target);if(!reg||reg.cluster!==n.hc)return;
+    if(p==='outbound'&&f.status==='returning')LOG('retreat','↩ '+cN(c)+' called off its march on '+rN(reg)+'.','r'+c.id+'-'+reg.id);
+    else if(p==='battle'&&f.status==='returning'&&reg.owner!==c.id)LOG('retreat','↩ '+cN(c)+' pulled back from '+rN(reg)+' after a hard fight.','r'+c.id+'-'+reg.id);});});
+  Object.defineProperty(G,'_p185f',{value:now,writable:true,configurable:true,enumerable:false});}catch(e){}}
+W('runTick',o=>function(){const r=o.apply(this,arguments);try{if(SOLO())scanFleets();}catch(e){}return r;});
+
+// ---------- C. the Home card ----------
+function card(){try{if(typeof view==='undefined'||view!=='dashboard')return;const v=document.getElementById('view');if(!v||v.querySelector('.p185card'))return;
+  const L=(G._p185||[]).filter(x=>G.tick-x.t<=20).slice(0,6);
+  const d=document.createElement('div');d.className='p185card';d.style.cssText='padding:10px 14px;margin:0 0 12px;border:1px solid var(--border);border-radius:12px;background:var(--bg2)';
+  d.innerHTML='<div class="mono small" style="letter-spacing:1.5px;color:var(--accent2);margin-bottom:4px">AROUND YOU</div>'+
+    (L.length?L.map(x=>'<div class="small" style="padding:3px 0;border-top:1px solid var(--border)"><span class="muted mono" style="display:inline-block;min-width:54px">turn '+x.t+'</span> '+esc(x.txt)+'</div>').join('')
+      :'<div class="small muted">Quiet in your part of the world. Nobody near you has moved in the last few turns.</div>');
+  const anchor=v.querySelector('.trainbar')||v.querySelector('.p18row');const after=anchor?(anchor.closest('#view > *')||anchor):null;
+  if(after&&after.parentNode===v)after.insertAdjacentElement('afterend',d);else if(v.children[1])v.insertBefore(d,v.children[2]||null);else v.appendChild(d);}catch(e){}}
+W('go',o=>function(){const r=o.apply(this,arguments);try{card();}catch(e){}return r;});
+window.p185Log=()=>G._p185||[];
 })();
 
 </script>
