@@ -16,7 +16,7 @@
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="https://playterrastate.nl/img/ironfront-share.jpg">
 <meta name="author" content="Wim Kamphorst">
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"VideoGame","@id":"https://playterrastate.nl/ironfront.html#game","name":"Ironfront","url":"https://playterrastate.nl/ironfront.html","description":"Free WW2-style grand strategy in your browser. Lead one invented nation in a 1940s world at war, hold 2 of the 3 Capital Sectors, and make every tick a decision: battle orders, field works, radio intel and feints. No account, no download.","image":"https://playterrastate.nl/img/ironfront-share.jpg","genre":["Strategy","Grand strategy","Turn-based strategy","War game","Browser game"],"gamePlatform":["Web browser","Windows","macOS","Linux","Android","iOS"],"applicationCategory":"Game","operatingSystem":"Any (web browser)","playMode":"SinglePlayer","inLanguage":"en","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"EUR","availability":"https://schema.org/InStock"},"author":{"@type":"Person","@id":"https://playterrastate.nl/#wim","name":"Wim Kamphorst","url":"https://wimkamphorst.nl"},"publisher":{"@type":"Person","@id":"https://playterrastate.nl/#wim","name":"Wim Kamphorst","url":"https://wimkamphorst.nl"},"softwareVersion":"12.0","dateModified":"2026-10-27","sameAs":["https://wimkamphorstcoaching.itch.io/ironfront"]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"VideoGame","@id":"https://playterrastate.nl/ironfront.html#game","name":"Ironfront","url":"https://playterrastate.nl/ironfront.html","description":"Free WW2-style grand strategy in your browser. Lead one invented nation in a 1940s world at war, hold 2 of the 3 Capital Sectors, and make every tick a decision: battle orders, field works, radio intel and feints. No account, no download.","image":"https://playterrastate.nl/img/ironfront-share.jpg","genre":["Strategy","Grand strategy","Turn-based strategy","War game","Browser game"],"gamePlatform":["Web browser","Windows","macOS","Linux","Android","iOS"],"applicationCategory":"Game","operatingSystem":"Any (web browser)","playMode":"SinglePlayer","inLanguage":"en","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"EUR","availability":"https://schema.org/InStock"},"author":{"@type":"Person","@id":"https://playterrastate.nl/#wim","name":"Wim Kamphorst","url":"https://wimkamphorst.nl"},"publisher":{"@type":"Person","@id":"https://playterrastate.nl/#wim","name":"Wim Kamphorst","url":"https://wimkamphorst.nl"},"softwareVersion":"13.0","dateModified":"2026-10-27","sameAs":["https://wimkamphorstcoaching.itch.io/ironfront"]}</script>
 <link rel="manifest" href="ironfront.webmanifest"><meta name="theme-color" content="#14160c"><link rel="icon" href="icons/ironfront-64.png"><link rel="apple-touch-icon" href="icons/ironfront-180.png">
 <script>window.__MP_URL__=''; /* '' = live multiplayer not open yet */ if('serviceWorker' in navigator)addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));</script>
 <script data-goatcounter="https://playterrastate.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
@@ -6641,7 +6641,7 @@ function ifrCardHTML(me){const rows=ifrRows(me);if(!rows.length)return '';
       ${near?`<div class="row wrap mt" style="gap:6px;margin-top:6px">${Object.entries(IFR_DEF).map(([k,o])=>btn(x.cur===k,'data-ifrd="'+x.id+'" data-o="'+k+'"',o)).join('')}</div>`:''}<div class="small" style="margin-top:4px">${seen}</div>${ex}</div>`;}).join('');
   return `<div class="card mb ifrcard" style="border-left:3px solid #c9b458"><div class="mono small" style="color:#c9b458;letter-spacing:1px">FRONT · BATTLE ORDERS</div>${typeof p8FrontHead==='function'?p8FrontHead(me):''}
     <div class="small muted" style="margin:4px 0 2px">Pick an order before END TURN. Guess their order right: +25% this tick.</div>${body}
-    <details class="small" style="margin-top:8px"><summary style="cursor:pointer;color:var(--muted)">Which order beats which</summary><div style="margin-top:6px;line-height:1.6">⛏ Dig in beats ⚔ Assault · 💥 Barrage beats ⛏ Dig in · ⚡ Counter-attack beats 💥 Barrage · ↪ Flank beats ⚡ Counter-attack · 🎯 Ambush beats ↪ Flank · ⚔ Assault beats 🎯 Ambush. 🛡 Hold the line gives no edge to either side. The computer nations follow the same rules and see no more than you do.</div></details></div>`;}
+    <details class="small" style="margin-top:8px"><summary style="cursor:pointer;color:var(--muted)">Which order beats which</summary><div style="margin-top:6px;line-height:1.6">⛏ Dig in beats ⚔ Assault · 💥 Barrage beats ⛏ Dig in · ⚡ Counter-attack beats 💥 Barrage · ↪ Flank beats ⚡ Counter-attack · 🎯 Ambush beats ↪ Flank · ⚔ Assault beats 🎯 Ambush. 🛡 Hold the line gives no edge to either side. The other nations follow the same rules and see no more than you do.</div></details></div>`;}
 function ifrHome(){try{if(!ifrOn()||!(_p3solo()||mpClient()))return;if(view!=='dashboard'&&view!=='self')return;const v=document.getElementById('view');const me=you();if(!v||!me)return;
   const html=ifrCardHTML(me);let el=v.querySelector('.ifrcard');
   if(!html){if(el)el.remove();return;}
@@ -8037,7 +8037,7 @@ function landingHaul(atk,def,captured){if(!captured||!atk)return null;const haul
   if(!Object.keys(haul).length)return null;
   atk.res=atk.res||{};for(const k in haul)atk.res[k]=(atk.res[k]||0)+haul[k];
   return haul;}
-function roundBoard(c){const now=G.tick;const inc=(typeof incomingTo==='function'?incomingTo(c.id):[]).filter(x=>x&&x.threat>=0.02).sort((a,b)=>a.eta-b.eta);
+function roundBoard(c){const now=G.tick;const inc=(typeof incomingTo==='function'?incomingTo(c.id):[]).filter(x=>x&&x.threat>=0).sort((a,b)=>a.eta-b.eta);
   const mine=[],help=[];
   (c.fleets||[]).forEach(f=>{if(!f)return;const r=_rgId(f.target);const eta=f.status==='returning'?((f.rEta||now)-now):(f.status==='battle'||f.status==='garrison'?0:(f.eta-now));const size=f._size!=null?f._size:fleetSize(f.units||{});
     const row={coord:r?r.coord:'?',name:r?r.name:'?',eta,size,fid:f.id,recall:(f.status==='outbound'||f.status==='garrison'||f.status==='staged')};
@@ -8236,9 +8236,9 @@ function renderLanding(){
       <a class="card" href="updates.html#if1" target="_self" rel="noopener" style="display:block;text-decoration:none;color:inherit;margin:0 auto">
         <div class="row between wrap" style="gap:10px;align-items:center">
           <div style="min-width:0;flex:1">
-            <div><span class="mono" style="color:var(--gold);font-size:11px;letter-spacing:1px">UPDATE 12.0 · LESS IS MORE</span> <span class="muted small">October 2026</span></div>
-            <div style="font-weight:700;margin-top:3px">Update 12.0: Less is more</div>
-            <div class="muted small mt">Update 12.0 takes things away. Home shows your goal in one line, the next land, and danger only when an attack would break through. Everything else waits under More on Home. The top bar is calmer, the speed buttons appear after turn 20, and Market, Covert Ops and Comms join the menu after turn 40. The field training has three steps. An army sent to empty land now turns back when another nation takes it first, and your first land pays double. Update 11.0 gave you Take it and the Sprint season.</div>
+            <div><span class="mono" style="color:var(--gold);font-size:11px;letter-spacing:1px">UPDATE 13.0 · ARMIES LIKE PLANETARION</span><!--/*p191*/--> <span class="muted small">October 2026</span></div>
+            <div style="font-weight:700;margin-top:3px">Update 13.0: Armies like Planetarion</div>
+            <div class="muted small mt">Update 13.0 brings attack and defence back to the Planetarion way. Every incoming army is on screen with its ETA, with Defend and Scan, also when your defence will hold (then it is green). Homeland lists each attacker. Your coordinates and the incoming and outgoing counters are back in the top bar. Your armies no longer turn back by themselves: when the target changes hands while you are on the march, you get a warning with the ETA and choose Recall or Keep going. Update 12.0 made Home calm.</div>
           </div>
           <span class="btn ghost sm" style="flex:none;pointer-events:none">What is new</span>
         </div>
@@ -8306,7 +8306,7 @@ function renderLanding(){
   {const b=s.querySelector('#lpNews');if(b)b.onclick=()=>{const t=s.querySelector('#playerupdate');if(t)t.scrollIntoView({behavior:'smooth',block:'center'});};}
 }
 // ---- Legal identity: ONE place to change the operator / contact / copyright holder. Used by the Privacy, Terms and Credits tabs and the footer.
-const LEGAL={operator:'Wim Kamphorst',email:'wimkamphorst.coaching@gmail.com',author:'Wim Kamphorst',country:'the Netherlands',law:'Dutch law',dpa:'Autoriteit Persoonsgegevens (the Dutch data protection authority)',dpaUrl:'https://www.autoriteitpersoonsgegevens.nl',version:'1.1',updated:'October 2026',build:'Update 12.0 · Front Line',minAge:16};
+const LEGAL={operator:'Wim Kamphorst',email:'wimkamphorst.coaching@gmail.com',author:'Wim Kamphorst',country:'the Netherlands',law:'Dutch law',dpa:'Autoriteit Persoonsgegevens (the Dutch data protection authority)',dpaUrl:'https://www.autoriteitpersoonsgegevens.nl',version:'1.1',updated:'October 2026',build:'Update 13.0 · Front Line',minAge:16};
 LEGAL.contact=`<b>${LEGAL.operator}</b>, <a href="mailto:${LEGAL.email}">${LEGAL.email}</a>`;
 // ---- Landing-page manual: beginner's handbook + combat formulae -------------
 const MANUAL={
@@ -9286,7 +9286,7 @@ function refreshBadges(){const inc=incomingTo(G.you);const real=inc.filter(x=>x.
   try{const fn=document.querySelector('.nav[data-k="self"]');if(fn)fn.title=real.length?why:'Homeland';
       const mn=document.querySelector('.nav[data-k="mail"]');if(mn)mn.title=un?(un+' unread'):'Messages';}catch(e){}}
 function showPulse(title,body){if(document.querySelector('.modal-bg'))return false;const bg=h('<div class="modal-bg"><div class="modal" style="max-width:440px"><h2 style="margin:0 0 8px">'+esc(title)+'</h2><p class="small" style="margin:0 0 12px;line-height:1.5">'+esc(body)+'</p><button class="btn" id="pulseok" style="min-height:48px;width:100%">Continue</button></div></div>');bg.querySelector('#pulseok').onclick=()=>bg.remove();document.body.appendChild(bg);return true;}
-function airLines(c){const inc=(typeof incomingTo==='function'?incomingTo(c.id):[]).filter(x=>x&&x.threat>=0.02).sort((a,b)=>a.eta-b.eta);const mine=(c.fleets||[]).filter(f=>f&&['outbound','returning','battle','staged'].includes(f.status));
+function airLines(c){const inc=(typeof incomingTo==='function'?incomingTo(c.id):[]).filter(x=>x&&x.threat>=0).sort((a,b)=>a.eta-b.eta);const mine=(c.fleets||[]).filter(f=>f&&['outbound','returning','battle','staged'].includes(f.status));
   const _atks=[...new Set(inc.map(y=>y.from?leaderName(y.from):null).filter(Boolean))];const who=inc[0]?(inc.length>1?(inc.length+(false?' enemy armies are on the march':' enemy fleets are in the air')+(_atks.length?' ('+_atks.slice(0,3).join(', ')+(_atks.length>3?' +'+(_atks.length-3):'')+')':'')+(inc[0].region?', first toward '+inc[0].region.name:'')+'.'):((inc[0].from?leaderName(inc[0].from):'Someone')+(false?' is on the march':' is in the air')+(inc[0].region?' toward '+inc[0].region.name:'')+'.')):(mine.length?(mine.length===1?'One of your armies is out.':mine.length+' of your armies are out.'):'Nobody is in the air.');
   const when=inc[0]?(inc.length>1?(inc[0].eta<=0?'The first lands this tick.':'The first lands in '+inc[0].eta+' tick'+(inc[0].eta===1?'':'s')+'.'):((inc[0].from?leaderName(inc[0].from):'They')+(inc[0].eta<=0?' lands this tick.':' lands in '+inc[0].eta+' tick'+(inc[0].eta===1?'':'s')+'.'))):(mine[0]?(mine[0].status==='returning'?'Yours is home in '+Math.max(0,(mine[0].rEta||G.tick)-G.tick)+' ticks.':'Yours lands in '+Math.max(0,(mine[0].eta||G.tick)-G.tick)+' ticks.'):'Nothing lands on you this tick.');
   const can=inc.length?'You can still reinforce, or end the turn.':'You can build, recruit, or end the turn.';
@@ -14501,6 +14501,28 @@ try{if(typeof TRAIN_TASKS!=='undefined'){for(const k of ['army','endturn']){cons
 function p188EventGate(){try{if(typeof isSoloGame!=='function'||!isSoloGame()||!G.season)return;const st=G.season.startTick||0;
   if(G.tick-st<P188.EVENT_START){if((G._nextEvent||0)<st+P188.EVENT_START)G._nextEvent=st+P188.EVENT_START;}}catch(e){}}
 {const _rt=runTick;runTick=function(){p188EventGate();p188TurnBack();const r=_rt.apply(this,arguments);p188FirstHaul();return r;};}
+
+/*p190*/
+/* p190 Update 13.0 "Fleets like Planetarion" (engine part).
+   A. No automatic turn-back. When the owner of your fleet's target changes while it is in the air,
+      you get a warning with the ETA and decide yourself: Recall or keep going (like Planetarion).
+   B. The 12.0 turn-back is switched off. */
+try{if(typeof P188!=='undefined')P188.TURNBACK=false;}catch(e){}
+function p190Human(c){return !!c&&c.isAI===false&&!c.retired;}
+function p190IsStrike(f){return !!f&&f.status==='outbound'&&f.intent!=='garrison'&&f.intent!=='reinforce'&&!f._cancel;}
+{const _op=cmdOp;cmdOp=function(c,rid,committed,opts){const r0=(typeof _rgId==='function')?_rgId(rid):null;const own0=r0?r0.owner:undefined;
+  const before=(c&&c.fleets)?c.fleets.length:0;const res=_op.apply(this,arguments);
+  try{if(res&&res.ok&&r0&&p190Human(c)&&c.fleets&&c.fleets.length>before){for(let i=before;i<c.fleets.length;i++){const f=c.fleets[i];if(f&&f.target===r0.id&&f._p190own===undefined)f._p190own=(own0==null?null:own0);}}}catch(e){}
+  return res;};}
+function p190Watch(){try{(G.countries||[]).forEach(c=>{if(!p190Human(c))return;
+  (c.fleets||[]).forEach(f=>{if(!p190IsStrike(f)||f._p190own===undefined||f._p190chg)return;const r=(typeof _rgId==='function')?_rgId(f.target):null;if(!r)return;
+    const now=(r.owner==null?null:r.owner);if(now===f._p190own||now===c.id)return;
+    f._p190chg={by:now,tick:G.tick};const taker=now!=null?G.countries[now]:null;const eta=Math.max(0,(f.eta||0)-G.tick);
+    const n=(typeof fleetSize==='function')?fleetSize(f.units||{}):0;const cs=r.coord?' ('+r.coord+')':'';
+    const msg=(taker?taker.name+' took ':'')+r.name+cs+(taker?'':' changed hands')+'. Your army of '+(typeof full==='function'?full(n):n)+' lands in '+eta+'t and will fight '+(taker?'them':'whoever holds it')+'. Recall it or keep going.';
+    try{sitrep(c,'warn','⚠ '+msg);}catch(e){}
+    try{if(typeof isSoloGame==='function'&&isSoloGame()&&typeof you==='function'&&you()===c&&typeof toast==='function'){toast('⚠ '+msg,'warn');try{sfx('warn');}catch(e){}}}catch(e){}});});}catch(e){}}
+{const _rt=runTick;runTick=function(){const r=_rt.apply(this,arguments);p190Watch();return r;};}
 
 // ---- BOOT ------------------------------------------------------------------
 // GitHub serves the brochure as index.html and this file as play.html.
@@ -20270,10 +20292,10 @@ setInterval(()=>{try{ladder();champCard();}catch(e){}},500);
   const turnsIn=()=>{try{return G.tick-((G.season&&G.season.startTick)||0);}catch(e){return 999;}};
   const P188U={TEMPO_AT:20,MENUS_AT:40,LATE:['market','covert','comms'],AROUND:3,BATTLE_AGE:3};
   const css=document.createElement('style');css.id='p188css';
-  css.textContent=`html body #topNation .tag,html body #strip #stockbtn,html body #stockbtn,html body .p17mini,html body .p5sum,html body .p5cb,html body .p7digest{display:none!important}
+  css.textContent=`html body #strip #stockbtn,html body #stockbtn,html body .p17mini,html body .p5sum,html body .p5cb,html body .p7digest{display:none!important}
   html body .p188h,html body #strip .res.p188h,html body #view .p188h,html body #side .p188h,html body header .p188h{display:none!important}
   .p188calm{border-color:var(--line,rgba(255,255,255,.12))!important}
-  .p188calm .p8f3,.p188calm .p8fold{display:none!important}
+  html body .p188calm{border-left-color:var(--ok,#37d9a9)!important}
   details.p188more{margin-top:10px}
   details.p188more>summary{cursor:pointer;color:var(--muted);font-size:13px;padding:10px 12px;border:1px dashed var(--line,rgba(255,255,255,.14));border-radius:10px;list-style:none}
   details.p188more>summary::-webkit-details-marker{display:none}
@@ -20308,8 +20330,7 @@ setInterval(()=>{try{ladder();champCard();}catch(e){}},500);
     v.querySelectorAll('.p186next').forEach(n=>{const box=n.closest('.p186box,.p18home')||n;box.classList.toggle('p188h',!!firstStep);});
     // an attack that will be held is not an alarm
     const d=danger(c);
-    if(d==='calm'){v.querySelectorAll('.p186danger').forEach(z=>z.classList.add('p188calm'));v.querySelectorAll('.p8frontcard').forEach(z=>z.classList.add('p188calm'));
-      v.querySelectorAll('details.p8fold').forEach(z=>z.classList.add('p188h'));}
+    if(d==='calm'){v.querySelectorAll('.p186danger').forEach(z=>z.classList.add('p188calm'));v.querySelectorAll('.p8frontcard').forEach(z=>z.classList.add('p188calm'));}
     // empty shells and the command line (only when command points run low)
     v.querySelectorAll('.dash-zone > .card.mb, .dash-zone > .card').forEach(card=>{const t=(card.innerText||'').trim();if(t.length<16)card.classList.add('p188h');});
     let cp=99;try{cp=c.cp;}catch(e){}
@@ -20326,7 +20347,7 @@ setInterval(()=>{try{ladder();champCard();}catch(e){}},500);
     // a list of "things that need attention" is advice, not danger, unless an attack will break through
     v.querySelectorAll('.card').forEach(card=>{if(card.closest('.p188more'))return;if(/^\W*\d+ THINGS? NEEDS? ATTENTION/i.test((card.innerText||'').trim())&&d!=='real')more.push(card);});
     // next land comes first when there is no real danger
-    if(d!=='real'){const nl=v.querySelector(':scope > .p186box, :scope > .p18home');const t=v.querySelector(':scope > .ptitle');if(nl&&t&&t.nextElementSibling!==nl&&!nl.classList.contains('p188h'))t.insertAdjacentElement('afterend',nl);}
+    if(d==='none'&&!v.querySelector('.p190warn')){const nl=v.querySelector(':scope > .p186box, :scope > .p18home');const t=v.querySelector(':scope > .ptitle');if(nl&&t&&t.nextElementSibling!==nl&&!nl.classList.contains('p188h'))t.insertAdjacentElement('afterend',nl);}
     // everything that is not an action or a danger goes under one fold
     v.querySelectorAll('.dash-cols, details.priorities-details, details.p5more, .ifxcard, details.howfold').forEach(e=>more.push(e));
     if(more.length){let det=v.querySelector(':scope > details.p188more');
@@ -20349,14 +20370,14 @@ setInterval(()=>{try{ladder();champCard();}catch(e){}},500);
     // the explainer sentence under every title goes; Home keeps its goal line
     v.querySelectorAll(':scope > .ptitle > span.h').forEach(s=>{const m=/(Turn \d+\.)\s*$/.exec(s.textContent);if(m){if(s.textContent!==m[1])s.textContent=m[1];s.classList.remove('p188h');}else s.classList.add('p188h');});
     // alert bar only for real danger
-    if(c&&danger(c)==='calm')v.querySelectorAll('.alertbar').forEach(a=>a.classList.add('p188h'));
+    
     if(name==='military'){const card=[...v.querySelectorAll(':scope > .card')].find(x=>/^\s*ARMY RECRUITMENT/i.test(x.innerText||'')||/^\s*UNIT RECRUITMENT/i.test(x.innerText||''));
       if(card&&!card.closest('details.p188mix')){const det=document.createElement('details');det.className='p188mix';if(LS('p188mix_open')==='1')det.open=true;
         det.innerHTML='<summary>Build your own mix</summary>';det.addEventListener('toggle',()=>LS('p188mix_open',det.open?'1':'0'));card.parentElement.insertBefore(det,card);det.appendChild(card);}
       const det2=v.querySelector('details.p188mix');if(det2&&c&&typeof UNIT!=='undefined'){let h=v.querySelector('.p188have');if(!h){h=document.createElement('div');h.className='p188have small';h.style.margin='0 2px 8px';det2.parentElement.insertBefore(h,det2);}
         const L=UNIT.map(u=>[u.n,(c.units&&c.units[u.k])||0]).filter(x=>x[1]>0).sort((x,y)=>y[1]-x[1]);const t=L.length?'Your army at home: '+L.slice(0,4).map(x=>x[1].toLocaleString('en-US')+' '+x[0]).join(', ')+(L.length>4?', and '+(L.length-4)+' more types':'')+'.':'Your army at home: none yet.';if(h.textContent!==t)h.textContent=t;}}}
   // ---------- top bar ----------
-  function topbar(){try{document.querySelectorAll('.strip .res').forEach(r=>{if(/^\s*STOCKPILE/i.test(r.innerText||''))r.classList.add('p188h');});const oa=document.getElementById('opsalert');if(oa){const nums=[...oa.querySelectorAll('b')].map(b=>+(b.textContent||0));oa.classList.toggle('p188h',nums.length>0&&nums.every(n=>!n));}
+  function topbar(){try{document.querySelectorAll('.strip .res').forEach(r=>{if(/^\s*STOCKPILE/i.test(r.innerText||''))r.classList.add('p188h');});const oa=document.getElementById('opsalert');if(oa){const nums=[...oa.querySelectorAll('b')].map(b=>+(b.textContent||0));oa.classList.remove('p188h');}
     const ts=document.querySelector('.tspeed');const auto=ts&&ts.querySelector('button.on')&&!/⏸|•/.test(ts.querySelector('button.on').textContent||'');
     document.body.classList.toggle('p188early',solo()&&turnsIn()<P188U.TEMPO_AT&&!auto);}catch(e){}}
   // ---------- menus ----------
@@ -20377,6 +20398,42 @@ setInterval(()=>{try{ladder();champCard();}catch(e){}},500);
   try{new MutationObserver(soon).observe(document.documentElement,{childList:true,subtree:true});}catch(e){}
   setTimeout(apply,400);
   window.p188Apply=apply;
+})();
+
+</script>
+<script>/*p190ui*/
+/* p190ui Update 13.0 "Fleets like Planetarion" (browser part).
+   - A fleet whose target changed owner gets a warning card on Home with Recall / Keep going, and a tag in every fleet list.
+   - Homeland lists every incoming fleet (the individual fleets are open).
+   - Incoming always stays visible with Defend and Scan; an attack that will be held is green, not hidden. */
+(function(){
+  const css=document.createElement('style');
+  css.textContent=`.p190warn{border:1px solid var(--danger,#e5484d);border-left:4px solid var(--danger,#e5484d);border-radius:10px;padding:12px 14px;margin:0 0 12px;background:rgba(229,72,77,.08)}
+  .p190warn b{color:var(--danger,#e5484d)}.p190warn .row{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+  .p190tag{display:inline-block;margin-left:6px;padding:1px 6px;border-radius:6px;font-size:11px;background:rgba(229,72,77,.15);color:var(--danger,#e5484d);border:1px solid var(--danger,#e5484d)}`;
+  document.head.appendChild(css);
+  const me=()=>{try{return you();}catch(e){return null;}};
+  const changed=c=>(c&&c.fleets||[]).filter(f=>f&&f.status==='outbound'&&f._p190chg&&!f._p190ok);
+  const who=f=>{const id=f._p190chg&&f._p190chg.by;const t=id!=null&&G.countries[id];return t?t.name:'someone else';};
+  const rname=f=>{try{const r=_rgId(f.target);return r?r.name+(r.coord?' '+r.coord:''):'the target';}catch(e){return 'the target';}};
+  function home(v,c){const L=changed(c);v.querySelectorAll('.p190warn').forEach(x=>{if(!L.some(f=>String(f.id)===x.dataset.fid))x.remove();});
+    L.forEach(f=>{if(v.querySelector('.p190warn[data-fid="'+f.id+'"]'))return;const eta=Math.max(0,f.eta-G.tick);
+      const d=document.createElement('div');d.className='p190warn';d.dataset.fid=f.id;
+      d.innerHTML='<div><b>⚠ Target changed hands.</b> '+esc(who(f))+' now holds '+esc(rname(f))+'. Your army of '+full(fleetSize(f.units||{}))+' lands in <b>'+eta+'t</b> and will fight them.</div>'+
+        (eta>1?'<div class="row"><button class="btn sm" data-p190recall="'+f.id+'">↩ Recall</button><button class="btn ghost sm" data-p190keep="'+f.id+'">Keep going</button></div>':'<div class="row"><span class="muted small">Too close to turn back: the assault is committed.</span><button class="btn ghost sm" data-p190keep="'+f.id+'">OK</button></div>');
+      const t=v.querySelector(':scope > .ptitle');if(t)t.insertAdjacentElement('afterend',d);else v.prepend(d);
+      const rb=d.querySelector('[data-p190recall]');if(rb)rb.onclick=async ()=>{const r=await recallFleet(c,f.id);try{toast(r&&r.ok?'↩ Army recalled, on its way home':((r&&r.error)||'Cannot recall'),r&&r.ok?'good':'warn');}catch(e){}try{save();}catch(e){}try{drawTop();}catch(e){}go('dashboard');};
+      d.querySelector('[data-p190keep]').onclick=()=>{f._p190ok=true;try{save();}catch(e){}d.remove();};});}
+  function tags(v,c){(c&&c.fleets||[]).forEach(f=>{if(!f||!f._p190chg||f.status!=='outbound')return;
+    v.querySelectorAll('[data-recallfleet="'+f.id+'"]').forEach(b=>{const host=b.parentElement;if(!host||host.querySelector('.p190tag'))return;
+      const s=document.createElement('span');s.className='p190tag';s.textContent='now held by '+who(f);b.insertAdjacentElement('beforebegin',s);});});}
+  function incoming(v){v.querySelectorAll('details').forEach(d=>{if(d.dataset.p190)return;const s=d.querySelector('summary');if(s&&/^\s*Show the \d+ individual (fleet|arm|column|legion)/i.test(s.textContent||'')){d.dataset.p190='1';d.open=true;}});}
+  let busy=false;
+  function apply(){if(busy)return;busy=true;try{const v=document.getElementById('view');const c=me();if(!v||!c){busy=false;return;}
+    const name=(typeof view!=='undefined')?view:'';if(name==='dashboard')home(v,c);tags(v,c);incoming(v);}catch(e){console.error('p190ui',e);}busy=false;}
+  let tm=null;const mo=new MutationObserver(()=>{clearTimeout(tm);tm=setTimeout(apply,40);});
+  const start=()=>{const v=document.getElementById('view');if(v)mo.observe(v,{childList:true,subtree:true});apply();};
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start);else start();
 })();
 
 </script>
