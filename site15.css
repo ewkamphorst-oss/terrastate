@@ -1,0 +1,77 @@
+/* site15.css: landing page 14.2. Three grand strategy games up front, mini and board games small. Mobile first. */
+:root{--bg:#0b0f17;--bg2:#111827;--panel:#151d2b;--line:#253248;--text:#e8edf5;--muted:#9aa7bb;--gold:#f6b62b;--gold2:#ffcf5a;--terra:#3aa0ff;--rome:#d9a441;--iron:#c8b26a}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);margin:0;font-family:Archivo,system-ui,-apple-system,Segoe UI,sans-serif;-webkit-text-size-adjust:100%;overflow-x:hidden}
+img{max-width:100%;height:auto;display:block}
+.l15w{max-width:1180px;margin:0 auto;padding:0 16px}
+.l15k{font:600 12px/1.2 'IBM Plex Mono',ui-monospace,monospace;letter-spacing:.14em;text-transform:uppercase;color:var(--gold)}
+.l15 h2{font-size:clamp(26px,6vw,40px);line-height:1.1;margin:8px 0 10px;letter-spacing:-.01em}
+.l15 p{line-height:1.6}
+.l15 .mut{color:var(--muted)}
+.l15btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:48px;padding:0 22px;border-radius:10px;background:linear-gradient(180deg,var(--gold2),var(--gold));color:#1a1204;font-weight:800;letter-spacing:.04em;text-decoration:none;text-transform:uppercase;font-size:15px;box-shadow:0 6px 18px rgba(246,182,43,.22)}
+.l15btn.ghost{background:transparent;color:var(--gold);border:1px solid rgba(246,182,43,.55);box-shadow:none}
+.l15btn:focus-visible,.l15nav a:focus-visible{outline:3px solid #fff;outline-offset:2px}
+/* nav */
+.l15nav{position:sticky;top:0;z-index:20;background:rgba(11,15,23,.92);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+.l15nav .l15w{display:flex;align-items:center;gap:14px;min-height:60px}
+.l15logo{display:flex;align-items:center;gap:8px;color:var(--text);text-decoration:none;font-weight:800;letter-spacing:.12em}
+.l15logo img{width:30px;height:30px}.l15logo b{color:var(--gold)}
+.l15links{display:flex;gap:18px;margin-left:auto}
+.l15links a{color:var(--muted);text-decoration:none;font-size:15px}.l15links a:hover{color:var(--text)}
+.l15nav .l15btn{min-height:40px;padding:0 16px;font-size:14px}
+@media(max-width:820px){.l15links{display:none}.l15nav .l15btn{margin-left:auto}}
+/* hero */
+.l15hero{position:relative;overflow:hidden;border-bottom:1px solid var(--line)}
+.l15hero:before{content:"";position:absolute;inset:0;background:url(img/v3/hero-map.jpg) center/cover no-repeat;opacity:.28}
+.l15hero:after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(11,15,23,.2),var(--bg) 92%)}
+.l15hero .l15w{position:relative;z-index:1;padding-top:48px;padding-bottom:28px}
+.l15hero h1{font-size:clamp(34px,8.6vw,64px);line-height:1.02;margin:10px 0 14px;letter-spacing:-.02em;max-width:14em}
+.l15hero .lead{font-size:clamp(17px,4.4vw,20px);color:#cfd8e6;max-width:36em;margin:0 0 18px}
+.l15chips{display:flex;flex-wrap:wrap;gap:8px;margin:0;padding:0;list-style:none}
+.l15chips li{font:500 13px/1 'IBM Plex Mono',ui-monospace,monospace;border:1px solid var(--line);background:rgba(21,29,43,.8);border-radius:6px;padding:8px 10px}
+/* three games */
+.l15games{padding:28px 0 40px}
+.l15grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:18px}
+@media(max-width:980px){.l15grid{grid-template-columns:1fr;gap:20px}}
+.l15g{background:var(--panel);border:1px solid var(--line);border-top:3px solid var(--c);border-radius:14px;overflow:hidden;display:flex;flex-direction:column}
+.l15g.t{--c:var(--terra)}.l15g.r{--c:var(--rome)}.l15g.i{--c:var(--iron)}
+.l15g .shot{display:block;aspect-ratio:16/9;background:#05080d}
+.l15g .shot img{width:100%;height:100%;object-fit:cover}
+.l15g .bd{padding:18px 18px 20px;display:flex;flex-direction:column;gap:10px;flex:1}
+.l15g .l15era{font:600 12px/1 'IBM Plex Mono',ui-monospace,monospace;letter-spacing:.14em;text-transform:uppercase;color:var(--c)}
+.l15g h3{margin:0;font-size:28px;letter-spacing:.02em}
+.l15g p{margin:0;color:#cfd8e6}
+.l15g ul{margin:0;padding:0 0 0 18px;color:var(--muted);line-height:1.55;font-size:15px}
+.l15g .l15btn{margin-top:auto;align-self:stretch}
+.l15g .l15btn:before{content:none}
+/* screens */
+.l15see{padding:40px 0;border-top:1px solid var(--line);background:var(--bg2)}
+.l15strip{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;margin-top:18px}
+@media(max-width:820px){.l15strip{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;gap:14px;padding-bottom:10px;margin-right:-16px;padding-right:16px}.l15strip figure{flex:0 0 72%;scroll-snap-align:start}}
+.l15strip figure{margin:0}
+.l15strip img{width:100%;aspect-ratio:390/844;object-fit:cover;object-position:top;border-radius:16px;border:1px solid var(--line)}
+.l15strip figcaption{font-size:14px;color:var(--muted);margin-top:8px;line-height:1.45}
+.l15strip figcaption b{color:var(--text)}
+/* why */
+.l15why{padding:40px 0}
+.l15pts{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-top:14px}
+@media(max-width:980px){.l15pts{grid-template-columns:1fr 1fr}}@media(max-width:560px){.l15pts{grid-template-columns:1fr}}
+.l15pts div{border-top:1px solid var(--line);padding-top:12px}
+.l15pts b{display:block;font-size:18px;margin-bottom:4px}.l15pts span{color:var(--muted);line-height:1.5}
+/* small games */
+.l15small{padding:36px 0;border-top:1px solid var(--line)}
+.l15list{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}
+@media(max-width:700px){.l15list{grid-template-columns:1fr}}
+.l15s{display:grid;grid-template-columns:88px 1fr auto;gap:12px;align-items:center;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:8px;color:var(--text);text-decoration:none}
+.l15s:hover{border-color:rgba(246,182,43,.5)}
+.l15s img{width:88px;height:50px;object-fit:cover;border-radius:6px}
+.l15s b{display:block;font-size:16px}.l15s small{color:var(--muted);font-size:13px}
+.l15s .go{color:var(--gold);font-weight:800;font-size:13px;letter-spacing:.06em;padding-right:6px;white-space:nowrap}
+/* live + ranking */
+.l15live{padding:36px 0;border-top:1px solid var(--line);background:var(--bg2)}
+.l15two{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+@media(max-width:820px){.l15two{grid-template-columns:1fr}}
+.l15box{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:20px}
+.l15box h3{margin:6px 0 8px;font-size:22px}.l15box p{margin:0 0 14px;color:#cfd8e6}
+.l15box .l15btn{width:auto}
+.l15box .disc{background:#5865f2;color:#fff;box-shadow:none}

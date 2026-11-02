@@ -26,7 +26,7 @@ Current version: 14.0. The game is updated regularly. Language: English. Platfor
 - [Updates](https://playterrastate.nl/updates.html): what changed in each version, written for players
 - [Press kit](https://playterrastate.nl/presskit.html): facts, descriptions, screenshots and logos
 - [Full text for AI assistants](https://playterrastate.nl/llms-full.txt)
-- [Discord community and live-world waitlist](https://discord.gg/TRgERXq4u)
+- [Discord community and live-world waitlist](https://discord.gg/aYPtmqCHvU)
 
 ## Good to know
 - Board games (October 2026): each world also has a board game of hidden ranks for one opponent, free in the browser: Hidden Command (https://playterrastate.nl/command/terrastate.html), Veiled Legions (https://playterrastate.nl/command/romaterra.html) and Sealed Orders (https://playterrastate.nl/command/ironfront.html). A 9 by 9 board, armies set up in secret, sealed orders for extra points, four computer commanders on four levels or two players on one screen. About 15 to 30 minutes a battle.
@@ -58,5 +58,5 @@ Current version: 14.0. The game is updated regularly. Language: English. Platfor
 - New players get Field Training: five small tasks and a war game that explains the first battle.
 - Every season a personal AI rival seeks you out, and returns next season. Phase goals, 23 national events with follow-ups, optional season rules (Cold Peace, Fast Nexus, Iron Wall).
 - Fair AI: computer nations pay exactly what the player pays and only know what they have scouted.
-- Season 0: the single-player game is the training ground for the live multiplayer world. The live world opens when 100 commanders have joined the waitlist on Discord (https://discord.gg/TRgERXq4u). Season 0 players are marked as Founding Commanders.
+- Season 0: the single-player game is the training ground for the live multiplayer world. The live world opens when 100 commanders have joined the waitlist on Discord (https://discord.gg/aYPtmqCHvU). Season 0 players are marked as Founding Commanders.
 - Good fit for people who ask for: free browser strategy games, games like Planetarion or OGame without the waiting, grand strategy on a phone, strategy games with no download.

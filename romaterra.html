@@ -1238,7 +1238,7 @@ const NEXUS_HOLD=48;            // ROMATERRA: 48 ticks = 12 real hours at 15 min
 // Single-player only. In multiplayer (window.__MP__) and on the headless server every function here is inert and every
 // tunable keeps its default, so the live world is untouched. Settings live in G.solo and travel with the save.
 const SOLO_DIFFS={
-  recruit:{n:'Recruit',ic:'🌱',d:'Learn the ropes. AI economies run at 85%, rivals rarely single you out, 48 ticks of beginner protection.',aiEcon:0.85,humBias:-30,needAdj:0.20,protect:48,skill:-0.1,opPace:1.3},
+  recruit:{n:'Recruit',ic:'🌱',d:'Learn the ropes. AI economies run at 85%, rivals rarely single you out, the longest beginner protection (48 turns, 16 in a Sprint).',aiEcon:0.85,humBias:-30,needAdj:0.20,protect:48,skill:-0.1,opPace:1.3},
   veteran:{n:'Veteran',ic:'⚔',d:'The standard game, exactly the live-world balance. Fair AI, 24 ticks of protection.',aiEcon:1,humBias:0,needAdj:0,protect:24},
   warlord:{n:'Warlord',ic:'💀',d:'The AI never gets extra resources, it just plays sharper: better choices, faster joint strikes, scouts that remember your army, rivals actively hunt you, only 8 ticks of protection. For veterans.',aiEcon:1,humBias:25,needAdj:-0.08,protect:8,skill:0.12,opPace:0.7,scoutMem:1}};
 const SOLO_LENGTHS={quick:{n:'Quick',ticks:200,d:'≈200 turns, a session or two'},standard:{n:'Standard',ticks:400,d:'≈400 turns, the sweet spot'},epic:{n:'Epic',ticks:840,d:'840 turns, the full live-world season'}};
@@ -5690,7 +5690,7 @@ function phase3Home(){try{if(!_p3solo()||view!=='dashboard')return;const v=docum
   if(g){const now=g.m(me);const prog=g.keep?(now+' / '+pg.target+' regions'):g.abs!=null?(now?'sent':'not yet'):(Math.min(now,pg.target)+' / '+pg.target);
     rows.push(`<div class="row between wrap" style="gap:6px"><div><span class="mono small" style="color:var(--gold);letter-spacing:1px">PHASE ${(pg.idx||0)+1} OF 5 · ${esc(pg.phase)}</span><div class="small">${pg.done?'🎖 Goal reached: ':'🎯 '}${esc(g.t)}</div></div><div class="small mono">${pg.done?'+'+goalReward(pg.idx||0)+' influence':esc(prog)}</div></div>`);}
   if(r){const e=(me._rivals||{})[r.id]||{w:0,l:0};const rk=rankTitle(r.id).pos;
-    rows.push(`<div class="row between wrap" style="gap:6px;border-top:1px solid var(--border);padding-top:6px;margin-top:6px"><div class="small">⚔ Your rival: ${emblem(r)} <b class="lk" onclick="if(typeof GOTO_NATION==='function')GOTO_NATION(${r.id})">${esc(leaderName(r))}</b> of ${esc(r.name)} <span class="atag">${esc(r.tag)}</span>${r._returning?' <span class="muted">· back from last season</span>':''}</div><div class="small mono">#${rk} · you ${e.w||0}–${e.l||0}</div></div>`);}
+    rows.push(`<div class="row between wrap" style="gap:6px;border-top:1px solid var(--border);padding-top:6px;margin-top:6px"><div class="small">⚔ Your rival: ${emblem(r)} <b class="lk" onclick="if(typeof GOTO_NATION==='function')GOTO_NATION(${r.id})">${esc(leaderName(r))}</b> of ${esc(r.name)} <span class="atag">${esc(r.tag)}</span>${r._returning?' <span class="muted">· back from last season</span>':''}</div><div class="small mono">their rank #${rk} · your record vs them ${e.w||0}–${e.l||0}</div></div>`);}
   if(rule){const R=SEASON_RULES[rule];rows.push(`<div class="small" style="border-top:1px solid var(--border);padding-top:6px;margin-top:6px">${R.ic} Season rule: <b>${esc(R.n)}</b> · <span class="muted">${esc(R.d)}</span></div>`);}
   if(!rows.length){if(old)old.remove();return;}
   const el=h(`<div class="card mb p3card" style="border-left:3px solid var(--gold)">${rows.join('')}</div>`);
@@ -6229,7 +6229,7 @@ if(typeof document!=='undefined'&&document&&document.head&&!(typeof window!=='un
 // background alerts (opt-in), a Comms screen (inbox first, forum moved in), and for the live world: alliance chat
 // links that only members see, plus a test message and delivery status for the alliance's Discord or Telegram feed.
 // Community lines (empty = hidden). Fill in the WhatsApp and Telegram channel links when the channels exist.
-const P9_LINES={discord:'https://discord.gg/TRgERXq4u',whatsapp:'',telegram:''};
+const P9_LINES={discord:'https://discord.gg/aYPtmqCHvU',whatsapp:'',telegram:''};
 const P9_NUDGE_GAP=20; // at most one share nudge per 20 ticks
 function p9Game(){let k='terrastate';try{k=_trkGame();}catch(e){}const n={terrastate:'Terrastate',romaterra:'Romaterra',ironfront:'Ironfront'}[k]||'Terrastate';return {k:(n.toLowerCase()),n};}
 function p9Url(){try{return GAME_URL();}catch(e){return 'https://playterrastate.nl';}}
@@ -8799,9 +8799,9 @@ const DONATE={
 
 // Season 0 (2026-10-03): the single-player game is the training ground for the live world, which opens at S0_GOAL
 // commanders on the Discord waitlist. Count = public member count of the invite; below S0_SHOW we show no number.
-const S0_GOAL=100,S0_SHOW=15,S0_INVITE='https://discord.gg/TRgERXq4u';
+const S0_GOAL=100,S0_SHOW=15,S0_INVITE='https://discord.gg/aYPtmqCHvU';
 function s0Fetch(cb){try{const c=sessionStorage.getItem('s0count');if(c){cb(+c);return;}}catch(e){}
-  try{fetch('https://discord.com/api/v9/invites/TRgERXq4u?with_counts=true').then(r=>r.json()).then(j=>{const n=+j.approximate_member_count||0;try{sessionStorage.setItem('s0count',n);}catch(e){}cb(n);}).catch(()=>cb(0));}catch(e){cb(0);}}
+  try{fetch('https://discord.com/api/v9/invites/aYPtmqCHvU?with_counts=true').then(r=>r.json()).then(j=>{const n=+j.approximate_member_count||0;try{sessionStorage.setItem('s0count',n);}catch(e){}cb(n);}).catch(()=>cb(0));}catch(e){cb(0);}}
 function s0Line(n){return n>=S0_SHOW?`<b>${n} of ${S0_GOAL}</b> commanders are on the waitlist.`:`Be one of the first ${S0_GOAL} commanders on the waitlist.`;}
 function s0Fill(root){const el=root&&root.querySelector('[data-s0]');if(!el)return;s0Fetch(n=>{el.innerHTML=s0Line(n);const bar=root.querySelector('[data-s0bar]');if(bar)bar.style.width=(n>=S0_SHOW?Math.min(100,Math.round(n/S0_GOAL*100)):0)+'%';});}
 function s0Badge(){try{localStorage.setItem('romaterra_founding','1');}catch(e){}
@@ -8823,7 +8823,7 @@ function showMpSupport(onClose,reason){
       <p style="margin:0 0 8px" data-s0>Be one of the first 100 commanders on the waitlist.</p>
     </div>
     <div class="mt" style="display:flex;flex-direction:column;gap:8px">
-      <a href="https://discord.gg/TRgERXq4u" target="_blank" rel="noopener" class="opt" style="display:block;text-align:center;background:linear-gradient(90deg,#4f8cff,#37d9a9);color:#04121c;font-weight:800;text-decoration:none;border:0">💬 Join the waitlist (Discord)</a>
+      <a href="https://discord.gg/aYPtmqCHvU" target="_blank" rel="noopener" class="opt" style="display:block;text-align:center;background:linear-gradient(90deg,#4f8cff,#37d9a9);color:#04121c;font-weight:800;text-decoration:none;border:0">💬 Join the waitlist (Discord)</a>
       <a href="${esc(MP_SUPPORT_URL)}" target="_blank" rel="noopener" class="btn ghost sm" style="display:block;text-align:center">❤️ Want to support it? A voluntary gift (PayPal)</a>
       <div class="small muted" style="text-align:center">A gift is entirely voluntary, goes to ${esc(DONATE.org)}, and has no effect on your game, ranking or place in the live world.</div>
       <div class="small muted" style="text-align:center">or by bank transfer: ${esc(DONATE.org)} · IBAN ${esc(DONATE.iban)}</div>
@@ -20099,7 +20099,7 @@ setInterval(()=>{try{ladder();champCard();}catch(e){}},500);
   function menus(){try{const side=document.getElementById('side');if(!side)return;const late=solo()&&turnsIn()<P188U.MENUS_AT;let hid=0;
     side.querySelectorAll('.nav[data-k]').forEach(n=>{const k=n.dataset.k;const h=late&&P188U.LATE.includes(k)&&(typeof view==='undefined'||view!==k);n.classList.toggle('p188h',h);});
     const more=side.querySelector('.p183more');if(more&&/More menus/.test(more.textContent)){side.querySelectorAll('.nav[data-k]').forEach(n=>{if(!n.classList.contains('p183k')&&!n.classList.contains('p188h'))hid++;});
-      more.textContent='▸ More menus ('+hid+')';}}catch(e){}}
+      {const t='▸ More menus ('+hid+')';if(more.textContent!==t)more.textContent=t;}}}catch(e){}}
   try{if(typeof window.p183Menus==='function'){const _m=window.p183Menus;window.p183Menus=function(){const r=_m.apply(this,arguments);menus();return r;};try{p183Menus=window.p183Menus;}catch(e){}}}catch(e){}
   // ---------- run after every render ----------
   let busy=false,queued=false;
@@ -20399,7 +20399,7 @@ setInterval(()=>{try{ladder();champCard();}catch(e){}},500);
       <div class="p194grid"><div class="p194web">${webHTML(c)}</div>${t?cardHTML(c,t):''}</div>`;
     if(!box){box=document.createElement('div');box.className='p194rd';const tt=v.querySelector(':scope > .ptitle');if(tt)tt.insertAdjacentElement('afterend',box);else v.prepend(box);}
     box.innerHTML=html;box.dataset.sig=sig(c);
-    box.querySelectorAll('[data-p194k]').forEach(n=>n.onclick=()=>{sel=n.dataset.p194k;armed=null;box.dataset.sig='';research(v,c);});
+    box.querySelectorAll('[data-p194k]').forEach(n=>n.onclick=()=>{sel=n.dataset.p194k;armed=null;box.dataset.sig='';research(v,c);try{if(matchMedia('(max-width:900px)').matches)setTimeout(()=>{const b=box.querySelector('.p194big');if(b)b.scrollIntoView({behavior:'smooth',block:'center'});},60);}catch(e){}});
     box.querySelectorAll('[data-p194sel]').forEach(b=>b.onclick=()=>{if(b.dataset.p194sel){sel=b.dataset.p194sel;armed=null;box.dataset.sig='';research(v,c);}});
     box.querySelectorAll('[data-p194classic]').forEach(b=>b.onclick=()=>{classic=!classic;box.dataset.sig='';research(v,c);old(v);});
     box.querySelectorAll('[data-p194go]').forEach(b=>b.onclick=async ()=>{const k=b.dataset.p194go;const tt=TECH.find(x=>x.k===k);if((tt.excludes||[]).length&&armed!==k){armed=k;box.dataset.sig='';research(v,c);return;}
@@ -20554,7 +20554,7 @@ setInterval(()=>{try{ladder();champCard();}catch(e){}},500);
     bar.innerHTML=`<span class="p195h">${E(hub.n)}</span>`+hub.views.map(([k,l,ic])=>`<button type="button" data-p195t="${k}" class="${k===cur?'on':''}"><span class="ic">${window.__pIc(ic)}</span><span>${E(l)}</span>${k==='self'&&n?`<span class="p195b">${E(n)}</span>`:''}</button>`).join('');
     bar.querySelectorAll('[data-p195t]').forEach(b=>b.onclick=()=>{if(b.dataset.p195t!==view){try{go(b.dataset.p195t);}catch(e){}}});}
   // no ready-made targets: you find them yourself by scouting (only the first lesson still points at your first land)
-  function quiet(){const v=document.getElementById('view');if(!v)return;v.querySelectorAll('.p195q').forEach(e=>e.classList.remove('p195q'));const nm=typeof view!=='undefined'?view:'';const hide=e=>{if(e&&!e.classList.contains('p195q'))e.classList.add('p195q');};
+  function quiet(){const v=document.getElementById('view');if(!v)return;const nm=typeof view!=='undefined'?view:'';const hide=e=>{if(e&&KEEP)KEEP.add(e);if(e&&!e.classList.contains('p195q'))e.classList.add('p195q');};
     let training=false;try{const c=you();training=!!(c&&c._train&&!c._train.done&&G.tick-(c._born||0)<16&&regionsOf(c).length<2);}catch(e){}
     if(nm==='dashboard'){const t=v.querySelector(':scope > .ptitle');if(t){const isAlert=e=>/alert|sos|p7bar|crisis/i.test(e.className||'')||(t=>t.indexOf('\uD83C\uDD98')===0||/^WAR ALERT/.test(t))((e.textContent||'').trim());let first=[...v.children].find(e=>!isAlert(e));if(first&&first!==t){v.insertBefore(t,first);const rl=v.querySelector(':scope > .p194realm');if(rl&&t.nextElementSibling!==rl)t.insertAdjacentElement('afterend',rl);}}}
     if(nm==='dashboard'){if(!training)v.querySelectorAll('.p186next').forEach(hide);v.querySelectorAll('.p192tg').forEach(hide);
@@ -20585,10 +20585,13 @@ setInterval(()=>{try{ladder();champCard();}catch(e){}},500);
       else out.innerHTML='🔍 The scouts came back with nothing: their radar turned them away. Try again next turn.';};
     box.querySelector('.p195scb').onclick=run;inp.onkeyup=e=>{if(e.key==='Enter')run();};}
   function mapTidy(){const v=document.getElementById('view');if(!v||typeof view==='undefined'||view!=='map')return;
-    [...v.children].forEach(e=>{if(/^You are .{1,60}\. Map codes like/i.test((e.innerText||'').trim()))e.classList.add('p195q');});}
+    [...v.children].forEach(e=>{if(/^You are .{1,60}\. Map codes like/i.test((e.innerText||'').trim())){if(KEEP)KEEP.add(e);if(!e.classList.contains('p195q'))e.classList.add('p195q');}});}
   function attackTidy(){const v=document.getElementById('view');if(!v||typeof view==='undefined'||view!=='around')return;
-    v.querySelectorAll('.p15 > div, .p15 .p15ground, .p15 > *').forEach(e=>{if(/^\W*Your ground\b/i.test((e.innerText||'').trim())&&!e.querySelector('.p15grid'))e.classList.add('p195q');});}
-  function apply(){try{side();tabs();quiet();scout();attackTidy();mapTidy();}catch(e){console.error('p195',e);}}
+    v.querySelectorAll('.p15 > div, .p15 .p15ground, .p15 > *').forEach(e=>{if(/^\W*Your ground\b/i.test((e.innerText||'').trim())&&!e.querySelector('.p15grid')){if(KEEP)KEEP.add(e);if(!e.classList.contains('p195q'))e.classList.add('p195q');}});}
+  // 14.2: hidden marks are kept, not wiped and re-added every pass. Wiping them changed the DOM on every pass, which woke
+  // the observers again: Home and War redrew about 30 times a second with nothing happening.
+  let KEEP=null;
+  function apply(){KEEP=new Set();try{side();tabs();quiet();scout();attackTidy();mapTidy();const v=document.getElementById('view');if(v)v.querySelectorAll('.p195q').forEach(e=>{if(!KEEP.has(e))e.classList.remove('p195q');});}catch(e){console.error('p195',e);}finally{KEEP=null;}}
   window.__p195apply=apply;
   document.addEventListener('click',e=>{const m=document.querySelector('.p195more.open');if(m&&!m.contains(e.target))m.classList.remove('open');});
   window.__pSched=window.__pSched||(fn=>{let q=false,n=0,t0=0;return ()=>{if(q)return;q=true;const now=performance.now();if(now-t0>200){t0=now;n=0;}n++;const run=()=>{q=false;try{fn();}catch(e){console.error(e);}};if(n>40)setTimeout(run,60);else queueMicrotask(run);};});
@@ -21106,7 +21109,7 @@ setInterval(()=>{try{ladder();champCard();}catch(e){}},500);
   // one honest line about the live world, under the links on Home
   function live(){const v=document.getElementById('view');if(!v||typeof view==='undefined'||view!=='dashboard')return;try{if(window.__MP__||(typeof isSoloGame==='function'&&!isSoloGame()))return;}catch(e){}if(v.querySelector('.p201live'))return;
     const l=v.querySelector(':scope > .p192links');const el=document.createElement('div');el.className='p201live';
-    el.innerHTML='<span class="dot"></span><span><b>The live world is being built.</b> Every nation a real player, one turn an hour. The server version is in testing. </span><a href="https://discord.gg/TRgERXq4u" target="_blank" rel="noopener">Join the waitlist on Discord</a>';
+    el.innerHTML='<span class="dot"></span><span><b>The live world is being built.</b> Every nation a real player, one turn an hour. The server version is in testing. </span><a href="https://discord.gg/aYPtmqCHvU" target="_blank" rel="noopener">Join the waitlist on Discord</a>';
     if(l)l.insertAdjacentElement('afterend',el);else v.appendChild(el);}
   const css2=document.createElement('style');css2.textContent='.p201live{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin-top:10px;padding:10px 14px;border:1px dashed var(--border);border-radius:var(--r,6px);font-size:13px;color:var(--muted)}.p201live b{color:var(--text)}.p201live a{color:var(--hi,#F59E0B);font-weight:700}.p201live .dot{width:8px;height:8px;border-radius:50%;background:var(--hi,#F59E0B);box-shadow:0 0 0 0 var(--hi,#F59E0B);animation:p201p 2s infinite}@keyframes p201p{0%{box-shadow:0 0 0 0 color-mix(in srgb,var(--hi,#F59E0B) 60%,transparent)}70%{box-shadow:0 0 0 8px transparent}100%{box-shadow:0 0 0 0 transparent}}@media (prefers-reduced-motion:reduce){.p201live .dot{animation:none}}';
   document.head.appendChild(css2);
@@ -21654,7 +21657,7 @@ if(typeof module!=='undefined'&&module.exports)module.exports=BANNER;
 (function(){
   const css=document.createElement('style');css.textContent=`
   #view{padding-bottom:84px}
-  @media(max-width:700px){.rpanel{max-height:min(40vh,calc(100dvh - 150px))!important}}
+  @media(max-width:700px){.rpanel{max-height:min(40vh,calc(100dvh - 150px))!important}#view td .lk,#view td a{display:inline-block;padding:7px 0}#view .help-q,#view button[aria-label='Help'],#view .qhelp{min-width:32px;min-height:32px}}
   .p207co{font-size:12px;color:var(--muted);margin-top:6px}`;document.head.appendChild(css);
   // 1. Escape closes the top window
   const SEL='.modal-bg,[role="dialog"],.p204ed,.modal';
@@ -21669,15 +21672,18 @@ if(typeof module!=='undefined'&&module.exports)module.exports=BANNER;
       const seen=new Set();rail.querySelectorAll('.ar-item').forEach(it=>{const k=(it.textContent||'').trim();if(seen.has(k))it.remove();else seen.add(k);});});}catch(e){}}
   // 3. the coordinate format, explained once where you type one
   function coordHelp(){try{const inp=document.querySelector('#view > .p199 .p199pick input');if(!inp)return;const box=inp.closest('.p199top');if(!box||box.querySelector('.p207co'))return;
-      const d=document.createElement('div');d.className='p207co';d.textContent='A coordinate reads theater:sector:region. 1:2:5 is theater 1, sector 2, region 5. Your own is the blue chip at the top.';
+      const d=document.createElement('div');d.className='p207co';d.textContent='A coordinate has three numbers: theater, sector and region. Yours is the blue chip at the top of the screen.';
       (inp.closest('.p199pick')||inp).insertAdjacentElement('afterend',d);}catch(e){}}
   // 4. Field training sits right under the title (after an incoming-attack card), also on a phone
   function trainTop(){try{if(typeof view==='undefined'||view!=='dashboard')return;const v=document.getElementById('view');const tb=v&&v.querySelector(':scope > .trainbar');const t=v&&v.querySelector(':scope > .ptitle');if(!tb||!t)return;
       let at=t;const fz=v.querySelector(':scope > .dash-zone.p186danger');if(fz&&t.nextElementSibling===fz){at=fz;if(fz.nextElementSibling&&fz.nextElementSibling.classList.contains('p186box'))at=fz.nextElementSibling;}
       if(at.nextElementSibling!==tb)at.insertAdjacentElement('afterend',tb);}catch(e){}}
-  function apply(){tidy();coordHelp();trainTop();}
+  // 5. the Army tile in the top strip follows the army: home now, plus what is out
+  function armyTile(){try{const el=document.querySelector('#strip .res-army');const c=you();if(!el||!c)return;const home=fleetSize(c.units||{});const out=(c.fleets||[]).reduce((s,f)=>s+fleetSize(f.units||{}),0);
+      const v=el.querySelector('.v'),d=el.querySelector('.d');const vt=full(home),dt=out?'home · '+full(out)+' out':'home';if(v&&v.textContent!==vt)v.textContent=vt;if(d&&d.textContent!==dt)d.textContent=dt;}catch(e){}}
+  function apply(){tidy();coordHelp();trainTop();armyTile();}
   window.__p207apply=apply;if(window.__pLayers&&window.__pLayers.indexOf('__p207apply')<0)window.__pLayers.push('__p207apply');
-  setInterval(tidy,1500);
+  setInterval(()=>{tidy();armyTile();},1500);
 })();
 
 </script>
