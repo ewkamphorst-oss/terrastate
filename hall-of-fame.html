@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>World ranking · Terrastate, Romaterra, Ironfront</title>
+<meta name="description" content="The world ranking of solo seasons in Terrastate, Romaterra and Ironfront: who won the season, in how many turns, at which level.">
+<link rel="canonical" href="https://playterrastate.nl/hall-of-fame.html">
+<meta name="theme-color" content="#0b0f17">
+<link rel="icon" href="icons/terrastate-64.png">
+<link rel="stylesheet" href="site.css?v=115">
+<link rel="stylesheet" href="site14.css?v=1">
+<style>
+.hof-tabs{display:flex;flex-wrap:wrap;gap:0;border:1px solid var(--border,#263042);border-radius:8px;overflow:hidden;margin:22px 0 16px;width:max-content;max-width:100%}
+.hof-tabs button{background:transparent;border:0;border-right:1px solid var(--border,#263042);color:var(--muted,#9aa6b8);padding:11px 18px;font:inherit;font-weight:700;letter-spacing:.06em;text-transform:uppercase;cursor:pointer}
+.hof-tabs button:last-child{border-right:0}
+.hof-tabs button[aria-selected="true"]{color:#fff;background:rgba(245,158,11,.14);box-shadow:inset 0 -3px 0 #F59E0B}
+.hof-wrap{overflow-x:auto}
+table.hof{width:100%;border-collapse:collapse;min-width:560px}
+table.hof th{font-family:var(--mono,monospace);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted,#9aa6b8);text-align:left;padding:8px}
+table.hof td{padding:11px 8px;border-top:1px solid var(--border,#263042);vertical-align:top}
+table.hof td.n{font-family:var(--mono,monospace);font-weight:800}
+table.hof tr:nth-child(2) td.n{color:#F5C542}table.hof tr:nth-child(3) td.n{color:#C9D1DB}table.hof tr:nth-child(4) td.n{color:#D08A4E}
+table.hof .won{color:#F59E0B;font-weight:700}
+table.hof .sub{color:var(--muted,#9aa6b8);font-size:13px}
+@media(max-width:600px){.hof-tabs{width:100%}.hof-tabs button{flex:1;padding:11px 8px;font-size:13px}}
+.hof-empty{padding:28px;border:1px dashed var(--border,#263042);border-radius:8px;color:var(--muted,#9aa6b8);text-align:center}
+</style>
+</head>
+<body>
+<nav class="topbar">
+  <div class="wrap row">
+    <a class="logo" href="index.html"><img src="icons/terrastate-64.png" alt=""><span>TERRA<b>STATE</b></span></a>
+    <div class="navlinks"><a href="index.html">Home</a><a href="updates.html">Updates</a><a href="hall-of-fame.html">Ranking</a></div>
+    <a class="endturn small" href="play.html">PLAY <span>▶</span></a>
+  </div>
+</nav>
+<main class="wrap" style="padding-top:48px;padding-bottom:64px">
+  <div class="kicker">WORLD RANKING</div>
+  <h1 style="margin:6px 0 10px">Who rules the solo seasons</h1>
+  <p class="muted" style="max-width:720px">Finish a solo season and press Send at the end to put your result here. Winners first, fastest win on top. Then the best finish in the field. One line per player: their best season.</p>
+  <div class="hof-tabs" role="tablist">
+    <button role="tab" data-g="terrastate" aria-selected="true">Terrastate</button>
+    <button role="tab" data-g="romaterra" aria-selected="false">Romaterra</button>
+    <button role="tab" data-g="ironfront" aria-selected="false">Ironfront</button>
+  </div>
+  <div class="hof-wrap" id="hof"><div class="hof-empty">Loading the list.</div></div>
+  <p class="muted small" style="margin-top:18px;max-width:720px">Solo seasons are played on your own device, so we cannot check every result. Anything that looks wrong is taken off the list. Your name and season result are only sent when you press Send. <a href="privacy.html">Privacy</a></p>
+</main>
+<footer><div class="wrap"><div class="foot-links"><a href="index.html">Home</a> · <a href="play.html">Play Terrastate</a> · <a href="romaterra.html">Play Romaterra</a> · <a href="ironfront.html">Play Ironfront</a> · <a href="updates.html">Updates</a></div><div class="muted small">© 2026 Wim Kamphorst · Terrastate™ and Romaterra™ · a work of fiction · made with the help of AI tools</div></div></footer>
+<script>
+(function(){
+  var URL0='https://script.google.com/macros/s/AKfycby3_kn2rJlYyfF7dLNWq3JR4wM-rfthtpIK01yf_7e26yLgIa4vPnSK4sgmuPL23KeO3g/exec';
+  var PLAY={terrastate:'play.html',romaterra:'romaterra.html',ironfront:'ironfront.html'};
+  var LV={recruit:'Recruit',veteran:'Veteran',warlord:'Warlord',quick:'Quick',standard:'Standard',epic:'Epic'};
+  var box=document.getElementById('hof'),cache={};
+  function e(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
+  function paint(g,rows){
+    if(!rows){box.innerHTML='<div class="hof-empty">The list cannot be reached right now. Try again later.</div>';return;}
+    if(!rows.length){box.innerHTML='<div class="hof-empty">No seasons on the list yet. <a href="'+PLAY[g]+'">Play a season</a> and be the first.</div>';return;}
+    box.innerHTML='<table class="hof"><tr><th>#</th><th>Commander</th><th>Result</th><th>Turns</th><th>Level</th><th>Date</th></tr>'+rows.map(function(r,i){
+      return '<tr><td class="n">'+(i+1)+'</td><td><b>'+e(r.name)+'</b><div class="sub">'+e(r.nation)+(r.title?' · '+e(r.title):'')+'</div></td><td class="'+(r.won?'won':'')+'">'+(r.won?'Won the season':'#'+e(r.rank)+' of '+e(r.total))+'</td><td>'+e(r.turns)+'</td><td class="sub">'+e([LV[r.diff]||r.diff,LV[r.len]||r.len].filter(Boolean).join(' · '))+'</td><td class="sub">'+e(r.date)+'</td></tr>';}).join('')+'</table>';}
+  function show(g){
+    [].forEach.call(document.querySelectorAll('.hof-tabs button'),function(b){b.setAttribute('aria-selected',b.getAttribute('data-g')===g?'true':'false');});
+    if(location.hash!=='#'+g)history.replaceState(null,'','#'+g);
+    if(cache[g]){paint(g,cache[g]);return;}
+    box.innerHTML='<div class="hof-empty">Loading the list.</div>';
+    if(!/^https:\/\/script\.google\.com\//.test(URL0)){paint(g,[]);return;}
+    fetch(URL0+'?game='+g).then(function(r){return r.json();}).then(function(j){cache[g]=(j&&j.ok)?j.rows||[]:null;paint(g,cache[g]);}).catch(function(){paint(g,null);});}
+  [].forEach.call(document.querySelectorAll('.hof-tabs button'),function(b){b.onclick=function(){show(b.getAttribute('data-g'));};});
+  var h=(location.hash||'').slice(1);show(PLAY[h]?h:'terrastate');
+})();
+</script>
+</body>
+</html>

@@ -21612,5 +21612,67 @@ setInterval(()=>{try{ladder();champCard();}catch(e){}},500);
 })();
 
 </script>
+<script>/*p203ui*/
+/* p203 Update 14.1: the world ranking for solo seasons. At the end of a season you can put your result on the public
+   list at playterrastate.nl (name of your choice + the season result, nothing else, only when you press the button).
+   Rankings shows the top of the list for this game. Without an address for the list, nothing shows. */
+(function(){
+  const URL0='https://script.google.com/macros/s/AKfycby3_kn2rJlYyfF7dLNWq3JR4wM-rfthtpIK01yf_7e26yLgIa4vPnSK4sgmuPL23KeO3g/exec';
+  if(!/^https:\/\/script\.google\.com\//.test(URL0))return;
+  const GAME='Ironfront'.toLowerCase();
+  const PAGE='https://playterrastate.nl/hall-of-fame.html#'+GAME;
+  const E=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+  const solo=()=>{try{return !window.__MP__&&(typeof isSoloGame!=='function'||isSoloGame());}catch(e){return false;}};
+  const LS=(k,v)=>{try{if(v===undefined)return localStorage.getItem(k);localStorage.setItem(k,v);}catch(e){return null;}};
+  const css=document.createElement('style');css.textContent=`
+  .p203{margin-top:14px;border:1px solid color-mix(in srgb,var(--hi,#F59E0B) 45%,var(--border));border-radius:10px;padding:14px 16px;background:color-mix(in srgb,var(--hi,#F59E0B) 7%,transparent);text-align:left}
+  .p203 h4{margin:0 0 4px;font-size:15px}.p203 .s{color:var(--muted);font-size:13px;line-height:1.45}
+  .p203 .r{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}.p203 input{flex:1 1 160px;min-width:0}
+  .p203 button{white-space:nowrap}.p203 .ok{color:var(--ok,#22C55E);font-weight:700;margin-top:8px}.p203 .no{color:var(--bad,#EF4444);margin-top:8px;font-size:13px}
+  .p203w table{width:100%;border-collapse:collapse}.p203w td,.p203w th{padding:7px 6px;border-top:1px solid var(--border);text-align:left;font-size:13px}
+  .p203w th{font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);border-top:0}
+  .p203w .won{color:var(--hi,#F59E0B);font-weight:700}.p203w .me td{background:color-mix(in srgb,var(--accent,#3B82F6) 12%,transparent)}
+  `;document.head.appendChild(css);
+
+  function pid(){let p=LS('p203pid');if(!p){p='p'+Math.random().toString(36).slice(2,12)+Date.now().toString(36);LS('p203pid',p);}return p;}
+  function result(){const c=you();const rt=rankTitle(c.id);let won=false;
+    try{if(G._winner!=null){const w=G.countries[G._winner];won=G._winner===G.you||!!(w&&w.clan!=null&&w.clan===c.clan);}else won=typeof finaleWonBy==='function'&&!!finaleWonBy(c);}catch(e){}
+    let score=0;try{score=Math.round(scores(c).overall||0);}catch(e){}let title='';try{title=legacyTitle(c,rt,won).t;}catch(e){}
+    const S=G.season||{};const L=(typeof slog==='function'?slog(c):{})||{};
+    return {game:GAME,nation:c.name,tag:c.tag,won,rank:Math.max(1,rt.pos||rt.total||1),total:Math.max(1,rt.total||1),turns:Math.max(1,G.tick-(S.startTick||0)),
+      score,captures:L.captures||0,diff:(G.solo&&G.solo.diff)||'',len:(G.solo&&G.solo.len)||'',title,player:pid(),key:pid()+'-'+GAME+'-'+(S.num||1)+'-'+(S.startTick||0)};}
+  function block(){const r=result();const nm=LS('p203name')||'';const k='p203sent-'+r.key;
+    const el=document.createElement('div');el.className='p203';
+    el.innerHTML=`<h4>World ranking</h4><div class="s">Put this season on the public list at playterrastate.nl. We send the name below and this season's result (${r.won?'won':'#'+r.rank+' of '+r.total}, ${r.turns} turns). Nothing else, and only when you press the button.</div>
+      ${LS(k)?`<div class="ok">On the list. <a href="${PAGE}" target="_blank" rel="noopener">See the ranking</a></div>`:`<div class="r"><input maxlength="24" placeholder="Your name on the list" value="${E(nm)}" aria-label="Your name on the list"><button class="btn sm" type="button">Send</button></div><div class="msg"></div>`}`;
+    const b=el.querySelector('button');if(b)b.onclick=async()=>{const name=el.querySelector('input').value.trim();const msg=el.querySelector('.msg');
+      if(name.length<2){msg.className='no';msg.textContent='Pick a name of at least 2 letters.';return;}
+      b.disabled=true;b.textContent='Sending';LS('p203name',name);
+      try{const res=await fetch(URL0,{method:'POST',body:JSON.stringify(Object.assign({name},r))});const j=await res.json();
+        if(j&&j.ok){LS(k,'1');el.querySelector('.r').remove();msg.className='ok';msg.innerHTML=`On the list. <a href="${PAGE}" target="_blank" rel="noopener">See the ranking</a>`;try{trackEvent('rank-send');}catch(e){}}
+        else{msg.className='no';msg.textContent=(j&&j.error)||'That did not work. Try again later.';b.disabled=false;b.textContent='Send';}}
+      catch(e){msg.className='no';msg.textContent='No connection to the list right now. Try again later.';b.disabled=false;b.textContent='Send';}};
+    return el;}
+  function addToModal(){if(!solo())return;setTimeout(()=>{const ms=[...document.querySelectorAll('.modal-bg .modal')];const m=ms[ms.length-1];if(!m||m.querySelector('.p203'))return;
+    const ns=m.querySelector('#ns,.opt.mt');const leg=[...m.querySelectorAll('div')].find(d=>/^your legacy/i.test((d.firstElementChild&&d.firstElementChild.textContent||'').trim())&&d.children.length<6);try{const el=block();if(leg)leg.insertAdjacentElement('afterend',el);else if(ns)ns.insertAdjacentElement('beforebegin',el);else m.appendChild(el);}catch(e){}},0);}
+  ['showSeasonEnd','showVictory'].forEach(fn=>{try{const f=window[fn];if(typeof f!=='function'||f._p203)return;const g=function(){const r=f.apply(this,arguments);addToModal();return r;};g._p203=1;window[fn]=g;
+    try{if(fn==='showSeasonEnd')showSeasonEnd=g;else showVictory=g;}catch(e){}}catch(e){}});
+
+  // ---------- Rankings: the top of the world list for this game ----------
+  let cache=null,at=0,busy=false;
+  async function load(){if(busy||(cache&&Date.now()-at<300000))return;busy=true;try{const r=await fetch(URL0+'?game='+GAME);const j=await r.json();if(j&&j.ok){cache=j.rows||[];at=Date.now();}}catch(e){}busy=false;paint();}
+  function paint(){const v=document.getElementById('view');if(!v||typeof view==='undefined'||view!=='rankings'||!solo())return;
+    let w=v.querySelector('.p203w');if(!w){w=document.createElement('div');w.className='card mt p203w';const t=v.querySelector('.ptitle');w.style.marginBottom='14px';t?t.insertAdjacentElement('afterend',w):v.prepend(w);}
+    const me=LS('p203name');const rows=(cache||[]).slice(0,10);const sig=JSON.stringify(rows)+(cache?1:0);if(w.dataset.sig===sig)return;w.dataset.sig=sig;
+    w.innerHTML=`<h3>World ranking <span class="muted small" style="text-transform:none;letter-spacing:0">solo seasons of other players · <a href="${PAGE}" target="_blank" rel="noopener">full list</a></span></h3>`+
+      (!cache?'<div class="muted small">Loading the list.</div>':!rows.length?'<div class="muted small">No seasons on the list yet. Finish a season and be the first.</div>':
+      `<table><tr><th>#</th><th>Name</th><th>Result</th><th>Turns</th><th>Level</th></tr>${rows.map((r,i)=>`<tr${me&&r.name===me?' class="me"':''}><td>${i+1}</td><td><b>${E(r.name)}</b> <span class="muted">${E(r.nation||'')}</span></td><td class="${r.won?'won':''}">${r.won?'Won the season':'#'+r.rank+' of '+r.total}</td><td>${r.turns}</td><td class="muted">${E([r.diff,r.len].filter(Boolean).join(' · '))}</td></tr>`).join('')}</table>`);}
+  function apply(){if(typeof view!=='undefined'&&view==='rankings'&&solo()){paint();load();}}
+  window.__p203apply=apply;if(window.__pLayers&&window.__pLayers.indexOf('__p203apply')<0)window.__pLayers.push('__p203apply');
+  const v0=()=>{const v=document.getElementById('view');if(v)new MutationObserver(window.__pSched?window.__pSched(apply):apply).observe(v,{childList:true});apply();};
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',v0);else v0();
+})();
+
+</script>
 </body>
 </html>
