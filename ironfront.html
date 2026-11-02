@@ -1922,7 +1922,7 @@ const VOICE={
 function voiceLine(arch,kind){const m=VOICE[kind]||{};const arr=m[arch]||m.default||['...'];return pick(arr);}
 function assignLeader(c,arch){G._usedNames=G._usedNames||{};let name='',guard=0;
   do{name=pick(LEAD_FIRST)+' '+pick(LEAD_LAST);guard++;}while(G._usedNames[name]&&guard<24);
-  if(G._usedNames[name])name=name+' '+String(c.id||guard);
+  if(G._usedNames[name])name=p202freeName(G._usedNames)||name+' '+String(c.id||guard);
   G._usedNames[name]=1;
   c.leader={name,persona:PERSONA[arch]||'the Pragmatist',seed:Math.floor(rand(1,99999))};}
 function leaderName(c){return c.leader?c.leader.name:c.name;}
@@ -12926,6 +12926,9 @@ window.DEV={tick:()=>{runTick();drawTop();if(view!=='map')go(view);}}; // consol
 // Emoji anywhere in the UI (also text that went through esc()) are swapped for these glyphs by iconize(); unmapped emoji
 // stay as they are. Add a glyph: draw it in ICON_PATHS, map the emoji in ICON_MAP.
 const ICON_PATHS={
+  steel:'M4 4.5h16M4 19.5h16M12 4.5v15M9 4.5c0 2 3 2 3 3.5M15 4.5c0 2-3 2-3 3.5M9 19.5c0-2 3-2 3-3.5M15 19.5c0-2-3-2-3-3.5',
+  sos:'M6 19v-6a6 6 0 0 1 12 0v6M4 19h16v2H4zM12 2v2M3.5 5.5l1.5 1.5M20.5 5.5 19 7M10 13a2 2 0 0 1 2-2',
+  mask:'M4 5c5 2 11 2 16 0v6c0 4.5-3.6 8-8 8s-8-3.5-8-8zM8 10h2.5M13.5 10H16M9.5 14c1.5 1.2 3.5 1.2 5 0',
   shield:'M12 3 4 6v5c0 5 3.4 8.6 8 10 4.6-1.4 8-5 8-10V6z',
   swords:'M4 20 20 4M20 4h-5M20 4v5M4 4l16 16M4 4h5M4 4v5M8 16l-2 2M16 16l2 2',
   target:'M12 12m-7 0a7 7 0 1 0 14 0a7 7 0 1 0-14 0M12 2v4M12 18v4M2 12h4M18 12h4M12 12h.01',
@@ -13002,11 +13005,11 @@ const ICON_PATHS={
   sun:'M12 12m-4 0a4 4 0 1 0 8 0a4 4 0 1 0-8 0M12 2v2M12 20v2M2 12h2M20 12h2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4',
   sparkle:'M12 3v18M3 12h18M6 6l12 12M18 6 6 18',leaf:'M5 20c0-8 4-13 14-14 0 10-5 14-11 14H5zM5 20c2-5 5-8 9-10',scale:'M12 3v18M4 21h16M12 6l-6 1 3 7a3 3 0 0 1-6 0zM12 6l6 1-3 7a3 3 0 0 0 6 0z',heart:'M12 21s-8-5.5-8-11a4 4 0 0 1 8-2 4 4 0 0 1 8 2c0 5.5-8 11-8 11z',speaker:'M4 10v4h4l5 4V6L8 10zM16 9a4 4 0 0 1 0 6M18.5 6.5a8 8 0 0 1 0 11',mute:'M4 10v4h4l5 4V6L8 10zM16 9l5 6M21 9l-5 6',barrel:'M6 4h12v16H6zM6 9h12M6 15h12',help:'M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0-18 0M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.7.4-1 1-1 1.7M12 17h.01',infinity:'M7 8a4 4 0 0 0 0 8c3 0 4-8 10-8a4 4 0 0 1 0 8c-3 0-4-8-10-8'
 };
-const ICON_MAP={'🛡':'shield','⚔':'swords','🎯':'target','📡':'radar','🛰':'satellite','👁':'eye','⚑':'flag','🚩':'flag','🏴':'flagb','🏳':'flag','💀':'skull','🏅':'medal','🎖':'medal','🧠':'bulb','💡':'bulb','🔮':'compass','🧭':'compass',
+const ICON_MAP={'🆘':'sos','🎭':'mask','📻':'chip','🛡':'shield','⚔':'swords','🎯':'target','📡':'radar','🛰':'satellite','👁':'eye','⚑':'flag','🚩':'flag','🏴':'flagb','🏳':'flag','💀':'skull','🏅':'medal','🎖':'medal','🧠':'bulb','💡':'bulb','🔮':'compass','🧭':'compass',
   '⚠':'warn','💰':'coin','💸':'coin','💶':'coin','⚡':'bolt','📦':'box','🏆':'trophy','🔥':'flame','🤝':'handshake','🗺':'map','🌍':'globe','🌐':'globe','👑':'crown','🕊':'dove','📍':'pin','📌':'pin','✉':'mail','📧':'mail','📨':'mail','📣':'megaphone','📢':'megaphone',
   '🔬':'flask','🧪':'flask','🏛':'capitol','⚙':'gear','🔒':'lock','🔓':'lock','🚚':'truck','✈':'plane','🛩':'plane','🔭':'binoculars','💻':'chip','🚀':'rocket','⏱':'clock','⏰':'clock','🕐':'clock','🔔':'bell','💬':'chat','📊':'chart','📈':'chart','📉':'chart','📖':'book','📕':'book','📋':'clipboard','📝':'clipboard',
   '🏠':'home','🏭':'factory','🏗':'factory','🔧':'wrench','🛠':'wrench','↩':'undo','🧱':'wall','↹':'swap','⭐':'star','🌟':'star','✨':'sparkle','🔍':'search','🔎':'search','🚪':'door','🛟':'buoy','👤':'user','👥':'users','📅':'calendar','⌛':'hourglass','⏳':'hourglass','🌙':'moon','🌾':'wheat','🛑':'stop','🚫':'ban','🩹':'bandage','🏦':'bank','✋':'hand',
-  '🕵':'detective','💥':'artillery','🪖':'soldier','⚓':'missile','🎪':'tent','☀':'sun','🚨':'bell','🏥':'bandage','💔':'broken','🧨':'flame','🛰️':'satellite','✅':'check good','❌':'x bad','🌱':'leaf','🌳':'leaf','⚖':'scale','🗳':'clipboard','❤️':'heart','❤':'heart','🏰':'wall','🔊':'speaker','🔇':'mute','💾':'box','🕒':'clock','🕶':'detective','📤':'mail','🥇':'medal','🥈':'medal','🥉':'medal','🛢':'barrel','📰':'book','❓':'help','⛊':'shield','⛓':'lock','🚄':'bolt','🧮':'chart','🏁':'flag','💳':'coin','🎉':'sparkle','✔':'check','🔄':'swap','🏃':'bolt','🌅':'sun','⏭':'chevr','♾':'infinity','📐':'chart'};
+  '🕵':'detective','💥':'artillery','🪖':'soldier','⚓':'missile','🎪':'tent','☀':'sun','🚨':'bell','🏥':'bandage','💔':'broken','🧨':'flame','🛰️':'satellite','✅':'check good','❌':'x bad','🌱':'leaf','🌳':'leaf','⚖':'scale','🗳':'clipboard','❤️':'heart','❤':'heart','🏰':'wall','🔊':'speaker','🔇':'mute','💾':'chip','🕒':'clock','🕶':'detective','📤':'mail','🥇':'medal','🥈':'medal','🥉':'medal','🛢':'barrel','📰':'book','❓':'help','⛊':'shield','⛓':'steel','🚄':'bolt','🧮':'chart','🏁':'flag','💳':'coin','🎉':'sparkle','✔':'check','🔄':'swap','🏃':'bolt','🌅':'sun','⏭':'chevr','♾':'infinity','📐':'chart'};
 const ICON_DOTS={'🟢':'g','🔴':'r','🟡':'y','🟠':'o','⚪':'w','🟣':'p','🔵':'b'};
 const ICON_RE=new RegExp('('+Object.keys(ICON_MAP).concat(Object.keys(ICON_DOTS)).sort((a,b)=>b.length-a.length).map(k=>k.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')).join('|')+')\\uFE0F?','g');
 function iconSVG(name,cls){return `<svg class="ic${cls?' '+cls:''}" aria-hidden="true"><use href="#i-${name}"/></svg>`;}
@@ -14595,6 +14598,11 @@ function p200AllyDuty(){try{(G.clans||[]).forEach(cl=>{if(!cl)return;const mem=c
       if(r0&&r0.ok){a.o._p200duty=G.tick;if(m.id===G.you){try{sitrep(m,'war','🛡 '+a.o.name+' sends '+full(fleetSize(com))+' troops to hold '+h.r.name+'. They arrive in '+a.tv+' turn'+(a.tv===1?'':'s')+'.');}catch(e){}}}});});});}catch(e){}}
 {const _rt200=runTick;runTick=function(){const r=_rt200.apply(this,arguments);p200AllyDuty();return r;};}
 
+/*p202*/
+function p202freeName(used){try{const F=LEAD_FIRST,L=LEAD_LAST,n=F.length*L.length,o=Math.floor(Math.random()*n);
+  for(let i=0;i<n;i++){const k=(o+i*7919)%n;const nm=F[k%F.length]+' '+L[Math.floor(k/F.length)];if(!used[nm])return nm;}
+  for(let i=0;i<n*3;i++){const nm=F[Math.floor(Math.random()*F.length)]+' '+L[Math.floor(Math.random()*L.length)]+'-'+L[Math.floor(Math.random()*L.length)];if(!used[nm])return nm;}}catch(e){}return null;}
+if(typeof window!=='undefined')window.__p202freeName=p202freeName;
 // ---- BOOT ------------------------------------------------------------------
 // GitHub serves the brochure as index.html and this file as play.html.
 // Itch and Newgrounds keep the whole game, landing included, as index.html.
@@ -20704,7 +20712,7 @@ setInterval(()=>{try{ladder();champCard();}catch(e){}},500);
   const ROME=GAME==='Romaterra',IRON=GAME==='Ironfront';
   // ---------- icons ----------
   const TIC={automation:'⚙',renewables:'⚡',advman:'🏭',armor:'🛡',supply:'🚚',mil_combined:'⚔',mil_air:ROME?'🦅':'✈',mil_advanced:ROME?'🏛':'🎖',mil_quantum:ROME?'📜':'⚛',
-    mil_asymmetric:ROME?'🏹':'🛩',mil_juggernaut:ROME?'🐘':'🏰',black_market:'💰',open_science:ROME?'📚':'🔬',recon_net:'👁',fortify:'🧱',rapid:ROME?'🛤':'🚆',deep_recon:ROME?'🗺':'🛰'};
+    mil_asymmetric:ROME?'🏹':'🛩',mil_juggernaut:ROME?'🐘':'🏰',black_market:'💰',open_science:ROME?'📚':'🔬',recon_net:'👁',fortify:'🧱',rapid:ROME?'🛤':'🚆',deep_recon:ROME?'🗺':'🛰',radar_grid:ROME?'🗼':'📡',deception:'🎭',siegecraft:'🛠'};
   const UIC={inf:ROME?'⚔':'🪖',recon:'🔭',armor:ROME?'🐎':'🛡',arty:ROME?'🏹':'💥',cyber:ROME?'📜':'💻',support:ROME?'🛒':'🚚',airdef:ROME?'🛡':'🎯',air:ROME?'🦅':'✈',sam:ROME?'🗼':'🚀',navy:'⚓'};
   const tic=t=>TIC[t.k]||(t.cat==='Military'?'⚔':t.cat==='Economy'?'💹':'🏗');
   // ---------- tech web ----------
@@ -21013,7 +21021,9 @@ setInterval(()=>{try{ladder();champCard();}catch(e){}},500);
   function build(){const v=document.getElementById('view');if(!v||typeof view==='undefined'||view!=='production')return;
     const rows=[...v.querySelectorAll('.brow')];if(!rows.length)return;const host=rows[0].parentElement;
     const cats=v.querySelector('button[data-pcat]');if(cats&&cats.parentElement)cats.parentElement.classList.add('p196cats');
-    const items=rows.map(parse);const catIc=(()=>{const a=v.querySelector('button[data-pcat]:not(.ghost) svg');return a?a.outerHTML:'';})();
+    const items=rows.map(parse);const catIc=(()=>{const a=v.querySelector('button[data-pcat]:not(.ghost)');const t=a?a.textContent.trim().toLowerCase():'';
+      const M={industry:'factory',energy:'bolt',agriculture:'wheat',farming:'wheat',technology:'flask',military:'shield',intelligence:'satellite',logistics:'truck',economy:'coin',trade:'coin',civic:'capitol',infrastructure:'wrench',timber:'leaf',coal:'flame',learning:'book',heavy:'factory',fuel:'barrel'};
+      const k=Object.keys(M).find(x=>t.indexOf(x)>=0);return window.__pIc?window.__pIc(k?M[k]:'factory'):'';})();
     const sig=items.map(i=>i.key+(i.can?1:0)+(i.locked?'L':'')+i.lv).join('|');let wrap=host.querySelector(':scope > .p196wrap');
     if(!window.__p196sel||!items.some(i=>i.key===window.__p196sel))window.__p196sel=(items.find(i=>i.can)||items.find(i=>!i.locked)||items[0]).key;
     if(wrap&&wrap.dataset.sig===sig+'#'+window.__p196sel)return;
@@ -21278,7 +21288,7 @@ setInterval(()=>{try{ladder();champCard();}catch(e){}},500);
       <div class="s">Led by ${E(lead?lead.name:'an ally')} · ${who.length} in · ${F(force)} units</div></div>
       <div><div class="eta">${o.landTick-G.tick}t<small>LANDS</small></div>${inIt?'<span class="p198in">✓ You are in</span>':`<button type="button" class="p198b gold" data-p198join="${o.id}">Join</button>`}</div></div>`;};
     const memTile=m=>`<div class="p198m ${m.id===me.id?'me':''} ${hitIds.has(m.id)?'hit':''}"><div class="nm">${(()=>{try{return emblem(m);}catch(e){return '';}})()}<span>${E(m.name)}${m.id===me.id?' (you)':''}</span></div>
-      <div class="rl ${role(m.id)==='leader'?'lead':''}">${E(role(m.id))} · ${(()=>{try{return regionsOf(m).length;}catch(e){return 0;}})()} lands${hitIds.has(m.id)?' · <span style="color:#fca5a5">under attack</span>':''}</div>
+      <div class="rl ${role(m.id)==='leader'?'lead':''}">${E(role(m.id))} · ${(()=>{let n=0;try{n=regionsOf(m).length;}catch(e){}return n+(n===1?' land':' lands');})()}${hitIds.has(m.id)?' · <span style="color:#fca5a5">under attack</span>':''}</div>
       <div class="pw"><span>ATK</span><div class="b a"><i style="width:${Math.round(pw(m,'atk')/maxA*100)}%"></i></div><span>DEF</span><div class="b d"><i style="width:${Math.round(pw(m,'def')/maxD*100)}%"></i></div></div></div>`;
     box.innerHTML=`<div class="p198hd"><div class="em" style="background:${E(cl.color||'#4f8cff')}">${E(cl.tag||'')}</div><div><h3>${E(cl.name)}</h3><div class="sub">${mem.length} members · you are ${E(role(me.id))}</div></div>
         <div class="p198act"><button type="button" class="p198b ghost" data-p198mng="manage">Manage &amp; merge</button><button type="button" class="p198b ghost" data-p198mng="chat">Chat</button></div><div class="st"><div><b>${F(tot)}</b><span>Power</span></div><div><b>${hits.length}</b><span>Under attack</span></div><div><b>${ops.length}</b><span>Strikes</span></div>${rank?`<div><b>${E(rank)}</b><span>Rank</span></div>`:''}</div></div>
@@ -21436,7 +21446,7 @@ setInterval(()=>{try{ladder();champCard();}catch(e){}},500);
 (function(){
   const LAYERS=['__p192apply','__p194apply','__p195apply','__p196apply','__p197apply','__p198apply','__p199apply'];
   function all(){LAYERS.forEach(n=>{try{const f=window[n];if(typeof f==='function')f();}catch(e){console.error(n,e);}});}
-  window.__p201all=all;
+  window.__p201all=all;window.__pLayers=LAYERS;
   try{if(typeof go==='function'&&!go._p201){const _go=go;const g=function(){const v=document.getElementById('view');const prev=typeof view!=='undefined'?view:null;
       const y=window.scrollY,vs=v?v.scrollTop:0;const r=_go.apply(this,arguments);
       try{all();all();}catch(e){}
@@ -21460,6 +21470,145 @@ setInterval(()=>{try{ladder();champCard();}catch(e){}},500);
   LAYERS.push('__p201live');window.__p201live=live;
   const v0=()=>{const v=document.getElementById('view');if(v)new MutationObserver(window.__pSched?window.__pSched(live):live).observe(v,{childList:true});live();};
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',v0);else v0();
+})();
+
+</script>
+<script>/*p202ui*/
+/* p202 Update 14.0.1: the polish pass. Found by walking every screen in a lived-in game.
+   - Alone in solo: one clean page to pick a neighbour, name your banner and found it. No live-world talk, no empty theater chat.
+   - Turns spelled out (1 turn, 3 turns, turn 69), no "fleet(s)", no "Homeland" link that no longer exists.
+   - Icon buttons get breathing room, headings keep their icon next to the title.
+   - Attack shows no ready-made target list, Defend shows only regions that are really under attack.
+   - Home drops a leftover button strip; Rankings show #1, #2, #3; the map title drops an old date. */
+(function(){
+  const GAME='Ironfront';
+  const E=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+  const IC=k=>window.__pIc?window.__pIc(k):'';
+  const solo=()=>{try{return !window.__MP__&&(typeof isSoloGame!=='function'||isSoloGame());}catch(e){return true;}};
+  const css=document.createElement('style');css.textContent=`
+  .btn>svg.ic:first-child,button>svg.ic:first-child{margin-right:.42em;flex:none}
+  .card>h3{justify-content:flex-start!important;gap:8px}
+  .card>h3>span.muted:last-child,.card>h3>.muted.small:last-child{margin-left:auto}
+  .p202hide{display:none!important}
+  .p202rk{font-family:var(--mono);font-weight:800}
+  .p202rk.g1{color:#F5C542}.p202rk.g2{color:#C9D1DB}.p202rk.g3{color:#D08A4E}
+  .p202solo{border:1px solid var(--border);border-radius:var(--r,8px);background:linear-gradient(180deg,color-mix(in srgb,var(--accent,#3B82F6) 9%,var(--panel)),var(--panel));padding:22px 24px;margin-bottom:14px}
+  .p202solo .hd{display:flex;gap:16px;align-items:center}
+  .p202solo .em{width:54px;height:54px;border-radius:12px;display:grid;place-items:center;border:2px dashed var(--border2,#475569);color:var(--muted);flex:none}
+  .p202solo .em svg{width:26px;height:26px}
+  .p202solo h3{margin:0;font-size:20px;text-transform:none;letter-spacing:0}
+  .p202solo .sub{color:var(--muted);font-size:14px;margin-top:4px;line-height:1.5}
+  .p202solo .k{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin:20px 0 8px}
+  .p202picks{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px}
+  .p202pick{text-align:left;border:1px solid var(--border);border-radius:var(--r,8px);background:var(--bg2,rgba(0,0,0,.2));padding:12px 14px;cursor:pointer;color:var(--text);font:inherit}
+  .p202pick:hover{border-color:var(--border2,#475569)}
+  .p202pick.on{border-color:var(--accent,#3B82F6);box-shadow:0 0 0 1px var(--accent,#3B82F6),0 0 16px color-mix(in srgb,var(--accent,#3B82F6) 35%,transparent)}
+  .p202pick .nm{font-weight:800;font-size:15px}
+  .p202pick .na{color:var(--muted);font-size:13px;margin-top:2px}
+  .p202pick .ch{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+  .p202pick .ch span{font-family:var(--mono);font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;padding:3px 7px;border:1px solid var(--border2,#475569);border-radius:4px;color:var(--muted)}
+  .p202pick .ch span.up{color:var(--ok,#22C55E);border-color:color-mix(in srgb,var(--ok,#22C55E) 50%,transparent)}
+  .p202pick .ch span.dn{color:var(--warn,#F59E0B);border-color:color-mix(in srgb,var(--warn,#F59E0B) 50%,transparent)}
+  .p202pick .tick{float:right;display:block;box-sizing:border-box;width:18px!important;height:18px!important;min-width:0;padding:0!important;margin:0 0 0 8px;border-radius:50%;border:2px solid var(--border2,#475569)}
+  .p202pick.on .tick{border-color:var(--accent,#3B82F6);background:radial-gradient(circle,var(--accent,#3B82F6) 0 45%,transparent 50%)}
+  .p202form{display:grid;grid-template-columns:2fr 1fr auto;gap:12px;align-items:end}
+  .p202form label{display:block;font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
+  .p202form input{width:100%}
+  .p202cost{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px;align-items:center}
+  .p202cost span{font-family:var(--mono);font-size:12.5px;padding:5px 9px;border:1px solid var(--border);border-radius:4px;background:var(--bg2,rgba(0,0,0,.2))}
+  .p202cost span.no{color:var(--bad,#EF4444);border-color:color-mix(in srgb,var(--bad,#EF4444) 50%,transparent)}
+  .p202cost em{font-style:normal;color:var(--muted);font-size:13px}
+  .p202go{padding:13px 20px;border-radius:var(--r,6px);border:1px solid color-mix(in srgb,var(--btn,#3B82F6) 70%,#000);background:linear-gradient(180deg,color-mix(in srgb,var(--btn,#3B82F6) 85%,#fff),var(--btn,#3B82F6));color:var(--btnfg,#fff);font-weight:800;letter-spacing:.06em;text-transform:uppercase;cursor:pointer;white-space:nowrap}
+  .p202go:disabled{opacity:.5;cursor:not-allowed}
+  .p202miss{color:var(--bad,#EF4444);font-size:13px;margin-top:10px}
+  @media(max-width:700px){.p202form{grid-template-columns:1fr 1fr}.p202form .gocell{grid-column:1/-1}.p202go{width:100%}.p202solo{padding:16px}}
+  `;document.head.appendChild(css);
+
+  // ---------- words ----------
+  const turns=n=>n+' turn'+(+n===1?'':'s');
+  function words(root){if(!root)return;const w=document.createTreeWalker(root,NodeFilter.SHOW_TEXT,{acceptNode:n=>{const p=n.parentNode;if(!p||/^(SCRIPT|STYLE|TEXTAREA|INPUT|OPTION)$/.test(p.tagName)||p.closest('svg'))return NodeFilter.FILTER_REJECT;return /\dt\b|\bt\d|\(s\)|Homeland →/.test(n.nodeValue)?NodeFilter.FILTER_ACCEPT:NodeFilter.FILTER_REJECT;}});
+    const ns=[];while(w.nextNode())ns.push(w.currentNode);
+    ns.forEach(n=>{let s=n.nodeValue,o=s;
+      s=s.replace(/(^|[\s(·:~])(\d+)t(?=$|[\s),.·;:])/g,(m,a,d)=>a+turns(d));
+      s=s.replace(/(^|[\s(·])t(\d+)(?=$|[\s),.·;:])/g,(m,a,d)=>a+'turn '+d);
+      s=s.replace(/(\d[\d,]*)([^\d(]*?)\(s\)/g,(m,d,mid)=>d+mid+(d.replace(/,/g,'')==='1'?'':'s'));
+      if(/\(s\)/.test(s)){let prev='';let q=n.previousSibling;while(q&&!prev.trim()){prev=(q.textContent||'')+prev;q=q.previousSibling;}const one=/(^|\D)1\s*$/.test(prev.trim())&&/^\s*[a-z ]*\(s\)/i.test(s);s=s.replace(/\(s\)/,one?'':'s').replace(/\(s\)/g,'s');}
+      s=s.replace('Homeland →','Defend →');
+      if(s!==o)n.nodeValue=s;});}
+
+  // ---------- leader names: no more "Nia Adeyemi 242" ----------
+  function names(){try{if(typeof G==='undefined'||!G||!G.countries||G._p202names)return;G._p202names=1;
+    if(typeof LEAD_FIRST==='undefined'||typeof LEAD_LAST==='undefined')return;const used={};G.countries.forEach(c=>{if(c&&c.leader&&c.leader.name)used[c.leader.name]=1;});
+    G.countries.forEach(c=>{if(!c||!c.leader||!/ \d+$/.test(c.leader.name||''))return;const nm=window.__p202freeName?window.__p202freeName(used):null;if(nm){delete used[c.leader.name];used[nm]=1;c.leader.name=nm;}});
+    G._usedNames=Object.assign(G._usedNames||{},used);}catch(e){}}
+
+  // ---------- alone in solo: the found page ----------
+  function aloneSolo(v){const fb=v.querySelector('#foundAsk');if(!fb||!solo())return;const found=fb.closest('.card');if(!found)return;
+    const alone=found.previousElementSibling&&found.previousElementSibling.classList.contains('card')?found.previousElementSibling:null;
+    found.classList.add('p202hide');if(alone)alone.classList.add('p202hide');
+    if(v.querySelector('.p202solo'))return;
+    const c=you();let picks=[];try{picks=soloNeighborPicks(c,3)||[];}catch(e){}
+    if(window.__p202ask==null||!picks.some(p=>p.m.id===window.__p202ask))window.__p202ask=picks[0]?picks[0].m.id:null;
+    const costEl=found.querySelector('.mono');const costTxt=costEl?costEl.textContent.split('. ')[0]:'';
+    const parts=costTxt.split('·').map(x=>x.trim()).filter(Boolean);
+    let cost={};try{cost=allianceFoundCost();}catch(e){}
+    const needM=Math.max(0,(cost.money||0)-(c.res.money||0)),needI=Math.max(0,(cost.influence||0)-(c.res.influence||0)),needC=(c.cp||0)<2;
+    const chip=(t,i)=>`<span class="${(i===0&&needM>0)||(i===1&&needI>0)||(i===2&&needC)?'no':''}">${E(t)}</span>`;
+    const missEl=found.querySelector('.muted.small:not(.mono)')||null;
+    const miss=fb.disabled?[...found.querySelectorAll('div')].map(d=>d.textContent.trim()).find(t=>/^You need/.test(t))||'Not enough to found it yet.':'';
+    const nmIn=found.querySelector('#cln'),tgIn=found.querySelector('#clt');
+    const dn=nmIn?nmIn.value:'Iron Pact',dt=tgIn?tgIn.value:'IRON';
+    const ph=v.querySelector('.ptitle');
+    const tile=p=>{const sz=String(p.size||'');const up=/stronger|larger|bigger/i.test(sz),dn2=/weaker|smaller/i.test(sz);
+      return `<button type="button" class="p202pick ${p.m.id===window.__p202ask?'on':''}" data-p202ask="${p.m.id}"><span class="tick"></span><div class="nm">${E(leaderName(p.m))}</div><div class="na">${E(p.m.name)}</div>
+        <div class="ch"><span>${E(p.m.tag)}</span><span>${E(p.rel)}</span><span class="${up?'up':dn2?'dn':''}">${E(sz)}</span></div></button>`;};
+    const el=document.createElement('div');el.className='p202solo';
+    const askName=()=>{const p=picks.find(x=>x.m.id===window.__p202ask);return p?leaderName(p.m):'';};
+    el.innerHTML=`<div class="hd"><div class="em">${IC('flag')}</div><div><h3>You stand alone</h3><div class="sub">An alliance defends your ground and strikes with you on the same turn. Pick who to ask, name your banner, and found it.</div></div></div>
+      ${picks.length?`<div class="k">Who to ask</div><div class="p202picks">${picks.map(tile).join('')}</div>`:`<div class="sub" style="margin-top:14px">No neighbour is free this turn. Found the alliance now and invite later from the war room.</div>`}
+      <div class="k">Your banner</div>
+      <div class="p202form"><div><label for="p202n">Alliance name</label><input id="p202n" maxlength="28" value="${E(dn)}"></div><div><label for="p202t">Tag</label><input id="p202t" maxlength="4" value="${E(dt)}"></div>
+        <div class="gocell"><button type="button" class="p202go" ${fb.disabled?'disabled':''}>${picks.length?'Found and ask '+E(askName()):'Found the alliance'}</button></div></div>
+      <div class="p202cost">${parts.map(chip).join('')}<em>You keep most of your treasury.</em></div>
+      ${miss?`<div class="p202miss">${E(miss)}</div>`:''}`;
+    if(ph)ph.insertAdjacentElement('afterend',el);else v.prepend(el);
+    el.querySelectorAll('[data-p202ask]').forEach(b=>b.onclick=()=>{window.__p202ask=+b.dataset.p202ask;el.querySelectorAll('.p202pick').forEach(x=>x.classList.toggle('on',x===b));
+      const g=el.querySelector('.p202go');if(g&&picks.length)g.textContent='Found and ask '+askName();});
+    el.querySelector('.p202go').onclick=async()=>{const r=await cmdFoundClan(you(),el.querySelector('#p202n').value.trim(),el.querySelector('#p202t').value.trim());
+      if(!r.ok){toast(r.error,'bad');return;}
+      const ask=picks.find(x=>x.m.id===window.__p202ask);let jr=ask?await cmdInvite(you(),ask.m.id):null;
+      if(jr&&jr.ok)toast(jr.data&&jr.data.who?jr.data.who+' is with you.':'Your neighbour joined.');else if(jr&&jr.error)toast(jr.error,'warn');else toast('Alliance founded');
+      go('clans');try{drawTop();save();}catch(e){}};}
+
+  function hideChat(v){if(!solo())return;const t=v.querySelector('#tchat');if(t){const c=t.closest('.card');if(c)c.classList.add('p202hide');}}
+  function emptyFolds(v){v.querySelectorAll(':scope > details, :scope > .p15more, :scope details.p15more').forEach(d=>{const kids=[...d.children].filter(k=>k.tagName!=='SUMMARY');
+    if(kids.length&&kids.some(k=>k.classList.contains('p202hide'))&&kids.every(k=>k.classList.contains('p202hide')||!(k.textContent||'').trim()))d.classList.add('p202hide');});}
+
+  // ---------- per screen ----------
+  function apply(){const v=document.getElementById('view');if(!v||typeof view==='undefined')return;names();
+    const V=view;
+    if(V==='clans'){aloneSolo(v);hideChat(v);}
+    if(V==='map'){hideChat(v);v.querySelectorAll('.ptitle h2 > span.muted').forEach(s=>{if(/Update \d/.test(s.textContent))s.classList.add('p202hide');});}
+    if(V==='around'||V==='fleets'){// no ready-made target list: you find targets by scouting
+      v.querySelectorAll('.card').forEach(c=>{const h=c.firstElementChild;if(h&&/^around you$/i.test((h.textContent||'').trim()))c.classList.add('p202hide');});}
+    if(V==='self'){v.querySelectorAll('.card>h3 .muted').forEach(s=>{if(/one decision per region/.test(s.textContent))s.textContent=s.textContent.split('·')[0].trim();});
+      v.querySelectorAll('.p15box').forEach(b=>{const h=b.querySelector('.p15h');if(h&&/attack a coordinate/i.test(h.textContent))b.classList.add('p202hide');});
+      v.querySelectorAll('table').forEach(t=>{const hs=[...t.querySelectorAll('thead th, tr:first-child th')].map(x=>x.textContent.trim().toLowerCase());const ei=hs.findIndex(x=>/^enemy power/.test(x));if(ei<0)return;
+        [...t.querySelectorAll('tbody tr, tr')].forEach(r=>{const td=r.children[ei];if(td&&td.tagName==='TD'&&td.textContent.trim()==='0'){r.classList.add('p202hide');const nx=r.nextElementSibling;if(nx&&nx.children.length===1)nx.classList.add('p202hide');}});});}
+    if(V==='dashboard'){v.querySelectorAll('button[onclick="GO_DEFENCE()"]').forEach(b=>{const row=b.parentElement;if(row&&row.querySelector('button[onclick="go(\'market\')"]')){row.classList.add('p202hide');const nx=row.nextElementSibling;if(nx&&/Command/.test(nx.textContent))nx.classList.add('p202hide');}});
+      v.querySelectorAll('.small.muted').forEach(d=>{const m=/First (lands|arrives|strikes) in (\d+)\./.exec(d.textContent);if(m&&d.childNodes.length===1)d.textContent=d.textContent.replace(m[0],'First '+m[1]+' in '+turns(m[2])+'.');});}
+    if(V==='rankings'){v.querySelectorAll('tr').forEach(r=>{const td=r.firstElementChild;if(!td||td.tagName!=='TD'||td.dataset.p202)return;const s=td.querySelector('svg');if(s&&!(td.textContent||'').trim()){const i=[...r.parentElement.children].filter(x=>x.firstElementChild&&x.firstElementChild.tagName==='TD').indexOf(r)+1;td.dataset.p202=1;td.innerHTML=`<span class="p202rk g${i}">#${i}</span>`;}});}
+    if(V==='production'){const M={economy:'coin',timber:'leaf',coal:'flame',learning:'book',energy:'bolt',industry:'factory',fuel:'barrel',trade:'coin'};
+      v.querySelectorAll('button[data-pcat]').forEach(e=>{if(e.querySelector('svg'))return;const t=e.textContent.trim().toLowerCase();const k=Object.keys(M).find(x=>t.indexOf(x)>=0);e.insertAdjacentHTML('afterbegin',IC(k?M[k]:'box'));});}
+    emptyFolds(v);words(v);}
+  function top(){words(document.querySelector('header.top'));words(document.querySelector('.alertbar'));}
+  window.__p202apply=()=>{apply();top();};
+  if(window.__pLayers&&window.__pLayers.indexOf('__p202apply')<0)window.__pLayers.push('__p202apply');
+  const run=window.__pSched?window.__pSched(()=>{apply();top();}):()=>{apply();top();};
+  const boot=()=>{const v=document.getElementById('view');if(v)new MutationObserver(run).observe(v,{childList:true,subtree:true,characterData:true});
+    const h=document.querySelector('header.top');if(h)new MutationObserver(run).observe(h,{childList:true,subtree:true,characterData:true});
+    new MutationObserver(run).observe(document.body,{childList:true});run();};
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot);else boot();
 })();
 
 </script>
