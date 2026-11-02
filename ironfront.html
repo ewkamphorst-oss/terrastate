@@ -14603,6 +14603,23 @@ function p202freeName(used){try{const F=LEAD_FIRST,L=LEAD_LAST,n=F.length*L.leng
   for(let i=0;i<n;i++){const k=(o+i*7919)%n;const nm=F[k%F.length]+' '+L[Math.floor(k/F.length)];if(!used[nm])return nm;}
   for(let i=0;i<n*3;i++){const nm=F[Math.floor(Math.random()*F.length)]+' '+L[Math.floor(Math.random()*L.length)]+'-'+L[Math.floor(Math.random()*L.length)];if(!used[nm])return nm;}}catch(e){}return null;}
 if(typeof window!=='undefined')window.__p202freeName=p202freeName;
+/*p204*/
+// p204 (14.1) alliance banners and founding alliances. A banner is a short code (see BANNER), set by the leader.
+// Founding alliances: tags reserved in Season 0 (solo) can only be founded in the live world with their claim code;
+// the founder then gets the reserved banner, motto and the Founding Alliance mark.
+function cmdSetBanner(c,code){const cl=clanOf(c);if(!cl)return err('Join an alliance first');if(cl.leader!==c.id)return err('Only the leader can change the banner');
+  code=String(code||'');if(!/^b1(\.\d{1,2}){11}$/.test(code))return err('That banner could not be read');cl.banner=code;return ok();}
+function p204Reserved(tag){try{const t=String(tag||'').toUpperCase();return (G.founding||[]).find(f=>String(f.tag||'').toUpperCase()===t)||null;}catch(e){return null;}}
+function p204LoadFounding(list){try{const game=(String((typeof GAME_CFG!=='undefined'&&GAME_CFG&&GAME_CFG.track)||'')||'').toLowerCase();
+  G.founding=(Array.isArray(list)?list:[]).filter(f=>f&&f.tag&&(!f.game||!game||f.game===game)).map(f=>({tag:String(f.tag).toUpperCase().replace(/[^A-Z0-9]/g,'').slice(0,4),name:String(f.name||'').slice(0,28),banner:String(f.banner||''),motto:String(f.motto||'').slice(0,60),claim:String(f.claim||''),founder:String(f.founder||'').slice(0,24)}));
+  // an AI alliance that happens to carry a reserved tag gets a new one, so the founder can take theirs
+  (G.clans||[]).forEach(cl=>{if(!cl||!p204Reserved(cl.tag))return;const mem=(typeof clanMembers==='function'?clanMembers(cl):[]);if(mem.some(m=>m&&m.isAI===false))return;
+    for(let i=0;i<50;i++){const t=(String(cl.tag).slice(0,2)+String.fromCharCode(65+Math.floor(Math.random()*26))+String.fromCharCode(65+Math.floor(Math.random()*26)));if(!p204Reserved(t)&&!(typeof clanTagTaken==='function'&&clanTagTaken(t))){cl.tag=t;break;}}});
+  return G.founding.length;}catch(e){return 0;}}
+{const _f=cmdFoundClan;cmdFoundClan=function(c,name,tag,claim){const t=String(tag||'').toUpperCase().replace(/[^A-Z0-9]/g,'').slice(0,4);const res=p204Reserved(t);
+  if(res&&String(claim||'').trim().toUpperCase()!==String(res.claim||'').toUpperCase())return err('The tag ['+t+'] is reserved for a founding alliance from Season 0. Enter its claim code, or pick another tag');
+  const r=_f.call(this,c,name,tag);if(r&&r.ok&&res){const cl=clanOf(c);if(cl){if(res.banner)cl.banner=res.banner;if(res.motto&&!cl.motto)cl.motto=res.motto;cl.founding=1;}}return r;};}
+
 // ---- BOOT ------------------------------------------------------------------
 // GitHub serves the brochure as index.html and this file as play.html.
 // Itch and Newgrounds keep the whole game, landing included, as index.html.
@@ -21496,6 +21513,7 @@ setInterval(()=>{try{ladder();champCard();}catch(e){}},500);
   .p202solo .hd{display:flex;gap:16px;align-items:center}
   .p202solo .em{width:54px;height:54px;border-radius:12px;display:grid;place-items:center;border:2px dashed var(--border2,#475569);color:var(--muted);flex:none}
   .p202solo .em svg{width:26px;height:26px}
+  .p202solo .em svg.bnr{width:54px;height:65px}
   .p202solo h3{margin:0;font-size:20px;text-transform:none;letter-spacing:0}
   .p202solo .sub{color:var(--muted);font-size:14px;margin-top:4px;line-height:1.5}
   .p202solo .k{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin:20px 0 8px}
@@ -21581,7 +21599,9 @@ setInterval(()=>{try{ladder();champCard();}catch(e){}},500);
       go('clans');try{drawTop();save();}catch(e){}};}
 
   function hideChat(v){if(!solo())return;const t=v.querySelector('#tchat');if(t){const c=t.closest('.card');if(c)c.classList.add('p202hide');}}
-  function emptyFolds(v){v.querySelectorAll(':scope > details, :scope > .p15more, :scope details.p15more').forEach(d=>{const kids=[...d.children].filter(k=>k.tagName!=='SUMMARY');
+  function emptyFolds(v){v.querySelectorAll(':scope > .p15more').forEach(d=>{if(d.children.length>1)return;let n=d.nextElementSibling,real=0;while(n){if(!n.classList.contains('p202hide')&&n.tagName!=='SCRIPT'&&n.tagName!=='STYLE')real++;n=n.nextElementSibling;}
+      if(!real){let pv=d.previousElementSibling,hid=false;while(pv){if(pv.classList.contains('p202hide')){hid=true;break;}pv=pv.previousElementSibling;}if(hid||!real)d.classList.add('p202hide');}});
+v.querySelectorAll(':scope > details, :scope > .p15more, :scope details.p15more').forEach(d=>{const kids=[...d.children].filter(k=>k.tagName!=='SUMMARY');
     if(kids.length&&kids.some(k=>k.classList.contains('p202hide'))&&kids.every(k=>k.classList.contains('p202hide')||!(k.textContent||'').trim()))d.classList.add('p202hide');});}
 
   // ---------- per screen ----------
@@ -21670,6 +21690,207 @@ setInterval(()=>{try{ladder();champCard();}catch(e){}},500);
   function apply(){if(typeof view!=='undefined'&&view==='rankings'&&solo()){paint();load();}}
   window.__p203apply=apply;if(window.__pLayers&&window.__pLayers.indexOf('__p203apply')<0)window.__pLayers.push('__p203apply');
   const v0=()=>{const v=document.getElementById('view');if(v)new MutationObserver(window.__pSched?window.__pSched(apply):apply).observe(v,{childList:true});apply();};
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',v0);else v0();
+})();
+
+</script>
+<script>/*banner*/
+/* Banners for alliances: one short code -> one SVG. Shared by the game (all three worlds) and the website.
+   Code: b1.shape.pattern.field.second.emblemColor.emblem.place.count.size.tag.edge  (all small integers)
+   Lists below are append-only: never reorder, or saved banners change. */
+var BANNER=(function(){
+  var SHAPES=[
+    {n:'Shield',d:'M6 6H94V58C94 88 72 106 50 116C28 106 6 88 6 58Z',tb:96,tt:24},
+    {n:'Round shield',d:'M50 12A46 46 0 1 1 49.9 12Z',cy:58,tb:92,tt:32},
+    {n:'Flag',d:'M4 16H96V92H4Z',cy:54,tb:86,tt:31},
+    {n:'Swallowtail',d:'M4 16H96L78 54L96 92H4Z',cy:54,cx:44,tb:86,tt:31},
+    {n:'Vexillum',d:'M14 10H86V96L68 88L50 100L32 88L14 96Z',cy:50,pole:1,tb:82,tt:26},
+    {n:'Pennant',d:'M4 22L96 58L4 94Z',cy:58,cx:30,small:1,tb:80,tt:40,tx:24},
+    {n:'Insignia',d:'M30 6H70L94 30V88L70 112H30L6 88V30Z',tb:100,tt:24},
+    {n:'Gonfalon',d:'M12 6H88V90L72 112L50 94L28 112L12 90Z',cy:52,tb:84,tt:22},
+    {n:'Scutum',d:'M14 8Q50 0 86 8V110Q50 118 14 110Z',tb:102,tt:22},
+    {n:'Kite',d:'M50 4C78 4 92 18 92 34C92 66 66 96 50 116C34 96 8 66 8 34C8 18 22 4 50 4Z',cy:50,tb:84,tt:22}
+  ];
+  var PAT=['Plain','Per pale','Per fess','Per bend','Per bend sinister','Quarterly','Per saltire','Chevron','Chief','Pale','Fess','Cross','Saltire','Bordure','Barry','Paly','Chequy','Gyronny','Bend','Base','Nordic cross','Canton'];
+  var COL=[['Gold','#E8B923'],['Silver','#D8DEE6'],['Red','#C8102E'],['Blue','#1F4FBF'],['Green','#1F8A4C'],['Black','#16181D'],['Purple','#6B2D8F'],['Orange','#E06A1B'],
+           ['Sky','#4FA3E0'],['Crimson','#8E1B2B'],['Navy','#13284F'],['Teal','#138A8A'],['Brown','#6B4423'],['White','#F6F4EE'],['Bronze','#B07A3B'],['Olive','#6B7A2A']];
+  // filled emblems drawn in a 24 box; stroke emblems come from the game's own icon set ({"swords":"M4 20 20 4M20 4h-5M20 4v5M4 4l16 16M4 4h5M4 4v5M8 16l-2 2M16 16l2 2","shield":"M12 3 4 6v5c0 5 3.4 8.6 8 10 4.6-1.4 8-5 8-10V6z","crown":"M3 18h18M3 18 2 8l5 4 5-7 5 7 5-4-1 10","flame":"M12 3s5 4.5 5 9.5a5 5 0 0 1-10 0c0-2 1-3.5 1.5-4 .3 1.5 1 2.5 2 2.5 1.5 0 .5-5 1.5-8z","bolt":"M13 2 4 14h7l-1 8 9-12h-7z","eye":"M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12zM12 12m-3 0a3 3 0 1 0 6 0a3 3 0 1 0-6 0","dove":"M3 12c3 0 6-1 8-4l2 3 6-3-2 5 3 2-6 2-3 4c-1-3-4-5-8-5z","globe":"M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0-18 0M3 12h18M12 3c3 3 3 15 0 18M12 3c-3 3-3 15 0 18","wheat":"M12 21V9M12 9c-3 0-5-2-5-5 3 0 5 2 5 5zM12 9c3 0 5-2 5-5-3 0-5 2-5 5zM12 15c-3 0-5-2-5-5 3 0 5 2 5 5zM12 15c3 0 5-2 5-5-3 0-5 2-5 5z","skull":"M8 20v-2.4A6.5 6.5 0 0 1 5 12a7 7 0 0 1 14 0 6.5 6.5 0 0 1-3 5.6V20zM9 12h.01M15 12h.01M10.5 20v-2.5M13.5 20v-2.5","wall":"M3 6h18v12H3zM3 10h18M3 14h18M9 6v4M15 6v4M6 10v4M12 10v4M18 10v4M9 14v4M15 14v4","capitol":"M3 21h18M5 21V10h14v11M12 3l8 5H4zM9 21v-6h6v6","trophy":"M8 4h8v5a4 4 0 0 1-8 0zM8 6H5a3 3 0 0 0 3 4M16 6h3a3 3 0 0 1-3 4M12 13v4M8 21h8M10 17h4v4","sun":"M12 12m-4 0a4 4 0 1 0 8 0a4 4 0 1 0-8 0M12 2v2M12 20v2M2 12h2M20 12h2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4","moon":"M20 14A8 8 0 1 1 10 4a6 6 0 0 0 10 10z","plane":"M12 2l2 7 8 3v2l-8-1-1 6 2 2v1l-3-1-3 1v-1l2-2-1-6-8 1v-2l8-3z","tank":"M3 15h18v3H3zM6 11h10v4H6zM11 11V8h9M5 18v1M9 18v1M15 18v1M19 18v1","rocket":"M12 2c4 2 6 7 6 12l-3 3H9l-3-3c0-5 2-10 6-12zM9 17l-2 4M15 17l2 4M12 9m-1.5 0a1.5 1.5 0 1 0 3 0a1.5 1.5 0 1 0-3 0","compass":"M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0-18 0M15.5 8.5l-2 5-5 2 2-5z","hand":"M7 11V6a1.5 1.5 0 0 1 3 0v5M10 10V4a1.5 1.5 0 0 1 3 0v6M13 10V5a1.5 1.5 0 0 1 3 0v7M16 11a1.5 1.5 0 0 1 3 0v4a7 7 0 0 1-7 7h-1a7 7 0 0 1-6-3.5L3 14a1.5 1.5 0 0 1 2.5-1.5L7 14","flag":"M5 21V4M5 4h13l-3 4 3 4H5","medal":"M12 15m-4 0a4 4 0 1 0 8 0a4 4 0 1 0-8 0M8.5 11.5 6 3h4l2 4.5L14 3h4l-2.5 8.5","target":"M12 12m-7 0a7 7 0 1 0 14 0a7 7 0 1 0-14 0M12 2v4M12 18v4M2 12h4M18 12h4M12 12h.01","satellite":"M4 10l6-6 4 4-6 6zM13 5l2-2 4 4-2 2M10 14l-6 6M14 8l6 6M17 12a5 5 0 0 1 3 5","gear":"M12 12m-3 0a3 3 0 1 0 6 0a3 3 0 1 0-6 0M12 2v3M12 19v3M2 12h3M19 12h3M5 5l2 2M17 17l2 2M5 19l2-2M17 7l2-2","hourglass":"M6 3h12M6 21h12M7 3v4l5 5-5 5v4M17 3v4l-5 5 5 5v4","sparkle":"M12 3v18M3 12h18M6 6l12 12M18 6 6 18","buoy":"M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0-18 0M12 12m-4 0a4 4 0 1 0 8 0a4 4 0 1 0-8 0M5.6 5.6l3.6 3.6M18.4 5.6l-3.6 3.6M5.6 18.4l3.6-3.6M18.4 18.4l-3.6-3.6","book":"M4 4h6a3 3 0 0 1 3 3v13a2 2 0 0 0-2-2H4zM20 4h-6a3 3 0 0 0-3 3v13a2 2 0 0 1 2-2h7z","flask":"M9 3h6M10 3v6l-5 9a2 2 0 0 0 2 3h10a2 2 0 0 0 2-3l-5-9V3","handshake":"M3 11l4-4h4l3 3M21 11l-4-4h-3M7 7l5 5 2-2M3 11l5 5 3 3h2l3-3 5-5","bank":"M3 21h18M4 9h16M5 9v9M10 9v9M14 9v9M19 9v9M12 3l9 6H3z","tent":"M3 20 12 4l9 16M12 4v16M8 20l4-7 4 7","missile":"M12 2c3 3 4 7 4 11l-4 3-4-3c0-4 1-8 4-11zM8 13l-3 3v4l3-2M16 13l3 3v4l-3-2M12 16v6","artillery":"M3 19h10M5 19v-4M5 15 19 5l2 2L9 19M6 17m-2.5 0a2.5 2.5 0 1 0 5 0a2.5 2.5 0 1 0-5 0","soldier":"M12 7m-3.5 0a3.5 3.5 0 1 0 7 0a3.5 3.5 0 1 0-7 0M5 21a7 7 0 0 1 14 0M8 7h8","peace":"M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0-18 0M12 3v18M12 12l6.5 6.5M12 12 5.5 18.5","binoculars":"M7 15m-4 0a4 4 0 1 0 8 0a4 4 0 1 0-8 0M17 15m-4 0a4 4 0 1 0 8 0a4 4 0 1 0-8 0M7 11V6h3v5M17 11V6h-3v5M10 8h4","star":"M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9z","leaf":"M5 20c0-8 4-13 14-14 0 10-5 14-11 14H5zM5 20c2-5 5-8 9-10","heart":"M12 21s-8-5.5-8-11a4 4 0 0 1 8-2 4 4 0 0 1 8 2c0 5.5-8 11-8 11z","infinity":"M7 8a4 4 0 0 0 0 8c3 0 4-8 10-8a4 4 0 0 1 0 8c-3 0-4-8-10-8"} is filled in at build time)
+  var FILL={
+    star:'M12 2.5l2.9 6.2 6.7.8-5 4.6 1.3 6.6L12 17.4 6.1 20.7l1.3-6.6-5-4.6 6.7-.8z',
+    star8:'M12 1l2.2 6.7L21 5l-3.2 6.2L24 13l-6.7 1.4L19 21l-6.3-3.6L12 24l-1.2-6.6L4.6 21l1.8-6.6L0 13l6.2-1.8L3 5l6.8 2.7z',
+    cross:'M9 2h6l-1 7 7-1v8l-7-1 1 7H9l1-7-7 1V8l7 1z',
+    crescent:'M15 2.5A10 10 0 1 0 21.5 17 8 8 0 1 1 15 2.5z',
+    lozenge:'M12 2l8 10-8 10-8-10z',
+    roundel:'M12 3a9 9 0 1 1-.01 0z',
+    eagle:'M12 3c-1.3 0-2.2 1-2.2 2.1 0 .6.2 1 .6 1.4L8.6 7.8 3 5.2l1.3 3L1.5 7.7l2.6 2.8-2 .7 3.5 1.6 2.6 2.1-.8 3.4 2-.7 1.8 3.4 1.8-3.4 2 .7-.8-3.4 2.6-2.1 3.5-1.6-2-.7 2.6-2.8-2.8.5 1.3-3-5.6 2.6-1.8-1.3c.4-.4.6-.8.6-1.4C14.2 4 13.3 3 12 3z',
+    tower:'M5 22V9h2V6h2v2h2V6h2v2h2V6h2v3h2v13h-5v-5a2 2 0 0 0-4 0v5z',
+    fleur:'M12 2c2 2.5 2.5 5 1 8h3.5c2.5 0 4 1.7 4 3.5S18.8 17 17 16c1 1.5.5 3-1.5 3-1.6 0-2.5-1.4-2.5-3h-.5v6h-1v-6H11c0 1.6-.9 3-2.5 3-2 0-2.5-1.5-1.5-3-1.8 1-3.5-.7-3.5-2.5S5 10 7.5 10H11c-1.5-3-1-5.5 1-8z',
+    lion:'M7 21l1-5-3-2 1-4 3-1 1-4 3-1 2 2 3 0-1 2 2 2-2 1 1 3-3 1v3l2 3h-3l-2-3-2 1v2z',
+    wolf:'M4 6l3 3 3-1 4 1 3-3v5l3 2-1 3-4 1-1 4h-3l-1-3-3 1-2-3 1-3-2-3z',
+    axe:'M11 2h2v20h-2zM13 4c5 0 8 2 8 6s-3 6-8 6z',
+    tree:'M12 2l7 9h-4l5 6h-6v5h-4v-5H4l5-6H5z',
+    sunburst:'M12 6a6 6 0 1 1-.01 0zM11 0h2v4h-2zM11 20h2v4h-2zM0 11h4v2H0zM20 11h4v2h-4zM3.5 2.1l2.8 2.8-1.4 1.4-2.8-2.8zM17.7 16.3l2.8 2.8-1.4 1.4-2.8-2.8zM2.1 20.5l2.8-2.8 1.4 1.4-2.8 2.8zM16.3 6.3l2.8-2.8 1.4 1.4-2.8 2.8z'
+  };
+  var ICONS={"swords":"M4 20 20 4M20 4h-5M20 4v5M4 4l16 16M4 4h5M4 4v5M8 16l-2 2M16 16l2 2","shield":"M12 3 4 6v5c0 5 3.4 8.6 8 10 4.6-1.4 8-5 8-10V6z","crown":"M3 18h18M3 18 2 8l5 4 5-7 5 7 5-4-1 10","flame":"M12 3s5 4.5 5 9.5a5 5 0 0 1-10 0c0-2 1-3.5 1.5-4 .3 1.5 1 2.5 2 2.5 1.5 0 .5-5 1.5-8z","bolt":"M13 2 4 14h7l-1 8 9-12h-7z","eye":"M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12zM12 12m-3 0a3 3 0 1 0 6 0a3 3 0 1 0-6 0","dove":"M3 12c3 0 6-1 8-4l2 3 6-3-2 5 3 2-6 2-3 4c-1-3-4-5-8-5z","globe":"M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0-18 0M3 12h18M12 3c3 3 3 15 0 18M12 3c-3 3-3 15 0 18","wheat":"M12 21V9M12 9c-3 0-5-2-5-5 3 0 5 2 5 5zM12 9c3 0 5-2 5-5-3 0-5 2-5 5zM12 15c-3 0-5-2-5-5 3 0 5 2 5 5zM12 15c3 0 5-2 5-5-3 0-5 2-5 5z","skull":"M8 20v-2.4A6.5 6.5 0 0 1 5 12a7 7 0 0 1 14 0 6.5 6.5 0 0 1-3 5.6V20zM9 12h.01M15 12h.01M10.5 20v-2.5M13.5 20v-2.5","wall":"M3 6h18v12H3zM3 10h18M3 14h18M9 6v4M15 6v4M6 10v4M12 10v4M18 10v4M9 14v4M15 14v4","capitol":"M3 21h18M5 21V10h14v11M12 3l8 5H4zM9 21v-6h6v6","trophy":"M8 4h8v5a4 4 0 0 1-8 0zM8 6H5a3 3 0 0 0 3 4M16 6h3a3 3 0 0 1-3 4M12 13v4M8 21h8M10 17h4v4","sun":"M12 12m-4 0a4 4 0 1 0 8 0a4 4 0 1 0-8 0M12 2v2M12 20v2M2 12h2M20 12h2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4","moon":"M20 14A8 8 0 1 1 10 4a6 6 0 0 0 10 10z","plane":"M12 2l2 7 8 3v2l-8-1-1 6 2 2v1l-3-1-3 1v-1l2-2-1-6-8 1v-2l8-3z","tank":"M3 15h18v3H3zM6 11h10v4H6zM11 11V8h9M5 18v1M9 18v1M15 18v1M19 18v1","rocket":"M12 2c4 2 6 7 6 12l-3 3H9l-3-3c0-5 2-10 6-12zM9 17l-2 4M15 17l2 4M12 9m-1.5 0a1.5 1.5 0 1 0 3 0a1.5 1.5 0 1 0-3 0","compass":"M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0-18 0M15.5 8.5l-2 5-5 2 2-5z","hand":"M7 11V6a1.5 1.5 0 0 1 3 0v5M10 10V4a1.5 1.5 0 0 1 3 0v6M13 10V5a1.5 1.5 0 0 1 3 0v7M16 11a1.5 1.5 0 0 1 3 0v4a7 7 0 0 1-7 7h-1a7 7 0 0 1-6-3.5L3 14a1.5 1.5 0 0 1 2.5-1.5L7 14","flag":"M5 21V4M5 4h13l-3 4 3 4H5","medal":"M12 15m-4 0a4 4 0 1 0 8 0a4 4 0 1 0-8 0M8.5 11.5 6 3h4l2 4.5L14 3h4l-2.5 8.5","target":"M12 12m-7 0a7 7 0 1 0 14 0a7 7 0 1 0-14 0M12 2v4M12 18v4M2 12h4M18 12h4M12 12h.01","satellite":"M4 10l6-6 4 4-6 6zM13 5l2-2 4 4-2 2M10 14l-6 6M14 8l6 6M17 12a5 5 0 0 1 3 5","gear":"M12 12m-3 0a3 3 0 1 0 6 0a3 3 0 1 0-6 0M12 2v3M12 19v3M2 12h3M19 12h3M5 5l2 2M17 17l2 2M5 19l2-2M17 7l2-2","hourglass":"M6 3h12M6 21h12M7 3v4l5 5-5 5v4M17 3v4l-5 5 5 5v4","sparkle":"M12 3v18M3 12h18M6 6l12 12M18 6 6 18","buoy":"M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0-18 0M12 12m-4 0a4 4 0 1 0 8 0a4 4 0 1 0-8 0M5.6 5.6l3.6 3.6M18.4 5.6l-3.6 3.6M5.6 18.4l3.6-3.6M18.4 18.4l-3.6-3.6","book":"M4 4h6a3 3 0 0 1 3 3v13a2 2 0 0 0-2-2H4zM20 4h-6a3 3 0 0 0-3 3v13a2 2 0 0 1 2-2h7z","flask":"M9 3h6M10 3v6l-5 9a2 2 0 0 0 2 3h10a2 2 0 0 0 2-3l-5-9V3","handshake":"M3 11l4-4h4l3 3M21 11l-4-4h-3M7 7l5 5 2-2M3 11l5 5 3 3h2l3-3 5-5","bank":"M3 21h18M4 9h16M5 9v9M10 9v9M14 9v9M19 9v9M12 3l9 6H3z","tent":"M3 20 12 4l9 16M12 4v16M8 20l4-7 4 7","missile":"M12 2c3 3 4 7 4 11l-4 3-4-3c0-4 1-8 4-11zM8 13l-3 3v4l3-2M16 13l3 3v4l-3-2M12 16v6","artillery":"M3 19h10M5 19v-4M5 15 19 5l2 2L9 19M6 17m-2.5 0a2.5 2.5 0 1 0 5 0a2.5 2.5 0 1 0-5 0","soldier":"M12 7m-3.5 0a3.5 3.5 0 1 0 7 0a3.5 3.5 0 1 0-7 0M5 21a7 7 0 0 1 14 0M8 7h8","peace":"M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0-18 0M12 3v18M12 12l6.5 6.5M12 12 5.5 18.5","binoculars":"M7 15m-4 0a4 4 0 1 0 8 0a4 4 0 1 0-8 0M17 15m-4 0a4 4 0 1 0 8 0a4 4 0 1 0-8 0M7 11V6h3v5M17 11V6h-3v5M10 8h4","star":"M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9z","leaf":"M5 20c0-8 4-13 14-14 0 10-5 14-11 14H5zM5 20c2-5 5-8 9-10","heart":"M12 21s-8-5.5-8-11a4 4 0 0 1 8-2 4 4 0 0 1 8 2c0 5.5-8 11-8 11z","infinity":"M7 8a4 4 0 0 0 0 8c3 0 4-8 10-8a4 4 0 0 1 0 8c-3 0-4-8-10-8"};
+  var EM=['','f:star','f:eagle','f:lion','f:wolf','f:tower','f:cross','f:crescent','f:fleur','f:star8','f:lozenge','f:roundel','f:axe','f:tree','f:sunburst',
+          'swords','shield','crown','flame','bolt','eye','dove','globe','wheat','skull','wall','capitol','trophy','sun','moon','plane','tank','rocket','compass',
+          'hand','flag','medal','target','satellite','gear','hourglass','sparkle','buoy','book','flask','handshake','bank','tent','missile','artillery','soldier','peace','binoculars','star','leaf','heart','infinity'];
+  var PLACE=['Centre','Top','Corner','Bottom'],COUNT=[1,2,3],SIZE=['Small','Medium','Large'],TAGPOS=['No text','Tag below','Tag above'],EDGE=['Dark edge','Gold edge','Silver edge','No edge'];
+  var LIM=[SHAPES.length,PAT.length,COL.length,COL.length,COL.length,EM.length,PLACE.length,3,3,3,EDGE.length];
+  function parse(code){var m=/^b1((?:\.\d{1,2}){11})$/.exec(String(code||''));if(!m)return null;var a=m[1].slice(1).split('.').map(Number);
+    for(var i=0;i<11;i++)if(!(a[i]>=0&&a[i]<LIM[i]))return null;return a;}
+  function make(a){return 'b1.'+a.join('.');}
+  function hash(s){var h=2166136261;s=String(s||'');for(var i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619);}return h>>>0;}
+  function seed(tag){var h=hash(tag||'x'),r=function(n){var v=h%n;h=(Math.floor(h/n)^hash(String(h)))>>>0;return v;};
+    var a=r(COL.length),b=(a+3+r(COL.length-4))%COL.length,c=lum(COL[a][1])>140?[5,10,9][r(3)]:[0,1,13][r(3)];
+    return make([r(SHAPES.length),r(PAT.length),a,b,c,1+r(EM.length-1),0,0,1,0,0]);}
+  function valid(code){return !!parse(code);}
+  function lum(hex){var n=parseInt(hex.slice(1),16);return ((n>>16)*299+((n>>8)&255)*587+(n&255)*114)/1000;}
+  function pattern(p,b){var R=function(x,y,w,h){return '<rect x="'+x+'" y="'+y+'" width="'+w+'" height="'+h+'" fill="'+b+'"/>';},P=function(pts){return '<polygon points="'+pts+'" fill="'+b+'"/>';},L=function(x1,y1,x2,y2,w){return '<line x1="'+x1+'" y1="'+y1+'" x2="'+x2+'" y2="'+y2+'" stroke="'+b+'" stroke-width="'+w+'"/>';},o='',i,j;
+    switch(p){case 1:return R(50,0,50,120);case 2:return R(0,60,100,60);case 3:return P('0,0 100,0 100,120');case 4:return P('0,0 100,0 0,120');
+      case 5:return R(50,0,50,60)+R(0,60,50,60);case 6:return P('0,0 100,0 50,60')+P('0,120 100,120 50,60');case 7:return P('0,100 50,52 100,100 100,78 50,30 0,78');
+      case 8:return R(0,0,100,34);case 9:return R(36,0,28,120);case 10:return R(0,46,100,28);case 11:return R(40,0,20,120)+R(0,50,100,20);
+      case 12:return L(0,0,100,120,16)+L(100,0,0,120,16);case 13:return '';case 14:for(i=0;i<6;i++)o+=R(0,10+i*20,100,10);return o;
+      case 15:for(i=0;i<5;i++)o+=R(10+i*20,0,10,120);return o;case 16:for(i=0;i<5;i++)for(j=0;j<6;j++)if((i+j)%2)o+=R(i*20,j*20,20,20);return o;
+      case 17:return P('50,60 50,0 100,0')+P('50,60 100,60 100,120')+P('50,60 50,120 0,120')+P('50,60 0,60 0,0');case 18:return L(0,0,100,120,20);
+      case 19:return R(0,86,100,34);case 20:return R(28,0,16,120)+R(0,50,100,16);case 21:return R(0,0,44,46);}return '';}
+  function emblem(k,cx,cy,s,col){if(!k)return '';var t='translate('+(cx-12*s).toFixed(1)+' '+(cy-12*s).toFixed(1)+') scale('+s.toFixed(2)+')';
+    if(k.indexOf('f:')===0){var d=FILL[k.slice(2)];return d?'<path transform="'+t+'" d="'+d+'" fill="'+col+'" stroke="rgba(0,0,0,.35)" stroke-width="'+(0.6/s*2).toFixed(2)+'"/>':'';}
+    var d2=ICONS[k];return d2?'<path transform="'+t+'" d="'+d2+'" fill="none" stroke="'+col+'" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"/>':'';}
+  var uid=0;
+  function svg(code,px,o){o=o||{};var a=parse(code)||parse(seed(o.tag));var sh=SHAPES[a[0]],c1=COL[a[2]][1],c2=COL[a[3]][1],c3=COL[a[4]][1];
+    var id='bn'+(++uid)+Math.floor(Math.random()*1e6),cx=sh.cx||50,cy=sh.cy||(a[9]===1?52:58),body=pattern(a[1],c2),k=EM[a[5]];
+    var tag=String(o.tag||'').toUpperCase().replace(/[^A-Z0-9]/g,'').slice(0,5),showT=!!(tag&&a[9]);
+    var base=(sh.small?2.2:3.1)*[0.72,1,1.22][a[8]],n=COUNT[a[7]],ems='';if(showT)base=Math.min(base,sh.small?2:2.6);
+    var py=[cy,cy-20,cy-28,cy+20][a[6]],px0=a[6]===2?cx-22:cx;if(a[6]===2)base=Math.min(base,1.9);
+    if(showT&&a[6]!==2)py+=(a[9]===1?-9:9);
+    if(n===1)ems=emblem(k,px0,py,base,c3);
+    else if(n===2){var s2=base*0.52,dx=12.5*s2;ems=emblem(k,px0-dx,py,s2,c3)+emblem(k,px0+dx,py,s2,c3);}
+    else{var s3=base*0.46,d3=12*s3;ems=emblem(k,px0,py-d3*0.85,s3,c3)+emblem(k,px0-d3,py+d3*0.85,s3,c3)+emblem(k,px0+d3,py+d3*0.85,s3,c3);}
+    var tx='';
+    if(showT){var ty=a[9]===1?sh.tb:sh.tt;var tc=lum(c1)>140?'#16181D':'#F6F4EE';
+      tx='<text x="'+(sh.tx||cx)+'" y="'+ty+'" text-anchor="middle" font-family="ui-monospace,Menlo,Consolas,monospace" font-weight="800" font-size="'+(tag.length>4?13:15)+'" letter-spacing="1.5" fill="'+tc+'" stroke="'+(tc==='#16181D'?'rgba(246,244,238,.85)':'rgba(10,12,16,.85)')+'" stroke-width="3" paint-order="stroke" stroke-linejoin="round">'+tag+'</text>';}
+    var edge=['rgba(0,0,0,.65)','#E8B923','#D8DEE6','none'][a[10]];
+    var bord=a[1]===13?'<path d="'+sh.d+'" fill="none" stroke="'+c2+'" stroke-width="16"/>':'';
+    var pole=sh.pole?'<line x1="6" y1="10" x2="94" y2="10" stroke="#8a6a3a" stroke-width="4" stroke-linecap="round"/>':'';
+    var shine='<path d="'+sh.d+'" fill="url(#'+id+'g)"/>';
+    return '<svg class="bnr" viewBox="0 0 100 120" width="'+(px||48)+'" height="'+Math.round((px||48)*1.2)+'" role="img" aria-label="'+(o.label||'Alliance banner').replace(/"/g,'')+'"><defs><clipPath id="'+id+'"><path d="'+sh.d+'"/></clipPath><linearGradient id="'+id+'g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".22"/><stop offset=".5" stop-color="#fff" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".22"/></linearGradient></defs>'+
+      pole+'<g clip-path="url(#'+id+')"><rect width="100" height="120" fill="'+c1+'"/>'+body+bord+ems+tx+shine+'</g>'+
+      (edge==='none'?'':'<path d="'+sh.d+'" fill="none" stroke="'+edge+'" stroke-width="'+(a[10]?3.2:2.2)+'" stroke-linejoin="round"/>')+'</svg>';}
+  function pickC(r,away){var best=0,bd=-1;for(var t=0;t<6;t++){var c=r(COL.length),d=Math.min.apply(null,away.map(function(x){return Math.abs(lum(COL[c][1])-lum(COL[x][1]));}));if(d>bd){bd=d;best=c;}}return best;}
+  function random(){var r=function(n){return Math.floor(Math.random()*n);};var a=r(COL.length),b=pickC(r,[a]),c=pickC(r,[a,b]);
+    var cnt=r(5)?0:1+r(2),pl=r(3)?0:r(4);return make([r(SHAPES.length),r(PAT.length),a,b,c,1+r(EM.length-1),pl,cnt,r(2)+(cnt?0:1),r(3),r(2)?r(3):0]);}
+  return {svg:svg,seed:seed,valid:valid,parse:parse,make:make,random:random,SHAPES:SHAPES,PAT:PAT,COL:COL,EM:EM,PLACE:PLACE,COUNT:COUNT,SIZE:SIZE,TAGPOS:TAGPOS,EDGE:EDGE,LIM:LIM};
+})();
+if(typeof module!=='undefined'&&module.exports)module.exports=BANNER;
+
+
+</script>
+<script>/*p204ui*/
+/* p204 Update 14.1: alliance banners and founding alliances.
+   - Banner workshop: shape, pattern, three colours, emblem (1, 2 or 3), placement, size, tag on the banner, edge, motto.
+   - The war room carries your banner; every alliance without one gets its own banner drawn from its tag.
+   - Season 0: reserve your banner and tag for the live world, get an invite code for friends and a claim code for yourself. */
+(function(){
+  if(typeof BANNER==='undefined')return;
+  const GAME='Ironfront'.toLowerCase(),URL0='https://script.google.com/macros/s/AKfycby3_kn2rJlYyfF7dLNWq3JR4wM-rfthtpIK01yf_7e26yLgIa4vPnSK4sgmuPL23KeO3g/exec',HAS=/^https:\/\/script\.google\.com\//.test(URL0);
+  const E=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+  const solo=()=>{try{return !window.__MP__&&(typeof isSoloGame!=='function'||isSoloGame());}catch(e){return false;}};
+  const LS=(k,v)=>{try{if(v===undefined)return localStorage.getItem(k);localStorage.setItem(k,v);}catch(e){return null;}};
+  const B=BANNER;window.__bannerOf=cl=>cl?(cl.banner&&B.valid(cl.banner)?cl.banner:B.seed(cl.tag||cl.name)):B.seed('x');
+  const css=document.createElement('style');css.textContent=`
+  .bnr{display:block;filter:drop-shadow(0 2px 4px rgba(0,0,0,.45))}
+  .p198hd .em.p204em{background:none!important;border:0!important;box-shadow:none!important;width:auto!important;height:auto!important;padding:0!important}
+  .p204bar{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+  .p204found{display:inline-block;font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;padding:2px 7px;border-radius:4px;border:1px solid #E8B923;color:#E8B923;margin-left:6px;vertical-align:middle}
+  .p204ed{position:fixed;inset:0;z-index:9000;background:rgba(5,8,14,.78);display:flex;align-items:center;justify-content:center;padding:16px}
+  .p204box{background:var(--panel,#121a28);border:1px solid var(--border,#263042);border-radius:12px;width:min(1000px,100%);height:min(840px,92vh);display:grid;grid-template-columns:300px 1fr;grid-template-rows:minmax(0,1fr) auto;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.6)}
+  .p204prev{padding:22px;border-right:1px solid var(--border,#263042);display:flex;flex-direction:column;align-items:center;gap:12px;background:radial-gradient(circle at 50% 30%,rgba(255,255,255,.06),transparent 70%)}
+  .p204prev h3{margin:0;font-size:18px;text-transform:none;letter-spacing:0;text-align:center}
+  .p204prev .motto{font-style:italic;color:var(--muted);text-align:center;font-size:13px;min-height:18px}
+  .p204prev input{width:100%}
+  .p204ctl{overflow:auto;padding:18px 20px;min-height:0}
+  .p204prev{overflow:auto;min-height:0}
+  .p204ctl .k{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin:16px 0 8px}
+  .p204ctl .k:first-child{margin-top:0}
+  .p204grid{display:flex;flex-wrap:wrap;gap:6px}
+  .p204grid button{background:var(--bg2,rgba(0,0,0,.25));border:1px solid var(--border,#263042);border-radius:6px;padding:4px;cursor:pointer;color:var(--text);font:inherit;font-size:12px;line-height:1}
+  .p204grid button.on{border-color:var(--hi,#F59E0B);box-shadow:0 0 0 1px var(--hi,#F59E0B)}
+  .p204grid button .bnr{filter:none}
+  .p204sw{width:26px;height:26px;border-radius:50%!important;padding:0!important}
+  .p204txt button{padding:8px 11px!important}
+  .p204foot{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end;padding:14px 20px;border-top:1px solid var(--border,#263042);grid-column:1/-1}
+  .p204foot .p204msg{margin-right:auto;color:var(--bad,#EF4444);font-size:13px;align-self:center}
+  .p204res{margin-top:14px;border:1px dashed color-mix(in srgb,#E8B923 60%,var(--border));border-radius:10px;padding:14px 16px;background:color-mix(in srgb,#E8B923 6%,transparent)}
+  .p204res h4{margin:0 0 4px;font-size:15px}.p204res .s{color:var(--muted);font-size:13px;line-height:1.5}
+  .p204res .r{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}.p204res .r input{flex:1 1 170px;min-width:0}
+  .p204code{font-family:var(--mono);font-size:15px;font-weight:800;letter-spacing:.12em;padding:4px 10px;border:1px solid var(--border2,#475569);border-radius:6px;background:var(--bg2,rgba(0,0,0,.25))}
+  .p204res .ok{color:var(--ok,#22C55E);font-weight:700}.p204res .no{color:var(--bad,#EF4444);font-size:13px;margin-top:8px}
+  @media(max-width:760px){.p204box{grid-template-columns:1fr;grid-template-rows:auto;height:auto;max-height:94vh;overflow:auto}.p204prev{border-right:0;border-bottom:1px solid var(--border,#263042)}.p204ctl{overflow:visible}}
+  `;document.head.appendChild(css);
+
+  const EMNAME=k=>!k?'None':k.replace(/^f:/,'').replace(/^star8$/,'compass star').replace(/^buoy$/,'anchor ring').replace(/^wall$/,'wall');
+  // ---------- the banner workshop ----------
+  function editor(cl){if(document.querySelector('.p204ed'))return;const a=B.parse(window.__bannerOf(cl)).slice();let motto=cl.motto||'';
+    const ov=document.createElement('div');ov.className='p204ed';ov.innerHTML=`<div class="p204box" role="dialog" aria-label="Banner workshop"><div class="p204prev"><div class="big"></div><h3>${E(cl.name)} <span class="muted">[${E(cl.tag)}]</span></h3><div class="motto"></div><input maxlength="60" placeholder="Motto (optional)" aria-label="Motto" value="${E(motto)}"></div><div class="p204ctl"></div><div class="p204foot"><span class="p204msg"></span><button type="button" class="btn ghost sm" data-x="rnd">Surprise me</button><button type="button" class="btn ghost sm" data-x="cancel">Cancel</button><button type="button" class="btn sm" data-x="save">Save banner</button></div></div>`;
+    document.body.appendChild(ov);const ctl=ov.querySelector('.p204ctl'),big=ov.querySelector('.big'),mo=ov.querySelector('.motto'),mi=ov.querySelector('.p204prev input');
+    const mini=(i,v,px)=>{const b=a.slice();b[i]=v;return B.svg(B.make(b),px||34,{tag:cl.tag});};
+    const sec=(title,i,n,label,px)=>`<div class="k">${title}</div><div class="p204grid">${Array.from({length:n},(_,v)=>`<button type="button" data-i="${i}" data-v="${v}" class="${a[i]===v?'on':''}" title="${E(label(v))}">${mini(i,v,px)}</button>`).join('')}</div>`;
+    const sw=(title,i)=>`<div class="k">${title}</div><div class="p204grid">${B.COL.map((c,v)=>`<button type="button" class="p204sw ${a[i]===v?'on':''}" data-i="${i}" data-v="${v}" title="${E(c[0])}" style="background:${c[1]}"></button>`).join('')}</div>`;
+    const txt=(title,i,arr)=>`<div class="k">${title}</div><div class="p204grid p204txt">${arr.map((t,v)=>`<button type="button" data-i="${i}" data-v="${v}" class="${a[i]===v?'on':''}">${E(t)}</button>`).join('')}</div>`;
+    function paint(){big.innerHTML=B.svg(B.make(a),190,{tag:cl.tag,label:cl.name+' banner'});mo.textContent=mi.value?'“'+mi.value+'”':'';
+      ctl.innerHTML=sec('Shape',0,B.SHAPES.length,v=>B.SHAPES[v].n)+sec('Pattern',1,B.PAT.length,v=>B.PAT[v])+sw('Field colour',2)+sw('Second colour',3)+sw('Emblem colour',4)+
+        sec('Emblem',5,B.EM.length,v=>EMNAME(B.EM[v]),38)+txt('Emblem placement',6,B.PLACE)+txt('How many',7,['One','Two','Three'])+txt('Emblem size',8,B.SIZE)+txt('Tag on the banner',9,B.TAGPOS)+txt('Edge',10,B.EDGE);
+      ctl.querySelectorAll('[data-i]').forEach(b=>b.onclick=()=>{a[+b.dataset.i]=+b.dataset.v;const st=ctl.scrollTop;paint();ctl.scrollTop=st;});}
+    mi.oninput=()=>{mo.textContent=mi.value?'“'+mi.value+'”':'';};
+    paint();
+    ov.querySelector('[data-x="rnd"]').onclick=()=>{const r=B.parse(B.random());r.forEach((v,i)=>a[i]=v);const st=ctl.scrollTop;paint();ctl.scrollTop=st;};
+    ov.querySelector('[data-x="cancel"]').onclick=()=>ov.remove();ov.addEventListener('click',e=>{if(e.target===ov)ov.remove();});
+    ov.querySelector('[data-x="save"]').onclick=async()=>{const code=B.make(a);const r=await cmdSetBanner(you(),code);if(r&&r.ok===false){ov.querySelector('.p204msg').textContent=r.error||'Not saved';return;}
+      if(mi.value!==(cl.motto||'')&&typeof cmdSetMotto==='function'){try{await cmdSetMotto(you(),mi.value);}catch(e){}}
+      ov.remove();try{toast('Banner saved','ok');}catch(e){}try{save();}catch(e){}if(solo())resync(clanOf(you()));go('clans');};}
+  window.__p204editor=()=>{const cl=clanOf(you());if(cl)editor(cl);};
+
+  // ---------- founding alliances (Season 0) ----------
+  const RK='p204res-'+GAME;
+  const res=()=>{try{return JSON.parse(LS(RK)||'null');}catch(e){return null;}};
+  let fcache=null,fat=0;
+  async function flist(force){if(!HAS)return null;if(!force&&fcache&&Date.now()-fat<300000)return fcache;try{const j=await fetch(URL0+'?type=founding&game='+GAME).then(r=>r.json());if(j&&j.ok){fcache=j.rows||[];fat=Date.now();}}catch(e){}return fcache;}
+  function pid(){let p=LS('p203pid');if(!p){p='p'+Math.random().toString(36).slice(2,12)+Date.now().toString(36);LS('p203pid',p);}return p;}
+  async function post(body){const r=await fetch(URL0,{method:'POST',body:JSON.stringify(body)});return r.json();}
+  async function resync(cl){const r=res();if(!HAS||!r||!cl||r.tag!==cl.tag)return;try{await post({type:'reserve',game:GAME,name:cl.name,tag:cl.tag,banner:window.__bannerOf(cl),motto:cl.motto||'',founder:r.founder,discord:r.discord||'',player:pid()});fcache=null;}catch(e){}}
+  function resCard(cl,me){const r=res();const el=document.createElement('div');el.className='p204res';const mine=r&&r.tag===cl.tag;
+    if(mine){const row=(fcache||[]).find(x=>x.tag===cl.tag);const link='https://playterrastate.nl/hall-of-fame.html#join-'+r.invite;
+      el.innerHTML=`<h4>Founding alliance · Season 0</h4><div class="s">[${E(cl.tag)}] ${E(cl.name)} is reserved for the live world${row?', with '+row.members+' '+(row.members===1?'friend':'friends')+' signed up':''}. Share the invite code with friends. Keep the claim code to yourself: you need it to found this alliance when the live world opens.</div>
+        <div class="r" style="align-items:center"><span class="s">Invite</span><span class="p204code">${E(r.invite)}</span><button type="button" class="btn ghost sm" data-c="1">Copy invite link</button><span class="s" style="margin-left:8px">Claim</span><span class="p204code">${E(r.claim)}</span></div>`;
+      el.querySelector('[data-c]').onclick=()=>{try{copyText?copyText('Join '+cl.name+' ['+cl.tag+'] for the live world of '+'Ironfront'+': '+link,'Invite link copied'):navigator.clipboard.writeText(link);}catch(e){try{navigator.clipboard.writeText(link);toast('Invite link copied','ok');}catch(_){}}};
+      return el;}
+    el.innerHTML=`<h4>Take this banner into the live world</h4><div class="s">Reserve [${E(cl.tag)}] ${E(cl.name)} and your banner for Season 1 of the live world. Your computer allies stay here, but friends can sign up with your invite code. We store the alliance, the banner, your name and, if you fill it in, your Discord name, so we can reach you when the world opens.</div>
+      <div class="r"><input maxlength="24" placeholder="Your name" aria-label="Your name" value="${E(LS('p203name')||'')}"><input maxlength="40" placeholder="Discord name (optional)" aria-label="Discord name"><button type="button" class="btn sm">Reserve</button></div><div class="msg"></div>`;
+    const b=el.querySelector('button');b.onclick=async()=>{const [n,d]=[...el.querySelectorAll('input')].map(i=>i.value.trim());const msg=el.querySelector('.msg');
+      if(n.length<2){msg.className='no';msg.textContent='Fill in your name.';return;}b.disabled=true;b.textContent='Reserving';LS('p203name',n);
+      try{const j=await post({type:'reserve',game:GAME,name:cl.name,tag:cl.tag,banner:window.__bannerOf(cl),motto:cl.motto||'',founder:n,discord:d,player:pid()});
+        if(j&&j.ok){LS(RK,JSON.stringify({tag:cl.tag,invite:j.invite,claim:j.claim,founder:n,discord:d}));fcache=null;try{trackEvent('founding-reserve');}catch(e){}go('clans');}
+        else{msg.className='no';msg.textContent=(j&&j.error)||'That did not work. Try again later.';b.disabled=false;b.textContent='Reserve';}}
+      catch(e){msg.className='no';msg.textContent='No connection right now. Try again later.';b.disabled=false;b.textContent='Reserve';}};
+    return el;}
+
+  // ---------- apply on screens ----------
+  function apply(){const v=document.getElementById('view');if(!v||typeof view==='undefined')return;
+    if(view==='clans'){let c;try{c=you();}catch(e){return;}const cl=c&&clanOf(c);
+      const hd=v.querySelector('.p198hd');if(hd&&cl){const em=hd.querySelector('.em');const code=window.__bannerOf(cl);
+        if(em&&em.dataset.p204!==code+cl.tag){em.dataset.p204=code+cl.tag;em.classList.add('p204em');em.innerHTML=B.svg(code,64,{tag:cl.tag,label:cl.name+' banner'});}
+        const h3=hd.querySelector('h3');if(h3&&cl.founding&&!h3.querySelector('.p204found'))h3.insertAdjacentHTML('beforeend','<span class="p204found">Founding · Season 0</span>');
+        const act=hd.querySelector('.p198act');if(act&&cl.leader===c.id&&!act.querySelector('[data-p204b]')){const b=document.createElement('button');b.type='button';b.className='p198b ghost';b.dataset.p204b=1;b.textContent='Banner';b.onclick=()=>editor(clanOf(you()));act.prepend(b);}
+        if(solo()&&HAS&&cl.leader===c.id&&!v.querySelector('.p204res')){const card=resCard(cl,c);hd.insertAdjacentElement('afterend',card);if(res()&&res().tag===cl.tag&&!fcache)flist().then(()=>{const o=v.querySelector('.p204res');if(o){o.replaceWith(resCard(clanOf(you()),you()));}});}}
+      // alone: show the banner your tag would get
+      const sp=v.querySelector('.p202solo .em');if(sp){const t=(v.querySelector('#p202t')||{}).value||'';const code=B.seed(t);if(sp.dataset.p204!==t){sp.dataset.p204=t;sp.style.border='0';sp.style.width='auto';sp.style.height='auto';sp.innerHTML=B.svg(code,54,{tag:t});}
+        const ti=v.querySelector('#p202t');if(ti&&!ti._p204){ti._p204=1;ti.addEventListener('input',()=>apply());}}
+      // live world: the claim code for a reserved tag
+      if(window.__MP__){const tg=v.querySelector('#clt');if(tg&&!v.querySelector('#p204claim')){tg.insertAdjacentHTML('afterend','<input id="p204claim" maxlength="12" placeholder="Founding claim code (only for reserved tags)" style="margin-top:6px">');}}}}
+  try{if(window.__MP__&&typeof cmdFoundClan==='function'&&!cmdFoundClan._p204){const f=cmdFoundClan;const g=function(c,n,t,cl){const el=document.getElementById('p204claim');return f.call(this,c,n,t,cl||(el?el.value.trim():''));};g._p204=1;cmdFoundClan=g;window.cmdFoundClan=g;}}catch(e){}
+  window.__p204apply=apply;if(window.__pLayers&&window.__pLayers.indexOf('__p204apply')<0)window.__pLayers.push('__p204apply');
+  const v0=()=>{const v=document.getElementById('view');if(v)new MutationObserver(window.__pSched?window.__pSched(apply):apply).observe(v,{childList:true,subtree:true});apply();};
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',v0);else v0();
 })();
 
