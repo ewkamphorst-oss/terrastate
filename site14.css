@@ -46,3 +46,15 @@ body .pick3{box-shadow:none}body .pick3-l{font-size:11px}
 .mk14-go:hover{background:rgba(245,158,11,.1)}
 @media (max-width:640px){.st14-go{width:100%;align-items:center;text-align:center}.st14-or{max-width:none}.mom14-grid{grid-template-columns:1fr}.mom14-big figcaption{position:static;background:none;padding:16px 18px 18px}.mk14-in{flex-direction:column;gap:16px}.mk14-ic{width:56px;height:56px;font-size:24px}}
 .mom14-grid figure:not(.mom14-big) img{height:240px;object-fit:cover;object-position:left top}
+/* 14.0: the live world */
+.live14-in{display:grid;grid-template-columns:1.2fr 1fr;gap:28px;align-items:start}
+.live14 h2{margin:6px 0 10px}.live14 p.muted{max-width:38em;font-size:16px;line-height:1.6}
+.live14-track{list-style:none;padding:0;margin:22px 0 0;display:grid;grid-template-columns:repeat(3,1fr);gap:0;counter-reset:lv}
+.live14-track li{position:relative;padding:34px 12px 0 0;counter-increment:lv}
+.live14-track li::before{content:'';position:absolute;left:0;right:0;top:11px;height:3px;background:#334155}
+.live14-track li::after{content:counter(lv);position:absolute;left:0;top:0;width:24px;height:24px;border-radius:50%;display:grid;place-items:center;font:800 12px/1 var(--mono,monospace);background:#1E293B;border:2px solid #475569;color:#94A3B8}
+.live14-track li.done::before{background:#22C55E}.live14-track li.done::after{content:'✓';background:#22C55E;border-color:#22C55E;color:#0F172A}
+.live14-track li.now::before{background:linear-gradient(90deg,#F59E0B,#334155)}.live14-track li.now::after{background:#F59E0B;border-color:#F59E0B;color:#0F172A;box-shadow:0 0 0 6px rgba(245,158,11,.18)}
+.live14-track b{display:block;font-size:15px;color:#F8FAFC}.live14-track span{display:block;font-size:13px;color:#94A3B8;margin-top:3px;line-height:1.4}
+.live14 .soon{border:1px solid #F59E0B!important;background:#1E293B!important;border-radius:4px!important;padding:22px!important}
+@media(max-width:820px){.live14-in{grid-template-columns:1fr}.live14-track{grid-template-columns:1fr;gap:14px}.live14-track li{padding:0 0 0 36px}.live14-track li::before{display:none}}
