@@ -1421,7 +1421,7 @@ const AI_INVITE_CD=20;        // ticks an AI won't rejoin/accept after declining
 const AI_LEAVE_CHECK=12;      // how often (ticks) AI in a human-led clan re-evaluate whether they're being farmed
 const LEADER_AFK=60;         // ticks of leader dormancy before an active officer takes emergency command
 const REBEL_TICKS=48;        // v3.13.1: ticks a HUMAN can be idle before a rebel uprising begins to reclaim their neglected land
-const ROLE={leader:'Leader',commander:'Alliance Commander',officer:'Officer',diplomat:'Diplomat',recruiter:'Recruiter',member:'Member'};
+const ROLE={leader:'Leader',commander:'Alliance Commander',officer:'Officer',diplomat:'Diplomat',recruiter:'Recruiter',quartermaster:'Quartermaster',spymaster:'Spymaster',member:'Member'};
 // ---- Alliance mergers: two alliances permanently unify into one larger power bloc ----
 const MERGE_COST={money:5e6,research:1000,influence:500}; // paid by the initiating alliance's leader
 const MERGE_CAP=20;             // a merged alliance is permanently capped here
@@ -10504,13 +10504,8 @@ VIEWS.military=v=>{const c=you();
       const air=(comp.air||0)+(comp.airdef||0),airPct=Math.round(air/tot*100);
       const alert=airPct<5?'<div class="small" style="color:var(--alert)">⚠ Your alliance is thin on air power, vulnerable to air strikes. Coordinate who builds it.</div>':(comp.cyber||0)/tot<0.02?'<div class="small" style="color:var(--muted)">Tip: almost no covert, nobody can disrupt enemy economies.</div>':'';
       mm.appendChild(h(`<div class="card mt"><h3>Alliance force <span class="muted small" style="text-transform:none;letter-spacing:0">${esc(cl.tag)} · ${full(tot)} units across ${mem.length} members</span></h3>${bars}${alert}</div>`));}}}
-  // Commanders (heroes)
-  const cmds=COMMANDERS.map(cm=>{const owned=(c.commanders||[]).includes(cm.k);const cs=Object.entries(cm.cost).map(([k,v])=>costTok(k,v)).join(' ');
-    const onAlt=owned&&c.cmdrAlt&&c.cmdrAlt.includes(cm.k);
-    const skillRow=owned&&cm.alt?`<div class="seg sm mt" title="Toggle this commander's stance (free)"><button class="${!onAlt?'on':''}" data-skill="${cm.k}" data-alt="0">Standard</button><button class="${onAlt?'on':''}" data-skill="${cm.k}" data-alt="1">${esc(cm.alt.n)}</button></div><div class="muted small" style="min-height:16px">${onAlt?esc(cm.alt.d):esc(cm.d)}</div>`:'';
-    return `<div class="card" style="padding:12px"><div class="row between"><strong>${cm.n}</strong><span class="tag">${cm.role}</span></div><div class="muted small" style="min-height:20px">${cm.d}</div>
-      ${owned?'<div class="pill g mt">Serving</div>'+skillRow:`<div class="small mt mono">${cs}</div><button class="btn sm mt" data-cmd="${cm.k}" ${afford(c,cm.cost)?'':'disabled'}>Recruit</button>`}</div>`;}).join('');
-  mm.appendChild(h(`<h3 class="mt">Commanders <span class="muted small">national bonuses · captured if a army is wiped</span></h3><div class="grid g3">${cmds}</div>`));
+  // 15.0: commanders live on the Staff screen now
+  mm.appendChild(h(`<div class="card mt"><h3>Commanders</h3><div class="muted small">Your commanders, their ranks, traits and orders are on the <b>Staff</b> screen.</div><button class="btn sm mt" onclick="GO('staff')">Open Staff</button></div>`));
   if((c._trophies||[]).length)mm.appendChild(h(`<div class="card mt"><h3>War trophies, captured enemy commanders</h3>${c._trophies.slice(-8).reverse().map(t=>`<div class="small mb"><span class="tag">t${t.tick}</span> <b>${esc(t.commander)}</b>, taken from ${esc(t.from)}</div>`).join('')}<div class="muted small">A captured commander is lost to its nation forever (they lose the bonus). Trophies are a trophy, not a transfer.</div></div>`));
   if(c._ops&&c._ops.length){const o=c._ops.slice(0,10).map(x=>`<tr><td>${esc(x.region)}</td><td>tick ${x.tick}</td><td>${x.result==='captured'?'✅ captured':x.result==='partial'?'partial':'❌ repelled'}</td></tr>`).join('');mm.appendChild(h(`<div class="card mt"><h3>Operations log</h3><table><tbody>${o}</tbody></table></div>`));}
   mm.appendChild(h(`<div class="card mt"><h3>Launch an operation</h3><div class="muted small">Plan attacks on <b>War</b>: pick a target, commit units, and see the travel time. Armies fight on arrival and survivors return home.</div><button class="btn sm mt" onclick="GO('around')">Open War</button></div>`));
@@ -12144,7 +12139,7 @@ VIEWS.clans=v=>{const c=you();const cl=clanOf(c);
     const tss=v.querySelector('#tgsave');if(tss)tss.onclick=async ()=>{const r=await cmdSetTelegram(c,$('tgtoken').value,$('tgchat').value,collectTOpts());if(r.ok){toast(r.data&&r.data.cleared?'Telegram disconnected':'\u2705 Telegram bot saved');go('clans');save();}else toast(r.error,'bad');};
     const tclb=v.querySelector('#tgclear');if(tclb)tclb.onclick=async ()=>{const r=await cmdSetTelegram(c,'','',null);if(r.ok){toast('Telegram disconnected');go('clans');save();}else toast(r.error,'bad');};}
   const mrows=mem.slice().sort(p6by(x=>scores(x).overall)).map(m=>{const role=cl.roles[m.id]||'member';const me=m.id===c.id;const pj=projection(m);const short=pj.net.food<0||pj.net.energy<0;const rd=READY[m.ready]||READY.standby;const inc=incomingTo(m.id).filter(x=>x.threat>=0.02).length;
-    let act='';if(isLead&&!me)act=`<details class="rolemenu"><summary class="btn ghost sm" title="Set alliance role">${ROLE[role]||role} ▾</summary><span class="rolepop">${['member','officer','diplomat','recruiter'].map(rk=>`<button class="btn ghost sm${role===rk?' on':''}" data-setrole="${m.id}:${rk}">${ROLE[rk]}</button>`).join('')}</span></details> ${m.isAI?'':`<button class="btn ghost sm" data-lead="${m.id}">Lead</button> `}<button class="btn ghost sm" data-kick="${m.id}">Kick</button>`;
+    let act='';if(isLead&&!me)act=`<details class="rolemenu"><summary class="btn ghost sm" title="Set alliance role">${ROLE[role]||role} ▾</summary><span class="rolepop">${['member','officer','diplomat','recruiter','quartermaster','spymaster'].map(rk=>`<button class="btn ghost sm${role===rk?' on':''}" data-setrole="${m.id}:${rk}">${ROLE[rk]}</button>`).join('')}</span></details> ${m.isAI?'':`<button class="btn ghost sm" data-lead="${m.id}">Lead</button> `}<button class="btn ghost sm" data-kick="${m.id}">Kick</button>`;
     else if(isOff&&!me&&role==='member')act=`<button class="btn ghost sm" data-kick="${m.id}">Kick</button>`;
     if(!me){const eq=(m.queue||[]).find(x=>x.ticks>1&&!x._eng);if(eq){const ed=BUILD.find(b=>b.k===eq.k);act+=` <button class="btn sec sm" data-eng="${m.id}" title="Spend 1 CP: their ${esc(ed?ed.n:eq.k)} finishes 1 tick sooner (once per building)">🔧 Engineers</button>`;}}
     const ac=memberActivity(m);
@@ -14704,6 +14699,335 @@ if(typeof projection==='function'){const _pj208=projection;projection=function(c
     if(c._p208pk===k&&c._p208pv)return c._p208pv;const v=_pj208.apply(this,arguments);try{Object.defineProperty(c,'_p208pv',{value:v,writable:true,configurable:true,enumerable:false});Object.defineProperty(c,'_p208pk',{value:k,writable:true,configurable:true,enumerable:false});}catch(e){}return v;};}
 // scores(c) (rankings, rank titles, the AI's view of the world) also asks for projection(c): the same kept result applies.
 if(typeof scores==='function'){const _sc208=scores;scores=function(){_p208AI++;try{return _sc208.apply(this,arguments);}finally{_p208AI--;}};}
+
+/*p211*/
+const STAFF_WORLD='I';
+// p211 Update 15.0 "Staff": the commander system rebuilt. 50 commanders per world, ranks 1 to 100, a trait choice at
+// rank 10/25/50/75/100, an active order per commander, a staff of 2 to 5 places, and commanders you unlock with deeds
+// during the season (everyone starts each season with the six basic commanders, so the field stays fair).
+// The staff lives in c.staff; c.commanders stays the list of commanders IN the staff, so older code (capture, saves) works.
+const STAFF_ROLES={army:{n:'Army',k:'atk'},defense:{n:'Defence',k:'def'},economy:{n:'Economy',k:'money'},science:{n:'Science',k:'research'},diplomacy:{n:'Diplomacy',k:'inf'},intel:{n:'Intelligence',k:'recon'},grand:{n:'Supreme',k:'grand'}};
+const STAFF_RAR={c:{n:'Common',p:1,b:.05},r:{n:'Rare',p:1.25,b:.07},e:{n:'Epic',p:1.5,b:.09},l:{n:'Legendary',p:1.8,b:.11},g:{n:'Supreme',p:1.6,b:.04}};
+const STAFF_MAXRANK=100,STAFF_MILES=[10,25,50,75,100],STAFF_SLOTS_BASE=2,STAFF_SLOTS_MAX=5;
+const STAFF_CAP={atk:.30,def:.35,logi:.30,money:.35,research:.40,inf:.80,recon:4};
+// names per world: [key, name, rarity] in role order; the first of each role is the old commander (same key)
+const STAFF_NAMES={
+ T:{army:[['general','General Novak'],['ibarra','Colonel Ibarra'],['lindgren','Major Lindgren'],['asante','Captain Asante'],['kovacs','Brigadier Kovacs'],['tamura','General Tamura'],['okafor','Field General Okafor'],['brandt','Marshal Ilse Brandt']],
+  defense:[['admiral','Admiral Zhao'],['haldane','Commodore Haldane'],['petrova','Colonel Petrova'],['duval','Major Duval'],['mori','Rear Admiral Kaito Mori'],['duarte','Vice Admiral Ines Duarte'],['rourke','Admiral Rourke'],['adomako','Grand Admiral Sefa Adomako']],
+  economy:[['minister','Minister Van Dijk'],['lindahl','Treasurer Lindahl'],['morales','Banker Morales'],['chenwei','Director Chen Wei'],['okeke','Minister Okeke'],['vasquez','Finance Chief Vasquez'],['halvorsen','Magnate Halvorsen'],['nwosu','Steward Amara Nwosu']],
+  science:[['scientist','Dr. Ada Reyes'],['haan','Dr. Felix Haan'],['kowal','Dr. Mira Kowal'],['rios','Engineer Tomas Rios'],['strand','Prof. Lena Strand'],['mensah','Dr. Kofi Mensah'],['marin','Prof. Ilya Marin'],['haddad','Dr. Noor Haddad']],
+  diplomacy:[['diplomat','Envoy Okoro'],['brenner','Envoy Brenner'],['ortega','Consul Ortega'],['lim','Attaché Lim'],['kessler','Ambassador Kessler'],['diallo','Ambassador Diallo'],['saarinen','High Envoy Saarinen'],['visser','Peacemaker Anouk Visser']],
+  intel:[['spymaster','Director Sato'],['kowalczyk','Agent Kowalczyk'],['frey','Analyst Frey'],['rahim','Operative Nadia Rahim'],['quinn','Handler Quinn'],['moreau','Director Moreau'],['akers','Shadow Chief Akers'],['lund','Spymaster Vera Lund']],
+  grand:[['marshal','Supreme Commander Adaeze Obi'],['chief','Chief of Staff Rafael Moretti']]},
+ R:{army:[['general','Legate Corvus'],['marcellus','Tribune Marcellus'],['rufus','Centurion Rufus'],['gallus','Tribune Gallus'],['aquila','Legate Aquila'],['flavius','Legate Flavius'],['ferox','Legate Valerius Ferox'],['invicta','Imperator Cassia Invicta']],
+  defense:[['admiral','Prefect Varro'],['silvanus','Prefect Silvanus'],['decimus','Tribune Decimus'],['otho','Centurion Otho'],['lucilla','Prefect Lucilla'],['agrippus','Prefect Agrippus'],['quintus','Master of the Wall Quintus'],['constans','Guardian Aelia Constans']],
+  economy:[['minister','Quaestor Crassus'],['felix','Quaestor Felix'],['lentulus','Aedile Lentulus'],['vibius','Publican Vibius'],['plautia','Quaestor Plautia'],['arrius','Censor Arrius'],['opulentus','Treasurer Caelius Opulentus'],['aurea','Steward Fabia Aurea']],
+  science:[['scientist','Scholar Aemilia'],['balbus','Engineer Balbus'],['nonius','Architect Nonius'],['galla','Physician Galla'],['theon','Philosopher Theon'],['didia','Mathematician Didia'],['apollonius','Master Builder Apollonius'],['sapiens','Sage Livia Sapiens']],
+  diplomacy:[['diplomat','Orator Tullius'],['paulus','Envoy Paulus'],['gracchus','Orator Gracchus'],['albinus','Herald Albinus'],['calpurnia','Senator Calpurnia'],['messala','Senator Messala'],['domitius','Consul Domitius'],['concordia','First Senator Iulia Concordia']],
+  intel:[['spymaster','Spymaster Sertorius'],['celer','Scout Celer'],['mercator','Courier Mercator'],['naso','Frumentarius Naso'],['cassius','Speculator Cassius'],['verina','Speculator Verina'],['tacitus','Master of Whispers Tacitus'],['umbra','Umbra, Master of Spies']],
+  grand:[['marshal','Dictator Marcus Fortis'],['chief','First Consul Helena Aeterna']]},
+ I:{army:[['general','General Voss'],['harlan','Colonel Harlan'],['duquesne','Major Duquesne'],['brodsky','Captain Brodsky'],['ashworth','Brigadier Ashworth'],['lemaire','General Lemaire'],['moravec','Lt. General Moravec'],['graye','Field Marshal Aldous Graye']],
+  defense:[['admiral','Admiral Hart'],['faber','Colonel Faber'],['novotny','Major Novotny'],['bell','Commander Bell'],['oakes','Brigadier Oakes'],['rasmussen','Admiral Rasmussen'],['delacroix','General Delacroix'],['strand','Fortress Commander Ivo Strand']],
+  economy:[['minister','Minister Colville'],['pryce','Quartermaster Pryce'],['klein','Supply Officer Klein'],['ames','Treasury Clerk Ames'],['hollis','Minister Hollis'],['ferrand','Director of Supply Ferrand'],['barrow','War Production Chief Barrow'],['crane','Minister of Supply Edith Crane']],
+  science:[['scientist','Dr. Lindqvist'],['weller','Dr. Weller'],['sauer','Engineer Sauer'],['petit','Dr. Petit'],['halloran','Prof. Halloran'],['okonski','Dr. Okonski'],['marlowe','Chief Engineer Marlowe'],['benedek','Prof. Clara Benedek']],
+  diplomacy:[['diplomat','Envoy Marchetti'],['dumont','Attaché Dumont'],['sorensen','Envoy Sorensen'],['reyes','Liaison Officer Reyes'],['whitlock','Ambassador Whitlock'],['varga','Ambassador Varga'],['langley','Foreign Secretary Langley'],['holm','Peace Envoy Margit Holm']],
+  intel:[['spymaster','Spymaster Orlov'],['finch','Signals Officer Finch'],['ellis','Codebreaker Ellis'],['moreau','Agent Moreau'],['vance','Handler Vance'],['kalina','Agent Kalina'],['rook','Spymaster Rook'],['laurent','Codemaster Sylvie Laurent']],
+  grand:[['marshal','Supreme Commander Elias Thorne'],['chief','Chief of Staff Helena Brandt']]}};
+const STAFF_RARS=['c','c','c','c','r','r','e','l'];
+const STAFF_BIOS={
+ army:['Never waits for perfect odds.','Marches at night and attacks at first light.','Trains recruits until they forget fear.','Knows every road on the map by heart.','Hits the weakest point, never the strongest.','Keeps the column fed and moving.','Has not lost a pitched battle in twenty years.','A living legend. Soldiers follow the name alone.'],
+ defense:['Digs in first and asks questions later.','Has never given up a wall without a fight.','Counts every gate and every guard.','Calm when the enemy is at the door.','Turns every hill into a fortress.','Rotates the watch so nobody sleeps on duty.','Held a border for a whole winter alone.','The wall that never broke.'],
+ economy:['Balances the books before breakfast.','Finds coin where others see dust.','Never pays full price.','Keeps the stores full and the debts small.','Turns trade routes into rivers of gold.','Taxes fairly, so nobody hides their purse.','Built three markets from one empty square.','The treasury grows wherever this steward walks.'],
+ science:['Always has one more experiment running.','Draws plans on every scrap of paper.','Fixes what others throw away.','Asks the question nobody dared to ask.','Turns ideas into tools in half the time.','Teaches ten students who each teach ten more.','Solved the problem everyone called impossible.','A mind that is always a step ahead.'],
+ diplomacy:['Remembers every name and every favour.','Speaks softly and is heard everywhere.','Can make enemies sit at one table.','Writes letters that open closed doors.','Trusted by both sides of every quarrel.','Turns rivals into partners.','Ended a war with one long conversation.','Their word is worth more than a treaty.'],
+ intel:['Hears everything, says nothing.','Reads a map like a diary.','Knows which roads the enemy prefers.','Pays the right people at the right time.','Sees through every disguise.','Has a friend in every capital.','Knew the enemy plan before the enemy did.','Nobody has ever seen this face twice.'],
+ grand:['Commands the whole war from one table.','Every department answers to this desk.']};
+// orders: id -> [name, description template, kind, params]. p = rarity power (order power traits add to it)
+const STAFF_ORDERS={
+ surge:['Offensive','+{a}% attack for 3 turns','fx',{atk:.20,t:3}],
+ march:['Forced March','+{a}% attack and +{l}% logistics for 3 turns','fx',{atk:.12,logi:.15,t:3}],
+ levy:['Levy','Raise foot soldiers at home now, worth {m} turns of income','levy',{m:4}],
+ breach:['Breakthrough','+{a}% attack for 2 turns','fx',{atk:.35,t:2}],
+ hold:['Hold the Line','+{d}% defence for 4 turns','fx',{def:.25,t:4}],
+ watch:['Watchtowers','+{d}% defence and +1 sight for 4 turns','fx',{def:.15,recon:1,t:4}],
+ stand:['Last Stand','+{d}% defence for 2 turns','fx',{def:.45,t:2}],
+ supply:['Supply Lines','+{l}% logistics for 5 turns','fx',{logi:.25,t:5}],
+ chest:['War Chest','Money now, worth {m} turns of income','cash',{m:6}],
+ drive:['Trade Drive','+{mo}% money for 6 turns','fx',{money:.20,t:6}],
+ golden:['Golden Age','+{mo}% money and +{r}% science for 8 turns','fx',{money:.10,research:.10,t:8}],
+ bargain:['Grand Bargain','Money and influence now','cash',{m:3,i:3}],
+ eureka:['Eureka','The current project jumps {pr}% ahead','lab',{f:.35}],
+ nights:['Long Nights','+{r}% science for 6 turns','fx',{research:.25,t:6}],
+ study:['Field Study','+{r}% science and +1 sight for 5 turns','fx',{research:.15,recon:1,t:5}],
+ envoys:['Envoys Abroad','Influence now, worth {i} turns of income','cash',{i:8}],
+ rally:['Rally the Staff','Command points back to full','cp',{}],
+ accord:['Accord','+{in}% influence and +{d}% defence for 6 turns','fx',{inf:.30,def:.08,t:6}],
+ banners:['Banners High','+{a}% attack, defence, money and science for 5 turns','fx',{atk:.06,def:.06,money:.06,research:.06,t:5}],
+ eyes:['Eyes Everywhere','+2 sight for 5 turns','fx',{recon:2,t:5}],
+ ambush:['Ambush','+{a}% attack and +1 sight for 3 turns','fx',{atk:.15,recon:1,t:3}],
+ counter:['Counter-Watch','+{d}% defence and +1 sight for 5 turns','fx',{def:.15,recon:1,t:5}],
+ total:['Total Mobilisation','+{a}% attack, defence, money and science for 4 turns','fx',{atk:.12,def:.12,money:.12,research:.12,t:4}]};
+const STAFF_ROLE_ORDERS={army:['surge','march','levy','breach'],defense:['hold','watch','stand','supply'],economy:['chest','drive','golden','bargain'],science:['eureka','nights','study','golden'],diplomacy:['envoys','rally','accord','banners'],intel:['eyes','ambush','counter','rally'],grand:['total','banners']};
+// traits per role at rank 10/25/50/75/100: two choices each. m = bonus keys, x = order power (op), cooldown (cd), experience (xp)
+const STAFF_TRAITS={
+ army:[[['Shock Troops',{atk:.03}],['Quick Feet',{logi:.04}]],[['Veteran Core',{def:.03}],['Spoils of War',{money:.03}]],[['Drillmaster',{},{op:.3}],['Tireless',{},{cd:-.25}]],[['Spearhead',{atk:.05}],['Scouting Parties',{recon:1}]],[['Living Legend',{atk:.06},{op:.2}],['Iron Discipline',{atk:.03,def:.04}]]],
+ defense:[[['Deep Trenches',{def:.03}],['Road Builders',{logi:.04}]],[['Sharp Eyes',{recon:1}],['Counterblow',{atk:.03}]],[['Quick Repairs',{},{cd:-.25}],['Fortress Mind',{},{op:.3}]],[['Unbreakable',{def:.05}],['Long Supply',{logi:.06}]],[['The Wall',{def:.07}],['Shield and Spear',{def:.04,atk:.03}]]],
+ economy:[[['Thrift',{money:.03}],['Patron of Learning',{research:.03}]],[['Merchant Friends',{inf:.08}],['War Bonds',{atk:.02,money:.02}]],[['Ready Coin',{},{cd:-.25}],['Big Deals',{},{op:.3}]],[['Golden Touch',{money:.05}],['Fair Taxes',{money:.03,inf:.06}]],[['Treasury of Ages',{money:.07}],['Prosperity',{money:.04,research:.04}]]],
+ science:[[['Curious Mind',{research:.03}],['Practical',{money:.03}]],[['Better Tools',{atk:.02,def:.02}],['Star Pupils',{},{xp:.15}]],[['Late Nights',{},{cd:-.25}],['Bold Theories',{},{op:.3}]],[['Genius',{research:.05}],['Field Science',{research:.03,recon:1}]],[['Visionary',{research:.07}],['Golden Era',{research:.04,money:.04}]]],
+ diplomacy:[[['Silver Tongue',{inf:.10}],['Friends Abroad',{def:.02}]],[['Open Doors',{inf:.10}],['Trade Talks',{money:.03}]],[['Busy Schedule',{},{cd:-.25}],['Grand Gestures',{},{op:.3}]],[['Respected',{inf:.15}],['Peace Dividend',{money:.03,research:.03}]],[['Voice of the World',{inf:.20}],['Trusted by All',{inf:.10,def:.04}]]],
+ intel:[[['Keen Eyes',{recon:1}],['Saboteur',{atk:.02}]],[['Informants',{inf:.08}],['Watchful',{def:.03}]],[['Fast Couriers',{},{cd:-.25}],['Master Plan',{},{op:.3}]],[['All-Seeing',{recon:1}],['Weak Spots',{atk:.04}]],[['Shadow Network',{recon:1,atk:.03}],['Ironclad Secrets',{def:.06}]]],
+ grand:[[['Broad View',{atk:.02,def:.02}],['Full Coffers',{money:.03}]],[['Strategist',{atk:.03}],['Organiser',{logi:.04}]],[['Swift Command',{},{cd:-.25}],['Total Effort',{},{op:.3}]],[['High Command',{atk:.03,def:.03}],['Statecraft',{money:.03,inf:.08}]],[['Supreme',{atk:.04,def:.04,money:.03}],['Grand Design',{research:.05,money:.03}]]]};
+// unlock deeds: per role a ladder for the 7 commanders after the basic one; the two supreme commanders have their own deed
+const STAFF_DEEDS={army:['win',[1,3,6,10,16,25,40],'Take {n} region(s) by force'],defense:['held',[1,2,4,7,12,18,28],'Hold off {n} attack(s) on your land'],economy:['build',[3,6,10,16,24,34,48],'Reach {n} building levels'],science:['tech',[1,3,5,8,12,17,24],'Finish {n} research project(s) this season'],diplomacy:['season',[8,15,25,40,55,70,85],'Lead your nation through {n}% of the season'],intel:['reg',[3,5,8,12,18,26,38],'Rule {n} regions at once']};
+function staffLabel(){return staffWorld()==='R'?'Council':'Staff';}
+function staffWorld(){return typeof STAFF_WORLD!=='undefined'?STAFF_WORLD:'T';}
+let _staffDB=null;
+function staffDB(){if(_staffDB)return _staffDB;const W=STAFF_NAMES[staffWorld()]||STAFF_NAMES.T;const out=[];
+  Object.keys(STAFF_ROLES).forEach(role=>{(W[role]||[]).forEach((x,i)=>{const rar=role==='grand'?'g':STAFF_RARS[i];const ords=STAFF_ROLE_ORDERS[role];
+    const d={k:x[0],n:x[1],role,rar,i,bio:(STAFF_BIOS[role]||[])[i]||'',order:ords[i%ords.length],starter:role!=='grand'&&i===0};
+    if(role==='grand')d.deed=i===0?{t:'top',n:3,d:'Reach the top 3 of the world ranking'}:{t:'rank',n:75,d:'Raise any commander to rank 75'};
+    else if(i>0){const L=STAFF_DEEDS[role];d.deed={t:L[0],n:L[1][i-1],d:L[2].replace('{n}',L[1][i-1])};}
+    out.push(d);});});
+  _staffDB=out;return out;}
+function staffDef(k){return staffDB().find(x=>x.k===k)||null;}
+function staffPace(){return clamp(400/Math.max(100,SEASON_TICKS||400),0.45,2.2);}
+const _staffXpA=1.72,_staffXpP=1.487; // rank r needs 1.72*(r-1)^1.487 xp: about rank 40 from time in the staff alone, 100 with a busy war
+function staffXpFor(r){return r<=1?0:_staffXpA*Math.pow(r-1,_staffXpP);}
+function staffRankOf(xp){let r=Math.floor(Math.pow(Math.max(0,xp)/_staffXpA,1/_staffXpP))+1;r=Math.max(1,Math.min(STAFF_MAXRANK,r));while(r<STAFF_MAXRANK&&staffXpFor(r+1)<=xp)r++;while(r>1&&staffXpFor(r)>xp)r--;return r;}
+function staffInit(c){if(!c)return null;let S=c.staff;
+  if(!S||S.season!==G.season){const keep=S&&S.season===G.season;S=c.staff={v:1,season:G.season,own:{},unl:[],fx:[],cnt:{win:0,held:0,fought:0},tech0:(c.tech||[]).length,maxReg:0,newUnl:[],log:[]};
+    staffDB().forEach(d=>{if(d.starter)S.unl.push(d.k);});
+    // an older save keeps the commanders it already had in service
+    c.commanders=(c.commanders||[]).filter(k=>S.unl.includes(k));if(!c.commanders.length&&c.isAI===false)c.commanders=['general','minister'];}
+  S.unl.forEach(k=>{if(!S.own[k])S.own[k]={xp:0,tr:[],cd:0,uses:0};});
+  return S;}
+function staffOf(c){return c&&c.staff&&c.staff.season===G.season?c.staff:(c&&c.isAI===false?staffInit(c):null);}
+function staffRank(c,k){const S=staffOf(c);const o=S&&S.own[k];return o?staffRankOf(o.xp):1;}
+function staffSlots(c){const S=staffOf(c);if(!S)return STAFF_SLOTS_BASE;let top=1;for(const k in S.own)top=Math.max(top,staffRankOf(S.own[k].xp));return Math.min(STAFF_SLOTS_MAX,STAFF_SLOTS_BASE+(top>=10?1:0)+(top>=25?1:0)+(top>=50?1:0));}
+function staffNextSlot(c){const S=staffOf(c);let top=1;if(S)for(const k in S.own)top=Math.max(top,staffRankOf(S.own[k].xp));return top<10?10:top<25?25:top<50?50:0;}
+function staffTraitX(c,k){const S=staffOf(c);const o=S&&S.own[k];const d=staffDef(k);const x={op:0,cd:0,xp:0};if(!o||!d)return x;
+  (o.tr||[]).forEach((pick,i)=>{const t=((STAFF_TRAITS[d.role]||[])[i]||[])[pick];if(t&&t[2])for(const q in t[2])x[q]+=t[2][q];});return x;}
+function staffBonus(c,k){const d=staffDef(k);const S=staffOf(c);const o=S&&S.own[k];const m={};if(!d)return m;const rk=o?staffRankOf(o.xp):1;const R=STAFF_RAR[d.rar];
+  const add=(q,v)=>{m[q]=(m[q]||0)+v;};
+  if(d.role==='grand'){['atk','def','money','research'].forEach(q=>add(q,R.b+0.001*(rk-1)));}
+  else if(d.role==='intel'){add('recon',(d.rar==='e'||d.rar==='l'?2:1)+(rk>=50?1:0)+(rk>=100?1:0));add('atk',0.0005*(rk-1));}
+  else{const q=STAFF_ROLES[d.role].k;add(q,(q==='inf'?R.b*4:R.b)+(q==='inf'?0.008:0.002)*(rk-1));if(d.role==='defense')add('logi',0.03*R.p);}
+  if(o)(o.tr||[]).forEach((pick,i)=>{const t=((STAFF_TRAITS[d.role]||[])[i]||[])[pick];if(t)for(const q in t[1])add(q,t[1][q]);});
+  return m;}
+// the old engine reads commanderMods(c) everywhere (combat, logistics, economy, sight): the staff plugs in there
+commanderMods=function(c){const m={atk:0,def:0,logi:0,money:0,research:0,inf:0,recon:0};if(!c)return m;
+  if(c.isAI!==false){(c.commanders||[]).forEach(k=>{const cm=COMMANDERS.find(x=>x.k===k);if(!cm)return;for(const b in cm.bonus)m[b]=(m[b]||0)+cm.bonus[b];});return m;}
+  const S=staffOf(c);if(!S)return m;
+  (c.commanders||[]).forEach(k=>{if(!S.own[k])return;const b=staffBonus(c,k);for(const q in b)m[q]=(m[q]||0)+b[q];});
+  (S.fx||[]).forEach(f=>{if(f.until>G.tick)for(const q in f.m)m[q]=(m[q]||0)+f.m[q];});
+  for(const q in STAFF_CAP)m[q]=Math.min(STAFF_CAP[q],m[q]||0);m.recon=Math.round(m.recon);return m;};
+function staffXp(c,k,amt){const S=staffOf(c);const o=S&&S.own[k];if(!o||!(c.commanders||[]).includes(k))return;
+  const before=staffRankOf(o.xp);o.xp+=amt*staffPace()*(1+staffTraitX(c,k).xp);const after=staffRankOf(o.xp);
+  if(after>before){const d=staffDef(k);const mile=STAFF_MILES.filter(r=>r>before&&r<=after);
+    if(c.id===G.you&&typeof toast==='function'&&(mile.length||after%10===0))toast('🎖 '+d.n+' reached rank '+after+(mile.length?'. Choose a new trait on the '+staffLabel()+' screen.':''));
+    if(mile.length&&typeof sitrep==='function')sitrep(c,'info','🎖 '+d.n+' reached rank '+after+': choose a new trait',{go:'staff'});}}
+function staffPendingTraits(c,k){const S=staffOf(c);const o=S&&S.own[k];if(!o)return 0;const rk=staffRankOf(o.xp);return STAFF_MILES.filter(r=>r<=rk).length-(o.tr||[]).length;}
+function staffDeedProgress(c,d){const S=staffOf(c);if(!S||!d.deed)return 0;const t=d.deed.t;
+  if(t==='win')return S.cnt.win;if(t==='held')return S.cnt.held;if(t==='build')return (c.buildings||[]).reduce((s,b)=>s+(b.lv||0),0);
+  if(t==='tech')return Math.max(0,(c.tech||[]).length-S.tech0);if(t==='season')return Math.floor(100*G.tick/Math.max(1,SEASON_TICKS));
+  if(t==='reg')return S.maxReg;if(t==='rank'){let top=1;for(const k in S.own)top=Math.max(top,staffRankOf(S.own[k].xp));return top;}
+  if(t==='top')return S.bestPos?Math.max(0,4-S.bestPos):0;return 0;}
+function staffDeedDone(c,d){if(!d.deed)return true;if(d.deed.t==='top'){const S=staffOf(c);return !!(S&&S.bestPos&&S.bestPos<=d.deed.n);}return staffDeedProgress(c,d)>=d.deed.n;}
+function staffUnlockCheck(c){const S=staffOf(c);if(!S)return;
+  staffDB().forEach(d=>{if(S.unl.includes(d.k)||!staffDeedDone(c,d))return;S.unl.push(d.k);S.own[d.k]=S.own[d.k]||{xp:0,tr:[],cd:0,uses:0};(S.newUnl=S.newUnl||[]).push(d.k);
+    const msg='⭐ New commander: '+d.n+' ('+STAFF_RAR[d.rar].n+', '+STAFF_ROLES[d.role].n+')';
+    if(c.id===G.you&&typeof toast==='function')toast(msg+'. Open '+staffLabel()+' to add them.');if(typeof sitrep==='function')sitrep(c,'info',msg,{go:'staff'});});}
+function staffOrderCost(d){return d.rar==='l'||d.rar==='g'?3:d.rar==='c'?1:2;}
+function staffCooldown(c,d){const base=STAFF_ORDERS[d.order][2]==='fx'?30:24;return Math.max(8,Math.round(base*Math.max(0.5,SEASON_TICKS/400)*(1+staffTraitX(c,d.k).cd)));}
+function staffOrderPower(c,d){return STAFF_RAR[d.rar].p*(1+staffTraitX(c,d.k).op)*(1+0.004*(staffRank(c,d.k)-1));}
+function staffOrderText(c,d){const O=STAFF_ORDERS[d.order];const p=staffOrderPower(c,d);const P=O[3];const pc=v=>Math.round(v*p*100);
+  return O[1].replace('{a}',pc(P.atk||0)).replace('{l}',pc(P.logi||0)).replace('{d}',pc(P.def||0)).replace('{mo}',pc(P.money||0)).replace('{r}',pc(P.research||0)).replace('{in}',pc(P.inf||0)).replace('{pr}',Math.min(90,pc(P.f||0))).replace('{m}',Math.round((P.m||0)*p)).replace('{i}',Math.round((P.i||0)*p));}
+function cmdStaffAdd(c,k){const S=staffOf(c);if(!S)return err('No staff');if(!S.unl.includes(k))return err('Unlock this commander first');c.commanders=c.commanders||[];
+  if(c.commanders.includes(k))return err('Already in your staff');if(c.commanders.length>=staffSlots(c))return err('Your staff is full. Remove someone first.');
+  const d=staffDef(k);if(d&&(d.rar==='l'||d.rar==='g')&&c.commanders.some(x=>{const e=staffDef(x);return e&&(e.rar==='l'||e.rar==='g');}))return err('Only one legendary or supreme commander at a time');
+  c.commanders.push(k);S.newUnl=(S.newUnl||[]).filter(x=>x!==k);return ok({k});}
+function cmdStaffRemove(c,k){c.commanders=(c.commanders||[]).filter(x=>x!==k);return ok({k});}
+function cmdStaffTrait(c,k,pick){const S=staffOf(c);const o=S&&S.own[k];const d=staffDef(k);if(!o||!d)return err('Unknown commander');pick=pick?1:0;
+  if(staffPendingTraits(c,k)<=0)return err('No trait to choose yet');o.tr=o.tr||[];o.tr.push(pick);return ok({k,pick});}
+function cmdStaffOrder(c,k,targetId){const S=staffOf(c);const o=S&&S.own[k];const d=staffDef(k);if(!o||!d)return err('Unknown commander');
+  if(!(c.commanders||[]).includes(k))return err('Only commanders in your staff can give orders');if(o.cd>G.tick)return err('Ready in '+(o.cd-G.tick)+' turns');
+  const cost=staffOrderCost(d);if((c.cp||0)<cost)return err('Needs '+cost+' command point'+(cost>1?'s':''));
+  const O=STAFF_ORDERS[d.order];const P=O[3];const p=staffOrderPower(c,d);let note='';
+  if(O[2]==='fx'){const m={};for(const q in P)if(q!=='t')m[q]=q==='recon'?P[q]:P[q]*p;S.fx=(S.fx||[]).filter(f=>f.until>G.tick);S.fx.push({k,m,until:G.tick+P.t});}
+  else if(O[2]==='cash'){const pr=((projection(c)||{}).prod)||{};const mo=Math.max(0,(pr.money||0)*(P.m||0)*p);const inf=Math.max(0,(pr.influence||0)*(P.i||0)*p,(P.i?150*p:0));
+    c.res.money=(c.res.money||0)+mo;if(P.i)c.res.influence=(c.res.influence||0)+inf;note=(mo?'+'+full(mo)+' money':'')+(P.i?(mo?', ':'')+'+'+full(inf)+' influence':'');}
+  else if(O[2]==='lab'){const q=c.rq&&c.rq[0];if(!q)return err('Start a research project first');const cut=Math.max(1,Math.round(q.ticks*Math.min(0.9,P.f*p)));q.ticks=Math.max(1,q.ticks-cut);note=cut+' turns faster';}
+  else if(O[2]==='cp'){const cap=cpCap(c);if((c.cp||0)-cost>=cap)return err('Your command points are already full');c.cp=cap+cost;note='command points refilled';}
+  else if(O[2]==='levy'){const inf=(typeof UNIT!=='undefined'?UNIT:[]).filter(u=>u.cls==='inf'&&(typeof unitUnlocked!=='function'||unitUnlocked(c,u.k)));inf.sort((a,b)=>((b.cost&&b.cost.money)||0)-((a.cost&&a.cost.money)||0));
+    const u=inf[0];if(!u)return err('No foot soldiers to raise');const inc=(((projection(c)||{}).prod)||{}).money||0;const n=Math.max(10,Math.round(inc*4*p/Math.max(1,(u.cost&&u.cost.money)||1)));c.units[u.k]=(c.units[u.k]||0)+n;note='+'+full(n)+' '+u.n;}
+  c.cp-=cost;o.cd=G.tick+staffCooldown(c,d);o.uses=(o.uses||0)+1;staffXp(c,k,12);
+  (S.log=S.log||[]).unshift({t:G.tick,k,o:d.order});if(S.log.length>30)S.log.length=30;
+  return ok({k,order:O[0],note});}
+// battles: wins, defences held, fights; they feed both experience and the unlock deeds
+function staffBattle(c,defC,captured,retreated){try{
+  if(c&&c.isAI===false){const S=staffOf(c);if(S){if(captured){S.cnt.win++;}S.cnt.fought++;(c.commanders||[]).forEach(k=>{const d=staffDef(k);if(!d)return;
+      staffXp(c,k,d.role==='army'?(captured?14:5):d.role==='intel'?4:d.role==='grand'?6:captured?3:1);});}}
+  if(defC&&defC.isAI===false&&!retreated){const S=staffOf(defC);if(S){if(!captured)S.cnt.held++;(defC.commanders||[]).forEach(k=>{const d=staffDef(k);if(!d)return;
+      staffXp(defC,k,d.role==='defense'?(captured?4:14):d.role==='intel'?4:d.role==='grand'?6:captured?1:3);});}}}catch(e){}}
+if(typeof finalizeBattle==='function'){const _fb211=finalizeBattle;finalizeBattle=function(c,f,r,defC,R,retreated){const before=r?r.owner:null;const out=_fb211.apply(this,arguments);
+  try{staffBattle(c,defC,!!(r&&r.owner===c.id&&before!==c.id),!!retreated);}catch(e){}return out;};}
+function staffTick(){const humans=G.countries.filter(c=>c&&c.isAI===false&&!c.retired);if(!humans.length)return;
+  let order=null;
+  humans.forEach(c=>{const S=staffOf(c);if(!S)return;S.fx=(S.fx||[]).filter(f=>f.until>G.tick);
+    const reg=regionsOf(c).length;if(reg>S.maxReg)S.maxReg=reg;
+    const nt=(c.tech||[]).length;if(S._tl!=null&&nt>S._tl)(c.commanders||[]).forEach(k=>{const d=staffDef(k);if(d&&d.role==='science')staffXp(c,k,16*(nt-S._tl));});S._tl=nt;
+    if(G.tick%5===0){if(!order){order=G.countries.filter(x=>x&&!x.retired&&regionsOf(x).length).map(x=>[x.id,netWorth(x)]).sort((a,b)=>b[1]-a[1]).map(x=>x[0]);}
+      const pos=order.indexOf(c.id)+1;if(pos>0&&(!S.bestPos||pos<S.bestPos))S.bestPos=pos;}
+    const inClan=c.clan!=null;
+    (c.commanders||[]).forEach(k=>{const d=staffDef(k);if(!d)return;const extra=(d.role==='economy'||d.role==='science'||d.role==='intel')?1:d.role==='diplomacy'?(inClan?1.5:1):0;staffXp(c,k,1+extra);});
+    staffUnlockCheck(c);});}
+if(typeof runTick==='function'){const _rt211=runTick;runTick=function(){const out=_rt211.apply(this,arguments);try{staffTick();}catch(e){}return out;};}
+// the old recruit command now places an unlocked commander in the staff (multiplayer clients call it by name)
+cmdCommander=function(c,k){return cmdStaffAdd(c,k);};
+
+/*p212*/
+// p212 Update 15.0 "Alliance roles": every title in an alliance now does something, for people and for computer nations.
+// Leader: doctrine for the whole alliance and a Rally Call. Officer: field command and a Muster. Diplomat: standing with
+// other alliances, envoys and trade deals (+5% influence, the old promise). Recruiter: candidates, a recruitment drive and a
+// welcome package. Quartermaster: aid from the treasury. Spymaster: +1 sight for every member and early warnings.
+// Computer nations that hold a title carry it out themselves (see roleAITick).
+const ROLE_DOCTRINES={offense:{n:'Offensive',d:'+4% attack for every member',m:{atk:.04}},fortress:{n:'Fortress',d:'+5% defence for every member',m:{def:.05}},
+  trade:{n:'Trade',d:'+5% money for every member',m:{money:.05}},science:{n:'Learning',d:'+6% science for every member',m:{research:.06}}};
+const ROLE_INFO={leader:'Sets the doctrine of the alliance and can give a Rally Call: every member defends better for 3 turns.',
+  officer:'Fights with +3% attack, leads joint strikes and can call a Muster: members send troops to a threatened region.',
+  diplomat:'+5% influence. Sends envoys to raise your standing with other alliances and signs trade deals (+4% money for both sides).',
+  recruiter:'Can invite nations, runs a recruitment drive and gives every new member a welcome package.',
+  quartermaster:'Hands out aid from the alliance treasury to members who need it.',
+  spymaster:'Every member sees +1 further. Warns the alliance when armies march on a member.',
+  commander:'Plans strikes and can pin joint strike targets.',member:'Fights and builds with the alliance.'};
+const ROLE_LABEL={leader:'Leader',officer:'Officer',commander:'General',diplomat:'Diplomat',recruiter:'Recruiter',quartermaster:'Quartermaster',spymaster:'Spymaster',member:'Member'};
+let _inc212T=-1,_inc212={};
+function roleInc(id){if(_inc212T!==G.tick){_inc212T=G.tick;_inc212={};}if(!(id in _inc212)){try{_inc212[id]=incomingTo(id)||[];}catch(e){_inc212[id]=[];}}return _inc212[id];}
+let _free212T=-1,_free212=0,_hum212=null;
+function roleFreePool(){if(_free212T!==G.tick){_free212T=G.tick;_free212=G.countries.filter(x=>x&&x.isAI&&!x.retired&&x.clan==null&&regionsOf(x).length).length;_hum212=null;}return _free212;}
+function roleHumanTheaters(){roleFreePool();if(!_hum212){_hum212=new Set();G.countries.forEach(x=>{if(x&&x.isAI===false&&!x.retired){try{_hum212.add(homeCluster(x));}catch(e){}}});}return _hum212;}
+function rolePace(){return Math.max(0.5,(SEASON_TICKS||400)/400);}
+function roleCd(base){return Math.max(6,Math.round(base*rolePace()));}
+function roleOf(c){const cl=c&&c.clan!=null?clanOf(c):null;return cl?(cl.roles[c.id]||'member'):null;}
+function roleHolders(cl,role){return clanMembers(cl).filter(m=>(cl.roles[m.id]||'member')===role);}
+function clanAM(cl){if(!cl)return null;if(cl._amT===G.tick&&cl._am)return cl._am;const m={};const add=(q,v)=>{m[q]=(m[q]||0)+v;};
+  const D=ROLE_DOCTRINES[cl.doctrine];if(D)for(const q in D.m)add(q,D.m[q]);
+  if(cl.rallyUntil&&cl.rallyUntil>G.tick)add('def',.15);
+  const deals=(G.diplomacy||[]).filter(r=>r.status==='trade'&&(r.a===cl.id||r.b===cl.id)&&(!r.until||r.until>G.tick)).length;if(deals)add('money',.04*Math.min(2,deals));
+  if(roleHolders(cl,'spymaster').length)add('recon',1);
+  cl._am=m;cl._amT=G.tick;return m;}
+function roleMods(c){const cl=c&&c.clan!=null?clanOf(c):null;if(!cl)return null;const base=clanAM(cl)||{};const m=Object.assign({},base);
+  const r=cl.roles[c.id];if(r==='officer'||r==='commander'||r==='leader')m.atk=(m.atk||0)+.03;if(r==='diplomat')m.inf=(m.inf||0)+.05;return m;}
+// fold the alliance bonuses into the commander modifiers the whole engine already reads (the p211 diplomat fix moves here)
+{const _cm212=commanderMods;commanderMods=function(c){const m=_cm212(c);try{const r=roleMods(c);if(r){
+  for(const q in r)m[q]=(m[q]||0)+r[q];if(m.recon)m.recon=Math.round(m.recon);}}catch(e){}return m;};}
+function clanStanding(a,b){const A=(G.clans||[]).find(x=>x.id===a);return A&&A.standing&&A.standing[b]||0;}
+function clanStandAdd(a,b,v){const A=(G.clans||[]).find(x=>x.id===a);if(!A)return;A.standing=A.standing||{};A.standing[b]=Math.max(-100,Math.min(100,(A.standing[b]||0)+v));}
+function standingWord(v){return v>=60?'Friends':v>=25?'Warm':v>-25?'Neutral':v>-60?'Cold':'Enemies';}
+// ---- leader ----
+function cmdSetDoctrine(c,k){const cl=clanOf(c);if(!cl)return err('Join an alliance first');if(cl.roles[c.id]!=='leader')return err('Only the leader sets the doctrine');
+  if(!ROLE_DOCTRINES[k])return err('Unknown doctrine');if(cl.doctrine===k)return err('That is already the doctrine');
+  if(cl.doctrineAt!=null&&G.tick-cl.doctrineAt<roleCd(40))return err('The alliance can change doctrine again in '+(cl.doctrineAt+roleCd(40)-G.tick)+' turns');
+  cl.doctrine=k;cl.doctrineAt=G.tick;cl._amT=-1;clanPost(cl,c.id,'📜 New doctrine: '+ROLE_DOCTRINES[k].n+'. '+ROLE_DOCTRINES[k].d+'.','officer');return ok({k});}
+function cmdRallyCall(c){const cl=clanOf(c);if(!cl)return err('Join an alliance first');if(cl.roles[c.id]!=='leader')return err('Only the leader can call a rally');
+  if(cl.rallyAt!=null&&G.tick-cl.rallyAt<roleCd(30))return err('Ready again in '+(cl.rallyAt+roleCd(30)-G.tick)+' turns');
+  cl.rallyAt=G.tick;cl.rallyUntil=G.tick+3;cl._amT=-1;clanPost(cl,c.id,'📯 Rally Call! Every member defends with +15% for 3 turns.','war');
+  clanMembers(cl).forEach(m=>{if(m.isAI===false&&m.id!==c.id)sitrep(m,'alliance','📯 '+leaderName(c)+' gave a Rally Call: +15% defence for 3 turns.',{go:'clans'});});return ok();}
+// ---- officer ----
+function cmdMuster(c,rid){const cl=clanOf(c);if(!cl)return err('Join an alliance first');if(!isClanOfficer(c))return err('Only the leader or an officer can call a muster');
+  const r=_rgId(rid);if(!r||r.owner==null||!cl.members.includes(r.owner))return err('Pick a region of your alliance');
+  if(cl.musterAt!=null&&G.tick-cl.musterAt<roleCd(12))return err('A new muster is possible in '+(cl.musterAt+roleCd(12)-G.tick)+' turns');
+  cl.musterAt=G.tick;cl.muster={rid:r.id,until:G.tick+6,by:c.id,answered:[]};
+  clanPost(cl,c.id,'🚩 Muster at '+r.name+'! Send troops there. Everyone who answers earns influence.','war');
+  clanMembers(cl).forEach(m=>{if(m.isAI===false&&m.id!==c.id)sitrep(m,'alliance','🚩 Muster at '+r.name+': '+leaderName(c)+' asks every member to send troops.',{go:'self',sev:2});});
+  roleMusterAnswer(cl);return ok({rid:r.id});}
+function roleMusterAnswer(cl){const M=cl.muster;if(!M||M.until<=G.tick)return;const r=G.regions[M.rid];if(!r||!cl.members.includes(r.owner)){cl.muster=null;return;}
+  clanMembers(cl).forEach(m=>{if(!m.isAI||m.retired||m.id===r.owner||M.answered.includes(m.id))return;
+    if(roleInc(m.id).length)return;
+    const com={};let n=0;for(const k in m.units||{}){const v=Math.floor((m.units[k]||0)*0.18);if(v>0){com[k]=v;n+=v;}}if(n<10)return;
+    const res=cmdStation(m,r.id,com);if(res&&res.ok){M.answered.push(m.id);m.res.influence=(m.res.influence||0)+60;}});}
+// ---- diplomat ----
+function cmdEnvoy(c,otherId){const cl=clanOf(c);if(!cl)return err('Join an alliance first');if(!isClanDiplomat(c))return err('Only the leader or a Diplomat sends envoys');
+  const B=(G.clans||[]).find(x=>x.id===otherId);if(!B||B.id===cl.id||!clanMembers(B).length)return err('Pick another alliance');if(clanAtWar(cl.id,B.id))return err('You are at war with them');
+  c._envoyAt=c._envoyAt||{};if(c._envoyAt[B.id]!=null&&G.tick-c._envoyAt[B.id]<roleCd(10))return err('Your envoy is still on the road. Again in '+(c._envoyAt[B.id]+roleCd(10)-G.tick)+' turns');
+  const cost=300;if((c.res.influence||0)<cost)return err('An envoy costs '+cost+' influence');c.res.influence-=cost;c._envoyAt[B.id]=G.tick;
+  clanStandAdd(cl.id,B.id,10);clanStandAdd(B.id,cl.id,15);
+  clanPost(cl,c.id,'🕊 Envoy sent to '+B.name+' ['+B.tag+']. Standing: '+standingWord(clanStanding(B.id,cl.id))+'.','officer');return ok({standing:clanStanding(B.id,cl.id)});}
+// trade deals ride on the existing alliance pact system as a third kind next to NAP and Allied
+{const _do=cmdDipOffer;cmdDipOffer=function(c,targetClanId,kind,ticks,note){if(kind!=='trade')return _do.apply(this,arguments);
+  const cl=clanOf(c);if(!cl)return err('Join an alliance first');if(!isClanDiplomat(c))return err('Only the leader or a Diplomat can propose diplomacy');
+  const tc=(G.clans||[]).find(x=>x.id===targetClanId);if(!tc||tc.id===cl.id||!clanMembers(tc).length)return err('Pick another alliance');if(clanAtWar(cl.id,tc.id))return err('You are at war with them');
+  if((G.diplomacy||[]).some(r=>r.status==='trade'&&_dipKey(r.a,r.b)===_dipKey(cl.id,tc.id)&&(!r.until||r.until>G.tick)))return err('You already trade with them');
+  if(clanStanding(tc.id,cl.id)<20)return err(tc.name+' does not trust you enough yet (standing '+standingWord(clanStanding(tc.id,cl.id))+'). Send an envoy first.');
+  G.dipOffers=(G.dipOffers||[]).filter(o=>!(o.from===cl.id&&o.to===tc.id));
+  G.dipOffers.push({id:G._fid++,from:cl.id,to:tc.id,kind:'trade',ticks:ticks||roleCd(40),note:(note||'').slice(0,120),expires:G.tick+DIP_OFFER_TTL,by:c.id});
+  clanPost(cl,c.id,'💰 Proposed a trade deal with '+tc.name+' ['+tc.tag+'].','officer');
+  clanMembers(tc).forEach(m=>{if(m.isAI===false&&['leader','diplomat'].includes(tc.roles[m.id]))sitrep(m,'alliance','💰 '+cl.name+' ['+cl.tag+'] proposes a trade deal: +4% money for both alliances. Answer in Alliance → Diplomacy.',{go:'diplomacy'});});
+  return ok();};}
+{const _dr=cmdDipRespond;cmdDipRespond=function(c,offerId,accept){const o=(G.dipOffers||[]).find(x=>x.id===offerId);
+  if(!o||o.kind!=='trade')return _dr.apply(this,arguments);
+  const cl=clanOf(c);if(!cl)return err('Join an alliance first');if(!isClanDiplomat(c))return err('Only the leader or a Diplomat can answer diplomacy');if(o.to!==cl.id)return err('That offer is not addressed to your alliance');
+  G.dipOffers=G.dipOffers.filter(x=>x!==o);const A=(G.clans||[]).find(x=>x.id===o.from);if(!A)return err('The proposing alliance no longer exists');
+  if(!accept){clanPost(A,A.leader,'✖ '+cl.name+' declined the trade deal.','officer');return ok();}
+  G.diplomacy=(G.diplomacy||[]).filter(r=>!(r.status==='trade'&&_dipKey(r.a,r.b)===_dipKey(A.id,cl.id)));
+  G.diplomacy.push({a:Math.min(A.id,cl.id),b:Math.max(A.id,cl.id),status:'trade',until:G.tick+(o.ticks||roleCd(40)),by:c.id,created:G.tick});
+  clanStandAdd(A.id,cl.id,10);clanStandAdd(cl.id,A.id,10);A._amT=-1;cl._amT=-1;
+  [A,cl].forEach(x=>clanPost(x,x.leader,'💰 Trade deal signed: '+A.tag+' ↔ '+cl.tag+'. +4% money for both.','general'));news('diplomacy','💰 '+A.name+' and '+cl.name+' signed a trade deal.');return ok();};}
+// a trade deal is a pact, not a shield: it does not block attacks, but breaking peace with a partner costs standing
+if(typeof breakAllianceDip==='function'){const _bd=breakAllianceDip;breakAllianceDip=function(a,b){const out=_bd.apply(this,arguments);try{clanStandAdd(b,a,-60);clanStandAdd(a,b,-20);}catch(e){}return out;};}
+// ---- recruiter ----
+{const _inv=cmdInvite;cmdInvite=function(c,aiId){const cl=clanOf(c);if(cl&&cl.roles[c.id]==='recruiter'){cl.roles[c.id]='officer';try{return _inv.apply(this,arguments);}finally{cl.roles[c.id]='recruiter';}}return _inv.apply(this,arguments);};}
+function roleCandidates(cl,n){const lead=G.countries[cl.leader];if(!lead)return [];const hc=homeCluster(lead);
+  return G.countries.filter(m=>m&&m.isAI&&!m.retired&&m.clan==null&&regionsOf(m).length&&!(m._aiCd&&G.tick<m._aiCd)).map(m=>({m,s:(homeCluster(m)===hc?2:0)+Math.min(2,netWorth(m)/Math.max(1,netWorth(lead)))})).sort((a,b)=>b.s-a.s).slice(0,n||6).map(x=>x.m);}
+function cmdRecruitDrive(c){const cl=clanOf(c);if(!cl)return err('Join an alliance first');const r=cl.roles[c.id];if(r!=='recruiter'&&r!=='leader')return err('Only the leader or a Recruiter runs a recruitment drive');
+  if(cl.driveAt!=null&&G.tick-cl.driveAt<roleCd(30))return err('A new drive is possible in '+(cl.driveAt+roleCd(30)-G.tick)+' turns');
+  if(clanMembers(cl).length>=clanCap(cl))return err('The alliance is full');if(!aiSlotOpen(cl))return err('No room for more computer nations');
+  const cost=300;if((c.res.influence||0)<cost)return err('A drive costs '+cost+' influence');c.res.influence-=cost;cl.driveAt=G.tick;
+  let got=[];for(const m of roleCandidates(cl,8)){if(got.length>=2||clanMembers(cl).length>=clanCap(cl)||!aiSlotOpen(cl))break;
+    cl.members.push(m.id);m.clan=cl.id;cl.roles[m.id]='member';got.push(m);}
+  clanPost(cl,c.id,'📣 Recruitment drive: '+(got.length?got.map(m=>m.name).join(' and ')+' joined us.':'nobody answered this time.'),'general');return ok({joined:got.map(m=>m.name)});}
+function roleWelcome(cl){const seen=cl._mem0||(cl._mem0=cl.members.slice());const fresh=cl.members.filter(id=>!seen.includes(id));cl._mem0=cl.members.slice();
+  if(!fresh.length||!roleHolders(cl,'recruiter').length)return;
+  fresh.forEach(id=>{const m=G.countries[id];if(!m)return;const inc=(((projection(m)||{}).prod)||{}).money||0;m.res.money=(m.res.money||0)+inc*3;m._welcomeUntil=G.tick+5;
+    clanPost(cl,cl.leader,'🎁 Welcome, '+m.name+'! A welcome package is on its way.','general');if(m.isAI===false)sitrep(m,'alliance','🎁 Welcome package from your new alliance: money for three turns.',{go:'clans'});});}
+// ---- quartermaster ----
+function cmdAid(c,memberId){const cl=clanOf(c);if(!cl)return err('Join an alliance first');const r=cl.roles[c.id];if(r!=='quartermaster'&&r!=='leader')return err('Only the leader or the Quartermaster hands out aid');
+  const m=G.countries[memberId];if(!m||!cl.members.includes(memberId))return err('Pick a member');if(cl.aidAt!=null&&G.tick-cl.aidAt<roleCd(6))return err('Next aid in '+(cl.aidAt+roleCd(6)-G.tick)+' turns');
+  const t=cl.treasury||{};const amt=Math.floor((t.money||0)*0.25);if(amt<1000)return err('The treasury is nearly empty. Members can donate on the alliance screen.');
+  t.money-=amt;m.res.money=(m.res.money||0)+amt;cl.aidAt=G.tick;clanPost(cl,c.id,'📦 Aid from the treasury to '+m.name+': '+full(amt)+'.','general');
+  if(m.isAI===false&&m.id!==c.id)sitrep(m,'alliance','📦 Your alliance sent you '+full(amt)+' from the treasury.',{go:'clans'});return ok({amt});}
+// ---- spymaster ----
+function roleSpyWarn(cl){const sp=roleHolders(cl,'spymaster')[0];if(!sp||!clanMembers(cl).some(x=>x.isAI===false))return;cl._warned=cl._warned||{};
+  clanMembers(cl).forEach(m=>{const inc=roleInc(m.id);inc.forEach(x=>{const f=x.fleet||{};const key=String(f.id!=null?f.id:((x.region&&x.region.id)+':'+x.eta));if(cl._warned[key])return;cl._warned[key]=G.tick;
+    const r=x.region;clanPost(cl,sp.id,'👁 '+leaderName(sp)+': '+((x.from&&x.from.name)||'an enemy')+' marches on '+(r?r.name:'one of us')+' ('+m.name+'), arriving in '+Math.max(0,x.eta||0)+' turns.','war');});});
+  for(const k in cl._warned)if(G.tick-cl._warned[k]>40)delete cl._warned[k];}
+// ---- computer nations carry out their titles ----
+function roleAITick(){(G.clans||[]).forEach(cl=>{try{const mem=clanMembers(cl);if(!mem.length)return;roleWelcome(cl);roleMusterAnswer(cl);roleSpyWarn(cl);
+    const lead=G.countries[cl.leader];const aiLed=lead&&lead.isAI;
+    // an AI-led alliance fills its titles; in a player-led alliance the player hands them out
+    if(aiLed&&G.tick%6===cl.id%6){const want=[['diplomat',3],['recruiter',4],['quartermaster',5],['spymaster',6]];
+      want.forEach(([role,min])=>{if(mem.length<min||roleHolders(cl,role).length)return;const pickM=mem.find(m=>m.isAI&&(cl.roles[m.id]||'member')==='member');if(pickM)cl.roles[pickM.id]=role;});}
+    if(G.tick%3!==cl.id%3)return;
+    mem.forEach(m=>{if(!m.isAI||m.retired)return;const role=cl.roles[m.id]||'member';
+      if(role==='leader'){const atWar=(G.wars||[]).some(w=>w.active&&(w.a===cl.id||w.b===cl.id));const threat=mem.filter(x=>roleInc(x.id).length>0).length;
+        const want=atWar?'offense':threat>=2?'fortress':(cl.id%2?'trade':'science');if(cl.doctrine!==want&&(cl.doctrineAt==null||G.tick-cl.doctrineAt>=roleCd(40)))cmdSetDoctrine(m,want);
+        if(threat>=2&&(cl.rallyAt==null||G.tick-cl.rallyAt>=roleCd(30)))cmdRallyCall(m);}
+      else if(role==='officer'||role==='commander'){if(cl.musterAt==null||G.tick-cl.musterAt>=roleCd(12)){let best=null,bn=0;mem.forEach(x=>{const inc=roleInc(x.id);
+          if(inc.length>bn){const r=inc[0]&&inc[0].region;if(r&&r.owner===x.id){bn=inc.length;best=r;}}});if(best)cmdMuster(m,best.id);}}
+      else if(role==='diplomat'){if(Math.random()<0.25&&(m.res.influence||0)>=500){const others=(G.clans||[]).filter(x=>x.id!==cl.id&&clanMembers(x).length&&!clanAtWar(cl.id,x.id));
+          if(others.length){others.sort((a,b)=>clanStanding(a.id,cl.id)-clanStanding(b.id,cl.id));const t=others.find(x=>clanStanding(x.id,cl.id)>-60)||others[0];cmdEnvoy(m,t.id);
+            const partner=others.find(x=>clanStanding(x.id,cl.id)>=20&&!(G.diplomacy||[]).some(r=>r.status==='trade'&&_dipKey(r.a,r.b)===_dipKey(cl.id,x.id))&&!(G.dipOffers||[]).some(o=>o.from===cl.id&&o.to===x.id));
+            if(partner&&Math.random()<0.4)cmdDipOffer(m,partner.id,'trade');}}
+        const inO=(G.dipOffers||[]).find(o=>o.to===cl.id&&o.kind==='trade');if(inO)cmdDipRespond(m,inO.id,clanStanding(cl.id,inO.from)>=10||Math.random()<0.5);}
+      else if(role==='recruiter'){
+        // a computer recruiter keeps the world open: it stops at 8 members, leaves a reserve of free nations, and never takes the
+        // free nations in a player's home theater (those are the player's future allies)
+        if(mem.length<Math.min(7,clanCap(cl))&&aiSlotOpen(cl)&&Math.random()<0.2&&roleFreePool()>100){const hum=roleHumanTheaters();const cand=roleCandidates(cl,8).find(x=>!hum.has(homeCluster(x)));if(cand)cmdInvite(m,cand.id);}}
+      else if(role==='quartermaster'){const t=cl.treasury||{};if((t.money||0)>2e6){const needy=mem.filter(x=>x.id!==m.id).sort((a,b)=>{const ia=roleInc(a.id).length,ib=roleInc(b.id).length;return ib-ia||(a.res.money||0)-(b.res.money||0);})[0];
+          if(needy)cmdAid(m,needy.id);}}});
+    // a player-led alliance answers trade offers from computer alliances through its own diplomats (or the player)
+  }catch(e){}});}
+if(typeof runTick==='function'){const _rt212=runTick;runTick=function(){const out=_rt212.apply(this,arguments);try{roleAITick();}catch(e){}return out;};}
 
 // ---- BOOT ------------------------------------------------------------------
 // GitHub serves the brochure as index.html and this file as play.html.
@@ -20941,11 +21265,11 @@ setInterval(()=>{try{ladder();champCard();}catch(e){}},500);
   window.__pIc=window.__pIc||((k,cls)=>'<svg class="ic'+(cls?' '+cls:'')+'" aria-hidden="true"><use href="#i-'+k+'"></use></svg>');
   window.__pUnitIc=window.__pUnitIc||(cls=>{const R=window.__pGame==='Romaterra';const m=R?{inf:'swords',recon:'eye',armor:'flag',arty:'target',cyber:'book',support:'box',airdef:'wall',air:'crown',sam:'tent',navy:'buoy'}:{inf:'soldier',recon:'binoculars',armor:'tank',arty:'artillery',cyber:'chip',support:'truck',airdef:'radar',air:'plane',sam:'missile',navy:'buoy'};return window.__pIc(m[cls]||'shield');});
   const HUBS=[
-    {k:'war',n:'War',views:[['around','Attack','swords'],['self','Defend','shield'],['covert','Scout','eye'],['battles','Reports','flag']]},
+    {k:'war',n:'War',views:[['around','Attack','swords'],['self','Defend','shield'],['covert','Scout','eye'],['battles','Reports','flag'],['staff','Staff','medal']]},
     {k:'build',n:'Build',views:[['production','Buildings','factory'],['military','Army','medal'],['economy','Economy','chart'],['market','Market','scale']]},
-    {k:'ally',n:'Alliance',views:[['clans','War room','handshake'],['diplomacy','Diplomacy','dove']]}];
+    {k:'ally',n:'Alliance',views:[['clans','War room','handshake'],['diplomacy','Diplomacy','dove'],['roles','Roles','medal']]}];
   const SIDE=['dashboard','map','around','production','research','clans'];
-  const EXTRA=[['reports','Reports'],['mail','Comms'],['rankings','Rankings'],['codex','Field manual']];
+  const EXTRA=[['story','Story mode'],['staff','Staff'],['reports','Reports'],['mail','Comms'],['rankings','Rankings'],['codex','Field manual']];
   const hubOf=k=>HUBS.find(h=>h.views.some(v=>v[0]===k));
   const E=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
   try{localStorage.setItem('p183menus','simple');}catch(e){}
@@ -22205,6 +22529,285 @@ if(typeof module!=='undefined'&&module.exports)module.exports=BANNER;
     const flush=()=>{if(!p6on()){if(!raw()&&packT&&!window.__p209ro){/* a fast save is on disk already; nothing to do */}}};
     window.addEventListener('pagehide',flush,true);
     document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden')flush();},true);}catch(e){}})(0);
+})();
+
+</script>
+<script>/*p211ui*/
+/* p211 Update 15.0: the Staff screen. 50 commanders per world: who is in your staff, who you unlocked this season and
+   what the others ask of you. Ranks 1 to 100, a trait choice at rank 10/25/50/75/100, one order per commander. */
+(function(){
+  if(typeof staffDB!=='function')return;
+  const E=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+  const ROME=/Romaterra/i.test(document.title);
+  const LAB={atk:'attack',def:'defence',logi:'logistics',money:'money',research:'science',inf:'influence',recon:'sight'};
+  const fmtB=m=>Object.keys(m).filter(q=>m[q]).map(q=>q==='recon'?'+'+m[q]+' '+LAB[q]:'+'+(Math.round(m[q]*1000)/10)+'% '+(LAB[q]||q)).join(', ');
+  const css=document.createElement('style');css.id='p211css';
+  css.textContent=`
+  .p211g{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:12px}
+  .p211c{position:relative;border-left:4px solid var(--rc,#64748b)!important;display:flex;flex-direction:column;gap:6px}
+  .p211c.rc{--rc:#8b98ad}.p211c.rr{--rc:#4f8cff}.p211c.re{--rc:#a77bf5}.p211c.rl{--rc:#f6b62b}.p211c.rg{--rc:#ef6a5a}
+  .p211c .nm{font-weight:800;font-size:15px;line-height:1.25}
+  .p211c .rt{font:700 10.5px/1 var(--mono,monospace);letter-spacing:.08em;text-transform:uppercase;color:var(--rc)}
+  .p211c .bio{color:var(--muted);font-size:13px;font-style:italic}
+  .p211rk{display:flex;align-items:baseline;gap:8px}.p211rk b{font-size:26px;line-height:1}.p211rk span{color:var(--muted);font-size:12px}
+  .p211bar{height:6px;background:var(--bg2);border-radius:4px;overflow:hidden}.p211bar i{display:block;height:100%;background:var(--rc)}
+  .p211c .bn{font-size:13px}.p211c .tr{font-size:12px;color:var(--muted)}
+  .p211ord{border:1px solid var(--border2);border-radius:8px;padding:8px 10px;font-size:13px}
+  .p211ord b{display:block}
+  .p211pick{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+  .p211pick button{display:block!important;min-height:44px;text-align:left;line-height:1.3;white-space:normal;text-transform:none!important;letter-spacing:0!important;padding:8px 10px!important}.p211pick button b{display:block;margin-bottom:2px}.p211pick button br{display:none}
+  .p211new{position:absolute;top:10px;right:10px;font:800 10px/1 var(--mono,monospace);background:#f6b62b;color:#1a1204;border-radius:4px;padding:3px 5px}
+  .p211chips{display:flex;flex-wrap:wrap;gap:6px;margin:4px 0 12px}
+  .p211chips button{min-height:36px;padding:0 12px;border-radius:18px;border:1px solid var(--border2);background:transparent;color:var(--text);cursor:pointer;font-size:13px}
+  .p211chips button.on{background:color-mix(in srgb,var(--accent) 70%,#000);border-color:transparent;color:#fff}
+  .p211lock{display:grid;grid-template-columns:1fr auto;gap:2px 10px;padding:9px 0;border-top:1px solid var(--border);font-size:13px}
+  .p211lock .n{font-weight:700}.p211lock .d{color:var(--muted)}.p211lock .pg{font-family:var(--mono,monospace);text-align:right;white-space:nowrap}
+  .p211home{display:flex;flex-wrap:wrap;align-items:center;gap:6px 12px;padding:9px 12px;border:1px solid var(--border2);border-radius:10px;margin:0 0 12px;font-size:13.5px;cursor:pointer}
+  .p211home b{color:var(--text)}
+  @media (max-width:600px){.p211g{grid-template-columns:1fr}.p211pick{grid-template-columns:1fr}}`;
+  document.head.appendChild(css);
+  const sname=ROME?'Council':'Staff';
+  function card(c,d,inStaff){const S=staffOf(c);const o=S.own[d.k]||{xp:0,tr:[],cd:0};const rk=staffRankOf(o.xp);
+    const lo=staffXpFor(rk),hi=staffXpFor(Math.min(100,rk+1));const pct=rk>=100?100:Math.max(2,Math.round(100*(o.xp-lo)/Math.max(1,hi-lo)));
+    const b=staffBonus(c,d.k);const O=STAFF_ORDERS[d.order];const cost=staffOrderCost(d);const ready=o.cd<=G.tick;const isNew=(S.newUnl||[]).includes(d.k);
+    const traits=(o.tr||[]).map((p,i)=>((STAFF_TRAITS[d.role]||[])[i]||[])[p]).filter(Boolean).map(t=>t[0]);
+    let pick='';const pend=staffPendingTraits(c,d.k);
+    if(pend>0){const i=(o.tr||[]).length;const pair=(STAFF_TRAITS[d.role]||[])[i]||[];const tx=t=>{const parts=[];if(t[1]&&Object.keys(t[1]).length)parts.push(fmtB(t[1]));const x=t[2]||{};if(x.op)parts.push('orders '+Math.round(x.op*100)+'% stronger');if(x.cd)parts.push('orders ready '+Math.round(-x.cd*100)+'% sooner');if(x.xp)parts.push('+'+Math.round(x.xp*100)+'% experience');return parts.join(', ');};
+      pick=`<div class="small" style="color:var(--warn,#f6b62b);font-weight:700">Rank ${STAFF_MILES[i]}: choose a trait</div><div class="p211pick">${pair.map((t,j)=>`<button class="btn sm ghost" data-p211t="${d.k}" data-p211p="${j}"><b>${E(t[0])}</b><br><span class="muted small">${E(tx(t))}</span></button>`).join('')}</div>`;}
+    const ord=inStaff?`<div class="p211ord"><b>${E(O[0])} <span class="muted small" style="font-weight:400">· ${cost} CP</span></b><span class="muted">${E(staffOrderText(c,d))}</span><div class="mt" style="margin-top:6px">${ready?`<button class="btn sm" data-p211o="${d.k}">Give order</button>`:`<span class="small muted">Ready in ${o.cd-G.tick} turn${o.cd-G.tick===1?'':'s'}</span>`}</div></div>`:`<div class="small muted">Order: <b>${E(O[0])}</b>. ${E(staffOrderText(c,d))}</div>`;
+    return `<div class="card p211c r${d.rar}">${isNew?'<span class="p211new">NEW</span>':''}<div class="rt">${E(STAFF_RAR[d.rar].n)} · ${E(STAFF_ROLES[d.role].n)}</div><div class="nm">${E(d.n)}</div><div class="bio">${E(d.bio)}</div>
+      <div class="p211rk"><b>${rk}</b><span>rank${rk<100?' · '+Math.round(o.xp)+' / '+Math.ceil(hi)+' xp':' · the highest rank'}</span></div><div class="p211bar"><i style="width:${pct}%"></i></div>
+      <div class="bn">${E(fmtB(b))||'<span class="muted">no bonus yet</span>'}</div>${traits.length?`<div class="tr">Traits: ${traits.map(E).join(', ')}</div>`:''}
+      ${pick}${ord}
+      <div>${inStaff?`<button class="btn sm ghost" data-p211r="${d.k}">Leave the ${sname.toLowerCase()}</button>`:`<button class="btn sm" data-p211a="${d.k}" ${(c.commanders||[]).length>=staffSlots(c)?'disabled':''}>Join the ${sname.toLowerCase()}</button>`}</div></div>`;}
+  VIEWS.staff=v=>{const c=you();const S=staffOf(c);if(!S){v.appendChild(h('<div class="card">Start a season first.</div>'));return;}
+    const DB=staffDB();const f=window.__p211f||'all';const inS=(c.commanders||[]).filter(k=>S.own[k]);const slots=staffSlots(c);const nxt=staffNextSlot(c);
+    v.appendChild(h(`<div class="ptitle"><h2>${sname}</h2><span class="h">${inS.length} of ${slots} places used · ${S.unl.length} of ${DB.length} commanders unlocked this season</span></div>`));
+    v.appendChild(h(`<div class="card mb" style="margin-bottom:12px"><div class="small">Commanders in your ${sname.toLowerCase()} give their bonus, gain experience every turn and from battles, and can each give one order. At rank 10, 25, 50, 75 and 100 you choose a trait. ${nxt?`A new place opens when a commander reaches rank <b>${nxt}</b>.`:'All five places are open.'} Every season starts fresh with the six basic commanders. The others you unlock with deeds.</div></div>`));
+    const roles=['all','army','defense','economy','science','diplomacy','intel','grand'];
+    v.appendChild(h(`<div class="p211chips" role="group" aria-label="Filter by role">${roles.map(r=>`<button class="${f===r?'on':''}" data-p211f="${r}">${r==='all'?'All':E(STAFF_ROLES[r].n)}</button>`).join('')}</div>`));
+    const keep=d=>f==='all'||d.role===f;
+    const mine=inS.map(staffDef).filter(Boolean);
+    v.appendChild(h(`<h3 class="mt">In your ${sname.toLowerCase()} <span class="muted small">${inS.length}/${slots}</span></h3>`));
+    v.appendChild(h(mine.length?`<div class="p211g">${mine.map(d=>card(c,d,true)).join('')}</div>`:`<div class="card muted small">Nobody yet. Pick commanders below.</div>`));
+    const free=DB.filter(d=>S.unl.includes(d.k)&&!inS.includes(d.k)&&keep(d));
+    if(free.length){v.appendChild(h(`<h3 class="mt">Unlocked <span class="muted small">${free.length}</span></h3>`));v.appendChild(h(`<div class="p211g">${free.map(d=>card(c,d,false)).join('')}</div>`));}
+    const locked=DB.filter(d=>!S.unl.includes(d.k)&&keep(d));
+    if(locked.length){v.appendChild(h(`<h3 class="mt">Still to unlock <span class="muted small">${locked.length}</span></h3>`));
+      v.appendChild(h(`<div class="card">${locked.map(d=>{const pg=d.deed?(d.deed.t==='top'?(S.bestPos?'best #'+S.bestPos:'-'):Math.min(staffDeedProgress(c,d),d.deed.n)+' / '+d.deed.n):'';
+        return `<div class="p211lock"><span><span class="n">${E(d.n)}</span> <span class="tag">${E(STAFF_RAR[d.rar].n)}</span> <span class="tag">${E(STAFF_ROLES[d.role].n)}</span><br><span class="d">${E(d.deed?d.deed.d:'')}</span></span><span class="pg">${pg}</span></div>`;}).join('')}</div>`));}
+    const hist=(S.log||[]).slice(0,6);
+    if(hist.length)v.appendChild(h(`<div class="card mt"><h3>Recent orders</h3>${hist.map(x=>{const d=staffDef(x.k);return `<div class="small"><span class="tag">t${x.t}</span> ${E(d?d.n:x.k)}: ${E((STAFF_ORDERS[x.o]||[''])[0])}</div>`;}).join('')}</div>`));
+    S.newUnl=(S.newUnl||[]).filter(k=>inS.includes(k)?false:true);
+    const redo=()=>{try{save();}catch(e){}try{drawTop();}catch(e){}go('staff');};
+    v.querySelectorAll('[data-p211f]').forEach(b=>b.onclick=()=>{window.__p211f=b.dataset.p211f;go('staff');});
+    v.querySelectorAll('[data-p211a]').forEach(b=>b.onclick=async()=>{const r=await cmdStaffAdd(c,b.dataset.p211a);if(!r.ok)toast(r.error,'bad');else{(S.newUnl=(S.newUnl||[]).filter(x=>x!==b.dataset.p211a));toast(staffDef(b.dataset.p211a).n+' joined your '+sname.toLowerCase());}redo();});
+    v.querySelectorAll('[data-p211r]').forEach(b=>b.onclick=async()=>{const r=await cmdStaffRemove(c,b.dataset.p211r);if(!r.ok)toast(r.error,'bad');redo();});
+    v.querySelectorAll('[data-p211t]').forEach(b=>b.onclick=async()=>{const r=await cmdStaffTrait(c,b.dataset.p211t,+b.dataset.p211p);if(!r.ok)toast(r.error,'bad');redo();});
+    v.querySelectorAll('[data-p211o]').forEach(b=>b.onclick=async()=>{const r=await cmdStaffOrder(c,b.dataset.p211o);if(!r.ok)toast(r.error,'bad');else toast('🎖 '+r.data.order+(r.data.note?': '+r.data.note:''));redo();});
+    // the "new" marks fade once you have seen them
+    setTimeout(()=>{try{S.newUnl=[];}catch(e){}},4000);
+  };
+  // Home: one line when an order is ready, a trait waits or a commander is new
+  function homeLine(){try{if(typeof view==='undefined'||view!=='dashboard')return;const v=document.getElementById('view');if(!v)return;const c=you();const S=staffOf(c);if(!S)return;
+      const ready=(c.commanders||[]).filter(k=>S.own[k]&&S.own[k].cd<=G.tick).map(staffDef).filter(Boolean);
+      const pend=(c.commanders||[]).filter(k=>staffPendingTraits(c,k)>0).map(staffDef).filter(Boolean);
+      const nw=(S.newUnl||[]).map(staffDef).filter(Boolean);const free=(c.commanders||[]).length<staffSlots(c)&&S.unl.length>(c.commanders||[]).length;
+      const bits=[];if(nw.length)bits.push('New: <b>'+E(nw[0].n)+'</b>'+(nw.length>1?' and '+(nw.length-1)+' more':''));
+      if(pend.length)bits.push('<b>'+E(pend[0].n)+'</b> can choose a trait');
+      if(ready.length)bits.push('Order ready: <b>'+E(STAFF_ORDERS[ready[0].order][0])+'</b>'+(ready.length>1?' and '+(ready.length-1)+' more':''));
+      if(free)bits.push('a place in your '+sname.toLowerCase()+' is free');
+      let el=v.querySelector(':scope > .p211home');const sig=bits.join('|');
+      if(!bits.length){if(el)el.remove();return;}
+      if(el&&el.dataset.sig===sig)return;
+      if(!el){el=document.createElement('div');el.className='p211home';el.setAttribute('role','button');el.tabIndex=0;el.onclick=()=>go('staff');el.onkeydown=e=>{if(e.key==='Enter')go('staff');};
+        const t=v.querySelector(':scope > .ptitle');if(t)t.insertAdjacentElement('afterend',el);else v.prepend(el);}
+      el.dataset.sig=sig;el.innerHTML='<span>'+(window.__pIc?window.__pIc('medal'):'')+' <b>'+sname+'</b></span><span class="muted">'+bits.join(' · ')+'</span><span style="margin-left:auto">Open ›</span>';}catch(e){}}
+  window.__p211apply=homeLine;if(window.__pLayers&&window.__pLayers.indexOf('__p211apply')<0)window.__pLayers.push('__p211apply');
+  setTimeout(homeLine,1200);
+})();
+
+</script>
+<script>/*p212ui*/
+/* p212 Update 15.0: the Roles screen of the alliance. What every title does, who holds it, and the buttons for your own. */
+(function(){
+  if(typeof ROLE_INFO==='undefined')return;
+  const E=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+  const css=document.createElement('style');css.id='p212css';
+  css.textContent=`
+  .p212row{display:grid;grid-template-columns:1fr auto;gap:4px 10px;align-items:center;padding:8px 0;border-top:1px solid var(--border);font-size:13.5px}
+  .p212row:first-of-type{border-top:0}
+  .p212row .acts{display:flex;flex-wrap:wrap;gap:6px;justify-content:flex-end}
+  .p212doc{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:8px}
+  .p212doc button{display:block!important;min-height:56px;text-align:left;white-space:normal;line-height:1.3;text-transform:none!important;letter-spacing:0!important;padding:8px 10px!important}.p212doc button b{display:block;text-transform:uppercase;letter-spacing:.04em;margin-bottom:2px}.p212doc button br{display:none}
+  .p212doc button.on{outline:2px solid var(--accent);outline-offset:-2px}
+  .p212role{display:grid;grid-template-columns:150px 1fr;gap:4px 12px;padding:8px 0;border-top:1px solid var(--border);font-size:13px}
+  .p212role:first-of-type{border-top:0}.p212role b{display:block}
+  .p212st{font-family:var(--mono,monospace);font-size:12px}
+  @media (max-width:600px){.p212row{grid-template-columns:1fr}.p212row .acts{justify-content:flex-start}.p212role{grid-template-columns:1fr}}`;
+  document.head.appendChild(css);
+  const cdLeft=(at,base)=>at==null?0:Math.max(0,at+roleCd(base)-G.tick);
+  VIEWS.roles=v=>{const c=you();const cl=c&&c.clan!=null?clanOf(c):null;
+    v.appendChild(h(`<div class="ptitle"><h2>Roles</h2><span class="h">Every title in your alliance does something. Computer members carry out theirs on their own.</span></div>`));
+    if(!cl){v.appendChild(h(`<div class="card"><div class="small">You are not in an alliance yet.</div><button class="btn sm mt" onclick="GO('clans')">Open Alliance</button></div>`));return;}
+    const my=cl.roles[c.id]||'member';const lead=my==='leader';const mem=clanMembers(cl);
+    const D=ROLE_DOCTRINES[cl.doctrine];
+    v.appendChild(h(`<div class="card mb" style="margin-bottom:12px"><div class="row between"><div><div class="small muted">Your title</div><div style="font-size:20px;font-weight:800">${E(ROLE_LABEL[my]||my)}</div></div><div class="small" style="text-align:right">Doctrine: <b>${D?E(D.n):'none yet'}</b>${D?'<br><span class="muted">'+E(D.d)+'</span>':''}${cl.rallyUntil>G.tick?'<br><b style="color:var(--good)">Rally Call active</b>':''}</div></div><div class="small mt">${E(ROLE_INFO[my]||ROLE_INFO.member)}</div></div>`));
+    // leader
+    if(lead){const left=cdLeft(cl.doctrineAt,40),rl=cdLeft(cl.rallyAt,30);
+      v.appendChild(h(`<div class="card mb" style="margin-bottom:12px"><h3>Leader</h3><div class="small muted mb">Doctrine for the whole alliance${left?' · can change again in '+left+' turns':''}</div>
+        <div class="p212doc">${Object.keys(ROLE_DOCTRINES).map(k=>`<button class="btn ghost sm${cl.doctrine===k?' on':''}" data-p212d="${k}" ${left||cl.doctrine===k?'disabled':''}><b>${E(ROLE_DOCTRINES[k].n)}</b><br><span class="muted small">${E(ROLE_DOCTRINES[k].d)}</span></button>`).join('')}</div>
+        <div class="p212row" style="margin-top:8px"><span><b>Rally Call</b><br><span class="muted small">Every member defends with +15% for 3 turns.</span></span><span class="acts">${rl?`<span class="small muted">Ready in ${rl} turns</span>`:'<button class="btn sm" data-p212rally="1">Rally Call</button>'}</span></div></div>`));}
+    // officer: muster
+    if(isClanOfficer(c)){const ml=cdLeft(cl.musterAt,12);const regs=[];mem.forEach(m=>{roleInc(m.id).forEach(x=>{if(x.region&&x.region.owner===m.id&&!regs.some(r=>r.r.id===x.region.id))regs.push({r:x.region,m,eta:x.eta});});});
+      const list=regs.length?regs.slice(0,6):mem.filter(m=>m.id!==c.id).map(m=>({r:regionsOf(m)[0],m})).filter(x=>x.r).slice(0,4);
+      v.appendChild(h(`<div class="card mb" style="margin-bottom:12px"><h3>Officer: Muster</h3><div class="small muted mb">Ask every member to send troops to one region. Members who answer earn influence.${ml?' Next muster in '+ml+' turns.':''}${cl.muster&&cl.muster.until>G.tick?' Current muster: '+E((G.regions[cl.muster.rid]||{}).name||'')+', '+cl.muster.answered.length+' answered.':''}</div>
+        ${list.map(x=>`<div class="p212row"><span><b>${E(x.r.name)}</b> <span class="muted small">${E(x.m.name)}${x.eta!=null?' · attack in '+Math.max(0,x.eta)+' turns':''}</span></span><span class="acts"><button class="btn sm${regs.length?'':' ghost'}" data-p212m="${x.r.id}" ${ml?'disabled':''}>Muster here</button></span></div>`).join('')||'<div class="small muted">No regions to defend right now.</div>'}</div>`));}
+    // diplomat: standing, envoys, trade
+    if(isClanDiplomat(c)){const lc=G.countries[cl.leader]||c;const hc=homeCluster(lc);
+      const others=(G.clans||[]).filter(x=>x.id!==cl.id&&clanMembers(x).length).map(x=>({x,near:clanMembers(x).some(m=>homeCluster(m)===hc),st:clanStanding(x.id,cl.id)})).sort((a,b)=>(b.near-a.near)||(b.st-a.st)).slice(0,8);
+      v.appendChild(h(`<div class="card mb" style="margin-bottom:12px"><h3>Diplomat</h3><div class="small muted mb">How the other alliances see you. An envoy (300 influence) raises it. From Warm (+25) on, they will talk trade: +4% money for both alliances.</div>
+        ${others.map(o=>{const st=dipStatus(cl.id,o.x.id);const trade=(G.diplomacy||[]).some(r=>r.status==='trade'&&_dipKey(r.a,r.b)===_dipKey(cl.id,o.x.id)&&(!r.until||r.until>G.tick));const war=st==='war';
+          return `<div class="p212row"><span><b>${E(o.x.name)}</b> <span class="tag">${E(o.x.tag)}</span>${o.near?' <span class="muted small">neighbours</span>':''}<br><span class="p212st">${E(standingWord(o.st))} (${o.st>0?'+':''}${Math.round(o.st)})${st!=='neutral'?' · '+E(st.toUpperCase()):''}${trade?' · TRADE':''}</span></span>
+          <span class="acts">${war?'<span class="small muted">at war</span>':`<button class="btn ghost sm" data-p212e="${o.x.id}">Envoy</button>${trade?'':`<button class="btn ghost sm" data-p212t="${o.x.id}" ${o.st<20?'disabled':''}>Trade deal</button>`}`}</span></div>`;}).join('')}</div>`));}
+    // recruiter
+    if(my==='recruiter'||lead){const cand=roleCandidates(cl,5);const dl=cdLeft(cl.driveAt,30);
+      v.appendChild(h(`<div class="card mb" style="margin-bottom:12px"><h3>Recruiter</h3><div class="small muted mb">${mem.length}/${clanCap(cl)} members. ${roleHolders(cl,'recruiter').length?'New members get a welcome package.':'With a Recruiter in the alliance, new members get a welcome package.'}</div>
+        <div class="p212row"><span><b>Recruitment drive</b><br><span class="muted small">Up to two nations nearby join at once (300 influence).</span></span><span class="acts">${dl?`<span class="small muted">Ready in ${dl} turns</span>`:'<button class="btn sm" data-p212drive="1">Start drive</button>'}</span></div>
+        ${cand.map(m=>`<div class="p212row"><span><b>${E(m.name)}</b> <span class="muted small">${regionsOf(m).length} regions${homeCluster(m)===homeCluster(G.countries[cl.leader]||c)?' · neighbours':''}</span></span><span class="acts"><button class="btn ghost sm" data-p212i="${m.id}">Invite</button></span></div>`).join('')}</div>`));}
+    // quartermaster
+    if(my==='quartermaster'||lead){const t=cl.treasury||{};const al=cdLeft(cl.aidAt,6);
+      v.appendChild(h(`<div class="card mb" style="margin-bottom:12px"><h3>Quartermaster</h3><div class="small muted mb">Treasury: ${full(t.money||0)} money. Aid sends a quarter of it to one member.${al?' Next aid in '+al+' turns.':''}</div>
+        ${mem.map(m=>`<div class="p212row"><span><b>${E(m.name)}</b> <span class="muted small">${roleInc(m.id).length?'under attack':'quiet'}</span></span><span class="acts"><button class="btn ghost sm" data-p212a="${m.id}" ${al||(t.money||0)<4000?'disabled':''}>Send aid</button></span></div>`).join('')}</div>`));}
+    // who holds which title
+    const roles=['leader','officer','diplomat','recruiter','quartermaster','spymaster'];
+    v.appendChild(h(`<div class="card"><h3>Titles in ${E(cl.name)}</h3>${roles.map(r=>{const who=roleHolders(cl,r);return `<div class="p212role"><span><b>${E(ROLE_LABEL[r])}</b><span class="muted small">${who.length?who.map(m=>E(m.name)+(m.isAI?'':' (you)')).join(', '):'nobody yet'}</span></span><span class="small">${E(ROLE_INFO[r])}</span></div>`;}).join('')}
+      ${lead?`<h3 class="mt">Hand out titles</h3>${mem.filter(m=>m.id!==c.id).map(m=>`<div class="p212row"><span><b>${E(m.name)}</b></span><span class="acts"><select data-p212r="${m.id}" aria-label="Title for ${E(m.name)}">${['member','officer','diplomat','recruiter','quartermaster','spymaster'].map(r=>`<option value="${r}"${(cl.roles[m.id]||'member')===r?' selected':''}>${E(ROLE_LABEL[r])}</option>`).join('')}</select></span></div>`).join('')}`:''}</div>`));
+    const redo=()=>{try{save();}catch(e){}try{drawTop();}catch(e){}go('roles');};
+    const run=async(p,okMsg)=>{const r=await p;if(!r||!r.ok)toast((r&&r.error)||'Not possible','bad');else if(okMsg)toast(typeof okMsg==='function'?okMsg(r):okMsg);redo();};
+    v.querySelectorAll('[data-p212d]').forEach(b=>b.onclick=()=>run(cmdSetDoctrine(c,b.dataset.p212d),'New doctrine set'));
+    v.querySelectorAll('[data-p212rally]').forEach(b=>b.onclick=()=>run(cmdRallyCall(c),'Rally Call given'));
+    v.querySelectorAll('[data-p212m]').forEach(b=>b.onclick=()=>run(cmdMuster(c,+b.dataset.p212m),'Muster called'));
+    v.querySelectorAll('[data-p212e]').forEach(b=>b.onclick=()=>run(cmdEnvoy(c,+b.dataset.p212e),'Envoy sent'));
+    v.querySelectorAll('[data-p212t]').forEach(b=>b.onclick=()=>run(cmdDipOffer(c,+b.dataset.p212t,'trade'),'Trade deal proposed'));
+    v.querySelectorAll('[data-p212drive]').forEach(b=>b.onclick=()=>run(cmdRecruitDrive(c),r=>r.data&&r.data.joined&&r.data.joined.length?r.data.joined.join(' and ')+' joined':'Nobody answered this time'));
+    v.querySelectorAll('[data-p212i]').forEach(b=>b.onclick=()=>run(cmdInvite(c,+b.dataset.p212i),'Invitation sent'));
+    v.querySelectorAll('[data-p212a]').forEach(b=>b.onclick=()=>run(cmdAid(c,+b.dataset.p212a),r=>'Sent '+full(r.data.amt)));
+    v.querySelectorAll('[data-p212r]').forEach(s=>s.onchange=()=>run(cmdClanRole(c,+s.dataset.p212r,s.value),'Title given'));
+  };
+})();
+
+</script>
+<script>/*p213ui*/
+/* p213 Update 15.0: Story mode. Ten chapters per world, each a short level with a goal, told by your commanders.
+   Built on the scenario engine (setup, check, progress, brief and end screens). Up to three stars per chapter:
+   win, win within the par time, and win without losing a region. Finishing a chapter opens the next. */
+(function(){
+  if(typeof SCENARIOS==='undefined'||typeof staffDB!=='function')return;
+  const E=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+  const WK=typeof STAFF_WORLD!=='undefined'?STAFF_WORLD:'T';
+  const V={T:{prize:'the Nexus',land:'republic',title:'The Young Republic'},R:{prize:'Roma',land:'province',title:'The Road to Roma'},I:{prize:'the Capital Sector',land:'nation',title:'A Continent at War'}}[WK];
+  const KEY='story_'+WK;
+  const load=()=>{try{return JSON.parse(localStorage.getItem(KEY))||{stars:{},best:{}};}catch(e){return {stars:{},best:{}};}};
+  const store=d=>{try{localStorage.setItem(KEY,JSON.stringify(d));}catch(e){}};
+  const spk=(role,i)=>{const d=staffDB().filter(x=>x.role===role)[i||0];return d||staffDB()[0];};
+  const reg=c=>regionsOf(c).length;
+  const cnt=c=>{const S=staffOf(c);return S?S.cnt:{win:0,held:0};};
+  const foes=(c,n)=>{const home=regionsOf(c)[0];if(!home)return [];return G.countries.filter(x=>x&&x.isAI&&!x.retired&&regionsOf(x).length).map(x=>{const r=regionsOf(x)[0];return {x,d:Math.hypot(r.x-home.x,r.y-home.y)};}).sort((a,b)=>a.d-b.d).slice(0,n).map(o=>o.x);};
+  const angry=x=>{x.pers=x.pers||{};x.pers.aggression=92;x.pers.risk=65;x.pers.patience=25;try{const v=rel(x);v.grudge=7;v.interest=90;relClamp(v);}catch(e){}x._scFoe=true;};
+  const homeHeld=c=>{const h=_rgId(G.solo.scHome);return !!(h&&h.owner===c.id);};
+  const lost=c=>!reg(c);
+  const L=[
+   {n:'A Flag on the Map',sp:['economy',0],diff:'recruit',len:'quick',turns:60,par:40,goal:'Rule 3 regions.',
+    intro:['The maps still show our land as almost empty. Let us change that.','Claim the free land next to us, keep our people fed, and the world will start to notice us.'],
+    outro:'Three flags on the map. The neighbours are talking about us now.',check:c=>reg(c)>=3?'win':lost(c)||scTurns()>=60?'lose':null,prog:c=>reg(c)+'/3 regions'},
+   {n:'Lamps in the Workshop',sp:['science',0],diff:'recruit',len:'quick',turns:90,par:60,goal:'Finish 3 research projects and rule 4 regions.',
+    intro:['A '+V.land+' that stops learning stops growing.','Give my workshops three projects and four regions to feed them, and I will give you an edge nobody else has.'],
+    outro:'The workshops are humming. Every project from now on comes a little faster.',check:c=>{const t=Math.max(0,(c.tech||[]).length-(G.solo.scTech0||0));return t>=3&&reg(c)>=4?'win':lost(c)||scTurns()>=90?'lose':null;},prog:c=>Math.max(0,(c.tech||[]).length-(G.solo.scTech0||0))+'/3 projects · '+reg(c)+'/4 regions'},
+   {n:'The First Threat',sp:['defense',0],diff:'veteran',len:'quick',turns:70,par:70,goal:'Your home region is still yours after 70 turns.',
+    intro:['One of our neighbours has decided our home should be theirs.','No more beginner protection. Build walls, keep an army at home, and do not give them the gate.'],
+    outro:'They broke their teeth on our walls. Others will think twice.',setup:c=>{c._born=-1e6;foes(c,1).forEach(angry);},check:c=>!homeHeld(c)?'lose':scTurns()>=70?'win':null,prog:c=>'turn '+scTurns()+'/70 · home '+(homeHeld(c)?'held':'LOST')},
+   {n:'Friends in Need',sp:['diplomacy',0],diff:'veteran',len:'quick',turns:80,par:55,goal:'Be part of an alliance with at least 4 members.',
+    intro:['Nobody wins this alone. Not even us.','Found an alliance or join one, and make sure at least four banners fly together.'],
+    outro:'Four banners, one voice. Now they will hear us in every council.',check:c=>{const cl=c.clan!=null?clanOf(c):null;return cl&&clanMembers(cl).length>=4?'win':lost(c)||scTurns()>=80?'lose':null;},prog:c=>{const cl=c.clan!=null?clanOf(c):null;return (cl?clanMembers(cl).length:0)+'/4 alliance members';}},
+   {n:'Shadows at the Border',sp:['intel',0],diff:'veteran',len:'quick',turns:100,par:80,goal:'Hold off 3 attacks on your land and keep your home.',
+    intro:['Two neighbours are watching our roads. My people say they will strike soon.','Let them come. Every attack we hold off makes them weaker and us stronger.'],
+    outro:'Three attacks, three failures. Their spies now whisper about us.',setup:c=>{c._born=-1e6;foes(c,2).forEach(angry);},check:c=>!homeHeld(c)?'lose':cnt(c).held>=3?'win':scTurns()>=100?'lose':null,prog:c=>cnt(c).held+'/3 attacks held · home '+(homeHeld(c)?'held':'LOST')},
+   {n:'First Strike',sp:['army',0],diff:'veteran',len:'quick',turns:100,par:75,goal:'Take 4 regions by force.',
+    intro:['Defending wins time. Attacking wins wars.','Pick your targets, look before you leap, and take four regions from those who would not share them.'],
+    outro:'Four victories. The soldiers sing my name, but the plan was yours.',check:c=>cnt(c).win>=4?'win':lost(c)||scTurns()>=100?'lose':null,prog:c=>cnt(c).win+'/4 regions taken'},
+   {n:'The Long Watch',sp:['defense',5],diff:'veteran',len:'standard',turns:140,par:110,goal:'Rule 10 regions at the same time.',
+    intro:['A big '+V.land+' has long borders, and long borders need many guards.','Grow to ten regions and hold them all at once. I will keep the watch.'],
+    outro:'Ten regions, and not one of them asleep at night.',check:c=>reg(c)>=10?'win':lost(c)||scTurns()>=140?'lose':null,prog:c=>reg(c)+'/10 regions'},
+   {n:'The Rival',sp:['intel',6],diff:'veteran',len:'standard',turns:150,par:120,goal:'Take every region of your rival.',
+    intro:['There is one nation that has been against us from the start. You know the one.','I have mapped every road into their land. Now finish it: when they hold no region, the rivalry ends.'],
+    outro:'Their banner is down. The rivalry is over, and the story of it will be told for years.',
+    setup:c=>{const r=foes(c,6).filter(x=>{const n=regionsOf(x).length;return n>=2&&n<=4;})[0]||foes(c,1)[0];if(r){angry(r);G.solo.scRival=r.id;news('war',r.name+' calls '+c.name+' its rival.');}},
+    check:c=>{const r=G.countries[G.solo.scRival];if(!r||r.retired||!regionsOf(r).length)return 'win';return lost(c)||scTurns()>=150?'lose':null;},prog:c=>{const r=G.countries[G.solo.scRival];return r?(r.name+': '+regionsOf(r).length+' regions left'):'rival defeated';}},
+   {n:'Rise of the Staff',sp:['army',7],diff:'veteran',len:'standard',turns:180,par:150,goal:'Raise a commander to rank 40 and rule 14 regions.',
+    intro:['Armies win battles. Commanders win wars.','Train your staff. When one of them reaches rank 40 and our flag flies over fourteen regions, we are ready for the last step.'],
+    outro:'Your staff is ready. So are we. Only one goal remains.',check:c=>{let top=1;const S=staffOf(c);if(S)for(const k in S.own)top=Math.max(top,staffRankOf(S.own[k].xp));return top>=40&&reg(c)>=14?'win':lost(c)||scTurns()>=180?'lose':null;},
+    prog:c=>{let top=1;const S=staffOf(c);if(S)for(const k in S.own)top=Math.max(top,staffRankOf(S.own[k].xp));return 'rank '+top+'/40 · '+reg(c)+'/14 regions';}},
+   {n:'The Prize',sp:['grand',0],diff:'veteran',len:'quick',turns:200,par:200,goal:'Win the season: hold '+V.prize+' at the end, or finish first.',
+    intro:['Every road we walked led here.','Win this season and the story of this '+V.land+' is complete. I will be at your side until the last turn.'],
+    outro:'It is done. They will tell this story for a long time.',
+    check:c=>{if(G._winner!=null)return G._winner===c.id?'win':'lose';if(G._seasonEnd){if(G._finale&&G._finale.winner!=null)return finaleWonBy(c)?'win':'lose';return rankTitle(c.id).pos===1?'win':'lose';}if(!regionsOf(c).length)return 'lose';return null;},
+    prog:c=>'rank #'+(rankTitle(c.id).pos||'?')+' · '+Math.max(0,SEASON_TICKS-scTurns())+' turns left'}];
+  const STORY=L.map((l,i)=>{const d=spk(l.sp[0],l.sp[1]);return Object.assign({},l,{k:'story_'+(i+1),story:i+1,ic:'',speaker:d,brief:l.intro.join(' '),tips:'Story chapter '+(i+1)+' of '+L.length+'. '+(l.par<l.turns?'Win within '+l.par+' turns for the second star.':'')+' Lose no region for the third star.',
+    setup:c=>{G.solo.scTech0=(c.tech||[]).length;G.solo.scLostAny=false;G.solo.scReg=reg(c);try{const S=staffOf(c);if(S&&!S.unl.includes(d.k)){S.unl.push(d.k);S.own[d.k]=S.own[d.k]||{xp:0,tr:[],cd:0,uses:0};(S.newUnl=S.newUnl||[]).push(d.k);}}catch(e){}if(l.setup)l.setup(c);}});});
+  window.STORY=STORY;
+  const _so=scenarioOf;scenarioOf=window.scenarioOf=function(k){return STORY.find(x=>x.k===k)||_so(k);};
+  function storyOpen(i){const d=load();return i===0||!!(d.stars[STORY[i-1].k]);}
+  // track losses for the third star, and record stars on a win (and keep story wins out of the campaign count)
+  const _st=scenarioTick;scenarioTick=window.scenarioTick=function(){const sc=curScenario();const had=G._scResult;
+    if(sc&&sc.story&&!had){try{const c=you();const n=reg(c);if(G.solo.scReg!=null&&n<G.solo.scReg)G.solo.scLostAny=true;G.solo.scReg=n;}catch(e){}}
+    const out=_st.apply(this,arguments);
+    if(sc&&sc.story&&!had&&G._scResult){try{const cd=campaignLoad();if(cd.done)delete cd.done[sc.k];if(cd.best)delete cd.best[sc.k];if(cd.vet)delete cd.vet[sc.k];campaignSave(cd);}catch(e){}
+      if(G._scResult==='win'){const t=scTurns();const s=1+(t<=sc.par?1:0)+(G.solo.scLostAny?0:1);G.solo.scStars=s;const d=load();d.stars[sc.k]=Math.max(d.stars[sc.k]||0,s);d.best[sc.k]=Math.min(d.best[sc.k]||1e9,t);store(d);}}
+    return out;};
+  const starHTML=n=>'<span class="p213s">'+[1,2,3].map(i=>`<i class="${i<=n?'on':''}">★</i>`).join('')+'</span>';
+  const scene=(sc,lines)=>`<div class="p213scene"><div class="p213who"><span class="p213av">${E(sc.speaker.n.replace(/^(Dr\.|Prof\.|Lt\.)\s*/,'').split(' ').filter(w=>/^[A-Z]/.test(w)).slice(-1)[0]||'?').slice(0,1)}</span><span><b>${E(sc.speaker.n)}</b><br><span class="muted small">${E(STAFF_RAR[sc.speaker.rar].n)} · ${E(STAFF_ROLES[sc.speaker.role].n)}</span></span></div>${lines.map(t=>`<p>${E(t)}</p>`).join('')}</div>`;
+  const css=document.createElement('style');css.id='p213css';
+  css.textContent=`.p213s i{font-style:normal;color:var(--border2);font-size:16px;letter-spacing:1px}.p213s i.on{color:#f6b62b}
+  .p213scene{border-left:3px solid #f6b62b;background:var(--bg2);border-radius:8px;padding:12px 14px;margin:8px 0}
+  .p213scene p{margin:6px 0 0;font-size:14.5px;line-height:1.5}
+  .p213who{display:flex;gap:10px;align-items:center}.p213av{width:38px;height:38px;border-radius:50%;background:#f6b62b;color:#1a1204;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:17px;flex:none}
+  .p213list{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px}
+  .p213ch{display:flex;flex-direction:column;gap:6px}.p213ch.lock{opacity:.55}
+  .p213ch .no{font:700 11px/1 var(--mono,monospace);letter-spacing:.1em;color:#f6b62b}
+  @media (max-width:600px){.p213list{grid-template-columns:1fr}}`;
+  document.head.appendChild(css);
+  // the brief before a chapter and the end screen after it tell the story
+  const _sb=showScenarioBrief;showScenarioBrief=window.showScenarioBrief=function(){const sc=curScenario();if(!sc||!sc.story)return _sb.apply(this,arguments);
+    const bg=h(`<div class="modal-bg"><div class="modal" style="max-width:560px"><div class="mono" style="font-size:11px;letter-spacing:2px;color:#f6b62b">STORY · CHAPTER ${sc.story} OF ${STORY.length}</div><h2 style="margin:.2em 0">${E(sc.n)}</h2>
+      ${scene(sc,sc.intro)}<p class="small"><b>Goal:</b> ${E(sc.goal)} <span class="muted">(${sc.turns} turns)</span></p><p class="muted small">${E(sc.speaker.n)} has joined your ${typeof staffLabel==='function'?staffLabel().toLowerCase():'staff'}. ${sc.par<sc.turns?'Second star: win within '+sc.par+' turns. ':''}Third star: lose no region.</p>
+      <div class="row between mt"><span class="muted small">Progress shows in the header.</span><button class="btn" data-x>Begin</button></div></div></div>`);
+    bg.querySelector('[data-x]').onclick=()=>bg.remove();document.body.appendChild(bg);};
+  const _se=showScenarioEnd;showScenarioEnd=window.showScenarioEnd=function(){const sc=curScenario();if(!sc||!sc.story)return _se.apply(this,arguments);
+    G._scShown=true;const win=G._scResult==='win';try{sfx(win?'victory':'bad');}catch(e){}const nx=STORY[sc.story];const s=G.solo.scStars||0;
+    const bg=h(`<div class="modal-bg"><div class="modal" style="max-width:560px"><div class="mono" style="font-size:11px;letter-spacing:2px;color:#f6b62b">STORY · CHAPTER ${sc.story}</div><h2 style="margin:.2em 0">${win?E(sc.n)+': done':'Not this time'}</h2>
+      ${win?starHTML(s)+scene(sc,[sc.outro]):`<p class="muted">The goal was: ${E(sc.goal)} Try the chapter again, or keep playing this world freely.</p>`}
+      ${win&&nx?`<p class="small"><b>Next chapter:</b> ${E(nx.n)}. ${E(nx.goal)}</p>`:win?`<p class="small"><b>The story of this ${V.land} is complete.</b> Replay chapters for three stars, or play a full season.</p>`:''}
+      <div class="row wrap mt" style="gap:8px">${win&&nx?'<button class="btn" data-next>Next chapter</button>':''}${!win?'<button class="btn" data-retry>Try again</button>':''}<button class="btn sec" data-keep>Keep playing this world</button><button class="btn ghost" data-list>All chapters</button></div></div></div>`);
+    const off=()=>bg.remove();const q=bg.querySelector('[data-next]');if(q)q.onclick=()=>{off();renderSetup(nx.k);};const r=bg.querySelector('[data-retry]');if(r)r.onclick=()=>{off();renderSetup(sc.k);};
+    bg.querySelector('[data-keep]').onclick=()=>{off();G.solo.scenario=null;G._scResult=null;G._scShown=false;try{save();}catch(e){}try{drawScenarioPill();}catch(e){}};
+    bg.querySelector('[data-list]').onclick=()=>{off();showStory();};document.body.appendChild(bg);};
+  function listHTML(){const d=load();const total=Object.values(d.stars).reduce((a,b)=>a+b,0);
+    return `<p class="muted small">${E(V.title)}. Ten chapters, each a short level with its own goal. A commander tells each chapter and joins your ${typeof staffLabel==='function'?staffLabel().toLowerCase():'staff'}. Starting a chapter replaces the world you are playing now.</p>
+      <p class="small"><b>${total}</b> of ${STORY.length*3} stars</p><div class="p213list">${STORY.map((sc,i)=>{const open=storyOpen(i);const st=d.stars[sc.k]||0;
+        return `<div class="card p213ch${open?'':' lock'}"><span class="no">CHAPTER ${i+1}</span><b>${E(sc.n)}</b><span class="small">${E(sc.goal)}</span><span class="muted small">Told by ${E(sc.speaker.n)} · ${sc.turns} turns</span>${starHTML(st)}
+        ${open?`<button class="btn sm${st?' ghost':''}" data-p213="${sc.k}">${st?'Play again':'Play'}</button>`:'<span class="muted small">Finish the chapter before this one to open it.</span>'}</div>`;}).join('')}</div>`;}
+  function showStory(){const bg=h(`<div class="modal-bg"><div class="modal" style="max-width:860px;max-height:90vh;overflow:auto"><div class="row between"><h2 style="margin:0">Story mode</h2><button class="btn ghost sm" data-x aria-label="Close">✕</button></div>${listHTML()}</div></div>`);
+    bg.querySelector('[data-x]').onclick=()=>bg.remove();bg.onclick=e=>{if(e.target===bg)bg.remove();};
+    bg.querySelectorAll('[data-p213]').forEach(b=>b.onclick=()=>{bg.remove();renderSetup(b.dataset.p213);});document.body.appendChild(bg);}
+  window.showStory=showStory;
+  VIEWS.story=v=>{v.appendChild(h(`<div class="ptitle"><h2>Story mode</h2></div>`));v.appendChild(h(`<div>${listHTML()}</div>`));
+    v.querySelectorAll('[data-p213]').forEach(b=>b.onclick=()=>renderSetup(b.dataset.p213));};
+  // the start screen gets a Story button next to the Campaign
+  function hook(){const pq=document.getElementById('p182quick');if(pq&&!document.getElementById('lstory2')){const b=document.createElement('button');b.type='button';b.className='btn sec';b.id='lstory2';b.textContent='Story mode';b.onclick=e=>{e.preventDefault();showStory();};pq.insertAdjacentElement('afterend',b);}
+    const lc=document.getElementById('lcamp');if(lc&&!document.getElementById('lstory')){const b=document.createElement('button');b.className='btn';b.id='lstory';b.style.cssText='font-size:16px;padding:15px 24px';b.textContent='Story mode, 10 chapters';b.onclick=showStory;lc.insertAdjacentElement('beforebegin',b);}
+    const sc=document.getElementById('setCamp');if(sc&&!document.getElementById('setStory')){const b=document.createElement('button');b.className='btn sec sm';b.id='setStory';b.textContent='Story mode';b.onclick=()=>{const m=sc.closest('.modal-bg');if(m)m.remove();showStory();};sc.insertAdjacentElement('afterend',b);}}
+  try{new MutationObserver(hook).observe(document.body,{childList:true,subtree:true});}catch(e){}hook();
 })();
 
 </script>
