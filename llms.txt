@@ -1,6 +1,6 @@
 # Terrastate
 
-> Terrastate is a free, Planetarion-style grand strategy game that runs in the web browser. You lead one nation against 300 AI nations on a world map, form alliances and fight for the Nexus, the one region that decides the season. No account, no download, no ads, no pay-to-win. Romaterra is the same game set in the age of Rome, and Ironfront in Europe at war in 1944. Made by Wim Kamphorst, a hobby developer from the Netherlands.
+> Terrastate is a free, Planetarion-style grand strategy game that runs in the web browser. You lead one nation against 500 AI nations on a world map, form alliances and fight for the Nexus, the one region that decides the season. No account, no download, no ads, no pay-to-win. Romaterra is the same game set in the age of Rome, and Ironfront in Europe at war in 1944. Made by Wim Kamphorst, a hobby developer from the Netherlands.
 
 Current version: 14.0. The game is updated regularly. Language: English. Platforms: any modern browser on desktop or phone; installable and playable offline.
 

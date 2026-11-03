@@ -1,6 +1,6 @@
 # Terrastate, Romaterra and Ironfront: full description
 
-> Terrastate is a free, Planetarion-style grand strategy game that runs in the web browser. You lead one nation against 300 AI nations on a world map, form alliances and fight for the Nexus, the one region that decides the season. No account, no download, no ads, no pay-to-win. Romaterra is the same game set in the age of Rome, and Ironfront in Europe at war in 1944. Made by Wim Kamphorst, a hobby developer from the Netherlands.
+> Terrastate is a free, Planetarion-style grand strategy game that runs in the web browser. You lead one nation against 500 AI nations on a world map, form alliances and fight for the Nexus, the one region that decides the season. No account, no download, no ads, no pay-to-win. Romaterra is the same game set in the age of Rome, and Ironfront in Europe at war in 1944. Made by Wim Kamphorst, a hobby developer from the Netherlands.
 
 Current version: 14.0. The game is updated regularly. Language: English. Platforms: any modern browser on desktop or phone; installable and playable offline.
 
@@ -88,7 +88,7 @@ Current version: 14.0. The game is updated regularly. Language: English. Platfor
 ## Frequently asked questions
 
 ### What is Terrastate?
-Terrastate is a free grand strategy game in the style of Planetarion that runs in your web browser. You lead one nation against 300 AI nations on a world map of 25 theaters: build an economy, research, raise an army, join or found an alliance and fight for the Nexus, the one region that decides the season.
+Terrastate is a free grand strategy game in the style of Planetarion that runs in your web browser. You lead one nation against 500 AI nations on a world map of 25 theaters: build an economy, research, raise an army, join or found an alliance and fight for the Nexus, the one region that decides the season.
 
 ### Is Terrastate free?
 Yes. Terrastate, Romaterra and Ironfront are completely free. There are no payments, no ads, no account and no download. It is a non-commercial hobby project by Wim Kamphorst from the Netherlands.
@@ -115,7 +115,7 @@ New players get Field Training: five small tasks that teach you by doing, includ
 Not yet. What you play now is Season 0: single-player against AI nations, the training ground for the live world. The live world, one shared season with real people as the other nations, opens when 100 commanders have joined the waitlist on the Terrastate Discord.
 
 ### What is Season 0?
-Season 0 is the single-player phase of Terrastate and Romaterra. You learn the game against 300 AI nations while the community grows. When 100 commanders are on the Discord waitlist, the live multiplayer world opens. Players from Season 0 are marked as Founding Commanders.
+Season 0 is the single-player phase of Terrastate and Romaterra. You learn the game against 500 AI nations while the community grows. When 100 commanders are on the Discord waitlist, the live multiplayer world opens. Players from Season 0 are marked as Founding Commanders.
 
 ### What is Ironfront?
 Ironfront is the third era of the game: Europe at war in 1944, on a map of real fronts and towns, with invented nations and leaders. You gather pounds, rations, coal, steel, petrol and radio gear, raise infantry divisions, tank battalions, artillery and strategic bombers, and win by holding 2 of the 3 Capital Sectors with a GHQ Bunker for 12 ticks. It also has its own battle layer: battle orders every tick, field works, radio intel with feints, and allied help that has to arrive in time.
