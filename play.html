@@ -1336,11 +1336,11 @@ const COMMANDERS=[
 // ---- CLANS + ACS (coordinated joint attacks) ------------------------------
 const CLAN_FOUND_COST={money:2e7,influence:1500};
 const CLAN_CORE=6;            // members beyond this incur an escalating bureaucracy penalty
-const CLAN_MAX=12;           // hard roster cap (base)
+const CLAN_MAX=10;           // hard roster cap (base)
 // v3.20 ANTI AI-FARM: a human could once pack an alliance with bots (1 human + 11 AI) and, with off-game
 // coordination, run one superbloc — making real human teams structurally weaker. These caps close that: the AI is
 // still welcome so low-pop worlds feel full, but AI can never be the MAIN source of a single human's power.
-const MAX_AI_IN_HUMAN_CLAN=4; // once a clan has ≥1 human, at most this many AI members
+const MAX_AI_IN_HUMAN_CLAN=9; // once a clan has ≥1 human, at most this many AI members
 const AI_INVITE_CD=20;        // ticks an AI won't rejoin/accept after declining or leaving a clan
 const AI_LEAVE_CHECK=12;      // how often (ticks) AI in a human-led clan re-evaluate whether they're being farmed
 const LEADER_AFK=60;         // ticks of leader dormancy before an active officer takes emergency command
@@ -3462,7 +3462,7 @@ function cmdKick(c,memberId){const cl=clanOf(c);if(!cl)return err('Not in a clan
 function aiSlotOpen(cl){return clanHumanCount(cl)===0||clanAICount(cl)<MAX_AI_IN_HUMAN_CLAN;}
 function cmdInvite(c,aiId){const cl=clanOf(c);if(!cl)return err('Found or join an alliance first');const mine=cl.roles[c.id];if(mine!=='leader'&&mine!=='officer')return err('Only officers can invite');
   const m=G.countries[aiId];if(!m||!m.isAI)return err('Invalid');if(m.clan!=null)return err(leaderName(m)+' already flies another banner');if(clanMembers(cl).length>=clanCap(cl))return err('The alliance is full');
-  if(!aiSlotOpen(cl))return err('AI cap reached. Four aides can fly your banner. A live season is won with people.');
+  if(!aiSlotOpen(cl))return err('AI cap reached. Nine aides can fly your banner. A live season is won with people.');
   if(m._aiCd&&G.tick<m._aiCd)return err(leaderName(m)+' of '+m.name+' recently declined. They will hear an offer again in '+(m._aiCd-G.tick)+' ticks.');
   const lead=G.countries[cl.leader]||c;const sameThe=homeCluster(m)===homeCluster(lead);let sameSec=false;try{sameSec=homeSector(m)===homeSector(lead);}catch(e){}
   const solo=typeof isSoloGame==='function'&&isSoloGame();
@@ -11490,7 +11490,7 @@ VIEWS.clans=v=>{const c=you();const cl=clanOf(c);
       const rows=picks.map(p=>'<div class="row between wrap" style="gap:8px;padding:6px 0;border-top:1px solid var(--border)"><div class="small"><b>'+esc(leaderName(p.m))+'</b> of '+esc(p.m.name)+' <span class="tag">'+esc(p.m.tag)+'</span><div class="muted">'+esc(p.rel)+' · '+esc(p.size)+'</div></div></div>').join('')||'<div class="muted small">No free neighbor this tick. Found the alliance and ask again from Members.</div>';
       const miss=!afford?(needM>0?'You need €'+fmt(needM)+' more.':needI>0?'You need '+fmt(needI)+' more influence.':'You need 2 command.'):'';
       v.appendChild(h('<div class="card mb" style="border-left:3px solid var(--accent)"><h3>You are alone. These three live near you.</h3><div class="small" style="line-height:1.55">Your theater will not hit you. An alliance hits <b>with</b> you, on the same tick. The live world is where other people bring their own banners. Here, you ask a neighbor.</div><div class="mt">'+rows+'</div></div>'));
-      v.appendChild(h('<div class="card"><h3>Found your banner'+(who?' and ask '+esc(who):'')+'</h3><div class="grid g2"><div><label>Alliance name</label><input id="cln" maxlength="28" value="Iron Pact"></div><div><label>Tag</label><input id="clt" maxlength="4" value="IRON"></div></div><div class="row between mt wrap"><span class="muted small mono">€'+fmt(cost.money)+' · '+fmt(cost.influence)+' influence · 2 command. You keep most of your treasury.</span><button class="btn sm" id="foundAsk" '+(afford?'':'disabled')+'>'+(who?'Ask '+esc(who):'Found alliance')+'</button></div>'+(miss?'<div class="small mt" style="color:var(--warn)">'+miss+'</div>':'')+'<div class="muted small mt">Four aides can fly your banner. A live season is won with people. An invite code for friends waits under Live-world tools, once the alliance exists.</div></div>'));
+      v.appendChild(h('<div class="card"><h3>Found your banner'+(who?' and ask '+esc(who):'')+'</h3><div class="grid g2"><div><label>Alliance name</label><input id="cln" maxlength="28" value="Iron Pact"></div><div><label>Tag</label><input id="clt" maxlength="4" value="IRON"></div></div><div class="row between mt wrap"><span class="muted small mono">€'+fmt(cost.money)+' · '+fmt(cost.influence)+' influence · 2 command. You keep most of your treasury.</span><button class="btn sm" id="foundAsk" '+(afford?'':'disabled')+'>'+(who?'Ask '+esc(who):'Found alliance')+'</button></div>'+(miss?'<div class="small mt" style="color:var(--warn)">'+miss+'</div>':'')+'<div class="muted small mt">Nine aides can fly your banner. A live season is won with people. An invite code for friends waits under Live-world tools, once the alliance exists.</div></div>'));
       const fb=v.querySelector('#foundAsk');if(fb)fb.onclick=async ()=>{
         const r=await cmdFoundClan(c,$('cln').value.trim(),$('clt').value.trim());
         if(!r.ok){toast(r.error,'bad');return;}
@@ -11906,7 +11906,7 @@ VIEWS.clans=v=>{const c=you();const cl=clanOf(c);
       <div class="row mt wrap" style="gap:6px"><select id="dres" style="width:auto">${RES.map(k=>`<option value="${k}">${RMETA[k].l}</option>`).join('')}</select><input type="text" inputmode="numeric" class="qint" id="damt" placeholder="amount" style="width:100px"><button class="btn sm" id="donate">Donate</button>${isOff?'<button class="btn sec sm" id="withdraw">Withdraw</button>':''}</div>
       <div class="muted small mt">Anti-feeder transfer cap: you may still gift <b>${fmt(remainCap,true)}</b> worth this season (${Math.round(NETWORTH_CAP*100)}% of your net worth). ${isOff?'Officers may withdraw for the war effort.':'Only officers can withdraw.'}</div>
       ${(cl.tlog||[]).length?`<details class="mt"><summary class="small muted" style="cursor:pointer">🏦 Treasury log, every deposit & withdrawal (transparency)</summary><div class="mt">${cl.tlog.slice(0,10).map(e=>{const m=G.countries[e.by];return `<div class="row between small" style="padding:3px 0;border-top:1px solid var(--border)"><span><span class="tag">t${e.tick}</span> ${e.dir==='in'?'<span style="color:var(--good)">＋</span>':'<span style="color:var(--bad)">－</span>'} ${esc(m?m.name:'—')}</span><span class="mono">${fmt(e.amt,e.res==='money')} ${RMETA[e.res]?RMETA[e.res].l:e.res}</span></div>`;}).join('')}</div></details>`:''}</div>
-    <div class="card"><h3>${_soloLive?'Ask a neighbor':'Recruit, invite AI nations'}</h3>${_soloLive?'<div class="muted small mb">Four aides can fly your banner. A live season is won with people.</div>':''}${invHtml}</div></div>`));
+    <div class="card"><h3>${_soloLive?'Ask a neighbor':'Recruit, invite AI nations'}</h3>${_soloLive?'<div class="muted small mb">Nine aides can fly your banner. A live season is won with people.</div>':''}${invHtml}</div></div>`));
   boxManage.appendChild(h(`<div class="card mb" style="border-left:3px solid var(--accent)"><h3>Coordinated assault (ACS)</h3><div class="muted small">Launch a joint attack from <b>War</b>: pick a target, commit your units, and clanmates' fleets are timed to land on the <b>same tick</b> as one combined force.</div><button class="btn sm mt" onclick="GO('around')">Open War</button></div>`));
   // Alliance wonders, pooled treasury projects that buff every member (shared goals)
   {const wdone=cl.wonders||[];
