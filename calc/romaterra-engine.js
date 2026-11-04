@@ -9630,9 +9630,9 @@ VIEWS.fleets=v=>{const c=you();const inc=incomingTo(c.id);const cl0=clanOf(c);
 
   // ---- COVERT OPS embedded in Around you: your eyes and dirty tricks on the neighbourhood ----
   if(TAB==='offence'){v.appendChild(h(`<div class="ptitle" style="margin-top:14px;border-top:1px solid var(--border);padding-top:12px"><h2 style="font-size:19px">🕵 Covert Ops</h2><span class="h">Your spies: see what is hidden, and hit them where it hurts. Each mission shows its cost and what it needs.</span></div>`));try{covertRender(v,true);}catch(e){console.error('covert embed',e);}}
-  // Sandbox Combat Simulator, test the 5-phase math with virtual armies, no Excel needed.
+  // Sandbox Combat Simulator, test a 3-turn battle with virtual armies, no Excel needed.
   const myArmy={};UNIT.forEach(u=>myArmy[u.k]=c.units[u.k]||0);
-  if(TAB==='offence')v.appendChild(h(`<div class="card"><details class="rawmath" style="background:transparent;border:0;padding:0"><summary style="font-size:14px;color:var(--text)">🧪 Combat Simulator, test the 5-phase math (sandbox)</summary>
+  if(TAB==='offence')v.appendChild(h(`<div class="card"><details class="rawmath" style="background:transparent;border:0;padding:0"><summary style="font-size:14px;color:var(--text)">🧪 Combat Simulator, test a 3-turn battle (sandbox)</summary>
     <div class="muted small mt mb">Pit two virtual armies and read the full phase breakdown & losses. Nothing here affects your game, it's a calculator built into the game.</div>
     <div class="grid g2">
       <div><div class="mono small mb" style="color:var(--accent2)">ATTACKER</div>${simUnitInputs('a',myArmy)}<div class="row mt" style="gap:8px"><label class="small" style="margin:0"><input type="checkbox" data-sc="a:armor" style="width:auto"> Lorica Segmentata</label><label class="small" style="margin:0"><input type="checkbox" data-sc="a:supply" style="width:auto"> Supply Chain</label></div></div>
@@ -10397,7 +10397,7 @@ function renderMapBelow(v,c,hostiles,incRegions){v.innerHTML='';
     <div class="rpanel" id="mapcard2" style="display:none"></div></div></details>`);
   v.appendChild(wrap);
   const modeHelp=mode==='conflict'?' <b style="color:var(--bad)">Conflict view</b>: redder = more fighting (🔥 live battles + recent engagements over the last '+CONFLICT_TTL+' ticks). Region tiles flag ⚠ under attack, 🩹 recovering, or a 🛡 defence estimate, spot soft targets and hot fronts.':mode==='economic'?' <b style="color:var(--gold)">Economic view</b>: brighter gold = more GDP. Province tiles show total output + the dominant alliance; region tiles show each nation\'s GDP, that\'s where the loot is.':' <b>Political view</b>: coloured by alliance & relationship, with the dominant alliance tag per province and an ownership bar (you / allies / enemies / neutral), spot blocs and enemy ground.';
-  if(mapView.level<2)v.appendChild(h(`<div class="muted small mt">Click a ${mapView.level===0?'theater':'region'} to zoom in.${modeHelp}</div>`));
+  if(mapView.level<2)v.appendChild(h(`<div class="muted small mt">Click a ${mapView.level===0?'realm':'province'} to zoom in.${modeHelp}</div>`));
   else v.appendChild(h(`<div class="muted small mt">Tap a nation for stats + intel crumbs, then plan an attack.${modeHelp}</div>`));
 
   // Activity feed, your recent battles (jumpable) + recent world headlines
@@ -11407,7 +11407,7 @@ VIEWS.rankings=v=>{const c=you();const rt=rankTitle(c.id);const myS=scores(c);co
    const br=bigCl.map(o=>`<div class="small" style="margin-top:4px">${clanLink(o.x.id,esc(o.x.name))} <span class="muted">${o.n} members</span></div>`).join('');
    v.appendChild(h(`<div class="clabel mt" style="margin-bottom:6px">🏆 Hall of Fame</div><div class="grid g3 mb">${col('📈 Fastest growing',gr)}${col('⚔ Largest military',mr)}${col('🤝 Biggest alliance',br)}</div>`));}
   // Top 100 players, filter by category (theory-crafter view)
-  const CATS=[['overall','Overall'],['economic','Economy (GDP)'],['military','Military'],['technology','Tech / Research']];
+  const CATS=[['overall','Overall'],['economic','Economy (GDP)'],['military','Military'],['technology','Studies']];
   const seg=h(`<div class="seg mb" id="rcat">${CATS.map(([k,l])=>`<button class="${k===rankCat?'on':''}" data-c="${k}">${l}</button>`).join('')}</div>`);
   v.appendChild(seg);seg.querySelectorAll('button').forEach(b=>b.onclick=()=>{rankCat=b.dataset.c;go('rankings');});
   const list=G.countries.filter(x=>!x.retired&&regionsOf(x).length).map(x=>({c:x,s:scores(x)})).sort((a,b)=>b.s[rankCat]-a.s[rankCat]).slice(0,100);
@@ -13904,12 +13904,21 @@ function p219Block(c,r){try{if(!c||!r)return '';if(typeof moraleOf==='function'&
   if(typeof regionsOf==='function'&&regionsOf(d).length<=1&&(d._capShieldUntil||0)>G.tick){const st=(G.season&&G.season.startTick)||0;return 'No capture until turn '+(d._capShieldUntil-st)+': their last region has an emergency shield.';}
   return '';}catch(e){return '';}}
 // 5. the Army tile counted only your own armies: units in a joint strike were missing from "out"
-function p219Out(c){let n=0;try{(c.fleets||[]).forEach(f=>{n+=fleetSize(f.units||{});});
+function p219Out(c){let n=0;try{(c.fleets||[]).forEach(f=>{if(f&&f.acs&&f.members&&f.members.length){const m=f.members.find(x=>x.owner===c.id);const tot=f.members.reduce((s,x)=>s+(x.share||0),0)||1;n+=m?Math.round(fleetSize(f.units||{})*(m.share||0)/tot):0;return;}n+=fleetSize(f.units||{});});
   (G.acs||[]).forEach(op=>{(op.fleets||[]).forEach(f=>{if(f&&f.owner===c.id)n+=fleetSize(f.units||{});});});
   (G.countries||[]).forEach(o=>{if(!o||o.id===c.id)return;(o.fleets||[]).forEach(f=>{if(!f||!f.acs||!f.members)return;const m=f.members.find(x=>x.owner===c.id);if(!m)return;
     const tot=f.members.reduce((s,x)=>s+(x.share||0),0)||1;n+=Math.round(fleetSize(f.units||{})*(m.share||0)/tot);});});}catch(e){}return n;}
 // 6. a rival who joined your own alliance is no longer shown as your rival
 if(typeof rivalOf==='function'){const _ro219=rivalOf;rivalOf=function(){const r=_ro219.apply(this,arguments);try{const me=G.countries[G.you];if(r&&me&&me.clan!=null&&r.clan===me.clan)return null;}catch(e){}return r;};}
+// 7. every scouting order is kept, also the ones that bounced, so War → Scout can list them
+if(typeof cmdScoutRegion==='function'){const _sc219=cmdScoutRegion;cmdScoutRegion=function(c,rid){const out=_sc219.apply(this,arguments);
+  try{if(c&&out&&out.ok){const r=_rgId(rid);const L=c._scoutLog=c._scoutLog||[];L.unshift({t:G.tick,rid:+rid,ok:!(out.data&&out.data.miss),tag:r&&r.owner!=null&&G.countries[r.owner]?G.countries[r.owner].tag:null,d:out.data&&out.data.lo!=null?out.data.lo:null});if(L.length>30)L.length=30;}}catch(e){}
+  return out;};}
+
+// 8. a joint strike you lead: the report counts everyone's troops, so say that it is the whole force
+if(typeof finalizeBattle==='function'){const _fb219=finalizeBattle;finalizeBattle=function(c,f,r,defC,R,retreated){const n0=(G.battles||[]).length,b0=(G.battles||[])[0];const out=_fb219.apply(this,arguments);
+  try{const b=(G.battles||[])[0];if(b&&b!==b0&&f&&f.acs&&f.members&&f.members.length>1&&c&&c.id===G.you){const mine=f.members.find(m=>m.owner===c.id);
+    b.atkName='Your joint strike';b.why='Joint strike with '+(f.members.length-1)+' all'+(f.members.length===2?'y':'ies')+': the numbers are for the whole force'+(mine?', your part was '+full(mine.share||0)+' units':'')+'. '+(b.why||'');}}catch(e){}return out;};}
 
 
 // ==== EXPORTS (server-side) ====

@@ -125,8 +125,8 @@ const TECH=[
  {k:'mil_quantum',n:'Codebreaking',cat:'Military',d:'Unlocks Master Spies. +6% def, stronger covert ops.',cost:{research:20e3,money:24e6},ticks:6,req:['mil_advanced'],bonus:{def:.06}},
  // v3.13.4 MILITARY DOCTRINE SPLIT (Tier 4): a permanent, mutually-exclusive fork that breaks the "everyone ends with the same
  // army" endgame. You must scout to learn which one your enemy took, and counter it. (excludes = you can never take the other.)
- {k:'mil_asymmetric',n:'Partisan Doctrine',cat:'Military',d:'Raiders & scouts: +2 recon, −5% def. Locks Heavy Armor.',cost:{research:18e3,money:20e6},ticks:6,req:['mil_advanced'],excludes:['mil_juggernaut'],bonus:{def:-.05,recon:2}},
- {k:'mil_juggernaut',n:'Heavy Armor Doctrine',cat:'Military',d:'Heavy: +10% def, +5% atk, −15% logi. Locks Partisan.',cost:{research:18e3,money:20e6},ticks:6,req:['mil_advanced'],excludes:['mil_asymmetric'],bonus:{def:.10,atk:.05,logi:-.15}},
+ {k:'mil_asymmetric',n:'Partisan Doctrine',cat:'Military',d:'Raiders & scouts: +2 recon, −5% def. Locks Heavy Armour.',cost:{research:18e3,money:20e6},ticks:6,req:['mil_advanced'],excludes:['mil_juggernaut'],bonus:{def:-.05,recon:2}},
+ {k:'mil_juggernaut',n:'Heavy Armour Doctrine',cat:'Military',d:'Heavy: +10% def, +5% atk, −15% logi. Locks Partisan.',cost:{research:18e3,money:20e6},ticks:6,req:['mil_advanced'],excludes:['mil_asymmetric'],bonus:{def:.10,atk:.05,logi:-.15}},
  // v3.18 SIDE-TECHS (Batch C): a mutually-exclusive economic fork, a one-way identity choice like the doctrines, each with a real downside.
  {k:'black_market',n:'Smuggling Networks',cat:'Economy',d:'+15% money, +8% influence. Weaker counter-espionage. Locks Allied Research Sharing.',cost:{research:9e3,money:14e6},ticks:5,req:['advman'],excludes:['open_science'],bonus:{mult:{money:.15,influence:.08}}},
  {k:'open_science',n:'Allied Research Sharing',cat:'Economy',d:'+20% research, but −5% attack & defence, secrets leak. Locks Smuggling.',cost:{research:9e3,money:14e6},ticks:5,req:['advman'],excludes:['black_market'],bonus:{mult:{research:.20},atk:-.05,def:-.05}}
@@ -7344,7 +7344,7 @@ const MANUAL={
     <h3>Alliances &amp; diplomacy</h3>
     <p>Diplomacy is waged between <b>alliances</b>, not lone nations. An alliance leader can <b>declare war</b> for a +12% attack bonus, launch joint <b>ACS</b> strikes where multiple armies land simultaneously as one combined force, and run <b>alliance polls</b> so officers vote on key decisions. Alliances also compete in <b>World Projects</b>, crisis events where pledging resources earns renown and rich rewards for the leading alliance.</p>
     <h3>How to win</h3>
-    <p>Three <b>Capital Sectors</b> are spread across the world. Capture one, build the <b>GHQ Bunker</b>, and hold it for <code>${NEXUS_HOLD}</code> ticks to secure it, control <code>${typeof AXIS_WIN_COUNT!=='undefined'?AXIS_WIN_COUNT:2}</code> of the <code>${typeof NEXUS_COUNT!=='undefined'?NEXUS_COUNT:3}</code> Capital Sectors (alone or shared with allies), the Axis of Control, and you win. Building a GHQ Bunker takes <code>${CC_BUILD_TICKS}</code> ticks (lose the sector meanwhile and the works are torn down, no refund) and the whole world is alerted the moment it starts. Each Capital Sector is held in the open: it belongs to no front (theater-mates may attack it too), the Flak Command never covers it, and the hold counter pauses while your shield is up. If nobody manages it, the season runs an outer clock of <code>${SEASON_TICKS}</code> ticks (${Math.round(SEASON_TICKS/168)} weeks at one tick per hour) and the nation with the highest <b>overall score</b> wins. Then the world resets so everyone starts equal.</p><p><b>New here?</b> You are under <b>beginner protection</b> for your first ${NEWBIE_PROTECT} ticks, your regions can't be captured, but launching an attack ends it early. <b>Also permanent this season:</b> your <b>National Path</b> (Industrial · Green · Scientific · Fortress · Trade) is a one-way choice made in R&amp;D, your late-game <b>military doctrine</b> (Partisan raiders vs Heavy Armor heavy armour, unlocked after Blitzkrieg Doctrine) is a second one-way choice, and every region has <b>10 Development Points</b> of building footprint, so no region can hold everything. The season runs through five phases (Foundation → Expansion → Specialization → World Conflict → Finale), each with its own bonus, the current phase is always shown in the top bar.</p>
+    <p>Three <b>Capital Sectors</b> are spread across the world. Capture one, build the <b>GHQ Bunker</b>, and hold it for <code>${NEXUS_HOLD}</code> ticks to secure it, control <code>${typeof AXIS_WIN_COUNT!=='undefined'?AXIS_WIN_COUNT:2}</code> of the <code>${typeof NEXUS_COUNT!=='undefined'?NEXUS_COUNT:3}</code> Capital Sectors (alone or shared with allies), the Axis of Control, and you win. Building a GHQ Bunker takes <code>${CC_BUILD_TICKS}</code> ticks (lose the sector meanwhile and the works are torn down, no refund) and the whole world is alerted the moment it starts. Each Capital Sector is held in the open: it belongs to no front (theater-mates may attack it too), the Flak Command never covers it, and the hold counter pauses while your shield is up. If nobody manages it, the season runs an outer clock of <code>${SEASON_TICKS}</code> ticks (${Math.round(SEASON_TICKS/168)} weeks at one tick per hour) and the nation with the highest <b>overall score</b> wins. Then the world resets so everyone starts equal.</p><p><b>New here?</b> You are under <b>beginner protection</b> for your first ${NEWBIE_PROTECT} ticks, your regions can't be captured, but launching an attack ends it early. <b>Also permanent this season:</b> your <b>National Path</b> (Industrial · Green · Scientific · Fortress · Trade) is a one-way choice made in R&amp;D, your late-game <b>military doctrine</b> (Partisan raiders vs Heavy Armour heavy armour, unlocked after Blitzkrieg Doctrine) is a second one-way choice, and every region has <b>10 Development Points</b> of building footprint, so no region can hold everything. The season runs through five phases (Foundation → Expansion → Specialization → World Conflict → Finale), each with its own bonus, the current phase is always shown in the top bar.</p>
     <h3>Beginner tips</h3>
     <ul>
       <li>Don't over-expand early, overextension hurts stability and upkeep.</li>
@@ -7389,7 +7389,7 @@ const MANUAL={
     <p>After <b>Blitzkrieg Doctrine</b> you commit, once and for the whole season, to one of two military doctrines. You cannot take both, so it shapes your late game and your alliance's composition:</p>
     <ul>
       <li><b>Partisan</b>, cheap <b>Partisan Raiders</b> that shred heavy armour, stealth recon, and the Reconnaissance Wing that makes a region deadly to attack without flak defence. Slightly weaker on straight defence. The guerrilla/tech road.</li>
-      <li><b>Heavy Armor</b>, the heavy <b>Titan Mech</b>, mobile flak defence, and +defence/+attack, at the cost of −15% logistics (rebuild it with Forward Supply Depots). The overwhelming-force road.</li>
+      <li><b>Heavy Armour</b>, the heavy <b>Titan Mech</b>, mobile flak defence, and +defence/+attack, at the cost of −15% logistics (rebuild it with Forward Supply Depots). The overwhelming-force road.</li>
     </ul>
     <p>You don't need to decide in your first 20 ticks, but knowing it's coming helps: raiders hard-counter an unscreened tank ball, and flak defence hard-counters raiders, so scouting what your enemies are teching is what wins the late game. Detail in the <b>Combat &amp; Formulae</b> tab.</p>`,
   combat:`
@@ -7444,10 +7444,10 @@ const MANUAL={
     <p>After <b>Blitzkrieg Doctrine</b> you commit permanently to one of two doctrines. They add their own units to the rock-paper-scissors, and their tech bonuses now apply in the <b>real</b> battle (attack/defence, and logistics), not just the on-screen estimate:</p>
     <table><thead><tr><th>Doctrine unit</th><th>hard-counters…</th><th>…but dies to</th></tr></thead><tbody>
       <tr><td><b>Partisan Raiders</b> (Partisan, air)</td><td>an unscreened Titan / tank ball</td><td>Flak Defence &amp; Flak</td></tr>
-      <tr><td><b>Titan Mech</b> (Heavy Armor, armor)</td><td>plain tanks &amp; infantry, holds ground</td><td>Partisan Raiders with no AA cover</td></tr>
-      <tr><td><b>Mobile Shield</b> (Heavy Armor, air-def)</td><td>screens your armour vs raiders/air</td><td>artillery &amp; ground once air is clear</td></tr>
+      <tr><td><b>Titan Mech</b> (Heavy Armour, armor)</td><td>plain tanks &amp; infantry, holds ground</td><td>Partisan Raiders with no AA cover</td></tr>
+      <tr><td><b>Mobile Shield</b> (Heavy Armour, air-def)</td><td>screens your armour vs raiders/air</td><td>artillery &amp; ground once air is clear</td></tr>
     </tbody></table>
-    <p>The lesson: <b>never field naked heavy armour</b>, a ~30–40% flak defence screen flips a raider raid from a rout into a win. Heavy Armor trades logistics for raw power (plant <b>Forward Supply Depots</b> to win it back); Partisan trades a little defence for cheap, army-shredding raiders and better recon. Scouting which doctrine your enemy took is half the battle.</p>
+    <p>The lesson: <b>never field naked heavy armour</b>, a ~30–40% flak defence screen flips a raider raid from a rout into a win. Heavy Armour trades logistics for raw power (plant <b>Forward Supply Depots</b> to win it back); Partisan trades a little defence for cheap, army-shredding raiders and better recon. Scouting which doctrine your enemy took is half the battle.</p>
     <h3>3-tick battles &amp; retreat</h3>
     <p>Battles resolve over up to <b>3 combat ticks</b>. Losses are staged (roughly 10–15% in Tick 1, more later), so you can <b>retreat</b> after Tick 1 and keep ~85–90% of your force, feints are viable. Fast allied units can <b>reinforce</b> a defender mid-battle, so defence is a team sport.</p>
     <h3>Losses</h3>
@@ -7604,7 +7604,7 @@ const HELP=[
   warn:'A rations or coal deficit is the fastest way to lose a game — the Priority Center warns you in time.',
   see:['help-research','help-buildings'],anchor:'production',cta:'Open Production',anchor2:'market',cta2:'Buy on Market'},
  {id:'help-research',sec:'B',ic:'🔬',title:'Research, Paths & Doctrines',short:'Tech unlocks civilian and military capability; a doctrine shapes your army.',
-  bullets:['The military tree unlocks heavier unit tiers step by step.','A doctrine (Partisan vs Heavy Armor) tilts you toward speed/recon or mass/armour.','Repeatable techs give a permanent late-game resource sink.','Pick a doctrine once you know how you like to fight — it is a commitment.'],
+  bullets:['The military tree unlocks heavier unit tiers step by step.','A doctrine (Partisan vs Heavy Armour) tilts you toward speed/recon or mass/armour.','Repeatable techs give a permanent late-game resource sink.','Pick a doctrine once you know how you like to fight — it is a commitment.'],
   warn:'Your doctrine is a lasting choice. Read help-army before you lock it in.',
   see:['help-army','help-techs'],anchor:'research'},
  {id:'help-army',sec:'B',ic:'⚔',title:'Army, armies & battles',short:'Combat is rock-paper-scissors resolved over up to three ticks.',
@@ -9317,14 +9317,14 @@ VIEWS.research=v=>{const c=you();
   if(c.tech.includes('mil_advanced')&&!_docChosen){
     const DOC2=[
       {k:'mil_asymmetric',ic:'🐝',n:'Partisan',pros:['Unlocks Partisan Raiders, Night Raiders, Reconnaissance Wing','+2 recon — see more, hit blind enemies','Raiders shred heavy armour'],cons:['−5% defence','Weak to enemy flak defence (Flak / Interceptors)']},
-      {k:'mil_juggernaut',ic:'🛡',n:'Heavy Armor',pros:['Unlocks Heavy Tank Battalions, Mobile Shields, Forward Supply Depot','+10% defence, +5% attack','The iron wall — hard to break'],cons:['−15% logistics (build the Forward Supply Depot)','Slow, countered by raider swarms']},
+      {k:'mil_juggernaut',ic:'🛡',n:'Heavy Armour',pros:['Unlocks Heavy Tank Battalions, Mobile Shields, Forward Supply Depot','+10% defence, +5% attack','The iron wall — hard to break'],cons:['−15% logistics (build the Forward Supply Depot)','Slow, countered by raider swarms']},
     ];
     const _t0=TECH.find(x=>x.k==='mil_asymmetric')||{cost:{research:0,money:0},ticks:0};
     const dcards=DOC2.map(d=>`<div class="card compact"><div style="font-size:19px;font-weight:800">${d.ic} ${d.n}</div><div class="small mt">${d.pros.map(x=>`<div style="color:var(--ok)">✓ ${esc(x)}</div>`).join('')}${d.cons.map(x=>`<div style="color:var(--danger)">✗ ${esc(x)}</div>`).join('')}</div><div class="muted small mt" style="border-top:1px solid var(--border);padding-top:6px">🔬${fmt(_t0.cost.research)} · £${fmt(_t0.cost.money)} · ${_t0.ticks} ticks · locks the other forever</div><button class="btn sm mt" data-doc="${d.k}" style="width:100%">Commit to ${d.n} →</button></div>`).join('');
     const dcard=h(`<div class="card mb priority bad" style="background:linear-gradient(180deg,rgba(184,72,58,.06),transparent)"><h3>⚔ Choose your doctrine <span class="muted small" style="text-transform:none;letter-spacing:0">a permanent, one-way fork</span></h3><div class="muted small mb">Blitzkrieg Doctrine is done. Pick ONE Tier-4 doctrine: it unlocks that branch and <b>permanently locks the other this season</b>. Scout your enemy to learn theirs, and counter it.</div><div class="grid g2">${dcards}</div></div>`);
     v.appendChild(dcard);
     try{tipOnce(c,'doctrine','Doctrine unlocked. This is a one-way fork — read the trade-offs before you commit.','help-research');}catch(e){}
-    dcard.querySelectorAll('button[data-doc]').forEach(b=>b.onclick=()=>{const dk=b.dataset.doc;const nm=dk==='mil_asymmetric'?'Partisan':'Heavy Armor';uiConfirm('Commit to the '+nm+' doctrine?\n\nThis is PERMANENT this season and locks the other doctrine forever.',async ()=>{const r=await cmdResearch(c,dk);if(r.ok){sfx('research');toast('⚔ Doctrine committed: '+nm);go('research');drawTop();save();}else toast(r.error,'bad');},'Commit '+nm);});
+    dcard.querySelectorAll('button[data-doc]').forEach(b=>b.onclick=()=>{const dk=b.dataset.doc;const nm=dk==='mil_asymmetric'?'Partisan':'Heavy Armour';uiConfirm('Commit to the '+nm+' doctrine?\n\nThis is PERMANENT this season and locks the other doctrine forever.',async ()=>{const r=await cmdResearch(c,dk);if(r.ok){sfx('research');toast('⚔ Doctrine committed: '+nm);go('research');drawTop();save();}else toast(r.error,'bad');},'Commit '+nm);});
   }
   // Real impact of a tech, valued against YOUR current nation, turns "+8% attack" into "108k → 116k".
   const impactOf=t=>{const b=t.bonus||{},out=[];const atk=power(c,'atk'),def=power(c,'def');
@@ -9414,7 +9414,7 @@ VIEWS.military=v=>{const c=you();
   // Doctrine presets, one tap fills the queue toward an army identity (only unlocked units).
   const DOCTRINES=[
     {n:'⚡ Rapid Response',d:'Infantry + recon, mobile',mix:{infantry:400,spec_ops:60,militia:200}},
-    {n:'🛡 Heavy Armor',d:'Tanks + artillery',mix:{tank:120,artillery:60,infantry:150}},
+    {n:'🛡 Heavy Armour',d:'Tanks + artillery',mix:{tank:120,artillery:60,infantry:150}},
     {n:'🕵 Covert State',d:'Covert + commando',mix:{cyber_cell:120,spec_ops:80,quantum_hacker:20}},
     {n:'🏰 Fortress',d:'Home Guard + Flak + artillery',mix:{militia:400,sam:80,artillery:60}}];
   // Hard bridge from "0 units home": if you have almost no army, say so plainly and give a one-tap defensive line +
@@ -9858,9 +9858,9 @@ VIEWS.fleets=v=>{const c=you();const inc=incomingTo(c.id);const cl0=clanOf(c);
 
   // ---- COVERT OPS embedded in Around you: your eyes and dirty tricks on the neighbourhood ----
   if(TAB==='offence'){v.appendChild(h(`<div class="ptitle" style="margin-top:14px;border-top:1px solid var(--border);padding-top:12px"><h2 style="font-size:19px">🕵 Covert Ops</h2><span class="h">Your spies: see what is hidden, and hit them where it hurts. Each mission shows its cost and what it needs.</span></div>`));try{covertRender(v,true);}catch(e){console.error('covert embed',e);}}
-  // Sandbox Combat Simulator, test the 5-phase math with virtual armies, no Excel needed.
+  // Sandbox Combat Simulator, test a 3-turn battle with virtual armies, no Excel needed.
   const myArmy={};UNIT.forEach(u=>myArmy[u.k]=c.units[u.k]||0);
-  if(TAB==='offence')v.appendChild(h(`<div class="card"><details class="rawmath" style="background:transparent;border:0;padding:0"><summary style="font-size:14px;color:var(--text)">🧪 Combat Simulator, test the 5-phase math (sandbox)</summary>
+  if(TAB==='offence')v.appendChild(h(`<div class="card"><details class="rawmath" style="background:transparent;border:0;padding:0"><summary style="font-size:14px;color:var(--text)">🧪 Combat Simulator, test a 3-turn battle (sandbox)</summary>
     <div class="muted small mt mb">Pit two virtual armies and read the full phase breakdown & losses. Nothing here affects your game, it's a calculator built into the game.</div>
     <div class="grid g2">
       <div><div class="mono small mb" style="color:var(--accent2)">ATTACKER</div>${simUnitInputs('a',myArmy)}<div class="row mt" style="gap:8px"><label class="small" style="margin:0"><input type="checkbox" data-sc="a:armor" style="width:auto"> Modern Armor</label><label class="small" style="margin:0"><input type="checkbox" data-sc="a:supply" style="width:auto"> Supply Chain</label></div></div>
@@ -12501,7 +12501,7 @@ F20T.add([
  [/\bTechno-State\b/g,'Directorate'],[/\bConsortium\b/g,'Trade Republic'],[/\bSyndicate\b/g,'Customs Union'],[/\bHoldings\b/g,'Free Port'],[/\bEnterprise\b/g,'Mercantile League'],[/\bEmirate\b/g,'Principality'],
  [/\bcovert EMP\b/g,'covert sabotage'],[/\bEMP\b/g,'sabotage'],
  [/\bA hacked system hardens for a while\b/g,'A broken spy ring stays wary for a while'],[/\ba hacked system is then hardened for a while\b/g,'a broken spy ring then stays wary for a while'],
-[/\bEarth Command\b/g,'Capital Command'],[/\bTitan Mechs\b/g,'Heavy Tank Battalions'],[/\bTitan Mech\b/g,'Heavy Tank Battalion'],[/\bTitan \/ tank ball\b/g,'heavy tank ball'],[/\bHeavy Armor heavy armour\b/g,'Heavy Armor'],
+[/\bEarth Command\b/g,'Capital Command'],[/\bTitan Mechs\b/g,'Heavy Tank Battalions'],[/\bTitan Mech\b/g,'Heavy Tank Battalion'],[/\bTitan \/ tank ball\b/g,'heavy tank ball'],[/\bHeavy Armour heavy armour\b/g,'Heavy Armour'],
  [/\bTitans and shields\. The swarm is closed to you\./g,'Heavy tanks and smoke screens. The raiders are closed to you.'],
  [/\bthe chores the computer nations do\b/g,'the chores the AI nations do'],[/\bthe computer never cheats\b/g,'the AI rivals never cheat'],[/\banother computer\b/g,'another device'],
  [/\bNew power capacity online\b/g,'New power stations come on line'],[/\bTechnological Lead\b/g,'Technical Lead'],[/\btechnological\b/g,'technical'],[/\bTechnological\b/g,'Technical']
@@ -12885,7 +12885,7 @@ function vetsHTML(me){var V=vets(me);var rows=V.list.slice().sort(function(a,b){
    +'<div class="row between wrap" style="gap:8px"><div><span class="mono small" style="color:#d4b451;letter-spacing:1px">VETERAN DIVISIONS</span></div><span class="muted small">up to '+IFX.MAXV+' at once</span></div>'
    +'<div class="small" style="margin-top:4px">Every attack army is led by a division. It earns a star for surviving and winning battles: <b>+4% attack per star</b>, up to <b>+12%</b>. If its army is wiped out, the division is gone for good.</div>'
    +intro+rows+'</div>';}
-function nearNote(me){var cl=cal(),wx=cl.wx;return '<div class="small muted" data-ifx="nearnote" style="margin:0 0 12px;padding:8px 12px;border:1px solid var(--border);border-radius:8px;line-height:1.55">\uD83D\uDE9A <b>Supply</b>: an attack in another sector of your front costs <b>-5%</b>, on another front <b>-15%</b>. Supply Trucks (10% of the army) remove it, and a captured region puts its whole sector in supply. Weather now: '+wx.ic+' '+esc(wx.n)+', see Home.</div>';}
+function nearNote(me){var cl=cal(),wx=cl.wx;return '<div class="small muted" data-ifx="nearnote" style="margin:0 0 12px;padding:8px 12px;border:1px solid var(--border);border-radius:8px;line-height:1.55">\uD83D\uDE9A <b>Supply</b>: an attack in another sector of your front costs <b>-5%</b>, on another front <b>-15%</b>. Supply Trucks (10% of the army) remove it, and a captured region puts its whole sector in supply. Weather now: '+wx.ic+' '+esc(wx.n)+'.</div>';}
 // each target in the Nearest targets table shows what supply would cost before any trucks
 function tagTargets(v){var card=[].slice.call(v.children).filter(function(e){return /^nearest targets/i.test((e.textContent||'').trim());})[0];if(!card)return;
   var me=you(),byC=null;[].slice.call(card.querySelectorAll('tbody tr')).forEach(function(tr){if(tr.querySelector('.ifxsup'))return;
@@ -14271,12 +14271,21 @@ function p219Block(c,r){try{if(!c||!r)return '';if(typeof moraleOf==='function'&
   if(typeof regionsOf==='function'&&regionsOf(d).length<=1&&(d._capShieldUntil||0)>G.tick){const st=(G.season&&G.season.startTick)||0;return 'No capture until turn '+(d._capShieldUntil-st)+': their last region has an emergency shield.';}
   return '';}catch(e){return '';}}
 // 5. the Army tile counted only your own armies: units in a joint strike were missing from "out"
-function p219Out(c){let n=0;try{(c.fleets||[]).forEach(f=>{n+=fleetSize(f.units||{});});
+function p219Out(c){let n=0;try{(c.fleets||[]).forEach(f=>{if(f&&f.acs&&f.members&&f.members.length){const m=f.members.find(x=>x.owner===c.id);const tot=f.members.reduce((s,x)=>s+(x.share||0),0)||1;n+=m?Math.round(fleetSize(f.units||{})*(m.share||0)/tot):0;return;}n+=fleetSize(f.units||{});});
   (G.acs||[]).forEach(op=>{(op.fleets||[]).forEach(f=>{if(f&&f.owner===c.id)n+=fleetSize(f.units||{});});});
   (G.countries||[]).forEach(o=>{if(!o||o.id===c.id)return;(o.fleets||[]).forEach(f=>{if(!f||!f.acs||!f.members)return;const m=f.members.find(x=>x.owner===c.id);if(!m)return;
     const tot=f.members.reduce((s,x)=>s+(x.share||0),0)||1;n+=Math.round(fleetSize(f.units||{})*(m.share||0)/tot);});});}catch(e){}return n;}
 // 6. a rival who joined your own alliance is no longer shown as your rival
 if(typeof rivalOf==='function'){const _ro219=rivalOf;rivalOf=function(){const r=_ro219.apply(this,arguments);try{const me=G.countries[G.you];if(r&&me&&me.clan!=null&&r.clan===me.clan)return null;}catch(e){}return r;};}
+// 7. every scouting order is kept, also the ones that bounced, so War → Scout can list them
+if(typeof cmdScoutRegion==='function'){const _sc219=cmdScoutRegion;cmdScoutRegion=function(c,rid){const out=_sc219.apply(this,arguments);
+  try{if(c&&out&&out.ok){const r=_rgId(rid);const L=c._scoutLog=c._scoutLog||[];L.unshift({t:G.tick,rid:+rid,ok:!(out.data&&out.data.miss),tag:r&&r.owner!=null&&G.countries[r.owner]?G.countries[r.owner].tag:null,d:out.data&&out.data.lo!=null?out.data.lo:null});if(L.length>30)L.length=30;}}catch(e){}
+  return out;};}
+
+// 8. a joint strike you lead: the report counts everyone's troops, so say that it is the whole force
+if(typeof finalizeBattle==='function'){const _fb219=finalizeBattle;finalizeBattle=function(c,f,r,defC,R,retreated){const n0=(G.battles||[]).length,b0=(G.battles||[])[0];const out=_fb219.apply(this,arguments);
+  try{const b=(G.battles||[])[0];if(b&&b!==b0&&f&&f.acs&&f.members&&f.members.length>1&&c&&c.id===G.you){const mine=f.members.find(m=>m.owner===c.id);
+    b.atkName='Your joint strike';b.why='Joint strike with '+(f.members.length-1)+' all'+(f.members.length===2?'y':'ies')+': the numbers are for the whole force'+(mine?', your part was '+full(mine.share||0)+' units':'')+'. '+(b.why||'');}}catch(e){}return out;};}
 
 
 // ==== EXPORTS (server-side) ====
