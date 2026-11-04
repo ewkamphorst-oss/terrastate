@@ -191,7 +191,7 @@ const PATHS=[
    gain:['+20% Research','+ Intel & Intrigue','+8% Bronze'],lose:['−3% Military output'],
    mult:{research:0.20,electronics:0.08},stab:0,milCut:0.03,
    blurb:'You win by knowing where the enemy is weak, not by brute force. Weaker armies, sharper eyes.'},
- {k:'fortress',n:'Fortress State',ic:'🛡',
+ {k:'fortress',n:'Walled Realm',ic:'🛡',
    gain:['+ Regional defense','+ Siege resistance','+ Stability'],lose:['−6% Economy','Slower armies'],
    mult:{money:-0.06,steel:-0.05},stab:5,fortify:true,fleetSlow:0.10,
    blurb:'Nearly unbreakable ground, a poor economy. Your neighbours route their wars around you.'},
@@ -1598,7 +1598,7 @@ function advice(c){const pj=projection(c),out=[];
   if(pj.net.money<0){const t=Math.max(0,Math.floor((c.res.money||0)/-pj.net.money));if(t<6)out.push({m:'Finance Minister',msg:`The treasury runs dry in ~${t} tick(s) (−${fmt(-pj.net.money,true)}/tick). Raise tax one step, set readiness to Standby, or sell surplus on the Market.`,go:'economy',qa:'money'});}
   if(c.stab<40)out.push({m:'Interior Minister',msg:`Stability is low (${Math.round(c.stab)}%). Lower taxes or fix a shortage.`,go:'economy',qa:'stab'});
   if(!(c.tech.length||(c.rq||[]).length)&&c.res.research>=3500)out.push({m:'Chief Scientist',msg:'Research points are idle, start a research project.',go:'research',qa:'research'});
-  if(c.cp>=cpCap()*0.8){const idleR=!(c.rq||[]).length&&(c.buildings||[]).some(b=>b.k==='lab');out.push({m:'Chief of Staff',msg:`${Math.floor(c.cp)}/${cpCap()} command points unused, every order (build, research, recruit, trade, attack) costs 1–3 CP; they refill +${cpRegen()}/tick and cap at ${cpCap()}, so a full bar is wasted turns. ${idleR?'Start a research project':'Queue a building or recruit'}.`,go:idleR?'research':'production'});}
+  if(c.cp>=cpCap()*0.8){const idleR=!(c.rq||[]).length&&(c.buildings||[]).some(b=>b.k==='lab');out.push({m:'Chief of Staff',msg:`${Math.floor(c.cp)}/${cpCap()} command points unused, every order costs command points (an attack more than a build); they refill +${cpRegen()}/tick and cap at ${cpCap()}, so a full bar is wasted turns. ${idleR?'Start a research project':'Queue a building or recruit'}.`,go:idleR?'research':'production'});}
   if(c.res.money>4e7&&c.buildings.length<4)out.push({m:'Minister of Economy',msg:'Large cash reserves, invest in buildings to grow.',go:'production'});
   if(c.clan==null)out.push({m:'Foreign Minister',msg:'Not in an alliance yet, join one for shared defense and war bonuses.',go:'clans'});
   return out.slice(0,3);}
@@ -1873,7 +1873,7 @@ function rankTitle(cid){const list=activeRanked();const idx=list.findIndex(x=>x.
   const young=!!(c&&c.isAI===false&&!fought&&(G.tick-(c._born||0))<40);
   const pct=(idx+1)/list.length;let title;
   if(young)title='Rising Tribe';
-  else if(idx===0)title='Hegemon';else if(pct<=.05)title='Imperator';else if(pct<=.15)title='Great Power';else if(pct<=.35)title='Major Power';else if(pct<=.6)title='Regional Power';else title='Rising Tribe';
+  else if(idx===0)title='Hegemon';else if(pct<=.05)title='Imperator';else if(pct<=.15)title='Great Power';else if(pct<=.35)title='Major Power';else if(pct<=.6)title='Provincial Power';else title='Rising Tribe';
   return {title,pos:idx+1,total:list.length};}
 function catRank(cid,cat){const list=G.countries.filter(x=>!x.retired&&regionsOf(x).length).map(x=>({id:x.id,v:scores(x)[cat]})).sort((a,b)=>b.v-a.v);return list.findIndex(x=>x.id===cid)+1;}
 // ---- VICTORY TYPES, every national path has its OWN way to top the season, not just conquest.
@@ -6721,7 +6721,7 @@ body.turnmode header.top .tspeed{margin-left:22px;padding-left:12px;border-left:
 function emblem(c){return `<span class="flagi" title="${esc((c&&c.name)||'')}">${flagSVG(c,22)}</span>`;}
 // Relationship-only colours (Planetarion-style): gold self, blue alliance,
 // green ally, red enemy, gray neutral.
-const RELCOL={self:'#e3b341',alliance:'#d9a441',ally:'#c98be0',enemy:'#d94b3a',neutral:'#8a7358',empty:'#5a4630'};
+const RELCOL={self:'#e3b341',alliance:'#4fa3c7',ally:'#c98be0',enemy:'#d94b3a',neutral:'#8a7358',empty:'#5a4630'};
 function relationTo(ownerId,hostiles){
   if(ownerId===G.you)return {k:'self',ring:RELCOL.self,w:3,label:'You'};
   if(ownerId==null)return {k:'empty',ring:RELCOL.empty,w:1,label:'Unclaimed'};
@@ -9832,8 +9832,8 @@ function wmTheaterColor(regs,mode,c){if(mode==='conflict'){const conf=areaBattle
   const conf=areaBattles(regs)+regs.filter(r=>regionHeat(r)>0).length;
   let ally=0,foe=0,n=0,host;try{host=hostileSet(c.id);}catch(e){host=new Set();}
   regs.forEach(r=>{if(r.owner==null)return;const o=G.countries[r.owner];if(!o||o.retired)return;n++;if(c.clan!=null&&o.clan===c.clan)ally++;else if(host.has(o.id))foe++;});
-  if(conf>0||(n&&foe>ally&&foe*2>=n))return '#d94b3a';
-  if(ally>0&&ally>=foe)return '#d9a441';
+  if(n&&foe>ally&&foe*2>=n)return '#d94b3a';
+  if(ally>0&&ally>=foe)return '#4fa3c7';
   return '#3c6e96';}
 // ---- fleet arcs ------------------------------------------------------------------------------------
 function wmArc(a,b){const dx=b.x-a.x,dy=b.y-a.y,d=Math.hypot(dx,dy)||1;const bul=Math.min(40,d*0.18);const mx=(a.x+b.x)/2-dy/d*bul,my=(a.y+b.y)/2+dx/d*bul;return {d:`M${a.x.toFixed(1)} ${a.y.toFixed(1)}Q${mx.toFixed(1)} ${my.toFixed(1)} ${b.x.toFixed(1)} ${b.y.toFixed(1)}`,mx:(a.x+2*mx+b.x)/4,my:(a.y+2*my+b.y)/4};}
@@ -10397,7 +10397,7 @@ function renderMapBelow(v,c,hostiles,incRegions){v.innerHTML='';
     <div class="rpanel" id="mapcard2" style="display:none"></div></div></details>`);
   v.appendChild(wrap);
   const modeHelp=mode==='conflict'?' <b style="color:var(--bad)">Conflict view</b>: redder = more fighting (🔥 live battles + recent engagements over the last '+CONFLICT_TTL+' ticks). Region tiles flag ⚠ under attack, 🩹 recovering, or a 🛡 defence estimate, spot soft targets and hot fronts.':mode==='economic'?' <b style="color:var(--gold)">Economic view</b>: brighter gold = more GDP. Province tiles show total output + the dominant alliance; region tiles show each nation\'s GDP, that\'s where the loot is.':' <b>Political view</b>: coloured by alliance & relationship, with the dominant alliance tag per province and an ownership bar (you / allies / enemies / neutral), spot blocs and enemy ground.';
-  if(mapView.level<2)v.appendChild(h(`<div class="muted small mt">Click a ${mapView.level===0?'theater':'region'} to zoom in, aggregated so it stays fast with thousands of players.${modeHelp}</div>`));
+  if(mapView.level<2)v.appendChild(h(`<div class="muted small mt">Click a ${mapView.level===0?'theater':'region'} to zoom in.${modeHelp}</div>`));
   else v.appendChild(h(`<div class="muted small mt">Tap a nation for stats + intel crumbs, then plan an attack.${modeHelp}</div>`));
 
   // Activity feed, your recent battles (jumpable) + recent world headlines
@@ -13266,7 +13266,7 @@ function p205After(S){try{if(!S)return;const me=G.countries[G.you];if(!me)return
   for(const id in S.fl){const s=S.fl[id],f=now[id],r=G.regions[s.t];if(!r)continue;const n2=f?fleetSize(f.units||{}):0;
     const bt=(G._p205t||[]).filter(x=>x.rid===r.id);const filed=fresh.some(b=>b.coord===r.coord);
     // 1. a battle where your force fought but no report was filed (stationed with an ally, joint strike under another leader)
-    if(bt.length&&!filed){const x=bt[bt.length-1];const def=s.intent==='garrison'||s.st==='garrison'||ally(x.defId);
+    if(bt.length&&!filed&&(s.st==='battle'||s.st==='garrison'||(f&&(f.status==='battle'||f.status==='garrison')))){const x=bt[bt.length-1];const def=s.intent==='garrison'||s.st==='garrison'||ally(x.defId);
       const lost=Math.max(0,s.n-n2);const held=!x.captured;
       G.battles.unshift({tick:G.tick,region:r.name,coord:r.coord,atkId:x.atkId,defId:x.defId,outcome:def?(held?'repelled':'captured'):(x.captured?'captured':'repelled'),ratio:(x.ratio||0).toFixed(2),atkP:x.atkP,defP:x.defP,
         why:def?(held?'The line held. Your stationed force fought with the defenders.':'The defence broke and the ground was taken.'):(x.captured?'The joint strike took the ground.':'The strike was beaten back.'),
@@ -13789,6 +13789,7 @@ function p217Reason(c,r,defC){
   return 'weak';}                                                   // a weaker neighbour, if the sum agrees
 function p217Need(c){const p=p217Pers(c);return p.risk>=65?1.25:p.risk<=30?1.45:1.32;}
 function p217Check(c,r,com){const defC=r.owner!=null?G.countries[r.owner]:null;const why=p217Reason(c,r,defC);if(!why)return {ok:false,why:'no reason'};
+  try{if(typeof p219Block==='function'&&p219Block(c,r))return {ok:false,why:'blocked'};}catch(e){}
   // everything of ours already on the way to this region counts too
   const A=Object.assign({},com);(c.fleets||[]).forEach(f=>{if(f&&f.target===r.id&&(f.status==='outbound'||f.status==='staged'||f.status==='battle'))for(const k in f.units||{})A[k]=(A[k]||0)+(f.units[k]||0);});
   let D={};try{D=defC?defenderPool(r,defC).units:garrisonUnits(r);}catch(e){D={};}
@@ -13840,7 +13841,7 @@ function p218IsPrize(r){try{return typeof prizeIds==='function'&&prizeIds().inde
 // every battle that ends: who took what from whom, and the defences that held where it mattered
 if(typeof finalizeBattle==='function'){const _fb218=finalizeBattle;finalizeBattle=function(c,f,r,defC,R,retreated){const before=r?r.owner:null;
   const cap=defC&&r?p218IsCap(defC,r):false;const out=_fb218.apply(this,arguments);
-  try{if(c&&r){const took=r.owner===c.id&&before!==c.id;const W=p218W();const A=c.name,D=defC?defC.name:null,RN=r.name;
+  try{if(c&&r&&!(defC&&defC.id===c.id)){const took=r.owner===c.id&&before!==c.id;const W=p218W();const A=c.name,D=defC?defC.name:null,RN=r.name;
     const human=(c.isAI===false)||(defC&&defC.isAI===false);const prize=p218IsPrize(r);const rev=f&&f._p217==='revenge';
     if(took){let s=4+(cap?4:0)+(prize?5:0)+(human?4:0)+(rev?2:0);let t;
       if(!D)t=W==='R'?A+' brings '+RN+' under its rule.':A+' takes the open ground of '+RN+'.';
@@ -13854,15 +13855,61 @@ if(typeof finalizeBattle==='function'){const _fb218=finalizeBattle;finalizeBattl
   return out;};}
 // at the end of the turn the paper is made: the biggest story on top, then four more
 const P218_SEEN=new WeakSet();
+function p218Twice(t){try{const words=t.match(/[A-Z][\w'&.-]+(?: [A-Z&][\w'&.-]+){1,4}/g)||[];const seen=new Set();for(const w of words){if(w.length<8)continue;if(seen.has(w))return true;seen.add(w);}return false;}catch(e){return false;}}
 function p218Make(){try{const b=G._p218b;const items=b?b.items.slice():[];const rns=items.map(x=>x.rn).filter(Boolean);const minT=G._paper?G._paper.tick-1:-1e9;
   (G.news||[]).slice(0,30).forEach(n=>{if(!n||!n.head||P218_SEEN.has(n)||n.tick<minT)return;P218_SEEN.add(n);const t=String(n.head).trim();
-    if(rns.some(r=>t.indexOf(r)>=0)||items.some(x=>x.t===t))return;items.push({s:n.cat==='war'?1.5:1,t,ids:[]});});
+    if(rns.some(r=>t.indexOf(r)>=0)||items.some(x=>x.t===t)||p218Twice(t))return;items.push({s:n.cat==='war'?1.5:1,t,ids:[]});});
   items.sort((a,b)=>b.s-a.s);const seen=new Set();const pick=[];let holds=0;for(const x of items){const k=x.t.slice(0,60);if(seen.has(k))continue;if(x.k==='h'&&!(x.ids||[]).some(i=>G.countries[i]&&G.countries[i].isAI===false)){if(holds>=1)continue;holds++;}seen.add(k);pick.push(x);if(pick.length>=5)break;}
   const W=p218W();const quiet=W==='R'?'A quiet day in the provinces.':W==='I'?'A quiet day along the front.':'A quiet turn across the world.';
   const P={tick:G.tick,head:pick.length?pick[0].t:quiet,hids:pick.length?pick[0].ids:[],items:pick.slice(1).map(x=>({t:x.t,ids:x.ids}))};
-  G._paper=P;const A=G._papers=G._papers||[];A.unshift(P);if(A.length>P218_KEEP)A.length=P218_KEEP;G._p218b=null;}catch(e){}}
+  G._paper=P;let A=G._papers=G._papers||[];if(A.length&&A[0].tick>G.tick)A=G._papers=[];A.unshift(P);if(A.length>P218_KEEP)A.length=P218_KEEP;G._p218b=null;}catch(e){}}
 function p218Paper(){return G._paper||null;}
 if(typeof runTick==='function'){const _rt218=runTick;runTick=function(){const out=_rt218.apply(this,arguments);try{p218Make();}catch(e){}return out;};}
+// silent fix: a later name pass (solo map names) could turn two different names into the same one, so two nations
+// showed with one name. After every turn any repeated name or tag among living nations gets a prefix or a letter.
+function p218Dedupe(){try{const seen=new Set(),tags=new Set();const P=['New','Free','Greater','Upper','Lower','Old','North','South'];
+  (G.countries||[]).filter(c=>c&&!c.retired).sort((a,b)=>((a.isAI===false?0:a._returning?1:2)-(b.isAI===false?0:b._returning?1:2))).forEach(c=>{let n=String(c.name||'');if(c.isAI!==false&&seen.has(n.toLowerCase())){for(const p of P){const m=(/^the /i.test(n)?n.slice(0,4)+p+' '+n.slice(4):p+' '+n).slice(0,40);if(!seen.has(m.toLowerCase())){c.name=m;n=m;break;}}}seen.add(n.toLowerCase());
+    let t=String(c.tag||'').toUpperCase();if(t&&c.isAI!==false&&tags.has(t)){const base=t.replace(/[^A-Z]/g,'').slice(0,3)||'NAT';const AL='ABCDEFGHJKLMNPQRSTUVWXYZ';for(let i=0;i<AL.length*AL.length;i++){const x=(base+AL[i%AL.length]+(i>=AL.length?AL[Math.floor(i/AL.length)%AL.length]:'')).slice(0,5);if(!tags.has(x)){c.tag=x;t=x;break;}}}if(t)tags.add(t);});}catch(e){}}
+if(typeof runTick==='function'){const _rt218d=runTick;runTick=function(){const out=_rt218d.apply(this,arguments);try{p218Dedupe();}catch(e){}return out;};}
+
+/*p219*/
+// p219 (18.1) fixes from the blind playtest of 4 November.
+// 1. An army that stays in battle at a region that is already its own, or its alliance's, no longer fights on there.
+//    That happened when a joint strike or another army of the same nation took the region first: the army then fought
+//    its own side (reports and the paper said "X attacked X") and could lose units for nothing. It now marches home.
+// a joint strike carries everyone's units in one army: send each member's own share home, as a normal battle end does
+function p219SplitHome(f){const startByType={};f.members.forEach(m=>{const cp=m.comp||{};for(const k in cp)startByType[k]=(startByType[k]||0)+(cp[k]||0);});
+  const tot=f.members.reduce((s,m)=>s+(m.share||0),0)||1;
+  f.members.forEach(m=>{const ow=G.countries[m.owner];if(!ow)return;const surv={};const cp=m.comp||null;
+    for(const k in f.units){const startK=startByType[k]||0;if(cp&&startK>0)surv[k]=Math.floor((f.units[k]||0)*((cp[k]||0)/startK));else surv[k]=Math.floor((f.units[k]||0)*((m.share||0)/tot));}
+    (ow.fleets=ow.fleets||[]).push({id:G._fid++,owner:m.owner,home:m.home,target:f.target,units:surv,travel:m.travel,rEta:G.tick+(m.travel||2),status:'returning'});});
+  f.units={};f.status='done';}
+if(typeof advanceBattle==='function'){const _ab219=advanceBattle;advanceBattle=function(c,f){try{const r=_rgId(f.target);
+    if(r&&c&&r.owner!=null){const o=G.countries[r.owner];if(o&&(o.id===c.id||(c.clan!=null&&o.clan===c.clan&&!o.retired))){
+      if(f.acs&&f.members&&f.members.length){p219SplitHome(f);}else{f.status='returning';f.rEta=G.tick+Math.max(1,f.travel||1);}
+      if(c.isAI===false&&typeof sitrep==='function')sitrep(c,'fleet','↩ '+r.name+' is already '+(o.id===c.id?'yours':'held by your alliance')+'. Your '+full(fleetSize(f.units||{}))+' units march home.',{coord:r.coord,go:'fleets'});
+      return;}}}catch(e){}
+  return _ab219.apply(this,arguments);};}
+// 2. Phase goals said "Finish 3 more research projects 1 / 3": the count already shows how far you are.
+if(typeof phaseGoals==='function'){const _pg219=phaseGoals;phaseGoals=function(){const o=_pg219.apply(this,arguments);try{for(const k in o){if(o[k]&&typeof o[k].t==='string')o[k].t=o[k].t.replace(/ \d+ more /,' ');}}catch(e){}return o;};}
+// 3. The energy homeland said "Sparse population" next to the most populous region on the list.
+try{if(typeof ARCH!=='undefined'&&ARCH.energy&&ARCH.energy.d)ARCH.energy.d=ARCH.energy.d.replace(/Sparse population, little industry\./,'Little industry.');}catch(e){}
+// 4. the planner said "Capture, even in the worst case" while the capture was blocked anyway: low morale, a shield, beginner
+//    protection or a last-region emergency shield. The battle is still fought, but the flag does not change. Now it says so.
+function p219Block(c,r){try{if(!c||!r)return '';if(typeof moraleOf==='function'&&moraleOf(c)<=0.3)return 'No capture now: your army\'s morale is too low. Rest a few turns first.';
+  const d=r.owner!=null?G.countries[r.owner]:null;if(!d||d.id===c.id)return '';
+  if(!r.nexus&&typeof shieldActive==='function'&&shieldActive(d))return 'No capture now: their shield is up.';
+  if(typeof newbieProtected==='function'&&newbieProtected(d))return 'No capture now: beginner protection.';
+  if((d._adminProtect||0)>G.tick)return 'No capture now: this region is protected.';
+  if(typeof regionsOf==='function'&&regionsOf(d).length<=1&&(d._capShieldUntil||0)>G.tick){const st=(G.season&&G.season.startTick)||0;return 'No capture until turn '+(d._capShieldUntil-st)+': their last region has an emergency shield.';}
+  return '';}catch(e){return '';}}
+// 5. the Army tile counted only your own armies: units in a joint strike were missing from "out"
+function p219Out(c){let n=0;try{(c.fleets||[]).forEach(f=>{n+=fleetSize(f.units||{});});
+  (G.acs||[]).forEach(op=>{(op.fleets||[]).forEach(f=>{if(f&&f.owner===c.id)n+=fleetSize(f.units||{});});});
+  (G.countries||[]).forEach(o=>{if(!o||o.id===c.id)return;(o.fleets||[]).forEach(f=>{if(!f||!f.acs||!f.members)return;const m=f.members.find(x=>x.owner===c.id);if(!m)return;
+    const tot=f.members.reduce((s,x)=>s+(x.share||0),0)||1;n+=Math.round(fleetSize(f.units||{})*(m.share||0)/tot);});});}catch(e){}return n;}
+// 6. a rival who joined your own alliance is no longer shown as your rival
+if(typeof rivalOf==='function'){const _ro219=rivalOf;rivalOf=function(){const r=_ro219.apply(this,arguments);try{const me=G.countries[G.you];if(r&&me&&me.clan!=null&&r.clan===me.clan)return null;}catch(e){}return r;};}
 
 
 // ==== EXPORTS (server-side) ====
