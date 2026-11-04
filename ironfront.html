@@ -1125,8 +1125,8 @@ const TECH=[
  {k:'mil_quantum',n:'Codebreaking',cat:'Military',d:'Unlocks Master Spies. +6% def, stronger covert ops.',cost:{research:20e3,money:24e6},ticks:6,req:['mil_advanced'],bonus:{def:.06}},
  // v3.13.4 MILITARY DOCTRINE SPLIT (Tier 4): a permanent, mutually-exclusive fork that breaks the "everyone ends with the same
  // army" endgame. You must scout to learn which one your enemy took, and counter it. (excludes = you can never take the other.)
- {k:'mil_asymmetric',n:'Partisan Doctrine',cat:'Military',d:'Raiders & scouts: +2 recon, −5% def. Locks Heavy Armor.',cost:{research:18e3,money:20e6},ticks:6,req:['mil_advanced'],excludes:['mil_juggernaut'],bonus:{def:-.05,recon:2}},
- {k:'mil_juggernaut',n:'Heavy Armor Doctrine',cat:'Military',d:'Heavy: +10% def, +5% atk, −15% logi. Locks Partisan.',cost:{research:18e3,money:20e6},ticks:6,req:['mil_advanced'],excludes:['mil_asymmetric'],bonus:{def:.10,atk:.05,logi:-.15}},
+ {k:'mil_asymmetric',n:'Partisan Doctrine',cat:'Military',d:'Raiders & scouts: +2 recon, −5% def. Locks Heavy Armour.',cost:{research:18e3,money:20e6},ticks:6,req:['mil_advanced'],excludes:['mil_juggernaut'],bonus:{def:-.05,recon:2}},
+ {k:'mil_juggernaut',n:'Heavy Armour Doctrine',cat:'Military',d:'Heavy: +10% def, +5% atk, −15% logi. Locks Partisan.',cost:{research:18e3,money:20e6},ticks:6,req:['mil_advanced'],excludes:['mil_asymmetric'],bonus:{def:.10,atk:.05,logi:-.15}},
  // v3.18 SIDE-TECHS (Batch C): a mutually-exclusive economic fork, a one-way identity choice like the doctrines, each with a real downside.
  {k:'black_market',n:'Smuggling Networks',cat:'Economy',d:'+15% money, +8% influence. Weaker counter-espionage. Locks Allied Research Sharing.',cost:{research:9e3,money:14e6},ticks:5,req:['advman'],excludes:['open_science'],bonus:{mult:{money:.15,influence:.08}}},
  {k:'open_science',n:'Allied Research Sharing',cat:'Economy',d:'+20% research, but −5% attack & defence, secrets leak. Locks Smuggling.',cost:{research:9e3,money:14e6},ticks:5,req:['advman'],excludes:['black_market'],bonus:{mult:{research:.20},atk:-.05,def:-.05}}
@@ -8344,7 +8344,7 @@ const MANUAL={
     <h3>Alliances &amp; diplomacy</h3>
     <p>Diplomacy is waged between <b>alliances</b>, not lone nations. An alliance leader can <b>declare war</b> for a +12% attack bonus, launch joint <b>ACS</b> strikes where multiple armies land simultaneously as one combined force, and run <b>alliance polls</b> so officers vote on key decisions. Alliances also compete in <b>World Projects</b>, crisis events where pledging resources earns renown and rich rewards for the leading alliance.</p>
     <h3>How to win</h3>
-    <p>Three <b>Capital Sectors</b> are spread across the world. Capture one, build the <b>GHQ Bunker</b>, and hold it for <code>${NEXUS_HOLD}</code> ticks to secure it, control <code>${typeof AXIS_WIN_COUNT!=='undefined'?AXIS_WIN_COUNT:2}</code> of the <code>${typeof NEXUS_COUNT!=='undefined'?NEXUS_COUNT:3}</code> Capital Sectors (alone or shared with allies), the Axis of Control, and you win. Building a GHQ Bunker takes <code>${CC_BUILD_TICKS}</code> ticks (lose the sector meanwhile and the works are torn down, no refund) and the whole world is alerted the moment it starts. Each Capital Sector is held in the open: it belongs to no front (theater-mates may attack it too), the Flak Command never covers it, and the hold counter pauses while your shield is up. If nobody manages it, the season runs an outer clock of <code>${SEASON_TICKS}</code> ticks (${Math.round(SEASON_TICKS/168)} weeks at one tick per hour) and the nation with the highest <b>overall score</b> wins. Then the world resets so everyone starts equal.</p><p><b>New here?</b> You are under <b>beginner protection</b> for your first ${NEWBIE_PROTECT} ticks, your regions can't be captured, but launching an attack ends it early. <b>Also permanent this season:</b> your <b>National Path</b> (Industrial · Green · Scientific · Fortress · Trade) is a one-way choice made in R&amp;D, your late-game <b>military doctrine</b> (Partisan raiders vs Heavy Armor heavy armour, unlocked after Blitzkrieg Doctrine) is a second one-way choice, and every region has <b>10 Development Points</b> of building footprint, so no region can hold everything. The season runs through five phases (Foundation → Expansion → Specialization → World Conflict → Finale), each with its own bonus, the current phase is always shown in the top bar.</p>
+    <p>Three <b>Capital Sectors</b> are spread across the world. Capture one, build the <b>GHQ Bunker</b>, and hold it for <code>${NEXUS_HOLD}</code> ticks to secure it, control <code>${typeof AXIS_WIN_COUNT!=='undefined'?AXIS_WIN_COUNT:2}</code> of the <code>${typeof NEXUS_COUNT!=='undefined'?NEXUS_COUNT:3}</code> Capital Sectors (alone or shared with allies), the Axis of Control, and you win. Building a GHQ Bunker takes <code>${CC_BUILD_TICKS}</code> ticks (lose the sector meanwhile and the works are torn down, no refund) and the whole world is alerted the moment it starts. Each Capital Sector is held in the open: it belongs to no front (theater-mates may attack it too), the Flak Command never covers it, and the hold counter pauses while your shield is up. If nobody manages it, the season runs an outer clock of <code>${SEASON_TICKS}</code> ticks (${Math.round(SEASON_TICKS/168)} weeks at one tick per hour) and the nation with the highest <b>overall score</b> wins. Then the world resets so everyone starts equal.</p><p><b>New here?</b> You are under <b>beginner protection</b> for your first ${NEWBIE_PROTECT} ticks, your regions can't be captured, but launching an attack ends it early. <b>Also permanent this season:</b> your <b>National Path</b> (Industrial · Green · Scientific · Fortress · Trade) is a one-way choice made in R&amp;D, your late-game <b>military doctrine</b> (Partisan raiders vs Heavy Armour heavy armour, unlocked after Blitzkrieg Doctrine) is a second one-way choice, and every region has <b>10 Development Points</b> of building footprint, so no region can hold everything. The season runs through five phases (Foundation → Expansion → Specialization → World Conflict → Finale), each with its own bonus, the current phase is always shown in the top bar.</p>
     <h3>Beginner tips</h3>
     <ul>
       <li>Don't over-expand early, overextension hurts stability and upkeep.</li>
@@ -8389,7 +8389,7 @@ const MANUAL={
     <p>After <b>Blitzkrieg Doctrine</b> you commit, once and for the whole season, to one of two military doctrines. You cannot take both, so it shapes your late game and your alliance's composition:</p>
     <ul>
       <li><b>Partisan</b>, cheap <b>Partisan Raiders</b> that shred heavy armour, stealth recon, and the Reconnaissance Wing that makes a region deadly to attack without flak defence. Slightly weaker on straight defence. The guerrilla/tech road.</li>
-      <li><b>Heavy Armor</b>, the heavy <b>Titan Mech</b>, mobile flak defence, and +defence/+attack, at the cost of −15% logistics (rebuild it with Forward Supply Depots). The overwhelming-force road.</li>
+      <li><b>Heavy Armour</b>, the heavy <b>Titan Mech</b>, mobile flak defence, and +defence/+attack, at the cost of −15% logistics (rebuild it with Forward Supply Depots). The overwhelming-force road.</li>
     </ul>
     <p>You don't need to decide in your first 20 ticks, but knowing it's coming helps: raiders hard-counter an unscreened tank ball, and flak defence hard-counters raiders, so scouting what your enemies are teching is what wins the late game. Detail in the <b>Combat &amp; Formulae</b> tab.</p>`,
   combat:`
@@ -8444,10 +8444,10 @@ const MANUAL={
     <p>After <b>Blitzkrieg Doctrine</b> you commit permanently to one of two doctrines. They add their own units to the rock-paper-scissors, and their tech bonuses now apply in the <b>real</b> battle (attack/defence, and logistics), not just the on-screen estimate:</p>
     <table><thead><tr><th>Doctrine unit</th><th>hard-counters…</th><th>…but dies to</th></tr></thead><tbody>
       <tr><td><b>Partisan Raiders</b> (Partisan, air)</td><td>an unscreened Titan / tank ball</td><td>Flak Defence &amp; Flak</td></tr>
-      <tr><td><b>Titan Mech</b> (Heavy Armor, armor)</td><td>plain tanks &amp; infantry, holds ground</td><td>Partisan Raiders with no AA cover</td></tr>
-      <tr><td><b>Mobile Shield</b> (Heavy Armor, air-def)</td><td>screens your armour vs raiders/air</td><td>artillery &amp; ground once air is clear</td></tr>
+      <tr><td><b>Titan Mech</b> (Heavy Armour, armor)</td><td>plain tanks &amp; infantry, holds ground</td><td>Partisan Raiders with no AA cover</td></tr>
+      <tr><td><b>Mobile Shield</b> (Heavy Armour, air-def)</td><td>screens your armour vs raiders/air</td><td>artillery &amp; ground once air is clear</td></tr>
     </tbody></table>
-    <p>The lesson: <b>never field naked heavy armour</b>, a ~30–40% flak defence screen flips a raider raid from a rout into a win. Heavy Armor trades logistics for raw power (plant <b>Forward Supply Depots</b> to win it back); Partisan trades a little defence for cheap, army-shredding raiders and better recon. Scouting which doctrine your enemy took is half the battle.</p>
+    <p>The lesson: <b>never field naked heavy armour</b>, a ~30–40% flak defence screen flips a raider raid from a rout into a win. Heavy Armour trades logistics for raw power (plant <b>Forward Supply Depots</b> to win it back); Partisan trades a little defence for cheap, army-shredding raiders and better recon. Scouting which doctrine your enemy took is half the battle.</p>
     <h3>3-tick battles &amp; retreat</h3>
     <p>Battles resolve over up to <b>3 combat ticks</b>. Losses are staged (roughly 10–15% in Tick 1, more later), so you can <b>retreat</b> after Tick 1 and keep ~85–90% of your force, feints are viable. Fast allied units can <b>reinforce</b> a defender mid-battle, so defence is a team sport.</p>
     <h3>Losses</h3>
@@ -8604,7 +8604,7 @@ const HELP=[
   warn:'A rations or coal deficit is the fastest way to lose a game — the Priority Center warns you in time.',
   see:['help-research','help-buildings'],anchor:'production',cta:'Open Production',anchor2:'market',cta2:'Buy on Market'},
  {id:'help-research',sec:'B',ic:'🔬',title:'Research, Paths & Doctrines',short:'Tech unlocks civilian and military capability; a doctrine shapes your army.',
-  bullets:['The military tree unlocks heavier unit tiers step by step.','A doctrine (Partisan vs Heavy Armor) tilts you toward speed/recon or mass/armour.','Repeatable techs give a permanent late-game resource sink.','Pick a doctrine once you know how you like to fight — it is a commitment.'],
+  bullets:['The military tree unlocks heavier unit tiers step by step.','A doctrine (Partisan vs Heavy Armour) tilts you toward speed/recon or mass/armour.','Repeatable techs give a permanent late-game resource sink.','Pick a doctrine once you know how you like to fight — it is a commitment.'],
   warn:'Your doctrine is a lasting choice. Read help-army before you lock it in.',
   see:['help-army','help-techs'],anchor:'research'},
  {id:'help-army',sec:'B',ic:'⚔',title:'Army, armies & battles',short:'Combat is rock-paper-scissors resolved over up to three ticks.',
@@ -10317,14 +10317,14 @@ VIEWS.research=v=>{const c=you();
   if(c.tech.includes('mil_advanced')&&!_docChosen){
     const DOC2=[
       {k:'mil_asymmetric',ic:'🐝',n:'Partisan',pros:['Unlocks Partisan Raiders, Night Raiders, Reconnaissance Wing','+2 recon — see more, hit blind enemies','Raiders shred heavy armour'],cons:['−5% defence','Weak to enemy flak defence (Flak / Interceptors)']},
-      {k:'mil_juggernaut',ic:'🛡',n:'Heavy Armor',pros:['Unlocks Heavy Tank Battalions, Mobile Shields, Forward Supply Depot','+10% defence, +5% attack','The iron wall — hard to break'],cons:['−15% logistics (build the Forward Supply Depot)','Slow, countered by raider swarms']},
+      {k:'mil_juggernaut',ic:'🛡',n:'Heavy Armour',pros:['Unlocks Heavy Tank Battalions, Mobile Shields, Forward Supply Depot','+10% defence, +5% attack','The iron wall — hard to break'],cons:['−15% logistics (build the Forward Supply Depot)','Slow, countered by raider swarms']},
     ];
     const _t0=TECH.find(x=>x.k==='mil_asymmetric')||{cost:{research:0,money:0},ticks:0};
     const dcards=DOC2.map(d=>`<div class="card compact"><div style="font-size:19px;font-weight:800">${d.ic} ${d.n}</div><div class="small mt">${d.pros.map(x=>`<div style="color:var(--ok)">✓ ${esc(x)}</div>`).join('')}${d.cons.map(x=>`<div style="color:var(--danger)">✗ ${esc(x)}</div>`).join('')}</div><div class="muted small mt" style="border-top:1px solid var(--border);padding-top:6px">🔬${fmt(_t0.cost.research)} · £${fmt(_t0.cost.money)} · ${_t0.ticks} ticks · locks the other forever</div><button class="btn sm mt" data-doc="${d.k}" style="width:100%">Commit to ${d.n} →</button></div>`).join('');
     const dcard=h(`<div class="card mb priority bad" style="background:linear-gradient(180deg,rgba(184,72,58,.06),transparent)"><h3>⚔ Choose your doctrine <span class="muted small" style="text-transform:none;letter-spacing:0">a permanent, one-way fork</span></h3><div class="muted small mb">Blitzkrieg Doctrine is done. Pick ONE Tier-4 doctrine: it unlocks that branch and <b>permanently locks the other this season</b>. Scout your enemy to learn theirs, and counter it.</div><div class="grid g2">${dcards}</div></div>`);
     v.appendChild(dcard);
     try{tipOnce(c,'doctrine','Doctrine unlocked. This is a one-way fork — read the trade-offs before you commit.','help-research');}catch(e){}
-    dcard.querySelectorAll('button[data-doc]').forEach(b=>b.onclick=()=>{const dk=b.dataset.doc;const nm=dk==='mil_asymmetric'?'Partisan':'Heavy Armor';uiConfirm('Commit to the '+nm+' doctrine?\n\nThis is PERMANENT this season and locks the other doctrine forever.',async ()=>{const r=await cmdResearch(c,dk);if(r.ok){sfx('research');toast('⚔ Doctrine committed: '+nm);go('research');drawTop();save();}else toast(r.error,'bad');},'Commit '+nm);});
+    dcard.querySelectorAll('button[data-doc]').forEach(b=>b.onclick=()=>{const dk=b.dataset.doc;const nm=dk==='mil_asymmetric'?'Partisan':'Heavy Armour';uiConfirm('Commit to the '+nm+' doctrine?\n\nThis is PERMANENT this season and locks the other doctrine forever.',async ()=>{const r=await cmdResearch(c,dk);if(r.ok){sfx('research');toast('⚔ Doctrine committed: '+nm);go('research');drawTop();save();}else toast(r.error,'bad');},'Commit '+nm);});
   }
   // Real impact of a tech, valued against YOUR current nation, turns "+8% attack" into "108k → 116k".
   const impactOf=t=>{const b=t.bonus||{},out=[];const atk=power(c,'atk'),def=power(c,'def');
@@ -10414,7 +10414,7 @@ VIEWS.military=v=>{const c=you();
   // Doctrine presets, one tap fills the queue toward an army identity (only unlocked units).
   const DOCTRINES=[
     {n:'⚡ Rapid Response',d:'Infantry + recon, mobile',mix:{infantry:400,spec_ops:60,militia:200}},
-    {n:'🛡 Heavy Armor',d:'Tanks + artillery',mix:{tank:120,artillery:60,infantry:150}},
+    {n:'🛡 Heavy Armour',d:'Tanks + artillery',mix:{tank:120,artillery:60,infantry:150}},
     {n:'🕵 Covert State',d:'Covert + commando',mix:{cyber_cell:120,spec_ops:80,quantum_hacker:20}},
     {n:'🏰 Fortress',d:'Home Guard + Flak + artillery',mix:{militia:400,sam:80,artillery:60}}];
   // Hard bridge from "0 units home": if you have almost no army, say so plainly and give a one-tap defensive line +
@@ -10858,9 +10858,9 @@ VIEWS.fleets=v=>{const c=you();const inc=incomingTo(c.id);const cl0=clanOf(c);
 
   // ---- COVERT OPS embedded in Around you: your eyes and dirty tricks on the neighbourhood ----
   if(TAB==='offence'){v.appendChild(h(`<div class="ptitle" style="margin-top:14px;border-top:1px solid var(--border);padding-top:12px"><h2 style="font-size:19px">🕵 Covert Ops</h2><span class="h">Your spies: see what is hidden, and hit them where it hurts. Each mission shows its cost and what it needs.</span></div>`));try{covertRender(v,true);}catch(e){console.error('covert embed',e);}}
-  // Sandbox Combat Simulator, test the 5-phase math with virtual armies, no Excel needed.
+  // Sandbox Combat Simulator, test a 3-turn battle with virtual armies, no Excel needed.
   const myArmy={};UNIT.forEach(u=>myArmy[u.k]=c.units[u.k]||0);
-  if(TAB==='offence')v.appendChild(h(`<div class="card"><details class="rawmath" style="background:transparent;border:0;padding:0"><summary style="font-size:14px;color:var(--text)">🧪 Combat Simulator, test the 5-phase math (sandbox)</summary>
+  if(TAB==='offence')v.appendChild(h(`<div class="card"><details class="rawmath" style="background:transparent;border:0;padding:0"><summary style="font-size:14px;color:var(--text)">🧪 Combat Simulator, test a 3-turn battle (sandbox)</summary>
     <div class="muted small mt mb">Pit two virtual armies and read the full phase breakdown & losses. Nothing here affects your game, it's a calculator built into the game.</div>
     <div class="grid g2">
       <div><div class="mono small mb" style="color:var(--accent2)">ATTACKER</div>${simUnitInputs('a',myArmy)}<div class="row mt" style="gap:8px"><label class="small" style="margin:0"><input type="checkbox" data-sc="a:armor" style="width:auto"> Modern Armor</label><label class="small" style="margin:0"><input type="checkbox" data-sc="a:supply" style="width:auto"> Supply Chain</label></div></div>
@@ -13501,7 +13501,7 @@ F20T.add([
  [/\bTechno-State\b/g,'Directorate'],[/\bConsortium\b/g,'Trade Republic'],[/\bSyndicate\b/g,'Customs Union'],[/\bHoldings\b/g,'Free Port'],[/\bEnterprise\b/g,'Mercantile League'],[/\bEmirate\b/g,'Principality'],
  [/\bcovert EMP\b/g,'covert sabotage'],[/\bEMP\b/g,'sabotage'],
  [/\bA hacked system hardens for a while\b/g,'A broken spy ring stays wary for a while'],[/\ba hacked system is then hardened for a while\b/g,'a broken spy ring then stays wary for a while'],
-[/\bEarth Command\b/g,'Capital Command'],[/\bTitan Mechs\b/g,'Heavy Tank Battalions'],[/\bTitan Mech\b/g,'Heavy Tank Battalion'],[/\bTitan \/ tank ball\b/g,'heavy tank ball'],[/\bHeavy Armor heavy armour\b/g,'Heavy Armor'],
+[/\bEarth Command\b/g,'Capital Command'],[/\bTitan Mechs\b/g,'Heavy Tank Battalions'],[/\bTitan Mech\b/g,'Heavy Tank Battalion'],[/\bTitan \/ tank ball\b/g,'heavy tank ball'],[/\bHeavy Armour heavy armour\b/g,'Heavy Armour'],
  [/\bTitans and shields\. The swarm is closed to you\./g,'Heavy tanks and smoke screens. The raiders are closed to you.'],
  [/\bthe chores the computer nations do\b/g,'the chores the AI nations do'],[/\bthe computer never cheats\b/g,'the AI rivals never cheat'],[/\banother computer\b/g,'another device'],
  [/\bNew power capacity online\b/g,'New power stations come on line'],[/\bTechnological Lead\b/g,'Technical Lead'],[/\btechnological\b/g,'technical'],[/\bTechnological\b/g,'Technical']
@@ -13885,7 +13885,7 @@ function vetsHTML(me){var V=vets(me);var rows=V.list.slice().sort(function(a,b){
    +'<div class="row between wrap" style="gap:8px"><div><span class="mono small" style="color:#d4b451;letter-spacing:1px">VETERAN DIVISIONS</span></div><span class="muted small">up to '+IFX.MAXV+' at once</span></div>'
    +'<div class="small" style="margin-top:4px">Every attack army is led by a division. It earns a star for surviving and winning battles: <b>+4% attack per star</b>, up to <b>+12%</b>. If its army is wiped out, the division is gone for good.</div>'
    +intro+rows+'</div>';}
-function nearNote(me){var cl=cal(),wx=cl.wx;return '<div class="small muted" data-ifx="nearnote" style="margin:0 0 12px;padding:8px 12px;border:1px solid var(--border);border-radius:8px;line-height:1.55">\uD83D\uDE9A <b>Supply</b>: an attack in another sector of your front costs <b>-5%</b>, on another front <b>-15%</b>. Supply Trucks (10% of the army) remove it, and a captured region puts its whole sector in supply. Weather now: '+wx.ic+' '+esc(wx.n)+', see Home.</div>';}
+function nearNote(me){var cl=cal(),wx=cl.wx;return '<div class="small muted" data-ifx="nearnote" style="margin:0 0 12px;padding:8px 12px;border:1px solid var(--border);border-radius:8px;line-height:1.55">\uD83D\uDE9A <b>Supply</b>: an attack in another sector of your front costs <b>-5%</b>, on another front <b>-15%</b>. Supply Trucks (10% of the army) remove it, and a captured region puts its whole sector in supply. Weather now: '+wx.ic+' '+esc(wx.n)+'.</div>';}
 // each target in the Nearest targets table shows what supply would cost before any trucks
 function tagTargets(v){var card=[].slice.call(v.children).filter(function(e){return /^nearest targets/i.test((e.textContent||'').trim());})[0];if(!card)return;
   var me=you(),byC=null;[].slice.call(card.querySelectorAll('tbody tr')).forEach(function(tr){if(tr.querySelector('.ifxsup'))return;
@@ -15271,12 +15271,21 @@ function p219Block(c,r){try{if(!c||!r)return '';if(typeof moraleOf==='function'&
   if(typeof regionsOf==='function'&&regionsOf(d).length<=1&&(d._capShieldUntil||0)>G.tick){const st=(G.season&&G.season.startTick)||0;return 'No capture until turn '+(d._capShieldUntil-st)+': their last region has an emergency shield.';}
   return '';}catch(e){return '';}}
 // 5. the Army tile counted only your own armies: units in a joint strike were missing from "out"
-function p219Out(c){let n=0;try{(c.fleets||[]).forEach(f=>{n+=fleetSize(f.units||{});});
+function p219Out(c){let n=0;try{(c.fleets||[]).forEach(f=>{if(f&&f.acs&&f.members&&f.members.length){const m=f.members.find(x=>x.owner===c.id);const tot=f.members.reduce((s,x)=>s+(x.share||0),0)||1;n+=m?Math.round(fleetSize(f.units||{})*(m.share||0)/tot):0;return;}n+=fleetSize(f.units||{});});
   (G.acs||[]).forEach(op=>{(op.fleets||[]).forEach(f=>{if(f&&f.owner===c.id)n+=fleetSize(f.units||{});});});
   (G.countries||[]).forEach(o=>{if(!o||o.id===c.id)return;(o.fleets||[]).forEach(f=>{if(!f||!f.acs||!f.members)return;const m=f.members.find(x=>x.owner===c.id);if(!m)return;
     const tot=f.members.reduce((s,x)=>s+(x.share||0),0)||1;n+=Math.round(fleetSize(f.units||{})*(m.share||0)/tot);});});}catch(e){}return n;}
 // 6. a rival who joined your own alliance is no longer shown as your rival
 if(typeof rivalOf==='function'){const _ro219=rivalOf;rivalOf=function(){const r=_ro219.apply(this,arguments);try{const me=G.countries[G.you];if(r&&me&&me.clan!=null&&r.clan===me.clan)return null;}catch(e){}return r;};}
+// 7. every scouting order is kept, also the ones that bounced, so War → Scout can list them
+if(typeof cmdScoutRegion==='function'){const _sc219=cmdScoutRegion;cmdScoutRegion=function(c,rid){const out=_sc219.apply(this,arguments);
+  try{if(c&&out&&out.ok){const r=_rgId(rid);const L=c._scoutLog=c._scoutLog||[];L.unshift({t:G.tick,rid:+rid,ok:!(out.data&&out.data.miss),tag:r&&r.owner!=null&&G.countries[r.owner]?G.countries[r.owner].tag:null,d:out.data&&out.data.lo!=null?out.data.lo:null});if(L.length>30)L.length=30;}}catch(e){}
+  return out;};}
+
+// 8. a joint strike you lead: the report counts everyone's troops, so say that it is the whole force
+if(typeof finalizeBattle==='function'){const _fb219=finalizeBattle;finalizeBattle=function(c,f,r,defC,R,retreated){const n0=(G.battles||[]).length,b0=(G.battles||[])[0];const out=_fb219.apply(this,arguments);
+  try{const b=(G.battles||[])[0];if(b&&b!==b0&&f&&f.acs&&f.members&&f.members.length>1&&c&&c.id===G.you){const mine=f.members.find(m=>m.owner===c.id);
+    b.atkName='Your joint strike';b.why='Joint strike with '+(f.members.length-1)+' all'+(f.members.length===2?'y':'ies')+': the numbers are for the whole force'+(mine?', your part was '+full(mine.share||0)+' units':'')+'. '+(b.why||'');}}catch(e){}return out;};}
 
 // ---- BOOT ------------------------------------------------------------------
 // GitHub serves the brochure as index.html and this file as play.html.
@@ -19044,7 +19053,7 @@ function injectPathCaution(){
     box.className='card mb beginner-path-caution';
     box.style.cssText='border-left:3px solid var(--warn);padding:10px 12px';
     box.innerHTML='<div style="font-weight:700">⚠ National Path is permanent this season</div>'+
-      '<div class="small muted">Pick when you know your style. Unsure? Follow Directives first, or choose a balanced path. Doctrine locks (e.g. Heavy Armor vs Partisan) also cannot be undone.</div>';
+      '<div class="small muted">Pick when you know your style. Unsure? Follow Directives first, or choose a balanced path. Doctrine locks (e.g. Heavy Armour vs Partisan) also cannot be undone.</div>';
     const t=v.querySelector('.ptitle');
     if(t&&t.nextSibling)v.insertBefore(box,t.nextSibling);
     else v.insertBefore(box,v.firstChild);
@@ -20691,7 +20700,7 @@ try{if(typeof TRAIN_TASKS!=='undefined'){
     Object.defineProperty(dr,'d',{configurable:true,get(){const c=ME();const r=c&&p183First(c);return r?(r.name+' next to you is empty and lightly guarded. Send your army and take it.'):'Send your army to take empty land next to you.';}});
     dr.ok=c=>!!c._train.drill||regionsOf(c).length>1;}
   if(rs){rs.d='Pick any project in R&D. It makes your army or your economy stronger.';}
-  if(bd){bd.d='Pick any building in Production. It is ready in a few turns.';}
+  if(bd){bd.d='Pick any building in Build. It is ready in a few turns.';}
   if(ar){ar.t='Train troops';ar.d='More troops means bigger targets. Open Armed Forces and train a batch.';}
   if(et){et.t='End your turn';et.d='Press END TURN. Everything moves one step: your army marches, buildings grow.';
     et.ok=c=>(!!c._train.drill||regionsOf(c).length>1)&&G.tick>c._train.t0;}
@@ -22711,7 +22720,7 @@ if(typeof module!=='undefined'&&module.exports)module.exports=BANNER;
       const seen=new Set();rail.querySelectorAll('.ar-item').forEach(it=>{const k=(it.textContent||'').trim();if(seen.has(k))it.remove();else seen.add(k);});});}catch(e){}}
   // 3. the coordinate format, explained once where you type one
   function coordHelp(){try{const inp=document.querySelector('#view > .p199 .p199pick input');if(!inp)return;const box=inp.closest('.p199top');if(!box||box.querySelector('.p207co'))return;
-      const d=document.createElement('div');d.className='p207co';d.textContent='A coordinate has three numbers: theater, sector and region. Yours is the blue chip at the top of the screen.';
+      const d=document.createElement('div');d.className='p207co';d.textContent='A coordinate has three numbers, for example 1:2:5: the area, the part of it and the region. Tap a region on the map to see its coordinate.';
       (inp.closest('.p199pick')||inp).insertAdjacentElement('afterend',d);}catch(e){}}
   // 4. Field training sits right under the title (after an incoming-attack card), also on a phone
   function trainTop(){try{if(typeof view==='undefined'||view!=='dashboard')return;const v=document.getElementById('view');const tb=v&&v.querySelector(':scope > .trainbar');const t=v&&v.querySelector(':scope > .ptitle');if(!tb||!t)return;
@@ -23245,6 +23254,7 @@ if(typeof module!=='undefined'&&module.exports)module.exports=BANNER;
   .p218rd{font-family:IBM Plex Mono,monospace;font-size:12px;text-align:center;margin:8px 0;min-height:34px;color:var(--muted,#8a9bb4)}
   .p218end{text-align:center;font-size:22px;font-weight:800;margin:10px 0 4px;min-height:30px}
   .p218vs{display:flex;gap:16px;align-items:flex-start}@media (max-width:600px){.p218vs{gap:10px}.p218blk{width:9px;height:9px}}
+  #view > .p218empty{display:none!important}
   .p218rp.nomo .p218bar i,.p218rp.nomo .p218blk{transition:none}`;document.head.appendChild(st);
 
   // ---------------------------------------------------------------- 1. armies on the map
@@ -23340,7 +23350,10 @@ if(typeof module!=='undefined'&&module.exports)module.exports=BANNER;
   document.addEventListener('click',e=>{if(e.target.closest&&e.target.closest('[data-p218arch]')){e.preventDefault();p218Archive();}});
 
   // ---------------------------------------------------------------- 4. END TURN and the side menu are real buttons for keyboards and screen readers
-  function tidy(){try{document.querySelectorAll('#view .p18home').forEach(c=>{c.style.display=(c.innerText||'').trim().length<3?'none':'';});}catch(e){}}
+  // a card is empty when none of its text is shown; measured without un-hiding it, so it never blinks
+  function visText(el){let n=0;const w=document.createTreeWalker(el,NodeFilter.SHOW_TEXT);let t;while((t=w.nextNode())){const s=(t.nodeValue||'').trim();if(!s)continue;let p=t.parentElement,ok=true;
+      while(p&&p!==el){const cs=getComputedStyle(p);if(cs.display==='none'||cs.visibility==='hidden'){ok=false;break;}p=p.parentElement;}if(ok)n+=s.length;if(n>2)break;}return n;}
+  function tidy(){try{document.querySelectorAll('#view > .p18home, #view > .p186box').forEach(c=>{if(c.style.display==='none')c.style.display='';const empty=visText(c)<3;if(empty!==c.classList.contains('p218empty'))c.classList.toggle('p218empty',empty);});}catch(e){}}
   function a11y(){tidy();try{document.querySelectorAll('.tick.turnmode, .nav').forEach(el=>{if(el.getAttribute('role')!=='button'){el.setAttribute('role','button');el.setAttribute('tabindex','0');}
       if(el.classList.contains('nav'))el.setAttribute('aria-current',el.classList.contains('on')?'page':'false');});}catch(e){}}
   document.addEventListener('keydown',e=>{if(e.key!=='Enter'&&e.key!==' ')return;const t=e.target;if(t&&t.matches&&t.matches('.tick.turnmode[role=button], .nav[role=button]')){e.preventDefault();t.click();}});
@@ -23353,8 +23366,15 @@ if(typeof module!=='undefined'&&module.exports)module.exports=BANNER;
 <script>/*p219ui*/
 // p219ui (18.1) less noise and clearer screens, from the blind playtest of 4 November.
 (function(){
+  // no-op class changes still count as DOM changes and woke the screen observers again and again (Home was redrawn about
+  // eight times a second with nothing happening, which can show as blinking). Adding a class that is already there, or
+  // removing one that is not, now does nothing.
+  try{const TL=DOMTokenList.prototype,_add=TL.add,_rem=TL.remove,_tog=TL.toggle;
+    TL.add=function(...a){for(const x of a){if(!this.contains(x))return _add.apply(this,a);}};
+    TL.remove=function(...a){for(const x of a){if(this.contains(x))return _rem.apply(this,a);}};
+    TL.toggle=function(x,f){if(f!==undefined){const has=this.contains(x);if(!!f===has)return has;}return _tog.apply(this,arguments);};}catch(e){}
   const LS=k=>{try{return localStorage.getItem(k);}catch(e){return null;}};const LSset=(k,v)=>{try{localStorage.setItem(k,v);}catch(e){}};
-  const st=document.createElement('style');st.textContent=`.p219x{margin-left:auto;background:none;border:0;color:var(--muted,#8a9bb4);font-size:16px;cursor:pointer;padding:0 4px;line-height:1}.p219hide{display:none!important}#strip .p219full::after{content:'storage full';display:block;font-size:10px;color:var(--warn,#f6b62b)}`;document.head.appendChild(st);
+  const st=document.createElement('style');st.textContent=`.p219x{margin-left:auto;background:none;border:0;color:var(--muted,#8a9bb4);font-size:16px;cursor:pointer;padding:0 4px;line-height:1}.p219hide{display:none!important}.p219sr{display:flex;justify-content:space-between;gap:10px;align-items:flex-start;padding:8px 0;border-top:1px solid var(--border,#2a3850)}@media(max-width:600px){.p219sr{flex-direction:column}}#strip .p219full::after{content:'storage full';display:block;font-size:10px;color:var(--warn,#f6b62b)}`;document.head.appendChild(st);
   function dismissable(el,key){if(!el||el.querySelector('.p219x'))return;if(LS(key)){el.classList.add('p219hide');return;}const b=document.createElement('button');b.className='p219x';b.type='button';b.title='Hide';b.setAttribute('aria-label','Hide');b.textContent='✕';
     b.onclick=e=>{e.preventDefault();e.stopPropagation();LSset(key,'1');el.classList.add('p219hide');};if(getComputedStyle(el).position==='static')el.style.position='relative';
     if(getComputedStyle(el).display.indexOf('flex')>=0)el.appendChild(b);else{b.style.cssText='position:absolute;top:6px;right:8px';el.appendChild(b);}}
@@ -23362,12 +23382,22 @@ if(typeof module!=='undefined'&&module.exports)module.exports=BANNER;
     const s=more.querySelector('summary');if(s){const n=more.querySelectorAll(':scope > :not(summary)').length;s.innerHTML=s.innerHTML.replace(/\d+ more block(s)?/,n+' more block'+(n===1?'':'s'));}return true;}
   // the calculator keeps its own numbers: the screen's form memory put the old empty fields back over a scouting report
   try{if(typeof formRestore==='function'){const _fr=formRestore;formRestore=function(v){try{if(typeof view!=='undefined'&&view==='calc'){try{_formMem=null;}catch(e){}return;}}catch(e){}return _fr.apply(this,arguments);};}}catch(e){}
+  // the screen layers run straight after a redraw, before the browser paints: no flash of blocks that are about to be hidden
+  try{if(typeof go==='function'){const _go219=go;let inGo=false;go=function(){const out=_go219.apply(this,arguments);if(inGo)return out;inGo=true;
+      try{(window.__pLayers||[]).forEach(n=>{try{const f=window[n];if(typeof f==='function')f();}catch(e){}});Object.keys(window).forEach(k=>{if(/^p\d+Apply$/.test(k)&&typeof window[k]==='function'){try{window[k]();}catch(e){}}});}catch(e){}finally{inGo=false;}return out;};
+    try{window.go=go;}catch(e){}}}catch(e){}
   // Romaterra pays in denarii
   try{if(typeof F20T!=='undefined'&&F20T.add&&typeof staffWorld==='function'&&staffWorld()==='R')F20T.add([[/(\+\d+% )Money\b/g,'$1Denarii']]);}catch(e){}
-  function home(v){
+  // battle reports showed the world tick ("turn 156") while the counter shows the season turn ("34")
+  const _done=new WeakSet();
+  function fixTurns(root){try{const st=(G.season&&G.season.startTick)||0;if(!root||st<=0)return;const w=document.createTreeWalker(root,NodeFilter.SHOW_TEXT);let t;
+      while((t=w.nextNode())){if(_done.has(t))continue;const v=t.nodeValue||'';if(!/\b[Tt]urn #?\d+/.test(v))continue;
+        const nv=v.replace(/\b([Tt]urn #?)(\d+)/g,(m,a,b)=>{const n=+b;return (n>=st&&n<=G.tick+30)?a+(n-st):m;});_done.add(t);if(nv!==v){t.nodeValue=nv;_done.add(t);}}}catch(e){}}
+  function noOne(v){
     // "Who is coming, in detail (1)" around a panel that says no one is coming
     v.querySelectorAll('details').forEach(d=>{const s=d.querySelector('summary');if(!s||!/Who is coming, in detail/.test(s.textContent))return;const t=(d.innerText||'').replace(s.innerText,'');
-      if(/No one is coming/i.test(t)&&!/\d+\s*(inbound|incoming)|arriv|lands? in/i.test(t))d.classList.add('p219hide');});
+      if(/No one is coming/i.test(t)&&!/\d+\s*(inbound|incoming)|arriv|lands? in/i.test(t))d.classList.add('p219hide');});}
+  function home(v){
     // the last battle is already in "New battle reports" and in the paper
     if(v.querySelector('.p205home')){const l=v.querySelector(':scope > .p13last');if(l)l.classList.add('p219hide');}
     // the staff line: two things, the rest is one tap away on the Staff screen
@@ -23383,9 +23413,31 @@ if(typeof module!=='undefined'&&module.exports)module.exports=BANNER;
   function dip(v){const cards=[...v.querySelectorAll(':scope > .card')];const rivals=cards.find(c=>/HOW RIVALS SEE YOU/i.test((c.querySelector('h3,h4,.h,b,div')||c).textContent||''));if(rivals)intoMore(v,rivals);
     cards.forEach(c=>{const rows=[...c.querySelectorAll('button')].filter(b=>/declare war/i.test(b.textContent)).map(b=>b.closest('.row,tr,li,.p15g')||b.parentElement);if(rows.length<=4||c.dataset.p219)return;c.dataset.p219='1';
       rows.slice(3).forEach(r=>r.classList.add('p219hide'));const s=document.createElement('button');s.className='btn ghost sm';s.textContent='Show all '+rows.length;s.onclick=()=>{rows.forEach(r=>r.classList.remove('p219hide'));s.remove();};rows[2].after(s);});}
+  // War → Scout: every scouting report you made, the ones that worked and the ones that bounced
+  function scoutList(v){try{const c=you();if(!c)return;const L=(c._scoutLog||[]).filter(x=>x&&_rgId(x.rid));let box=v.querySelector(':scope > .p219scout');
+      const sig=L.length+'|'+(L[0]?L[0].t+':'+L[0].rid:'')+'|'+G.tick;if(box&&box.dataset.sig===sig)return;
+      const E=x=>(typeof esc==='function'?esc(String(x)):String(x));const ttl=typeof SCOUT_TTL!=='undefined'?SCOUT_TTL:12;const st=(G.season&&G.season.startTick)||0;
+      const rows=L.slice(0,20).map(x=>{const r=_rgId(x.rid);const age=G.tick-x.t;const it=typeof regionIntel==='function'?regionIntel(c,x.rid):null;
+        const live=x.ok&&it&&!it.miss&&it.tick===x.t&&age<=ttl;const own=r.owner!=null&&G.countries[r.owner]?G.countries[r.owner]:null;
+        const comp=live&&it.comp?Object.entries(it.comp).filter(([,n])=>n>0).sort((a,b)=>b[1]-a[1]).slice(0,3).map(([k,n])=>full(n)+' '+((UBYK[k]||{n:k}).n)).join(', '):'';
+        const res=!x.ok?'<span style="color:var(--bad,#f0625f)">Bounced off their radar: nothing learned</span>':live?'<span style="color:var(--good,#37d9a9)">Exact army seen</span>'+(x.d!=null?' · defence '+full(x.d):'')+(comp?'<br><span class="muted small">'+E(comp)+'</span>':''):
+          (age>ttl?'<span class="muted">Too old: scout again for the army of today</span>':'<span class="muted">Replaced by a newer report</span>');
+        const btns=(live?'<button class="btn sm" data-p219calc="'+x.rid+'">Work it out</button>':'')+(r.owner!==c.id?'<button class="btn ghost sm" data-p219scout="'+x.rid+'">Scout again</button>':'');
+        return '<div class="p219sr"><div><b>'+E(r.name)+'</b> <span class="mono small">'+E(r.coord||'')+'</span> <span class="muted small">'+(own?E(own.name):'open land')+' · turn '+Math.max(0,x.t-st)+(age?', '+age+' turn'+(age===1?'':'s')+' ago':', this turn')+'</span><div class="small">'+res+'</div></div><div class="row" style="gap:6px;flex-wrap:wrap;justify-content:flex-end">'+btns+'</div></div>';}).join('');
+      const html='<div class="clabel">Your scouting reports</div><div class="muted small" style="margin:2px 0 8px">Every scout you sent, newest first. A report shows the exact army for '+ttl+' turns.</div>'+(rows||'<div class="muted small">No scouting yet. Scout a coordinate above: the result shows up here.</div>');
+      if(!box){box=document.createElement('div');box.className='card mb p219scout';const inp=[...v.querySelectorAll('input')].find(i=>/example/i.test(i.placeholder||''));let a=inp?inp.closest('.card'):null;while(a&&a.parentElement!==v)a=a.parentElement;if(a)a.after(box);else{const t=v.querySelector(':scope > .ptitle');if(t)t.after(box);else v.prepend(box);}}
+      box.innerHTML=html;box.dataset.sig=sig;}catch(e){}}
+  document.addEventListener('click',e=>{const a=e.target.closest&&e.target.closest('[data-p219calc],[data-p219scout]');if(!a)return;e.preventDefault();
+    const rid=+(a.getAttribute('data-p219calc')||a.getAttribute('data-p219scout'));
+    if(a.hasAttribute('data-p219calc')){try{p214Open('attack',rid);}catch(_){}}else{try{if(typeof p186Scout==='function')p186Scout(rid);else{const r=cmdScoutRegion(you(),rid);toast(r&&r.ok?'Scouted.':(r&&r.error)||'Not possible',r&&r.ok?'good':'warn');go(view);}}catch(_){}}});
+  // scouting answers at once: say what came back
+  window.p186Scout=function(rid){const c=you();if(!c)return;const r=_rgId(rid);if(!r)return;let res=null;try{res=cmdScoutRegion(c,r.id);}catch(e){res={ok:false,error:String(e)};}
+    if(res&&res.ok)toast(res.data&&res.data.miss?'🔍 '+r.name+': the scouts bounced off their radar. Nothing learned. All reports: War → Scout.':'🔍 '+r.name+': exact army seen. All reports: War → Scout.',res.data&&res.data.miss?'warn':'good');
+    else toast((res&&res.error)||'Scouting is not possible right now.','warn');try{save();go(view);}catch(e){}};
   function alliance(v){dismissable(v.querySelector('.p204res'),'p219res');}
   function apply(){try{if(typeof view==='undefined')return;const v=document.getElementById('view');if(!v)return;
-      if(view==='dashboard'){home(v);goalNexus(v);}else if(view==='self')defend(v);else if(view==='diplomacy')dip(v);else if(view==='clans')alliance(v);}catch(e){}}
+      noOne(v);fixTurns(v.querySelector('.p205home'));if(view==='reports'||view==='battles'||view==='self')fixTurns(v);
+      if(view==='dashboard'){home(v);goalNexus(v);}else if(view==='self')defend(v);else if(view==='diplomacy')dip(v);else if(view==='clans')alliance(v);else if(view==='covert')scoutList(v);}catch(e){}}
   // a Raider starts ready to fight, not on Standby at 60% strength
   function raider(){try{const c=typeof you==='function'?you():null;if(c&&c.doc==='war'&&c.ready==='standby'&&!c._p219rd&&G.tick<=2){c.ready='ready';c._p219rd=1;}else if(c&&!c._p219rd&&G.tick>2)c._p219rd=1;}catch(e){}}
   // a resource at its storage cap still showed "+530K/t": say the store is full, so the income is wasted
