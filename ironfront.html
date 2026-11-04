@@ -2602,7 +2602,7 @@ function advice(c){const pj=projection(c),out=[];
   if(pj.net.money<0){const t=Math.max(0,Math.floor((c.res.money||0)/-pj.net.money));if(t<6)out.push({m:'Finance Minister',msg:`The treasury runs dry in ~${t} tick(s) (−${fmt(-pj.net.money,true)}/tick). Raise tax one step, set readiness to Standby, or sell surplus on the Market.`,go:'economy',qa:'money'});}
   if(c.stab<40)out.push({m:'Interior Minister',msg:`Stability is low (${Math.round(c.stab)}%). Lower taxes or fix a shortage.`,go:'economy',qa:'stab'});
   if(!(c.tech.length||(c.rq||[]).length)&&c.res.research>=3500)out.push({m:'Chief Scientist',msg:'Research points are idle, start a technology.',go:'research',qa:'research'});
-  if(c.cp>=cpCap()*0.8){const idleR=!(c.rq||[]).length&&(c.buildings||[]).some(b=>b.k==='lab');out.push({m:'Chief of Staff',msg:`${Math.floor(c.cp)}/${cpCap()} command points unused, every order (build, research, recruit, trade, attack) costs 1–3 CP; they refill +${cpRegen()}/tick and cap at ${cpCap()}, so a full bar is wasted turns. ${idleR?'Start a research project':'Queue a building or recruit'}.`,go:idleR?'research':'production'});}
+  if(c.cp>=cpCap()*0.8){const idleR=!(c.rq||[]).length&&(c.buildings||[]).some(b=>b.k==='lab');out.push({m:'Chief of Staff',msg:`${Math.floor(c.cp)}/${cpCap()} command points unused, every order costs command points (an attack more than a build); they refill +${cpRegen()}/tick and cap at ${cpCap()}, so a full bar is wasted turns. ${idleR?'Start a research project':'Queue a building or recruit'}.`,go:idleR?'research':'production'});}
   if(c.res.money>4e7&&c.buildings.length<4)out.push({m:'Minister of Economy',msg:'Large cash reserves, invest in buildings to grow.',go:'production'});
   if(c.clan==null)out.push({m:'Foreign Minister',msg:'Not in an alliance yet, join one for shared defense and war bonuses.',go:'clans'});
   return out.slice(0,3);}
@@ -7946,7 +7946,7 @@ body.turnmode header.top .tspeed{margin-left:22px;padding-left:12px;border-left:
 function emblem(c){return `<span class="flagi" title="${esc((c&&c.name)||'')}">${flagSVG(c,22)}</span>`;}
 // Relationship-only colours (Planetarion-style): gold self, blue alliance,
 // green ally, red enemy, gray neutral.
-const RELCOL={self:'#d4b451',alliance:'#c9a227',ally:'#7dc947',enemy:'#b8483a',neutral:'#77845c',empty:'#4e5a35'};
+const RELCOL={self:'#d4b451',alliance:'#5b9bc4',ally:'#7dc947',enemy:'#b8483a',neutral:'#77845c',empty:'#4e5a35'};
 function relationTo(ownerId,hostiles){
   if(ownerId===G.you)return {k:'self',ring:RELCOL.self,w:3,label:'You'};
   if(ownerId==null)return {k:'empty',ring:RELCOL.empty,w:1,label:'Unclaimed'};
@@ -11060,8 +11060,8 @@ function wmTheaterColor(regs,mode,c){if(mode==='conflict'){const conf=areaBattle
   const conf=areaBattles(regs)+regs.filter(r=>regionHeat(r)>0).length;
   let ally=0,foe=0,n=0,host;try{host=hostileSet(c.id);}catch(e){host=new Set();}
   regs.forEach(r=>{if(r.owner==null)return;const o=G.countries[r.owner];if(!o||o.retired)return;n++;if(c.clan!=null&&o.clan===c.clan)ally++;else if(host.has(o.id))foe++;});
-  if(conf>0||(n&&foe>ally&&foe*2>=n))return '#b8483a';
-  if(ally>0&&ally>=foe)return '#c9a227';
+  if(n&&foe>ally&&foe*2>=n)return '#b8483a';
+  if(ally>0&&ally>=foe)return '#5b9bc4';
   return '#3c6e96';}
 // ---- fleet arcs ------------------------------------------------------------------------------------
 function wmArc(a,b){const dx=b.x-a.x,dy=b.y-a.y,d=Math.hypot(dx,dy)||1;const bul=Math.min(40,d*0.18);const mx=(a.x+b.x)/2-dy/d*bul,my=(a.y+b.y)/2+dx/d*bul;return {d:`M${a.x.toFixed(1)} ${a.y.toFixed(1)}Q${mx.toFixed(1)} ${my.toFixed(1)} ${b.x.toFixed(1)} ${b.y.toFixed(1)}`,mx:(a.x+2*mx+b.x)/4,my:(a.y+2*my+b.y)/4};}
@@ -11625,7 +11625,7 @@ function renderMapBelow(v,c,hostiles,incRegions){v.innerHTML='';
     <div class="rpanel" id="mapcard2" style="display:none"></div></div></details>`);
   v.appendChild(wrap);
   const modeHelp=mode==='conflict'?' <b style="color:var(--bad)">Conflict view</b>: redder = more fighting (🔥 live battles + recent engagements over the last '+CONFLICT_TTL+' ticks). Region tiles flag ⚠ under attack, 🩹 recovering, or a 🛡 defence estimate, spot soft targets and hot fronts.':mode==='economic'?' <b style="color:var(--gold)">Economic view</b>: brighter gold = more GDP. Front tiles show total output + the dominant alliance; region tiles show each nation\'s GDP, that\'s where the loot is.':' <b>Political view</b>: coloured by alliance & relationship, with the dominant alliance tag per front and an ownership bar (you / allies / enemies / neutral), spot blocs and enemy ground.';
-  if(mapView.level<2)v.appendChild(h(`<div class="muted small mt">Click a ${mapView.level===0?'theater':'region'} to zoom in, aggregated so it stays fast with thousands of players.${modeHelp}</div>`));
+  if(mapView.level<2)v.appendChild(h(`<div class="muted small mt">Click a ${mapView.level===0?'theater':'region'} to zoom in.${modeHelp}</div>`));
   else v.appendChild(h(`<div class="muted small mt">Tap a nation for stats + intel crumbs, then plan an attack.${modeHelp}</div>`));
 
   // Activity feed, your recent battles (jumpable) + recent world headlines
@@ -14633,7 +14633,7 @@ function p205After(S){try{if(!S)return;const me=G.countries[G.you];if(!me)return
   for(const id in S.fl){const s=S.fl[id],f=now[id],r=G.regions[s.t];if(!r)continue;const n2=f?fleetSize(f.units||{}):0;
     const bt=(G._p205t||[]).filter(x=>x.rid===r.id);const filed=fresh.some(b=>b.coord===r.coord);
     // 1. a battle where your force fought but no report was filed (stationed with an ally, joint strike under another leader)
-    if(bt.length&&!filed){const x=bt[bt.length-1];const def=s.intent==='garrison'||s.st==='garrison'||ally(x.defId);
+    if(bt.length&&!filed&&(s.st==='battle'||s.st==='garrison'||(f&&(f.status==='battle'||f.status==='garrison')))){const x=bt[bt.length-1];const def=s.intent==='garrison'||s.st==='garrison'||ally(x.defId);
       const lost=Math.max(0,s.n-n2);const held=!x.captured;
       G.battles.unshift({tick:G.tick,region:r.name,coord:r.coord,atkId:x.atkId,defId:x.defId,outcome:def?(held?'repelled':'captured'):(x.captured?'captured':'repelled'),ratio:(x.ratio||0).toFixed(2),atkP:x.atkP,defP:x.defP,
         why:def?(held?'The line held. Your stationed force fought with the defenders.':'The defence broke and the ground was taken.'):(x.captured?'The joint strike took the ground.':'The strike was beaten back.'),
@@ -15156,6 +15156,7 @@ function p217Reason(c,r,defC){
   return 'weak';}                                                   // a weaker neighbour, if the sum agrees
 function p217Need(c){const p=p217Pers(c);return p.risk>=65?1.25:p.risk<=30?1.45:1.32;}
 function p217Check(c,r,com){const defC=r.owner!=null?G.countries[r.owner]:null;const why=p217Reason(c,r,defC);if(!why)return {ok:false,why:'no reason'};
+  try{if(typeof p219Block==='function'&&p219Block(c,r))return {ok:false,why:'blocked'};}catch(e){}
   // everything of ours already on the way to this region counts too
   const A=Object.assign({},com);(c.fleets||[]).forEach(f=>{if(f&&f.target===r.id&&(f.status==='outbound'||f.status==='staged'||f.status==='battle'))for(const k in f.units||{})A[k]=(A[k]||0)+(f.units[k]||0);});
   let D={};try{D=defC?defenderPool(r,defC).units:garrisonUnits(r);}catch(e){D={};}
@@ -15207,7 +15208,7 @@ function p218IsPrize(r){try{return typeof prizeIds==='function'&&prizeIds().inde
 // every battle that ends: who took what from whom, and the defences that held where it mattered
 if(typeof finalizeBattle==='function'){const _fb218=finalizeBattle;finalizeBattle=function(c,f,r,defC,R,retreated){const before=r?r.owner:null;
   const cap=defC&&r?p218IsCap(defC,r):false;const out=_fb218.apply(this,arguments);
-  try{if(c&&r){const took=r.owner===c.id&&before!==c.id;const W=p218W();const A=c.name,D=defC?defC.name:null,RN=r.name;
+  try{if(c&&r&&!(defC&&defC.id===c.id)){const took=r.owner===c.id&&before!==c.id;const W=p218W();const A=c.name,D=defC?defC.name:null,RN=r.name;
     const human=(c.isAI===false)||(defC&&defC.isAI===false);const prize=p218IsPrize(r);const rev=f&&f._p217==='revenge';
     if(took){let s=4+(cap?4:0)+(prize?5:0)+(human?4:0)+(rev?2:0);let t;
       if(!D)t=W==='R'?A+' brings '+RN+' under its rule.':A+' takes the open ground of '+RN+'.';
@@ -15221,15 +15222,61 @@ if(typeof finalizeBattle==='function'){const _fb218=finalizeBattle;finalizeBattl
   return out;};}
 // at the end of the turn the paper is made: the biggest story on top, then four more
 const P218_SEEN=new WeakSet();
+function p218Twice(t){try{const words=t.match(/[A-Z][\w'&.-]+(?: [A-Z&][\w'&.-]+){1,4}/g)||[];const seen=new Set();for(const w of words){if(w.length<8)continue;if(seen.has(w))return true;seen.add(w);}return false;}catch(e){return false;}}
 function p218Make(){try{const b=G._p218b;const items=b?b.items.slice():[];const rns=items.map(x=>x.rn).filter(Boolean);const minT=G._paper?G._paper.tick-1:-1e9;
   (G.news||[]).slice(0,30).forEach(n=>{if(!n||!n.head||P218_SEEN.has(n)||n.tick<minT)return;P218_SEEN.add(n);const t=String(n.head).trim();
-    if(rns.some(r=>t.indexOf(r)>=0)||items.some(x=>x.t===t))return;items.push({s:n.cat==='war'?1.5:1,t,ids:[]});});
+    if(rns.some(r=>t.indexOf(r)>=0)||items.some(x=>x.t===t)||p218Twice(t))return;items.push({s:n.cat==='war'?1.5:1,t,ids:[]});});
   items.sort((a,b)=>b.s-a.s);const seen=new Set();const pick=[];let holds=0;for(const x of items){const k=x.t.slice(0,60);if(seen.has(k))continue;if(x.k==='h'&&!(x.ids||[]).some(i=>G.countries[i]&&G.countries[i].isAI===false)){if(holds>=1)continue;holds++;}seen.add(k);pick.push(x);if(pick.length>=5)break;}
   const W=p218W();const quiet=W==='R'?'A quiet day in the provinces.':W==='I'?'A quiet day along the front.':'A quiet turn across the world.';
   const P={tick:G.tick,head:pick.length?pick[0].t:quiet,hids:pick.length?pick[0].ids:[],items:pick.slice(1).map(x=>({t:x.t,ids:x.ids}))};
-  G._paper=P;const A=G._papers=G._papers||[];A.unshift(P);if(A.length>P218_KEEP)A.length=P218_KEEP;G._p218b=null;}catch(e){}}
+  G._paper=P;let A=G._papers=G._papers||[];if(A.length&&A[0].tick>G.tick)A=G._papers=[];A.unshift(P);if(A.length>P218_KEEP)A.length=P218_KEEP;G._p218b=null;}catch(e){}}
 function p218Paper(){return G._paper||null;}
 if(typeof runTick==='function'){const _rt218=runTick;runTick=function(){const out=_rt218.apply(this,arguments);try{p218Make();}catch(e){}return out;};}
+// silent fix: a later name pass (solo map names) could turn two different names into the same one, so two nations
+// showed with one name. After every turn any repeated name or tag among living nations gets a prefix or a letter.
+function p218Dedupe(){try{const seen=new Set(),tags=new Set();const P=['New','Free','Greater','Upper','Lower','Old','North','South'];
+  (G.countries||[]).filter(c=>c&&!c.retired).sort((a,b)=>((a.isAI===false?0:a._returning?1:2)-(b.isAI===false?0:b._returning?1:2))).forEach(c=>{let n=String(c.name||'');if(c.isAI!==false&&seen.has(n.toLowerCase())){for(const p of P){const m=(/^the /i.test(n)?n.slice(0,4)+p+' '+n.slice(4):p+' '+n).slice(0,40);if(!seen.has(m.toLowerCase())){c.name=m;n=m;break;}}}seen.add(n.toLowerCase());
+    let t=String(c.tag||'').toUpperCase();if(t&&c.isAI!==false&&tags.has(t)){const base=t.replace(/[^A-Z]/g,'').slice(0,3)||'NAT';const AL='ABCDEFGHJKLMNPQRSTUVWXYZ';for(let i=0;i<AL.length*AL.length;i++){const x=(base+AL[i%AL.length]+(i>=AL.length?AL[Math.floor(i/AL.length)%AL.length]:'')).slice(0,5);if(!tags.has(x)){c.tag=x;t=x;break;}}}if(t)tags.add(t);});}catch(e){}}
+if(typeof runTick==='function'){const _rt218d=runTick;runTick=function(){const out=_rt218d.apply(this,arguments);try{p218Dedupe();}catch(e){}return out;};}
+
+/*p219*/
+// p219 (18.1) fixes from the blind playtest of 4 November.
+// 1. An army that stays in battle at a region that is already its own, or its alliance's, no longer fights on there.
+//    That happened when a joint strike or another army of the same nation took the region first: the army then fought
+//    its own side (reports and the paper said "X attacked X") and could lose units for nothing. It now marches home.
+// a joint strike carries everyone's units in one army: send each member's own share home, as a normal battle end does
+function p219SplitHome(f){const startByType={};f.members.forEach(m=>{const cp=m.comp||{};for(const k in cp)startByType[k]=(startByType[k]||0)+(cp[k]||0);});
+  const tot=f.members.reduce((s,m)=>s+(m.share||0),0)||1;
+  f.members.forEach(m=>{const ow=G.countries[m.owner];if(!ow)return;const surv={};const cp=m.comp||null;
+    for(const k in f.units){const startK=startByType[k]||0;if(cp&&startK>0)surv[k]=Math.floor((f.units[k]||0)*((cp[k]||0)/startK));else surv[k]=Math.floor((f.units[k]||0)*((m.share||0)/tot));}
+    (ow.fleets=ow.fleets||[]).push({id:G._fid++,owner:m.owner,home:m.home,target:f.target,units:surv,travel:m.travel,rEta:G.tick+(m.travel||2),status:'returning'});});
+  f.units={};f.status='done';}
+if(typeof advanceBattle==='function'){const _ab219=advanceBattle;advanceBattle=function(c,f){try{const r=_rgId(f.target);
+    if(r&&c&&r.owner!=null){const o=G.countries[r.owner];if(o&&(o.id===c.id||(c.clan!=null&&o.clan===c.clan&&!o.retired))){
+      if(f.acs&&f.members&&f.members.length){p219SplitHome(f);}else{f.status='returning';f.rEta=G.tick+Math.max(1,f.travel||1);}
+      if(c.isAI===false&&typeof sitrep==='function')sitrep(c,'fleet','↩ '+r.name+' is already '+(o.id===c.id?'yours':'held by your alliance')+'. Your '+full(fleetSize(f.units||{}))+' units march home.',{coord:r.coord,go:'fleets'});
+      return;}}}catch(e){}
+  return _ab219.apply(this,arguments);};}
+// 2. Phase goals said "Finish 3 more research projects 1 / 3": the count already shows how far you are.
+if(typeof phaseGoals==='function'){const _pg219=phaseGoals;phaseGoals=function(){const o=_pg219.apply(this,arguments);try{for(const k in o){if(o[k]&&typeof o[k].t==='string')o[k].t=o[k].t.replace(/ \d+ more /,' ');}}catch(e){}return o;};}
+// 3. The energy homeland said "Sparse population" next to the most populous region on the list.
+try{if(typeof ARCH!=='undefined'&&ARCH.energy&&ARCH.energy.d)ARCH.energy.d=ARCH.energy.d.replace(/Sparse population, little industry\./,'Little industry.');}catch(e){}
+// 4. the planner said "Capture, even in the worst case" while the capture was blocked anyway: low morale, a shield, beginner
+//    protection or a last-region emergency shield. The battle is still fought, but the flag does not change. Now it says so.
+function p219Block(c,r){try{if(!c||!r)return '';if(typeof moraleOf==='function'&&moraleOf(c)<=0.3)return 'No capture now: your army\'s morale is too low. Rest a few turns first.';
+  const d=r.owner!=null?G.countries[r.owner]:null;if(!d||d.id===c.id)return '';
+  if(!r.nexus&&typeof shieldActive==='function'&&shieldActive(d))return 'No capture now: their shield is up.';
+  if(typeof newbieProtected==='function'&&newbieProtected(d))return 'No capture now: beginner protection.';
+  if((d._adminProtect||0)>G.tick)return 'No capture now: this region is protected.';
+  if(typeof regionsOf==='function'&&regionsOf(d).length<=1&&(d._capShieldUntil||0)>G.tick){const st=(G.season&&G.season.startTick)||0;return 'No capture until turn '+(d._capShieldUntil-st)+': their last region has an emergency shield.';}
+  return '';}catch(e){return '';}}
+// 5. the Army tile counted only your own armies: units in a joint strike were missing from "out"
+function p219Out(c){let n=0;try{(c.fleets||[]).forEach(f=>{n+=fleetSize(f.units||{});});
+  (G.acs||[]).forEach(op=>{(op.fleets||[]).forEach(f=>{if(f&&f.owner===c.id)n+=fleetSize(f.units||{});});});
+  (G.countries||[]).forEach(o=>{if(!o||o.id===c.id)return;(o.fleets||[]).forEach(f=>{if(!f||!f.acs||!f.members)return;const m=f.members.find(x=>x.owner===c.id);if(!m)return;
+    const tot=f.members.reduce((s,x)=>s+(x.share||0),0)||1;n+=Math.round(fleetSize(f.units||{})*(m.share||0)/tot);});});}catch(e){}return n;}
+// 6. a rival who joined your own alliance is no longer shown as your rival
+if(typeof rivalOf==='function'){const _ro219=rivalOf;rivalOf=function(){const r=_ro219.apply(this,arguments);try{const me=G.countries[G.you];if(r&&me&&me.clan!=null&&r.clan===me.clan)return null;}catch(e){}return r;};}
 
 // ---- BOOT ------------------------------------------------------------------
 // GitHub serves the brochure as index.html and this file as play.html.
@@ -20907,7 +20954,7 @@ function homeAtk(c){try{return power(c,'atk');}catch(e){return 0;}}
 function miss(c,r){const atk=homeAtk(c);if(r.owner==null){return Math.max(0,regionDef(r)*1.3-atk);}
   try{const o=typeof p14Odds==='function'?p14Odds(c,r,Object.assign({},c.units||{})):null;if(o&&!o.blind&&o.ratio>0)return o.ratio>=1.3?0:Math.max(1,o.need||0);}catch(e){}return Math.max(0,regionDef(r)*1.3-atk);}
 function sendAll(c,r){const atk=Math.max(1,homeAtk(c));const f=r.owner==null?Math.min(1,regionDef(r)*1.7/atk):1;const com={};for(const k in (c.units||{})){const n=Math.ceil((c.units[k]||0)*f);if(n>0)com[k]=n;}return cmdOp(c,r.id,com,{});}
-window.p186Scout=function(rid){const c=ME();if(!c)return;const r=_rgId(rid);if(!r)return;let res=null;try{res=cmdScoutRegion(c,r.id);}catch(e){res={ok:false,error:String(e)};}toast(res&&res.ok?'🔍 Scouts sent to '+r.name+'. The report comes in next turn.':(res&&res.error)||'Scouting is not possible right now.',res&&res.ok?'good':'warn');try{save();go(view);}catch(e){}};
+window.p186Scout=function(rid){const c=ME();if(!c)return;const r=_rgId(rid);if(!r)return;let res=null;try{res=cmdScoutRegion(c,r.id);}catch(e){res={ok:false,error:String(e)};}toast(res&&res.ok?'🔍 Scouts sent to '+r.name+'.':(res&&res.error)||'Scouting is not possible right now.',res&&res.ok?'good':'warn');try{save();go(view);}catch(e){}};
 window.p186Take=function(rid){const c=ME();if(!c)return;const r=_rgId(rid);if(!r)return;if(r.owner!=null&&r.owner!==c.id&&typeof regionIntel==='function'&&!regionIntel(c,r.id)){window.p186Scout(rid);return;}const atk=homeAtk(c);const gap=miss(c,r);
   if(gap<=0){const res=sendAll(c,r);if(res&&res.ok){toast('⚔ Your army marches on '+r.name+'.','good');try{sfx('ok');}catch(e){}}else toast((res&&res.error)||'Your army cannot march right now.','warn');try{save();go(view);}catch(e){}return;}
   const m=c.res.money||0;const o=m>1e5&&typeof p14RecOrder==='function'?p14RecOrder(c,m*0.5):null;const g=o?power(c,'atk',o):0;if(!(g>0)){toast('Not enough money for troops yet. Grow the economy first.','warn');return;}
@@ -21563,7 +21610,7 @@ setInterval(()=>{try{ladder();champCard();}catch(e){}},500);
   // Scout: look up a coordinate and send scouts, right at the top of the Scout tab
   function scout(){const v=document.getElementById('view');if(!v||typeof view==='undefined'||view!=='covert')return;if(v.querySelector(':scope > .p195sc'))return;
     const box=document.createElement('div');box.className='p195sc';
-    box.innerHTML=`<div class="p195sch"><div><div class="k">Scout a coordinate</div><div class="s">What is there, who holds it and how strong it is: you only know after a scout report. The report comes in next turn.</div></div></div>
+    box.innerHTML=`<div class="p195sch"><div><div class="k">Scout a coordinate</div><div class="s">What is there, who holds it and how strong it is: you only know after a scout report.</div></div></div>
       <div class="p195scf"><input type="text" placeholder="for example 1:2:5" autocomplete="off" aria-label="Coordinate"><button type="button" class="p195scb">Scout</button></div><div class="p195scr"></div>`;
     const t=v.querySelector(':scope > .ptitle');if(t)t.insertAdjacentElement('afterend',box);else v.prepend(box);
     const inp=box.querySelector('input'),out=box.querySelector('.p195scr');
@@ -22042,16 +22089,16 @@ setInterval(()=>{try{ladder();champCard();}catch(e){}},500);
     if(T.known){const sent=fleetSize(st.com);
       if(!sent)fcHTML='<div class="p199fc"><div class="p199note">Pick some troops to see the forecast.</div></div>';
       else if(fc){const r=fc.ratio;const RG=window.__p206range?window.__p206range(c,T.r,r):null;const rl=RG&&RG.known?RG.lo:r,rh=RG&&RG.known?RG.hi:r;const pct=Math.min(100,r/2*100);
-        const col=rl>=1.25?'var(--good,#22C55E)':rl>=1||rh>=1.25?'var(--hi,#F59E0B)':'var(--danger,#ef4444)';
-        const verdict=rl>=1.25?'Capture, even in the worst case':rl>=1?'Wins the field, capture not sure':rh>=1?'Uncertain, could go either way':rh>=0.85?'Likely repelled':'Repelled';
+        const col=(typeof p219Block==='function'&&p219Block(c,T.r))?'var(--danger,#ef4444)':rl>=1.25?'var(--good,#22C55E)':rl>=1||rh>=1.25?'var(--hi,#F59E0B)':'var(--danger,#ef4444)';
+        const _blk=(typeof p219Block==='function')?p219Block(c,T.r):'';const verdict=_blk?_blk:rl>=1.25?'Capture, even in the worst case':rl>=1?'Wins the field, capture not sure':rh>=1?'Uncertain, could go either way':rh>=0.85?'Likely repelled':'Repelled';
         const sentP=fleetSize(st.com),allP=fleetSize(H)||1,left=allP-sentP;let inc=0;try{inc=(incomingTo(c.id)||[]).length;}catch(e){}
         const homeWarn=sentP/allP>=0.85?`<div class="p199note" style="color:var(--warn,#F59E0B)">${left?'Only '+F(left)+' unit'+(left===1?' stays':'s stay')+' home':'Nothing stays home'}${inc?', and '+inc+' attack'+(inc>1?'s are':' is')+' already on the way to you':''}. Your own land is open while this army is away.</div>`:'';
         const aL=Object.values(fc.aLost||{}).reduce((a,b)=>a+b,0),dL=Object.values(fc.dLost||{}).reduce((a,b)=>a+b,0);
         fcHTML=`<div class="p199fc"><div class="p199verdict"><b style="color:${col}">${verdict}</b><span class="r">ratio ${Math.abs(rh-rl)<0.02?r.toFixed(2):rl.toFixed(2)+'–'+rh.toFixed(2)}</span></div>
           <div class="p199gauge"><i style="width:${pct}%;background:${col}"></i><span class="m" style="left:50%"></span><span class="ml" style="left:50%">1.00 ground</span><span class="m" style="left:62.5%"></span><span class="ml" style="left:62.5%;top:-16px">1.25 capture</span></div>
           <div class="p199loss"><div>You lose about<b style="color:#fca5a5">${F(aL)}</b></div><div>They lose about<b style="color:#93c5fd">${F(dL)}</b></div></div>
-          ${T.owner&&T.it?`<div class="p199note">Scout report ${age} turn${age===1?'':'s'} old. ${T.it.exact?'The report is exact, so this is the exact result if nothing moves. War → Calc shows every number.':'At '+T.it.conf+'% confidence the forecast is a range; the verdict uses the worst end.'} Their allies can still send help.</div>`:''}
-          ${homeWarn}<div class="p199go"><button type="button" class="p199btn${rh<1?' red':''}" data-p199="go">${rh<1?'Attack anyway with ':'Attack with '}${F(sent)}</button>${(c.clan!=null&&typeof isClanOfficer==='function'&&isClanOfficer(c))?'<button type="button" class="p199btn ghost" data-p199="acs">Make it a joint strike</button>':''}</div></div>`;}
+          ${T.owner&&T.it?`<div class="p199note">Scout report ${age} turn${age===1?'':'s'} old. ${T.it.exact?(age>0?'The report was exact '+age+' turn'+(age===1?'':'s')+' ago. Armies may have moved since: scout again for a sure result.':'The report is exact, so this is the exact result if nothing moves. War → Calc shows every number.'):'At '+T.it.conf+'% confidence the forecast is a range; the verdict uses the worst end.'} Their allies can still send help.</div>`:''}
+          ${homeWarn}<div class="p199go"><button type="button" class="p199btn${rh<1?' red':''}" data-p199="go">${rh<1?'Attack anyway with ':'Attack with '}${F(sent)}</button>${(c.clan!=null&&typeof isClanOfficer==='function'&&isClanOfficer(c))?'<button type="button" class="p199btn ghost" data-p199="acs">Joint strike with '+F(sent)+'</button>':''}</div></div>`;}
       else fcHTML='<div class="p199fc"><div class="p199note">No forecast available for this target.</div></div>';}
     box.innerHTML=pick+`<div class="p199grid">${tcard}<div>${force}${fcHTML}</div></div>`;wire(box,c,T);}
   let rt=null;const soon=()=>{clearTimeout(rt);rt=setTimeout(()=>{const b=document.querySelector('#view > .p199');if(b)b.dataset.sig='';render();},140);};
@@ -22671,7 +22718,7 @@ if(typeof module!=='undefined'&&module.exports)module.exports=BANNER;
       let at=t;const fz=v.querySelector(':scope > .dash-zone.p186danger');if(fz&&t.nextElementSibling===fz){at=fz;if(fz.nextElementSibling&&fz.nextElementSibling.classList.contains('p186box'))at=fz.nextElementSibling;}
       if(at.nextElementSibling!==tb)at.insertAdjacentElement('afterend',tb);}catch(e){}}
   // 5. the Army tile in the top strip follows the army: home now, plus what is out
-  function armyTile(){try{const el=document.querySelector('#strip .res-army');const c=you();if(!el||!c)return;const home=fleetSize(c.units||{});const out=(c.fleets||[]).reduce((s,f)=>s+fleetSize(f.units||{}),0);
+  function armyTile(){try{const el=document.querySelector('#strip .res-army');const c=you();if(!el||!c)return;const home=fleetSize(c.units||{});const out=(typeof p219Out==='function')?p219Out(c):(c.fleets||[]).reduce((s,f)=>s+fleetSize(f.units||{}),0);
       const v=el.querySelector('.v'),d=el.querySelector('.d');const vt=full(home),dt=out?'home · '+full(out)+' out':'home';if(v&&v.textContent!==vt)v.textContent=vt;if(d&&d.textContent!==dt)d.textContent=dt;}catch(e){}}
   function apply(){tidy();coordHelp();trainTop();armyTile();}
   window.__p207apply=apply;if(window.__pLayers&&window.__pLayers.indexOf('__p207apply')<0)window.__pLayers.push('__p207apply');
@@ -23233,6 +23280,7 @@ if(typeof module!=='undefined'&&module.exports)module.exports=BANNER;
     html+=`<div class="row">${d.w==='foe'?`<button class="btn sm" data-p218go="calc">Work it out</button><button class="btn ghost sm" data-p218go="self">Defend</button>`:d.w==='own'?`<button class="btn ghost sm" data-p218go="fleets">Armies</button>`:''}</div>`;
     const p=document.createElement('div');p.className='p218pop';p.innerHTML=html;wrap.appendChild(p);
     const x=Math.min(rb.width-310,Math.max(8,gb.left-rb.left-20)),y=Math.min(rb.height-120,Math.max(8,gb.top-rb.top+24));p.style.left=x+'px';p.style.top=y+'px';}
+  ['pointerdown','pointerup','mousedown','mouseup','touchstart','touchend'].forEach(t=>document.addEventListener(t,e=>{if(e.target.closest&&e.target.closest('.p218arm'))e.stopPropagation();},true));
   document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('[data-p218go]');if(b){const v=b.getAttribute('data-p218go');const o=document.querySelector('.p218pop');if(o)o.remove();try{if(v==='self'&&typeof warTab!=='undefined')warTab='defence';}catch(_){}try{go(v);}catch(_){}return;}
     if(e.target.closest&&e.target.closest('#wsvg'))pop(e);else{const o=document.querySelector('.p218pop');if(o&&!e.target.closest('.p218pop'))o.remove();}},true);
 
@@ -23244,11 +23292,11 @@ if(typeof module!=='undefined'&&module.exports)module.exports=BANNER;
   ['battleCardHTML','battleReportHTML'].forEach(n=>{try{const f=eval(n);if(typeof f!=='function')return;const w=function(b){const out=f.apply(this,arguments);try{if(typeof out==='string'&&out.indexOf('data-p218rp')<0){const x=btn(b);if(x){const j=out.lastIndexOf('</');return j>0?out.slice(0,j)+x+out.slice(j):out+x;}}}catch(e){}return out;};
     if(n==='battleCardHTML')battleCardHTML=w;else battleReportHTML=w;}catch(e){}});
   function rounds(b){const d=b.detail;const T=(b.ticks||[]).filter(t=>t&&(t.aLostT||t.dLostT));
-    if(T.length)return T.map(t=>({a:t.aLostT||{},d:t.dLostT||{},ratio:t.ratio,ph:(t.phases||[]).filter(p=>p&&p.t).slice(0,3)}));
-    return [{a:d.atkLost||{},d:d.defLost||{},ratio:+b.ratio||d.ratio||0,ph:(b.phases||[]).filter(p=>p&&p.t).slice(0,3)}];}
+    if(T.length)return T.map((t,ix)=>({a:t.aLostT||{},d:t.dLostT||{},ratio:t.ratio,ph:(t.phases||[]).filter(p=>p&&p.t&&p.p!=='Occupation').slice(0,3)}));
+    return [{a:d.atkLost||{},d:d.defLost||{},ratio:+b.ratio||d.ratio||0,ph:(b.phases||[]).filter(p=>p&&p.t&&p.p!=='Occupation').slice(0,3)}];}
   function verdict(b){const me=typeof you==='function'?you():null;const youA=me&&b.atkId===me.id,youD=me&&b.defId===me.id;
     const took=b.outcome==='captured';if(b.retreated)return {t:youA?'You pulled back':youD?'They pulled back':'The attacker pulled back',c:'#e8c14a'};
-    if(youA)return took?{t:'Taken',c:'#37d9a9'}:{t:'Beaten back',c:'#f0625f'};if(youD)return took?{t:'Lost',c:'#f0625f'}:{t:'Held',c:'#37d9a9'};
+    if(youA)return took?{t:'Taken',c:'#37d9a9'}:b.outcome==='partial'?{t:'Won the fight, not the ground',c:'#e8c14a'}:{t:'Beaten back',c:'#f0625f'};if(youD&&b.outcome==='partial')return {t:'Held, but the line bent',c:'#e8c14a'};if(youD)return took?{t:'Lost',c:'#f0625f'}:{t:'Held',c:'#37d9a9'};
     return took?{t:'Taken',c:'#e8c14a'}:{t:'Held',c:'#e8c14a'};}
   window.p218Replay=function(i){const b=(G.battles||[])[i];if(!canReplay(b))return;const d=b.detail;const R=rounds(b);const mo=motion();
     const sides=[{nm:b.atkName||'Attacker',col:b.atkColor||'#4f8cff',comp:Object.assign({},d.atkComp||{}),k:'a',role:'Attack'},{nm:b.defName||'Defender',col:b.defColor||'#f0625f',comp:Object.assign({},d.defComp||{}),k:'d',role:'Defence'}];
@@ -23257,7 +23305,7 @@ if(typeof module!=='undefined'&&module.exports)module.exports=BANNER;
       <div class="p218bar"><i id="p218bar${ix}" style="width:100%;background:${E(s.col)}"></i></div>
       <div class="p218line" id="p218line${ix}">${Array.from({length:s.blocks},()=>`<span class="p218blk" style="background:${E(s.col)}"></span>`).join('')}</div>
       <div id="p218units${ix}" style="margin-top:8px">${Object.keys(s.comp).filter(k=>s.comp[k]>0).sort((x,y)=>s.comp[y]-s.comp[x]).slice(0,6).map(k=>`<div class="p218u"><span>${E(uname(k))}</span><span><b data-u="${E(k)}">${full(s.comp[k])}</b> <span class="l" data-l="${E(k)}"></span></span></div>`).join('')}</div></div>`;
-    const bg=h(`<div class="modal-bg p218rp${mo?'':' nomo'}"><div class="modal"><div class="row between"><h2 style="margin:0;font-size:18px">${E(b.region||'Battle')} <span class="muted small">turn ${b.tick}</span></h2><button class="btn ghost sm" data-x>✕</button></div>
+    const bg=h(`<div class="modal-bg p218rp${mo?'':' nomo'}"><div class="modal"><div class="row between"><h2 style="margin:0;font-size:18px">${E(b.region||'Battle')} <span class="muted small">turn ${turnOf(b.tick)}</span></h2><button class="btn ghost sm" data-x>✕</button></div>
       <div class="p218rd" id="p218rd">The lines form up.</div><div class="p218vs">${side(sides[0],0)}${side(sides[1],1)}</div>
       <div class="p218end" id="p218end"></div><div class="muted small" id="p218why" style="text-align:center"></div>
       <div class="row" style="justify-content:center;gap:8px;margin-top:10px"><button class="btn sm" id="p218again">▶ Again</button><button class="btn ghost sm" id="p218skip">Skip to the end</button></div></div></div>`);
@@ -23280,23 +23328,72 @@ if(typeof module!=='undefined'&&module.exports)module.exports=BANNER;
       setTimeout(()=>{if(!document.querySelector('.modal-bg'))p218Replay(i);},700);}catch(e){}}
 
   // ---------------------------------------------------------------- 3. the paper of the turn
+  function turnOf(t){try{if(typeof p19TurnNo==='function'){const n=p19TurnNo().n;if(n!=null&&isFinite(n))return Math.max(0,n-(G.tick-t));}}catch(e){}return t;}
   const MAST={T:'World Wire',R:'Acta Diurna',I:'Front Dispatch'};
-  function line(t,ids){t=String(t).trim();t=t.charAt(0).toUpperCase()+t.slice(1);const me=typeof you==='function'?you():null;const mine=me&&(ids||[]).indexOf(me.id)>=0;return mine?`<span class="you">◆ ${E(t)}</span>`:E(t);}
-  function paperHTML(P,old){return `<div class="p218paper ${W}${old?' old':''}"><div class="mast">${MAST[W]||MAST.T}<span>turn ${P.tick}</span></div><div class="head">${line(P.head,P.hids)}</div>${(P.items||[]).length?`<ul>${P.items.map(x=>`<li>${line(x.t,x.ids)}</li>`).join('')}</ul>`:''}</div>`;}
-  window.p218Archive=function(){const A=(G._papers||[]).slice(1);const bg=h(`<div class="modal-bg"><div class="modal" style="max-width:640px"><div class="row between"><h2 style="margin:0">${MAST[W]||MAST.T}: earlier</h2><button class="btn ghost sm" data-x>✕</button></div><div style="margin-top:10px">${A.length?A.map(p=>paperHTML(p,1)).join(''):'<div class="muted">Nothing earlier yet.</div>'}</div></div></div>`);
+  function line(t,ids){t=String(t).replace(/\s*\(\d+:\d+:\d+\)/g,'').replace(/\s+(at|in)\s+\d+:\d+:\d+/g,'').trim();t=t.charAt(0).toUpperCase()+t.slice(1);const me=typeof you==='function'?you():null;const mine=me&&(ids||[]).indexOf(me.id)>=0;return mine?`<span class="you">◆ ${E(t)}</span>`:E(t);}
+  function paperHTML(P,old){return `<div class="p218paper ${W}${old?' old':''}"><div class="mast">${MAST[W]||MAST.T}<span>turn ${turnOf(P.tick)}</span></div><div class="head">${line(P.head,P.hids)}</div>${(P.items||[]).length?`<ul>${P.items.map(x=>`<li>${line(x.t,x.ids)}</li>`).join('')}</ul>`:''}</div>`;}
+  window.p218Archive=function(){const A=(G._papers||[]).slice(1).filter(p=>p.tick<=G.tick);const bg=h(`<div class="modal-bg"><div class="modal" style="max-width:640px"><div class="row between"><h2 style="margin:0">${MAST[W]||MAST.T}: earlier</h2><button class="btn ghost sm" data-x>✕</button></div><div style="margin-top:10px">${A.length?A.map(p=>paperHTML(p,1)).join(''):'<div class="muted">Nothing earlier yet.</div>'}</div></div></div>`);
     document.body.appendChild(bg);bg.addEventListener('click',e=>{if(e.target===bg||e.target.closest('[data-x]'))bg.remove();});};
-  function apply(){try{if(typeof view==='undefined'||view!=='dashboard')return;const v=document.getElementById('view');if(!v||v.querySelector('.p218paper'))return;const P=G._paper;if(!P)return;
+  function apply(){try{if(typeof view==='undefined'||view!=='dashboard')return;const v=document.getElementById('view');if(!v||v.querySelector('.p218paper'))return;const P=G._paper;if(!P||P.tick>G.tick)return;
       const el=h(paperHTML(P));if((G._papers||[]).length>1){const a=document.createElement('div');a.style.cssText='text-align:right;margin-top:6px';a.innerHTML='<button class="btn ghost sm" data-p218arch>Earlier</button>';el.appendChild(a);}
       const after=v.querySelector('.p18home')||v.querySelector('.ptitle');if(after&&after.parentElement===v)after.after(el);else v.prepend(el);}catch(e){}}
   document.addEventListener('click',e=>{if(e.target.closest&&e.target.closest('[data-p218arch]')){e.preventDefault();p218Archive();}});
 
   // ---------------------------------------------------------------- 4. END TURN and the side menu are real buttons for keyboards and screen readers
-  function a11y(){try{document.querySelectorAll('.tick.turnmode, .nav').forEach(el=>{if(el.getAttribute('role')!=='button'){el.setAttribute('role','button');el.setAttribute('tabindex','0');}
+  function tidy(){try{document.querySelectorAll('#view .p18home').forEach(c=>{c.style.display=(c.innerText||'').trim().length<3?'none':'';});}catch(e){}}
+  function a11y(){tidy();try{document.querySelectorAll('.tick.turnmode, .nav').forEach(el=>{if(el.getAttribute('role')!=='button'){el.setAttribute('role','button');el.setAttribute('tabindex','0');}
       if(el.classList.contains('nav'))el.setAttribute('aria-current',el.classList.contains('on')?'page':'false');});}catch(e){}}
   document.addEventListener('keydown',e=>{if(e.key!=='Enter'&&e.key!==' ')return;const t=e.target;if(t&&t.matches&&t.matches('.tick.turnmode[role=button], .nav[role=button]')){e.preventDefault();t.click();}});
-  function run(){apply();a11y();setTimeout(apply,80);setTimeout(()=>{apply();a11y();},400);}
+  function run(){try{if(typeof p218Dedupe==='function')p218Dedupe();}catch(e){}apply();a11y();setTimeout(apply,80);setTimeout(()=>{apply();a11y();},400);}
   window.__p218apply=run;if(window.__pLayers&&window.__pLayers.indexOf('__p218apply')<0)window.__pLayers.push('__p218apply');
   if(typeof runTick==='function'){const _rt=runTick;runTick=function(){const out=_rt.apply(this,arguments);try{autoBig();}catch(e){}return out;};}
+})();
+
+</script>
+<script>/*p219ui*/
+// p219ui (18.1) less noise and clearer screens, from the blind playtest of 4 November.
+(function(){
+  const LS=k=>{try{return localStorage.getItem(k);}catch(e){return null;}};const LSset=(k,v)=>{try{localStorage.setItem(k,v);}catch(e){}};
+  const st=document.createElement('style');st.textContent=`.p219x{margin-left:auto;background:none;border:0;color:var(--muted,#8a9bb4);font-size:16px;cursor:pointer;padding:0 4px;line-height:1}.p219hide{display:none!important}#strip .p219full::after{content:'storage full';display:block;font-size:10px;color:var(--warn,#f6b62b)}`;document.head.appendChild(st);
+  function dismissable(el,key){if(!el||el.querySelector('.p219x'))return;if(LS(key)){el.classList.add('p219hide');return;}const b=document.createElement('button');b.className='p219x';b.type='button';b.title='Hide';b.setAttribute('aria-label','Hide');b.textContent='✕';
+    b.onclick=e=>{e.preventDefault();e.stopPropagation();LSset(key,'1');el.classList.add('p219hide');};if(getComputedStyle(el).position==='static')el.style.position='relative';
+    if(getComputedStyle(el).display.indexOf('flex')>=0)el.appendChild(b);else{b.style.cssText='position:absolute;top:6px;right:8px';el.appendChild(b);}}
+  function intoMore(v,card){const more=v.querySelector(':scope > .p15more');if(!more||!card||card.closest('.p15more'))return false;more.appendChild(card);
+    const s=more.querySelector('summary');if(s){const n=more.querySelectorAll(':scope > :not(summary)').length;s.innerHTML=s.innerHTML.replace(/\d+ more block(s)?/,n+' more block'+(n===1?'':'s'));}return true;}
+  // the calculator keeps its own numbers: the screen's form memory put the old empty fields back over a scouting report
+  try{if(typeof formRestore==='function'){const _fr=formRestore;formRestore=function(v){try{if(typeof view!=='undefined'&&view==='calc'){try{_formMem=null;}catch(e){}return;}}catch(e){}return _fr.apply(this,arguments);};}}catch(e){}
+  // Romaterra pays in denarii
+  try{if(typeof F20T!=='undefined'&&F20T.add&&typeof staffWorld==='function'&&staffWorld()==='R')F20T.add([[/(\+\d+% )Money\b/g,'$1Denarii']]);}catch(e){}
+  function home(v){
+    // "Who is coming, in detail (1)" around a panel that says no one is coming
+    v.querySelectorAll('details').forEach(d=>{const s=d.querySelector('summary');if(!s||!/Who is coming, in detail/.test(s.textContent))return;const t=(d.innerText||'').replace(s.innerText,'');
+      if(/No one is coming/i.test(t)&&!/\d+\s*(inbound|incoming)|arriv|lands? in/i.test(t))d.classList.add('p219hide');});
+    // the last battle is already in "New battle reports" and in the paper
+    if(v.querySelector('.p205home')){const l=v.querySelector(':scope > .p13last');if(l)l.classList.add('p219hide');}
+    // the staff line: two things, the rest is one tap away on the Staff screen
+    const sh=v.querySelector('.p211home');if(sh&&!sh.dataset.p219){sh.dataset.p219='1';const cand=[...sh.querySelectorAll('*')].find(e=>e.children.length<12&&(e.innerHTML.match(/ · /g)||[]).length>=2&&!e.querySelector('.p211home'));
+      if(cand){const parts=cand.innerHTML.split(' · ');if(parts.length>2)cand.innerHTML=parts.slice(0,2).join(' · ')+' · <span class="muted">'+(parts.length-2)+' more</span>';}}
+    // the live-world note: one tap hides it for good
+    dismissable(v.querySelector('.p201live'),'p219live');}
+  function goalNexus(v){const t=v.querySelector(':scope > .ptitle');if(!t)return;[...t.querySelectorAll('.p188h')].forEach(sp=>{if(/\(the /.test(sp.textContent))sp.style.setProperty('display','inline','important');});}
+  function defend(v){const l=v.querySelector('.p9line > .small > span, .p9line .small span');if(!l||l.dataset.p219)return;l.dataset.p219='1';
+    // "REPELLED · Not taken · ASSAULT REPELLED vs X" says one thing three times; and the foe and the region ran together
+    l.innerHTML=l.innerHTML.replace(/ and\s*$/,'').replace(/^\s*[A-Z][A-Z ]+ · ([A-Z][a-z][^·<]*?) · [A-Z][A-Z ]+ vs /,' $1 vs ');
+    try{const b=(G.battles||[])[0];if(b&&b.region){const foe=b.youAtk?b.defName:b.atkName;if(foe&&l.innerHTML.indexOf(foe+b.region)>=0)l.innerHTML=l.innerHTML.replace(foe+b.region,foe+' at '+b.region);}}catch(e){}}
+  function dip(v){const cards=[...v.querySelectorAll(':scope > .card')];const rivals=cards.find(c=>/HOW RIVALS SEE YOU/i.test((c.querySelector('h3,h4,.h,b,div')||c).textContent||''));if(rivals)intoMore(v,rivals);
+    cards.forEach(c=>{const rows=[...c.querySelectorAll('button')].filter(b=>/declare war/i.test(b.textContent)).map(b=>b.closest('.row,tr,li,.p15g')||b.parentElement);if(rows.length<=4||c.dataset.p219)return;c.dataset.p219='1';
+      rows.slice(3).forEach(r=>r.classList.add('p219hide'));const s=document.createElement('button');s.className='btn ghost sm';s.textContent='Show all '+rows.length;s.onclick=()=>{rows.forEach(r=>r.classList.remove('p219hide'));s.remove();};rows[2].after(s);});}
+  function alliance(v){dismissable(v.querySelector('.p204res'),'p219res');}
+  function apply(){try{if(typeof view==='undefined')return;const v=document.getElementById('view');if(!v)return;
+      if(view==='dashboard'){home(v);goalNexus(v);}else if(view==='self')defend(v);else if(view==='diplomacy')dip(v);else if(view==='clans')alliance(v);}catch(e){}}
+  // a Raider starts ready to fight, not on Standby at 60% strength
+  function raider(){try{const c=typeof you==='function'?you():null;if(c&&c.doc==='war'&&c.ready==='standby'&&!c._p219rd&&G.tick<=2){c.ready='ready';c._p219rd=1;}else if(c&&!c._p219rd&&G.tick>2)c._p219rd=1;}catch(e){}}
+  // a resource at its storage cap still showed "+530K/t": say the store is full, so the income is wasted
+  function caps(){try{const c=you();if(!c||typeof capOf!=='function')return;const tiles=[...document.querySelectorAll('#strip > .res')];['energy','food','steel','fuel','electronics'].forEach(k=>{const lab=((typeof RMETA!=='undefined'&&RMETA[k]&&RMETA[k].l)||k).toUpperCase();const el=tiles.find(t=>(t.innerText||'').toUpperCase().indexOf(lab)>=0);if(!el)return;let cap=0;try{cap=capOf(c,k);}catch(e){}
+      el.classList.toggle('p219full',cap>0&&(c.res[k]||0)>=cap*0.995);});}catch(e){}}
+  setInterval(caps,2000);
+  function run(){raider();caps();apply();setTimeout(apply,80);setTimeout(apply,400);}
+  window.__p219apply=run;if(window.__pLayers&&window.__pLayers.indexOf('__p219apply')<0)window.__pLayers.push('__p219apply');
 })();
 
 </script>
