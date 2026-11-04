@@ -16,7 +16,7 @@
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="https://playterrastate.nl/img/ironfront-share.jpg">
 <meta name="author" content="Wim Kamphorst">
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"VideoGame","@id":"https://playterrastate.nl/ironfront.html#game","name":"Ironfront","url":"https://playterrastate.nl/ironfront.html","description":"Free WW2-style grand strategy in your browser. Lead one invented nation in a 1940s world at war, hold 2 of the 3 Capital Sectors, and make every tick a decision: battle orders, field works, radio intel and feints. No account, no download.","image":"https://playterrastate.nl/img/ironfront-share.jpg","genre":["Strategy","Grand strategy","Turn-based strategy","War game","Browser game"],"gamePlatform":["Web browser","Windows","macOS","Linux","Android","iOS"],"applicationCategory":"Game","operatingSystem":"Any (web browser)","playMode":"SinglePlayer","inLanguage":"en","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"EUR","availability":"https://schema.org/InStock"},"author":{"@type":"Person","@id":"https://playterrastate.nl/#wim","name":"Wim Kamphorst","url":"https://wimkamphorst.nl"},"publisher":{"@type":"Person","@id":"https://playterrastate.nl/#wim","name":"Wim Kamphorst","url":"https://wimkamphorst.nl"},"softwareVersion":"14.0","dateModified":"2026-11-03","sameAs":["https://wimkamphorstcoaching.itch.io/ironfront"]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"VideoGame","@id":"https://playterrastate.nl/ironfront.html#game","name":"Ironfront","url":"https://playterrastate.nl/ironfront.html","description":"Free WW2-style grand strategy in your browser. Lead one invented nation in a 1940s world at war, hold 2 of the 3 Capital Sectors, and make every tick a decision: battle orders, field works, radio intel and feints. No account, no download.","image":"https://playterrastate.nl/img/ironfront-share.jpg","genre":["Strategy","Grand strategy","Turn-based strategy","War game","Browser game"],"gamePlatform":["Web browser","Windows","macOS","Linux","Android","iOS"],"applicationCategory":"Game","operatingSystem":"Any (web browser)","playMode":"SinglePlayer","inLanguage":"en","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"EUR","availability":"https://schema.org/InStock"},"author":{"@type":"Person","@id":"https://playterrastate.nl/#wim","name":"Wim Kamphorst","url":"https://wimkamphorst.nl"},"publisher":{"@type":"Person","@id":"https://playterrastate.nl/#wim","name":"Wim Kamphorst","url":"https://wimkamphorst.nl"},"softwareVersion":"14.0","dateModified":"2026-11-04","sameAs":["https://wimkamphorstcoaching.itch.io/ironfront"]}</script>
 <link rel="manifest" href="ironfront.webmanifest"><meta name="theme-color" content="#14160c"><link rel="icon" href="icons/ironfront-64.png"><link rel="apple-touch-icon" href="icons/ironfront-180.png">
 <script>window.__MP_URL__=''; /* '' = live multiplayer not open yet */ if('serviceWorker' in navigator)addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));</script>
 <script data-goatcounter="https://playterrastatenl.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
@@ -14877,8 +14877,9 @@ function staffTick(){const humans=G.countries.filter(c=>c&&c.isAI===false&&!c.re
   humans.forEach(c=>{const S=staffOf(c);if(!S)return;S.fx=(S.fx||[]).filter(f=>f.until>G.tick);
     const reg=regionsOf(c).length;if(reg>S.maxReg)S.maxReg=reg;
     const nt=(c.tech||[]).length;if(S._tl!=null&&nt>S._tl)(c.commanders||[]).forEach(k=>{const d=staffDef(k);if(d&&d.role==='science')staffXp(c,k,16*(nt-S._tl));});S._tl=nt;
-    if(G.tick%5===0){if(!order){order=G.countries.filter(x=>x&&!x.retired&&regionsOf(x).length).map(x=>[x.id,netWorth(x)]).sort((a,b)=>b[1]-a[1]).map(x=>x[0]);}
-      const pos=order.indexOf(c.id)+1;if(pos>0&&(!S.bestPos||pos<S.bestPos))S.bestPos=pos;}
+    // the same overall ranking as the Rankings screen, and only once the opening is over: in the first turns a fresh start sits near the top by its starting treasury
+    if(G.tick%5===0&&G.tick-((G.season&&G.season.startTick)||0)>=50){if(!order){order=G.countries.filter(x=>x&&!x.retired&&regionsOf(x).length).map(x=>[x.id,netWorth(x)]).sort((a,b)=>b[1]-a[1]).map(x=>x[0]);}
+      let pos=order.indexOf(c.id)+1;try{if(typeof rankTitle==='function'){const rt=rankTitle(c.id);if(rt&&rt.pos)pos=rt.pos;}}catch(e){}if(pos>0&&(!S.bestPos||pos<S.bestPos))S.bestPos=pos;}
     const inClan=c.clan!=null;
     (c.commanders||[]).forEach(k=>{const d=staffDef(k);if(!d)return;const extra=(d.role==='economy'||d.role==='science'||d.role==='intel')?1:d.role==='diplomacy'?(inClan?1.5:1):0;staffXp(c,k,1+extra);});
     staffUnlockCheck(c);});}
@@ -15098,6 +15099,101 @@ maybeCapture=function(winner,loser,region,heavyLossFrac){
   if(loser.id===G.you&&typeof toast==='function'){toast('💔 '+nm+' was captured by '+leaderName(winner)+' and left your staff.','bad');}};
 
 /*p215*/
+/*p216*/
+// silent fix (16.0.1): with 500 nations, names and tags came out twice (two "Sunbelt Council"s on one list), and a few
+// tags spelled a rude word.
+// A new nation now gets a name and a tag that no living nation has.
+try{const _gcn216=genCountryName;genCountryName=function(){const used=new Set(),tags=new Set();
+  (G.countries||[]).forEach(c=>{if(c&&!c.retired){used.add(String(c.name||'').toLowerCase());tags.add(String(c.tag||'').toUpperCase());}});
+  let m=null;for(let i=0;i<30;i++){m=_gcn216.apply(this,arguments);if(!m||!used.has(String(m.name).toLowerCase()))break;}
+  if(!m)return m;
+  if(used.has(String(m.name).toLowerCase())){for(const p of ['New','Free','Greater','Upper','Lower','Old']){const n=(p+' '+m.name).slice(0,40);if(!used.has(n.toLowerCase())){m=Object.assign({},m,{name:n});break;}}}
+  const BAD=/TURD|SHIT|FUCK|CUNT|PISS|DICK|COCK|ANUS|NAZI|KKK|SS$|^SS|SLUT|FAG|PORN|SEX|ASS|POO|PUKE|DUMB|DIE$/;
+  if(tags.has(String(m.tag).toUpperCase())||BAD.test(String(m.tag).toUpperCase())){const base=String(m.tag).toUpperCase().replace(/[^A-Z]/g,'').slice(0,3)||'NAT';const AL='ABCDEFGHJKLMNPQRSTUVWXYZ';
+    for(let i=0;i<AL.length*AL.length;i++){const t=base+AL[i%AL.length]+(i>=AL.length?AL[Math.floor(i/AL.length)%AL.length]:'');if(!tags.has(t)&&!BAD.test(t)){m=Object.assign({},m,{tag:t.slice(0,5)});break;}}}
+  return m;};}catch(e){}
+
+/*p217*/
+// p217 Update 17.0 "Nations that think": memory between all nations, a check before every free attack, revenge and
+// friendship that grow from what happened. The computer still only uses the same commands a player has.
+// ---- 1. memory: every nation remembers every other nation (and every player) by what they did ----
+const P217_LOG=6,P217_KEYS=24;
+function memOf(c,oid){c._mem=c._mem||{};let m=c._mem[oid];if(!m)m=c._mem[oid]={tr:50,gr:0,log:[]};return m;}
+function memNote(c,oid,k,dTr,dGr){try{if(!c||oid==null||c.id===oid||c.retired)return;const m=memOf(c,oid);
+  const loy=((c.pers&&c.pers.loyalty)!=null?c.pers.loyalty:60)/100;   // loyal nations hold on to good and bad longer
+  m.tr=Math.max(0,Math.min(100,m.tr+dTr*(0.7+loy*0.6)));m.gr=Math.max(0,Math.min(10,m.gr+dGr));
+  m.log.unshift({t:G.tick,k});if(m.log.length>P217_LOG)m.log.length=P217_LOG;}catch(e){}}
+function memTrust(c,oid){const m=c&&c._mem&&c._mem[oid];return m?m.tr:50;}
+function memGrudge(c,oid){const m=c&&c._mem&&c._mem[oid];return m?m.gr:0;}
+// slowly back to neutral, and forget nations that are gone or never mattered
+function memFade(){if(G.tick%10)return;(G.countries||[]).forEach(c=>{if(!c||!c._mem)return;const ks=Object.keys(c._mem);
+  ks.forEach(k=>{const m=c._mem[k];const o=G.countries[k];if(!o||o.retired){delete c._mem[k];return;}m.tr+=(50-m.tr)*0.04;m.gr=Math.max(0,m.gr-0.15);
+    if(Math.abs(m.tr-50)<2&&m.gr<0.2&&(!m.log.length||G.tick-m.log[0].t>80))delete c._mem[k];});
+  const left=Object.keys(c._mem);if(left.length>P217_KEYS){left.sort((a,b)=>(Math.abs(c._mem[a].tr-50)+c._mem[a].gr*8)-(Math.abs(c._mem[b].tr-50)+c._mem[b].gr*8)).slice(0,left.length-P217_KEYS).forEach(k=>delete c._mem[k]);}});}
+// what happened in a battle is remembered by both sides, and by the allies who stood in the line
+if(typeof finalizeBattle==='function'){const _fb217=finalizeBattle;finalizeBattle=function(c,f,r,defC,R,retreated){const before=r?r.owner:null;
+  const helpers=[];try{if(r&&defC)(G.countries||[]).forEach(o=>{if(!o||o.id===defC.id||o.id===c.id)return;if((o.fleets||[]).some(x=>x&&x.target===r.id&&x.status==='garrison'))helpers.push(o.id);});}catch(e){}
+  const out=_fb217.apply(this,arguments);
+  try{if(f&&f._p217&&c&&c.isAI){const st=G._p217s=G._p217s||{};const k=f._p217+(r&&r.owner===c.id?':took':':no');st[k]=(st[k]||0)+1;}}catch(e){}
+  try{if(c&&defC&&before===defC.id){const took=r.owner===c.id;
+    memNote(defC,c.id,took?'took_land':'attacked',took?-20:-10,took?3:2);memNote(c,defC.id,took?'beat':'fought',took?-3:-2,0);
+    helpers.forEach(hid=>{memNote(defC,hid,'helped',took?6:10,0);const h=G.countries[hid];if(h)memNote(c,hid,'blocked',-6,1);});}}catch(e){}
+  return out;};}
+// stationing troops on another nation's ground is help, and is remembered
+if(typeof cmdStation==='function'){const _st217=cmdStation;cmdStation=function(c,rid){const out=_st217.apply(this,arguments);
+  try{if(out&&out.ok){const r=_rgId(rid);if(r&&r.owner!=null&&r.owner!==c.id)memNote(G.countries[r.owner],c.id,'helped',8,0);}}catch(e){}return out;};}
+// ---- 2. a check before every free attack: is there a reason, and does the sum say we win? ----
+let P217_FREE=0;G._p217=G._p217||{ok:0,no:0,rev:0};
+function p217Pers(c){return c.pers||{aggression:50,risk:50,patience:50,loyalty:60};}
+function p217Reason(c,r,defC){
+  if(!defC)return 'land';                                           // open or neutral ground: room to grow
+  if(c.clan!=null&&defC.clan===c.clan)return '';
+  try{if(typeof napActive==='function'&&(napActive(c,defC.id)||napActive(defC,c.id)))return '';}catch(e){}
+  const tr=memTrust(c,defC.id),gr=memGrudge(c,defC.id);
+  if(gr>=2)return 'revenge';
+  try{if(c.clan!=null&&defC.clan!=null&&typeof clanAtWar==='function'&&clanAtWar(c.clan,defC.clan))return 'war';}catch(e){}
+  if(tr>=68)return '';                                              // a friend: no reason to strike
+  return 'weak';}                                                   // a weaker neighbour, if the sum agrees
+function p217Need(c){const p=p217Pers(c);return p.risk>=65?1.25:p.risk<=30?1.45:1.32;}
+function p217Check(c,r,com){const defC=r.owner!=null?G.countries[r.owner]:null;const why=p217Reason(c,r,defC);if(!why)return {ok:false,why:'no reason'};
+  // everything of ours already on the way to this region counts too
+  const A=Object.assign({},com);(c.fleets||[]).forEach(f=>{if(f&&f.target===r.id&&(f.status==='outbound'||f.status==='staged'||f.status==='battle'))for(const k in f.units||{})A[k]=(A[k]||0)+(f.units[k]||0);});
+  let D={};try{D=defC?defenderPool(r,defC).units:garrisonUnits(r);}catch(e){D={};}
+  let B=null;try{B=battleCalc(c,A,r,defC,D,{});}catch(e){return {ok:true,why};}
+  const need=p217Need(c);return {ok:!!(B&&B.wouldTake&&B.ratio>=need),why,ratio:B?B.ratio:0};}
+if(typeof cmdOp==='function'){const _op217=cmdOp;cmdOp=function(c,rid,committed,opts){
+  if(P217_FREE>0&&c&&c.isAI&&!(opts&&opts._p217)){try{const r=_rgId(rid);if(r&&r.owner!==c.id){const k=p217Check(c,r,committed||{});
+      if(!k.ok){G._p217.no++;c._p217last={t:G.tick,r:r.id,why:k.why};return err('Thought better of it: '+k.why);}G._p217.ok++;
+        const out=_op217.apply(this,arguments);try{if(out&&out.ok){const f=(c.fleets||[])[c.fleets.length-1];if(f&&f.target===r.id)f._p217=k.why;}}catch(e){}return out;}}catch(e){}}
+  return _op217.apply(this,arguments);};}
+['aiDecide','standinAct','p175Expand'].forEach(n=>{try{const f=eval(n);if(typeof f!=='function')return;const w=function(){P217_FREE++;try{return f.apply(this,arguments);}finally{P217_FREE--;}};
+  if(n==='aiDecide')aiDecide=w;else if(n==='standinAct')standinAct=w;else p175Expand=w;}catch(e){}});
+// ---- 3. revenge: a nation that was hurt goes back for it, when the sum says it can ----
+function p217Revenge(){if(G.tick%3)return;const list=(G.countries||[]).filter(c=>c&&c.isAI&&!c.retired&&c._mem&&regionsOf(c).length);
+  list.forEach(c=>{if((c._p217rev||-99)+12>G.tick)return;const p=p217Pers(c);const gate=p.patience>=70?5:p.patience<=30?3:4;
+    let best=null;for(const k in c._mem){const m=c._mem[k];if(m.gr<gate)continue;const foe=G.countries[k];if(!foe||foe.retired)continue;if(!best||m.gr>best.m.gr)best={foe,m};}
+    if(!best)return;const mine=new Set(regionsOf(c).map(r=>r.cluster));
+    const targets=regionsOf(best.foe).filter(r=>mine.has(r.cluster)).slice(0,6);if(!targets.length)return;
+    for(const r of targets){let com=null;try{com=aiStrikeForce(c,r,0.5,1.4);}catch(e){}if(!com||fleetSize(com)<5)continue;
+      const k=p217Check(c,r,com);if(!k.ok)continue;let res=null;try{res=cmdOp(c,r.id,com,{_p217:1});}catch(e){}
+      if(res&&res.ok){c._p217rev=G.tick;G._p217.rev++;best.m.gr=Math.max(0,best.m.gr-2);
+        try{if(best.foe.id===G.you&&best.foe.isAI===false&&typeof _aiSay==='function')_aiSay(best.foe,c,'You took from us. We have not forgotten. We are coming for '+r.name+'.');}catch(e){}
+        try{if(typeof news==='function'&&Math.random()<0.25)news('war',c.name+' strikes back at '+best.foe.name+' over an old score.');}catch(e){}
+        break;}}});}
+if(typeof runTick==='function'){const _rt217=runTick;runTick=function(){const out=_rt217.apply(this,arguments);try{memFade();}catch(e){}try{p217Revenge();}catch(e){}return out;};}
+// ---- 4. who they are, in plain words (for the screens) ----
+function p217Traits(c){const p=p217Pers(c);const t=[];const add=(v,hi,lo,a,b)=>{if(v==null)return;if(v>=hi)t.push([a,v-hi]);else if(v<=lo)t.push([b,lo-v]);};
+  add(p.aggression,70,30,'warlike','peaceful');add(p.risk,65,30,'bold','careful');add(p.patience,70,30,'patient','hot-headed');
+  add(p.loyalty,75,40,'loyal','fickle');add(p.diplomacy,70,30,'talkative','closed');add(p.eco,72,30,'trader','poor trader');
+  return t.sort((a,b)=>b[1]-a[1]).slice(0,3).map(x=>x[0]);}
+const P217_WORDS={took_land:'you took their land',attacked:'you attacked them',helped:'you helped them',blocked:'you stood against them',beat:'they beat you',fought:'they attacked you'};
+function p217About(c,oid){const m=c&&c._mem&&c._mem[oid];const out={trust:Math.round(memTrust(c,oid)),grudge:Math.round(memGrudge(c,oid)*10)/10,events:[]};
+  // in a solo game the trust the pact answer uses is the one to show
+  try{if(oid===G.you&&c.vsYou&&c.vsYou.trust!=null)out.trust=Math.round(c.vsYou.trust);}catch(e){}
+  if(m)out.events=m.log.slice(0,2).map(x=>({t:x.t,w:P217_WORDS[x.k]||x.k}));
+  try{const v=c.vsYou;if(v&&v.mem&&oid===G.you&&!out.events.length)out.events=v.mem.slice(0,2).map(x=>({t:x.tick,w:({attacked_me:'you attacked them',captured_my_region:'you took their land',broke_nap:'you broke a pact',helped_me:'you helped them',traded:'you traded',honored_nap:'you kept a pact',defeated_my_army:'you beat their army'})[x.type]||x.type}));}catch(e){}
+  return out;}
+
 // ---- BOOT ------------------------------------------------------------------
 // GitHub serves the brochure as index.html and this file as play.html.
 // Itch and Newgrounds keep the whole game, landing included, as index.html.
@@ -20797,7 +20893,7 @@ function nextRow(c){const n=nextLand(c);if(!n)return '';const atk=Math.round(hom
   if(n.own&&!n.known)return '<div class="p18row p186next"><div><b>🗺 Next land: '+esc(n.r.name)+'</b> <span class="mono small">'+esc(n.r.coord||'')+'</span>, held by '+esc(n.own.name)+', '+n.t+' turns away. No empty land is left near you. You do not know their defence yet: scout it first.</div><div class="row wrap" style="gap:6px;margin-top:6px"><button class="btn sm" onclick="p186Scout('+n.r.id+')">🔍 Scout it</button></div></div>';
   const def=Math.round(n.def);const gap=Math.round(miss(c,n.r));const ready=gap<=0;const pending=c._p186go&&c._p186go.rid===n.r.id;
   return '<div class="p18row p186next"><div><b>🗺 Next land: '+esc(n.r.name)+'</b> <span class="mono small">'+esc(n.r.coord||'')+'</span>, '+(n.own?'held by '+esc(n.own.name)+' (scouted)':'empty')+', '+n.t+' turn'+(n.t===1?'':'s')+' away. Defence <b>'+full(def)+'</b>, your army <b>'+full(atk)+'</b>. '+
-    (pending?'Your new troops march as soon as they are ready.':ready?'<b>You can take it now.</b>':'You need about <b>+'+full(gap)+'</b> attack. Take it trains that and marches when the troops are ready.')+'</div>'+
+    (pending?'Your new troops march as soon as they are ready.':ready?'<b>You can take it now.</b>':'You need about <b>+'+full(gap)+'</b> attack. <b>Take it</b> trains that much and attacks as soon as the troops are ready.')+'</div>'+
     (pending?'':'<div class="row wrap" style="gap:6px;margin-top:6px"><button class="btn sm" onclick="p186Take('+n.r.id+')">⚔ Take it</button></div>')+'</div>';}
 function homeTidy(){try{if(typeof view==='undefined'||view!=='dashboard'||!SOLO())return;const v=document.getElementById('view');if(!v||v.querySelector('.p186mk'))return;v.insertAdjacentHTML('beforeend','<span class="p186mk" hidden></span>');const c=ME();if(!c)return;
   let inc=[];try{inc=incomingTo(c.id).filter(x=>x.threat>=0.02);}catch(e){}
@@ -22644,7 +22740,7 @@ if(typeof module!=='undefined'&&module.exports)module.exports=BANNER;
     if(pend>0){const i=(o.tr||[]).length;const pair=(STAFF_TRAITS[d.role]||[])[i]||[];const tx=t=>{const parts=[];if(t[1]&&Object.keys(t[1]).length)parts.push(fmtB(t[1]));const x=t[2]||{};if(x.op)parts.push('orders '+Math.round(x.op*100)+'% stronger');if(x.cd)parts.push('orders ready '+Math.round(-x.cd*100)+'% sooner');if(x.xp)parts.push('+'+Math.round(x.xp*100)+'% experience');return parts.join(', ');};
       pick=`<div class="small" style="color:var(--warn,#f6b62b);font-weight:700">Rank ${STAFF_MILES[i]}: choose a trait</div><div class="p211pick">${pair.map((t,j)=>`<button class="btn sm ghost" data-p211t="${d.k}" data-p211p="${j}"><b>${E(t[0])}</b><br><span class="muted small">${E(tx(t))}</span></button>`).join('')}</div>`;}
     const ord=inStaff?`<div class="p211ord"><b>${E(O[0])} <span class="muted small" style="font-weight:400">· ${cost} CP</span></b><span class="muted">${E(staffOrderText(c,d))}</span><div class="mt" style="margin-top:6px">${ready?`<button class="btn sm" data-p211o="${d.k}">Give order</button>`:`<span class="small muted">Ready in ${o.cd-G.tick} turn${o.cd-G.tick===1?'':'s'}</span>`}</div></div>`:`<div class="small muted">Order: <b>${E(O[0])}</b>. ${E(staffOrderText(c,d))}</div>`;
-    return `<div class="card p211c r${d.rar}">${isNew?'<span class="p211new">NEW</span>':''}<div class="rt">${E(STAFF_RAR[d.rar].n)} · ${E(STAFF_ROLES[d.role].n)}</div><div class="nm">${E(d.n)}</div><div class="bio">${E(d.bio)}</div>
+    return `<div class="card p211c r${d.rar}">${isNew?'<span class="p211new">NEW</span>':''}<div class="rt">${E(STAFF_RAR[d.rar].n)}${STAFF_RAR[d.rar].n===STAFF_ROLES[d.role].n?'':' · '+E(STAFF_ROLES[d.role].n)}</div><div class="nm">${E(d.n)}</div><div class="bio">${E(d.bio)}</div>
       <div class="p211rk"><b>${rk}</b><span>rank${rk<100?' · '+Math.round(o.xp)+' / '+Math.ceil(hi)+' xp':' · the highest rank'}</span></div><div class="p211bar"><i style="width:${pct}%"></i></div>
       <div class="bn">${E(fmtB(b))||'<span class="muted">no bonus yet</span>'}</div>${traits.length?`<div class="tr">Traits: ${traits.map(E).join(', ')}</div>`:''}
       ${pick}${ord}
@@ -22662,13 +22758,17 @@ if(typeof module!=='undefined'&&module.exports)module.exports=BANNER;
     const free=DB.filter(d=>S.unl.includes(d.k)&&!inS.includes(d.k)&&keep(d));
     if(free.length){v.appendChild(h(`<h3 class="mt">Unlocked <span class="muted small">${free.length}</span></h3>`));v.appendChild(h(`<div class="p211g">${free.map(d=>card(c,d,false)).join('')}</div>`));}
     const locked=DB.filter(d=>!S.unl.includes(d.k)&&keep(d));
-    if(locked.length){v.appendChild(h(`<h3 class="mt">Still to unlock <span class="muted small">${locked.length}</span></h3>`));
-      v.appendChild(h(`<div class="card">${locked.map(d=>{const pg=d.deed?(d.deed.t==='top'?(S.bestPos?'best #'+S.bestPos:'-'):Math.min(staffDeedProgress(c,d),d.deed.n)+' / '+d.deed.n):'';
-        return `<div class="p211lock"><span><span class="n">${E(d.n)}</span> <span class="tag">${E(STAFF_RAR[d.rar].n)}</span> <span class="tag">${E(STAFF_ROLES[d.role].n)}</span><br><span class="d">${E(d.deed?d.deed.d:'')}</span></span><span class="pg">${pg}</span></div>`;}).join('')}</div>`));}
+    // only the next commander of each ladder; the full list on request
+    const nextOf={};locked.forEach(d=>{const k=d.role+'|'+(d.deed?d.deed.t:'');if(!nextOf[k]||((d.deed&&d.deed.n)||0)<((nextOf[k].deed&&nextOf[k].deed.n)||0))nextOf[k]=d;});
+    const allL=!!window.__p211all;const shown=allL||f!=='all'?locked:locked.filter(d=>nextOf[d.role+'|'+(d.deed?d.deed.t:'')]===d);
+    if(locked.length){v.appendChild(h(`<h3 class="mt">${shown.length<locked.length?'Next to unlock':'Still to unlock'} <span class="muted small">${shown.length<locked.length?shown.length+' of '+locked.length:locked.length}</span></h3>`));
+      v.appendChild(h(`<div class="card">${shown.map(d=>{const pg=d.deed?(d.deed.t==='top'?(S.bestPos?'best #'+S.bestPos:'-'):Math.min(staffDeedProgress(c,d),d.deed.n)+' / '+d.deed.n):'';
+        return `<div class="p211lock"><span><span class="n">${E(d.n)}</span> <span class="tag">${E(STAFF_RAR[d.rar].n)}</span>${STAFF_RAR[d.rar].n===STAFF_ROLES[d.role].n?'':' <span class="tag">'+E(STAFF_ROLES[d.role].n)+'</span>'}<br><span class="d">${E(d.deed?d.deed.d:'')}</span></span><span class="pg">${pg}</span></div>`;}).join('')}${f==='all'?`<div class="mt"><button class="btn sm ghost" data-p211all="1">${allL?'Show only the next one per role':'Show all '+locked.length}</button></div>`:''}</div>`));}
     const hist=(S.log||[]).slice(0,6);
     if(hist.length)v.appendChild(h(`<div class="card mt"><h3>Recent orders</h3>${hist.map(x=>{const d=staffDef(x.k);return `<div class="small"><span class="tag">t${x.t}</span> ${E(d?d.n:x.k)}: ${E((STAFF_ORDERS[x.o]||[''])[0])}</div>`;}).join('')}</div>`));
     S.newUnl=(S.newUnl||[]).filter(k=>inS.includes(k)?false:true);
     const redo=()=>{try{save();}catch(e){}try{drawTop();}catch(e){}go('staff');};
+    v.querySelectorAll('[data-p211all]').forEach(b=>b.onclick=()=>{window.__p211all=!window.__p211all;go('staff');});
     v.querySelectorAll('[data-p211f]').forEach(b=>b.onclick=()=>{window.__p211f=b.dataset.p211f;go('staff');});
     v.querySelectorAll('[data-p211a]').forEach(b=>b.onclick=async()=>{const r=await cmdStaffAdd(c,b.dataset.p211a);if(!r.ok)toast(r.error,'bad');else{(S.newUnl=(S.newUnl||[]).filter(x=>x!==b.dataset.p211a));toast(staffDef(b.dataset.p211a).n+' joined your '+sname.toLowerCase());}redo();});
     v.querySelectorAll('[data-p211r]').forEach(b=>b.onclick=async()=>{const r=await cmdStaffRemove(c,b.dataset.p211r);if(!r.ok)toast(r.error,'bad');redo();});
@@ -22862,10 +22962,10 @@ if(typeof module!=='undefined'&&module.exports)module.exports=BANNER;
     bg.querySelector('[data-keep]').onclick=()=>{off();G.solo.scenario=null;G._scResult=null;G._scShown=false;try{save();}catch(e){}try{drawScenarioPill();}catch(e){}};
     bg.querySelector('[data-list]').onclick=()=>{off();showStory();};document.body.appendChild(bg);};
   function listHTML(){const d=load();const total=Object.values(d.stars).reduce((a,b)=>a+b,0);
-    return `<p class="muted small">${E(V.title)}. Ten chapters, each a short level with its own goal. A commander tells each chapter and joins your ${typeof staffLabel==='function'?staffLabel().toLowerCase():'staff'}. Starting a chapter replaces the world you are playing now.</p>
+    return `<p class="muted small">${E(V.title)}. Ten chapters, each a short level with its own goal. They open one by one. A commander tells each chapter and joins your ${typeof staffLabel==='function'?staffLabel().toLowerCase():'staff'}. Starting a chapter replaces the world you are playing now.</p>
       <p class="small"><b>${total}</b> of ${STORY.length*3} stars</p><div class="p213list">${STORY.map((sc,i)=>{const open=storyOpen(i);const st=d.stars[sc.k]||0;
         return `<div class="card p213ch${open?'':' lock'}"><span class="no">CHAPTER ${i+1}</span><b>${E(sc.n)}</b><span class="small">${E(sc.goal)}</span><span class="muted small">Told by ${E(sc.speaker.n)} · ${sc.turns} turns</span>${starHTML(st)}
-        ${open?`<button class="btn sm${st?' ghost':''}" data-p213="${sc.k}">${st?'Play again':'Play'}</button>`:'<span class="muted small">Finish the chapter before this one to open it.</span>'}</div>`;}).join('')}</div>`;}
+        ${open?`<button class="btn sm${st?' ghost':''}" data-p213="${sc.k}">${st?'Play again':'Play'}</button>`:'<span class="muted small">🔒 Locked</span>'}</div>`;}).join('')}</div>`;}
   function showStory(){const bg=h(`<div class="modal-bg"><div class="modal" style="max-width:860px;max-height:90vh;overflow:auto"><div class="row between"><h2 style="margin:0">Story mode</h2><button class="btn ghost sm" data-x aria-label="Close">✕</button></div>${listHTML()}</div></div>`);
     bg.querySelector('[data-x]').onclick=()=>bg.remove();bg.onclick=e=>{if(e.target===bg)bg.remove();};
     bg.querySelectorAll('[data-p213]').forEach(b=>b.onclick=()=>{bg.remove();renderSetup(b.dataset.p213);});document.body.appendChild(bg);}
@@ -22972,6 +23072,62 @@ if(typeof module!=='undefined'&&module.exports)module.exports=BANNER;
           S.mode='defend';S.rid=rid;S.atkCid=aid;S.atk=o?Object.assign({},o.v.units):{};try{S.def=Object.assign({},defenderPool(_rgId(rid),c).units);}catch(e){}go('calc');});}}catch(e){}}
   window.__p214apply=defendCard;if(window.__pLayers&&window.__pLayers.indexOf('__p214apply')<0)window.__pLayers.push('__p214apply');
   window.p214Open=(mode,rid,atkCid)=>{S.mode=mode||'attack';S.rid=rid;S.atkCid=atkCid||null;try{const c=you();if(mode==='attack'){const it=regionIntel(c,rid);S.def=Object.assign({},it&&it.comp||{});if(!fleetSize(S.atk))S.atk=homeArmy(c);}}catch(e){}go('calc');};
+})();
+
+</script>
+<script>/*p216ui*/
+// p216ui (16.0.1 "Clean screens"): less noise on a page, small layout fixes.
+(function(){
+  const st=document.createElement('style');st.textContent=`
+  #mktcard label:has(> input[type=checkbox]){justify-content:flex-start!important;text-transform:none!important;font-family:inherit!important;letter-spacing:normal!important;font-size:13px!important}
+    .p216clamp{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;cursor:pointer}.p216clamp.open{display:block}
+  button:not(.ghost) .pos,button:not(.ghost) .neg{color:inherit!important;opacity:.85}
+  #mktcard label > input[type=checkbox]{width:18px!important;height:18px!important;flex:0 0 18px!important;margin:0!important}`;
+  document.head.appendChild(st);
+  function apply(){try{const v=document.getElementById('view');if(!v||typeof view==='undefined')return;
+    // a card with nothing in it is not shown
+    v.querySelectorAll('.card').forEach(c=>{if(c.style.display==='none'||c.tagName==='DETAILS')return;if((c.innerText||'').trim())return;if(c.querySelector('input,select,textarea,canvas,img,button,svg:not(.ic)'))return;if(c.getBoundingClientRect().height>60)return;c.style.display='none';});
+    // build categories: one icon each
+    v.querySelectorAll('button[data-pcat]').forEach(b=>{const s=[...b.querySelectorAll(':scope > svg')];for(let i=0;i<s.length-1;i++)s[i].remove();});
+    if(view==='dashboard'){
+      // nothing coming, nothing out, no landings: the board says nothing, so it is not shown
+      const rb=v.querySelector('.rboard');const card=rb&&rb.closest('.card');
+      if(card&&!card.querySelector('.rline')&&!card.querySelector('.rland .small')&&!card.querySelector('button')){const d=card.closest('details.p8fold');
+        if(d&&d.querySelectorAll(':scope > .p8in').length<=1)d.style.display='none';else card.style.display='none';}}
+    if(view==='self'){
+      // long lists of every allied wave fold to two lines; a tap opens them
+      v.querySelectorAll('div,td').forEach(e=>{if(e.classList.contains('p216clamp'))return;const t=(e.textContent||'').trim();if(/^Defenders \(\d+\)/.test(t)&&t.length>180&&!e.querySelector('div')){e.classList.add('p216clamp');e.title='Tap to show all';e.addEventListener('click',()=>e.classList.toggle('open'));}});
+      v.querySelectorAll('.p9line[data-p9b="brline"]').forEach(e=>{if(/none yet/i.test(e.innerText||''))e.style.display='none';});
+      v.querySelectorAll('div').forEach(e=>{if(!e.children.length&&/^Launch from War\. /.test((e.textContent||'').trim()))e.style.display='none';});}
+    if(view==='market'){
+      // quick buy: stock and growth already stand in the table above; here only the price
+      // the trend column repeated the stock column
+      v.querySelectorAll('td,span,div').forEach(e=>{if(e.children.length||e.dataset.p216)return;const t=e.textContent||'';if(/^surplus|^deficit|^shortage|^balanced/i.test(t.trim())&&/ · [\d.,]+[KMB]? in stock$/.test(t)){e.textContent=t.replace(/ · [\d.,]+[KMB]? in stock$/,'');e.dataset.p216='1';}});
+      const q=[...v.querySelectorAll('.card')].find(c=>{const h=c.querySelector('h3');return h&&/quick buy/i.test(h.textContent||'');});
+      if(q)q.querySelectorAll('.row > span.small > span.muted').forEach(s=>{if(s.dataset.p216)return;const p=(s.textContent||'').split(' · ');if(p.length>1){s.textContent=p[p.length-1];s.dataset.p216='1';}});}
+  }catch(e){}}
+  // some screens add their icons and lines a moment after the layers ran: look once more right after
+  function run(){apply();setTimeout(apply,80);setTimeout(apply,400);}
+  window.__p216apply=run;if(window.__pLayers&&window.__pLayers.indexOf('__p216apply')<0)window.__pLayers.push('__p216apply');
+})();
+
+</script>
+<script>/*p217ui*/
+// p217ui (17.0): who your neighbours are and what they remember of you, on the Diplomacy screen.
+(function(){
+  const st=document.createElement('style');st.textContent=`.p217who{display:block;margin-top:2px;font-size:12px}.p217who .tr{font-weight:700}.p217who .lo{color:var(--bad,#f0625f)}.p217who .hi{color:var(--ok,#37d9a9)}`;document.head.appendChild(st);
+  function apply(){try{if(typeof view==='undefined'||view!=='diplomacy')return;const v=document.getElementById('view');const me=you();if(!v||!me||typeof p217About!=='function')return;
+    const card=v.querySelector('.p7dip');if(!card)return;
+    card.querySelectorAll(':scope > .row').forEach(row=>{if(row.querySelector('.p217who'))return;const b=row.querySelector('b');if(!b)return;
+      const bi=row.querySelector('[data-i]');let c=bi?G.countries[+bi.dataset.i]:null;if(!c){const nm=b.textContent.trim();c=G.countries.find(x=>x&&!x.retired&&x.isAI&&x.name===nm);}if(!c)return;
+      const tr=p217Traits(c);const a=p217About(c,me.id);const cls=a.trust>=62?'hi':a.trust<=38?'lo':'';
+      const ev=a.events.length?' · '+a.events.map(e=>e.w+' (turn '+e.t+')').join(', '):'';
+      const s=document.createElement('span');s.className='p217who muted';s.innerHTML=(tr.length?tr.join(', ')+' · ':'')+'trust in you <span class="tr '+cls+'">'+a.trust+'</span>'+(a.grudge>=2?' · <span class="lo">wants payback</span>':'')+esc(ev);
+      b.parentElement.appendChild(s);});
+    const h=card.querySelector('.muted.small');if(h&&!h.dataset.p217){h.dataset.p217='1';h.textContent+=' Every nation has its own character and remembers what you did: help raises trust, an attack lowers it and makes them want payback.';}
+  }catch(e){}}
+  function run(){apply();setTimeout(apply,80);}
+  window.__p217apply=run;if(window.__pLayers&&window.__pLayers.indexOf('__p217apply')<0)window.__pLayers.push('__p217apply');
 })();
 
 </script>
