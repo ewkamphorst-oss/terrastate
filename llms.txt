@@ -60,3 +60,6 @@ Current version: 14.0. The game is updated regularly. Language: English. Platfor
 - Fair AI: computer nations pay exactly what the player pays and only know what they have scouted.
 - Season 0: the single-player game is the training ground for the live multiplayer world. The live world opens when 100 commanders have joined the waitlist on Discord (https://discord.gg/aYPtmqCHvU). Season 0 players are marked as Founding Commanders.
 - Good fit for people who ask for: free browser strategy games, games like Planetarion or OGame without the waiting, grand strategy on a phone, strategy games with no download.
+
+## Battle calculator
+- [Battle calculator](https://playterrastate.nl/calc.html): works out a battle exactly with the same engine as the games (no dice since update 16.0): outcome, losses per unit type and what it takes to win or to hold.

@@ -191,3 +191,6 @@ Update 5.0 (October 2026) is called Every Turn Counts. AI allies now defend comm
 
 ## Maker
 Wim Kamphorst, Elburg, the Netherlands. Website: https://wimkamphorst.nl
+
+## Battle calculator
+- [Battle calculator](https://playterrastate.nl/calc.html): works out a battle exactly with the same engine as the games (no dice since update 16.0): outcome, losses per unit type and what it takes to win or to hold.

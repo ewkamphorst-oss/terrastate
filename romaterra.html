@@ -1459,7 +1459,7 @@ function cmdAskWithdraw(c,onlyOwner){const cl=clanOf(c);
 function cmdShareIntel(c,rid){const cl=clanOf(c);if(!cl)return err('Join an alliance to share intel');const r=_rgId(rid);if(!r)return err('Region not found');
   if(!rateOk(c,'clan',5,2))return err('Slow down, too many alliance messages.');
   const it=regionIntel(c,rid);const o=r.owner!=null?G.countries[r.owner]:null;
-  const line=it?'🔍 Intel on '+r.name+' ('+r.coord+')'+(o?' ['+o.tag+']':'')+': est. defence '+full(it.lo)+'–'+full(it.hi)+' ('+it.conf+'% conf)'+(it.comp&&Object.keys(it.comp).length?' · '+Object.keys(it.comp).slice(0,4).map(k=>(UBYK[k]?UBYK[k].n:k)+' ~'+full(it.comp[k])).join(', '):''):'🔍 '+r.name+' ('+r.coord+')'+(o?' ['+o.tag+']':'')+', not scouted yet. Scout it for a defence estimate.';
+  const line=it?'🔍 Intel on '+r.name+' ('+r.coord+')'+(o?' ['+o.tag+']':'')+': est. defence '+(it.lo===it.hi?full(it.lo):full(it.lo)+'–'+full(it.hi))+' ('+(it.exact?'exact':it.conf+'% conf')+')'+(it.comp&&Object.keys(it.comp).length?' · '+Object.keys(it.comp).slice(0,4).map(k=>(UBYK[k]?UBYK[k].n:k)+' ~'+full(it.comp[k])).join(', '):''):'🔍 '+r.name+' ('+r.coord+')'+(o?' ['+o.tag+']':'')+', not scouted yet. Scout it for a defence estimate.';
   clanPost(cl,c.id,line);return ok();}
 // v3.29: ask your alliance to reveal the UNIDENTIFIED fleets inbound to one of your regions. Posts a scan request to the
 // war channel (real teammates answer with a normal Reveal, which is now shared with you — see cmdScan). Solo/AI: a clan-mate
@@ -2312,6 +2312,7 @@ function rawPower(units,c,kind,extra){extra=extra||{};units=units||{};let raw=0;
   const logi=Number.isFinite(+extra.logi)?+extra.logi:1;const recon=Number.isFinite(+extra.recon)?+extra.recon:1;const cas=Number.isFinite(+extra.cas)?+extra.cas:1;const emp=Number.isFinite(+extra.emp)?clamp(+extra.emp,0,.9):0;
   const out=raw*rd*logi*recon*cas*(1-emp)*synergyOf(units)*(c?(1+(commanderMods(c)[kind==='atk'?'atk':'def']||0)):1)*techMil(c,kind)*(1+repDim(kind==='atk'?repeatLv(c,'doctrine'):repeatLv(c,'alloy'),0.01));
   return Number.isFinite(out)?Math.max(0,out):0;}
+const DEF_HOME=1.08; // 16.0: fixed home-ground bonus for the defender (replaces the hidden scout edge)
 function resolveBattle(atkC,atkU0,r,defC,coord,defUnitsOverride){coord=coord||1;
   const atkU=Object.assign({},atkU0);const defU=defUnitsOverride?Object.assign({},defUnitsOverride):(defC?Object.assign({},defC.units):garrisonUnits(r));
   const phases=[];
@@ -2320,8 +2321,8 @@ function resolveBattle(atkC,atkU0,r,defC,coord,defUnitsOverride){coord=coord||1;
   // v3.18 EW Drones jam the OTHER side's scouts, lowering their effective recon in the intel phase (breakable, take fleet slots).
   const atkJam=Math.min(3,Math.log2(1+(atkU.ew_drone||0))),defJam=Math.min(3,Math.log2(1+(defU.ew_drone||0)));
   const atkRecon=Math.max(0,reconLevel(atkC)+Math.min(4,Math.log2(1+atkSpec))-defJam),defRadar=Math.max(0,(defC?radarLevel(defC):Math.max(0,Math.round(r.infra/25)))+Math.min(4,Math.log2(1+defSpec))-atkJam);
-  const I=clamp((atkRecon-defRadar)/6,-1,1),reconEff=1+0.1*I;
-  phases.push({p:'Recon',t:`Intel ${I>=0?'edge':'blind'} (I=${I.toFixed(2)}) → efficiency ${Math.round(reconEff*100)}%`,win:I>=0});
+  const I=clamp((atkRecon-defRadar)/6,-1,1),reconEff=1;
+  
   const atkN=fleetSize(atkU),defN=fleetSize(defU);
   // Supply Trucks ease the logistics penalty for large armies.
   const supBon=u=>clamp(sumCls(u,'support')/Math.max(1,fleetSize(u))*1.5,0,.25);
@@ -2342,10 +2343,10 @@ function resolveBattle(atkC,atkU0,r,defC,coord,defUnitsOverride){coord=coord||1;
   if(shieldLv)phases.push({p:'Ranged',t:`Enemy City Walls −${Math.round(shieldCut*100)}% ranged damage`,win:false});
   const terr=(defC?(1+r.infra/200+r.stab/300):1.1)*((typeof seasonRule==='function'&&seasonRule()==='ironwall')?1.25:1)*(typeof p200Terr==='function'?p200Terr(atkU):1);
   const warB=warBonus(atkC,defC);
-  const aRaw=rawPower(atkU,atkC,'atk',{enemy:defU,logi:atkLogi,recon:reconEff,cas:CAS,emp:empDef})*rand(.92-.04*Math.min(0,I),1.08)*coord*warB;
+  const aRaw=rawPower(atkU,atkC,'atk',{enemy:defU,logi:atkLogi,recon:reconEff,cas:CAS,emp:empDef})*1*coord*warB;
   if(coord!==1)phases.push({p:'Coordination',t:coord>=1?`Joint assault, allied armies combined, +${Math.round((coord-1)*100)}% force`:`Bureaucratic drag on coordination ${Math.round((coord-1)*100)}%`,win:coord>=1});
   if(warB>1)phases.push({p:'War footing',t:`Alliances at war, +${Math.round((warB-1)*100)}% attack`,win:true});
-  const dRaw=rawPower(defU,defC||{ready:'ready',commanders:[],tech:[]},'def',{enemy:atkU,logi:defLogi,recon:1,cas:1,emp:empAtk})*terr*rand(.92,1.08);
+  const dRaw=rawPower(defU,defC||{ready:'ready',commanders:[],tech:[]},'def',{enemy:atkU,logi:defLogi,recon:1,cas:1,emp:empAtk})*terr*DEF_HOME;
   const _a=Number.isFinite(aRaw)?aRaw:0,_d=Number.isFinite(dRaw)?dRaw:0;const _q=_d<=0?(_a>0?9:1):_a/_d;const ratio=Number.isFinite(_q)?Math.max(0,_q):9;const atkM=moraleOf(atkC),defM=defC?moraleOf(defC):.6;
   const captured=ratio>=1.25&&atkM>.3,success=ratio>=1;
   phases.push({p:'Ground',t:`Force ${full(Math.round(_a))} vs ${full(Math.round(_d))} (ratio ${ratio.toFixed(2)})`,win:success});
@@ -2778,13 +2779,13 @@ function cmdScoutRegion(c,rid){const r=_rgId(rid);if(!r)return err('Region not f
     if(owner&&radarLevel(owner)>=1&&Math.random()<0.7)sitrep(owner,'intel','👁 Watchtower swallowed a scan over '+r.name+(radarLevel(owner)>=2?', origin: '+c.name+' ['+c.tag+']':''),{coord:r.coord,sev:1,go:'fleets'});
     return ok({miss:true});
   }
-  const conf=clamp(0.45+reconLevel(c)*0.07-(owner?radarLevel(owner)*0.05:0),0.25,0.95);
+  const conf=1;
   const truth=regionDef(r),spread=(1-conf)*0.8;
   const lo=Math.max(0,Math.round(truth*(1-spread))),hi=Math.round(truth*(1+spread));
-  const comp={};if(owner)UNIT.forEach(u=>{const n=owner.units[u.k]||0;if(n>0)comp[u.k]=Math.max(1,Math.round(n*(1+rand(-spread,spread))));});
-  (c._regionIntel=c._regionIntel||{})[rid]={tick:G.tick,lo,hi,conf:Math.round(conf*100),comp,tag:owner?owner.tag:null};
-  sitrep(c,'intel','🔍 Scouted '+r.name+(owner?' ('+owner.name+')':'')+', defence ~'+full(lo)+'–'+full(hi)+' ('+Math.round(conf*100)+'% confidence)',{coord:r.coord,go:'fleets'});
-  if(c.id===G.you)toast('Scan in. '+r.name+' shows '+full(lo)+'–'+full(hi)+'.');
+  const comp={};{let pu={};try{pu=owner?defenderPool(r,owner).units:garrisonUnits(r);}catch(e){pu=owner?owner.units:{};}for(const k in pu)if((pu[k]||0)>=1)comp[k]=Math.round(pu[k]);}
+  (c._regionIntel=c._regionIntel||{})[rid]={tick:G.tick,lo,hi,conf:Math.round(conf*100),comp,tag:owner?owner.tag:null,exact:true};
+  sitrep(c,'intel','🔍 Scouted '+r.name+(owner?' ('+owner.name+')':'')+': the exact defending army is known for '+SCOUT_TTL+' turns. Open War → Calc to work out the battle.',{coord:r.coord,go:'fleets'});
+  if(c.id===G.you)toast('Scouting report in: the exact army at '+r.name+' is known.');
   if(owner){const rl=radarLevel(owner);if(rl>=1&&Math.random()<Math.min(0.9,0.35+rl*0.15))sitrep(owner,'intel','👁 Watchtower detected a scouting mission over '+r.name+(rl>=2?', origin: '+c.name+' ['+c.tag+']':', origin unknown (Watchtower L2+ identifies)'),{coord:r.coord,sev:1,go:'fleets'});}
   return ok({lo,hi,conf:Math.round(conf*100)});}
 // What the defender can tell about an inbound fleet (composition hidden by default).
@@ -4512,7 +4513,7 @@ function advanceBattle(c,f){const r=_rgId(f.target);
     // can't quite capture (ratio 1.0–1.25) grinds the region's hardening down. Fortress Network and Planetary Shield lose a
     // level under sustained pressure, so a turtle that survives one blow still crumbles under a coordinated, repeated siege.
     if(defC&&R.success&&!R.captured){const grind=k=>{const b=(defC.buildings||[]).find(x=>x.rid===r.id&&x.k===k);if(!b||b.lv<=0)return;b.lv-=1;if(b.lv<=0)defC.buildings=defC.buildings.filter(x=>x!==b);if(defC.isAI===false)sitrep(defC,'battle','🧱 The siege at '+r.name+' ground your '+((BUILD.find(x=>x.k===k)||{}).n||k)+' down a level — relieve it or the wall falls.',{coord:r.coord,sev:2,go:'production'});};
-      if(Math.random()<0.34)grind('fortress_network');if(Math.random()<0.34)grind('shield');}
+      r._grindN=(r._grindN||0)+1;if(r._grindN%3===0){grind('fortress_network');grind('shield');}}
     const aFrac=Math.min(BATTLE_CAP.a[tt-1],BATTLE_W.a[tt-1]*Math.min(1.4,1/Math.max(.5,R.ratio)));
     const dFrac=Math.min(BATTLE_CAP.d[tt-1],BATTLE_W.d[tt-1]*Math.min(1.6,Math.max(.3,R.ratio)))*(typeof p168DefLm==='function'?p168DefLm(defC):1);
     const TL=targetedLosses(merged,pool.units,aFrac,dFrac);
@@ -6886,7 +6887,7 @@ function p15Ops(c){const cl=clanOf(c);if(!cl)return [];const ops=[];const mem=cl
     (G.acs||[]).filter(op=>op.clan===cl.id&&op.target===g.rid).forEach(op=>(op.fleets||[]).forEach(f=>parts.push({id:f.owner,n:fleetSize(f.units||{}),p:Math.round(power(G.countries[f.owner]||c,'atk',f.units||{})),eta:Math.max(0,op.landTick-G.tick)})));
     ops.push({k:'goal',r,title:g.title,by:g.by,until:g.until,parts,acks:g.acks,mine:parts.some(x=>x.id===c.id)});});
   return ops;}
-function p15DefTxt(c,r){if(r.owner===c.id)return 'yours';if(r.owner==null)return full(Math.round(regionDef(r)));const it=regionIntel(c,r.id);return it?full(it.lo)+'–'+full(it.hi):'unknown, scout first';}
+function p15DefTxt(c,r){if(r.owner===c.id)return 'yours';if(r.owner==null)return full(Math.round(regionDef(r)));const it=regionIntel(c,r.id);return it?(it.lo===it.hi?full(it.lo):full(it.lo)+'–'+full(it.hi)):'unknown, scout first';}
 function p15OpHTML(c,o){const tot=o.parts.reduce((a,x)=>a+x.p,0);let defN=null;if(o.r.owner==null)defN=regionDef(o.r);else{const it=regionIntel(c,o.r.id);if(it)defN=(it.lo+it.hi)/2;}
   const b=defN?p14Band(tot/Math.max(1,defN)):null;const land=o.k==='acs'?'lands tick #'+o.land+' (in '+Math.max(0,o.land-G.tick)+'t)':(o.until?'by tick #'+o.until:'');
   const ppl=o.parts.length?o.parts.slice(0,8).map(x=>`<span class="p15chip">${esc(p15Who(x.id))} <b>${full(x.p)}</b>${x.eta!=null?` <span class="muted">${x.eta}t</span>`:''}</span>`).join('')+(o.parts.length>8?`<span class="muted small"> +${o.parts.length-8} more</span>`:''):'<span class="small" style="color:var(--warn)">Nobody has sent troops yet.</span>';
@@ -7698,10 +7699,10 @@ function defencePlanHTML(c,r,seenFleets){try{const incU={};let atkC=null;seenFle
   </div>`;}catch(e){return '';}}
 function battleForecast(c,tgt,units){const n=fleetSize(units);if(!tgt||n<=0)return '';if(tgt.owner!=null&&tgt.owner!==c.id&&!regionIntel(c,tgt.id)){const bounced=scanMissed(c,tgt.id);return `<div class="small mt" style="color:var(--alert)">${bounced?'The last scan bounced. You still know nothing about this garrison.':'No scan on this region. A forecast without one is a guess, and guesses get armies killed.'}</div>`;}const defC=tgt.owner!=null?G.countries[tgt.owner]:null;const it=regionIntel(c,tgt.id);
   // Defender composition: scouted → use it; else scale the default garrison shape to the public defence estimate.
-  let defU,src;if(it&&it.comp&&Object.keys(it.comp).length){defU=Object.assign({},it.comp);src='scout report ('+it.conf+'% confidence)';}
-  else{const g=garrisonUnits(tgt);const est=Math.round(regionDef(tgt));const gp=power(GARRISON_DUMMY,'def',g)||1;const k=est/gp;defU={};for(const u in g)defU[u]=Math.max(0,Math.round(g[u]*k));src=it?'scouted defence ~'+full(it.lo)+'–'+full(it.hi):'unscouted estimate, scout for a real number';}
+  let defU,src;if(it&&it.comp&&Object.keys(it.comp).length){defU=Object.assign({},it.comp);src='scout report ('+(it.exact?'exact':it.conf+'% confidence')+')';}
+  else{const g=garrisonUnits(tgt);const est=Math.round(regionDef(tgt));const gp=power(GARRISON_DUMMY,'def',g)||1;const k=est/gp;defU={};for(const u in g)defU[u]=Math.max(0,Math.round(g[u]*k));src=it?'scouted defence ~'+(it.lo===it.hi?full(it.lo):full(it.lo)+'–'+full(it.hi)):'unscouted estimate, scout for a real number';}
   let R;try{R=resolveBattle(c,Object.assign({},units),tgt,defC,1,defU);}catch(e){return '';}
-  const ratio=R.ratio||0;const band=ratio>=1.5?['Very likely capture','var(--good)']:ratio>=1.25?['Likely capture (thin margin, ±8% luck)','var(--good)']:ratio>=1.1?['Ground win likely, capture is a coin flip','var(--warn)']:ratio>=0.95?['Coin flip, expect a bloody stalemate','var(--warn)']:ratio>=0.7?['Unlikely, you will be repelled','var(--bad)']:['Suicide run, you will be crushed','var(--bad)'];
+  const ratio=R.ratio||0;const band=ratio>=1.5?['Very likely capture','var(--good)']:ratio>=1.25?['Capture (thin margin)','var(--good)']:ratio>=1.1?['Ground win likely, capture is a coin flip','var(--warn)']:ratio>=0.95?['Coin flip, expect a bloody stalemate','var(--warn)']:ratio>=0.7?['Unlikely, you will be repelled','var(--bad)']:['Suicide run, you will be crushed','var(--bad)'];
   // Full 3-tick simulation with the targeting layer: which of YOUR units die, which of THEIRS, and what happens to the cargo.
   const SIM=simulateBattle(c,units,tgt,defC,defU,3);const n0=fleetSize(units),dN0=fleetSize(defU);const aF=n0?fleetSize(SIM.aLost)/n0:0,dF=dN0?fleetSize(SIM.dLost)/dN0:0;
   const chipRow=(base,lost,col)=>Object.entries(base).filter(([k,v])=>v>0).sort((a,b)=>b[1]-a[1]).map(([k,v])=>{const l=lost[k]||0;return `<span class="br-chip">${esc((UBYK[k]||{n:k}).n)} <b>${full(v)}</b>${l?`<em style="color:${col}">−${full(l)}</em>`:''}</span>`;}).join('')||'—';
@@ -8130,7 +8131,7 @@ const MANUAL={
     <h3>The 5 phases</h3>
     <p>Every engagement is scored across five phases, winning the early ones shapes the rest:</p>
     <ul>
-      <li><b>Recon</b>, Speculatores &amp; intel sharpen your targeting; blind armies fight at a penalty.</li>
+      <li><b>Scouting</b>: a successful scouting report shows the exact defending army. It decides what you know, not how hard you hit.</li><li><b>No dice</b>: the same battle always ends the same way. War → Calc works it out, tick by tick.</li><li><b>Home ground</b>: a defender always fights at ×1.08 on its own soil, on top of the ground of the region.</li>
       <li><b>Intrigue / EMP</b>, Spy Networks &amp; Sicarii Assassins suppress enemy systems.</li>
       <li><b>Ranged</b>, Horse Archers &amp; Onagers vs Velites + Shield Wall. Ranged superiority grants <b>Close Ranged Support (CAS)</b>; an enemy <b>City Walls</b> cuts your ranged damage up to −60%.</li>
       <li><b>Ground</b>, Cataphracts, Legionaries &amp; Ballistae decide the Ratio.</li>
@@ -10414,7 +10415,7 @@ VIEWS.fleets=v=>{const c=you();const inc=incomingTo(c.id);const cl0=clanOf(c);
   if(tgt&&tgt.owner!==c.id){const home=homeFor(c,tgt);travel=home?travelFor(c,home,tgt):null;const owner=tgt.owner!=null?G.countries[tgt.owner]:null;
     v.appendChild(h(`<div class="card mb" style="border-left:3px solid var(--accent)"><h3>Launch operation → ${esc(tgt.name)} <span class="tag">${tgt.coord}</span></h3>
       <div class="row wrap" style="gap:18px" class="mb"><span class="small muted">Owner: ${owner?esc(owner.name)+(owner.isAI?'':''):'Unclaimed'}</span>
-        ${(()=>{const it=regionIntel(c,tgt.id);if(tgt.owner==null&&!it)return p14NeutralLine(c,tgt);return it?`<span class="small">🔍 Scouted defence <strong>${full(it.lo)}–${full(it.hi)}</strong> <span class="muted">(${it.conf}% confidence · t${it.tick})</span></span>`:`<span class="small" style="color:var(--alert)">${scanMissed(c,tgt.id)?'Scan bounced. Defence unknown.':'Defence unknown. Scout before you launch.'}</span>`;})()}
+        ${(()=>{const it=regionIntel(c,tgt.id);if(tgt.owner==null&&!it)return p14NeutralLine(c,tgt);return it?`<span class="small">🔍 Scouted defence <strong>${it.lo===it.hi?full(it.lo):(it.lo===it.hi?full(it.lo):full(it.lo)+'–'+full(it.hi))}</strong> <span class="muted">(${it.exact?'exact report':it.conf+'% confidence'} · t${it.tick})</span></span>`:`<span class="small" style="color:var(--alert)">${scanMissed(c,tgt.id)?'Scan bounced. Defence unknown.':'Defence unknown. Scout before you launch.'}</span>`;})()}
         <span class="small">Your attack power <strong>${full(Math.round(power(c,'atk')))}</strong></span>
         <span class="small">Travel <strong class="eta">${travel!=null?travel+' ticks':'—'}</strong>${travel!=null?` · arrives tick #${G.tick+travel} · ${attackReturnLabel(travel)}`:''}</span></div>
       <div class="row wrap" style="gap:4px;margin-bottom:5px;padding-bottom:5px;border-bottom:1px solid var(--border)"><span class="muted small" style="align-self:center">⚡ Preset:</span><button class="btn ghost sm" title="All units at max" onclick="(()=>{document.querySelectorAll('#ui [data-cu]').forEach(i=>{i.value=+(i.max)||0;});})()">100% All</button><button class="btn ghost sm" title="Cataphracts, ballistae, horse archers, praetorian guard, onagers" onclick="(()=>{const k=['tank','artillery','strike_fighter','powered_armor','strat_bomber'];document.querySelectorAll('#ui [data-cu]').forEach(i=>{i.value=k.includes(i.dataset.cu)?+(i.max)||0:0;});})()">Assault</button><button class="btn ghost sm" title="Fast units, speculatores, intrigue, supply wagons, velites, horse archers, onagers, quantum" onclick="(()=>{const k=['spec_ops','cyber_cell','supply_truck','interceptor','strike_fighter','strat_bomber','quantum_hacker'];document.querySelectorAll('#ui [data-cu]').forEach(i=>{i.value=k.includes(i.dataset.cu)?+(i.max)||0:0;});})()">Fast/Ranged</button><button class="btn ghost sm" title="Defensive units, levies, legionaries, velites, Shield Wall, praetorian guard" onclick="(()=>{const k=['militia','infantry','interceptor','sam','powered_armor'];document.querySelectorAll('#ui [data-cu]').forEach(i=>{i.value=k.includes(i.dataset.cu)?+(i.max)||0:0;});})()">Defenders</button></div>
@@ -10554,7 +10555,7 @@ VIEWS.fleets=v=>{const c=you();const inc=incomingTo(c.id);const cl0=clanOf(c);
   // Nearest targets (offence)
   const near=(TAB==='offence')?G.regions.filter(r=>r.owner!==c.id&&!sameTheaterAlly(c,r)&&!(c.clan!=null&&G.countries[r.owner]&&G.countries[r.owner].clan===c.clan)).map(r=>{const home=homeFor(c,r);return {r,eta:home?travelFor(c,home,r):99};}).sort((a,b)=>a.eta-b.eta||b.r.sv-a.r.sv).slice(0,14):[];
   const nr=near.map(x=>{const o=x.r.owner!=null?G.countries[x.r.owner]:null;const it=regionIntel(c,x.r.id);
-    const defCell=it?`<span class="mono">${full(it.lo)}–${full(it.hi)}</span><div class="mono" style="font-size:9.5px;color:var(--ok)">🔍 ${it.conf}% confidence</div>`:(x.r.owner==null?p14Neutral(c,x.r):`<span class="muted">unknown</span>`);
+    const defCell=it?`<span class="mono">${it.lo===it.hi?full(it.lo):(it.lo===it.hi?full(it.lo):full(it.lo)+'–'+full(it.hi))}</span><div class="mono" style="font-size:9.5px;color:var(--ok)">🔍 ${it.exact?'exact report':it.conf+'% confidence'}</div>`:(x.r.owner==null?p14Neutral(c,x.r):`<span class="muted">unknown</span>`);
     return `<tr><td style="white-space:nowrap"><span class="tag">${x.r.coord}</span> ${esc(x.r.name)}</td><td style="white-space:nowrap">${o?emblem(o)+' '+esc(o.tag):'<span class="muted">unclaimed</span>'}</td><td class="r">${defCell}</td><td class="r eta">${x.eta}t</td><td class="r"><button class="btn ghost sm" data-scout="${x.r.id}" title="Scout this region: ${SCOUT_COST} influence + 1 command point">🔍 Scout</button>${clanOf(c)?` <button class="btn ghost sm" data-shareintel="${x.r.id}" title="Post this target's intel to alliance chat">📤</button>`:''} <button class="btn sm" data-tgt="${x.r.id}">Target</button></td></tr>`;}).join('');
   if(TAB==='offence')v.appendChild(h(`<div class="card mb"><h3>Nearest targets <span class="muted small" style="text-transform:none;letter-spacing:0">unknown until a scan lands</span></h3><div class="scroll"><table><thead><tr><th>Region</th><th>Owner</th><th class="r">Defence</th><th class="r">Travel</th><th></th></tr></thead><tbody>${nr}</tbody></table></div></div>`));
 
@@ -10996,7 +10997,7 @@ function regionSheetHTML(r,c,hostiles,incRegions){const o=r.owner!=null?G.countr
   const rows=[['Region',esc(r.name)],['Province',esc(theaterName(r.cluster))+' <span class="muted mono">T'+r.cluster+'</span>'],['Relationship',`<span style="color:${rel.ring}">${mine?'Your territory':clanMate?'Alliance member':theaterAlly?'Sector-mate (your team)':rel.label}</span>`],
     o?['Rank',esc(rt.title)+(mine||regionsOf(o).some(rr=>regionIntel(c,rr.id))?' · #'+rt.pos:'')]:null,o?['Power',(mine||regionsOf(o).some(rr=>regionIntel(c,rr.id)))?full(rk?rk.s:0):'<span class="muted">Unknown until you scout</span>']:null,
     o&&o.clan!=null?['Alliance',(()=>{const st=shownAllyTag(c,o.id);if(clanMate)return '<span class="atag">'+esc(clanOf(o).tag)+'</span>';if(st)return `<span class="atag">${esc(st)}</span>`;const gs=allyGuess(c,o.id);return gs?`<span class="muted">❓ ${esc(gs)}</span>`:'<span class="muted">unknown</span>';})()]:null,
-    ['Defence',!o?'Empty ground':(mine||clanMate)?full(Math.round(regionDef(r))):(it?`<b>${full(it.lo)}–${full(it.hi)}</b> <span class="muted">(scouted t${it.tick})</span>`:(scanMissed(c,r.id)?'<span style="color:var(--alert)">Scan bounced. Unknown.</span>':'<span class="muted">Unknown. Scout before you sail.</span>'))],
+    ['Defence',!o?'Empty ground':(mine||clanMate)?full(Math.round(regionDef(r))):(it?`<b>${it.lo===it.hi?full(it.lo):(it.lo===it.hi?full(it.lo):full(it.lo)+'–'+full(it.hi))}</b> <span class="muted">(scouted t${it.tick})</span>`:(scanMissed(c,r.id)?'<span style="color:var(--alert)">Scan bounced. Unknown.</span>':'<span class="muted">Unknown. Scout before you sail.</span>'))],
     ['Population',fmt(r.pop)],['Profile',esc(r.arch)+' · ind '+r.ind+' · agr '+r.agr+' · en '+r.en]].filter(Boolean);
   const _rc=regionResistClaim(r);const _rcT=_rc!=null?(_rc===c.id?'<span style="color:var(--ok)">🏴 Your guerrilla claim ('+Math.max(0,(r._resist.until||0)-G.tick)+'t) — retake it easily</span>':(o&&o.id===c.id?'<span style="color:var(--warn)">🏴 '+((G.countries[_rc]||{}).tag||'former owner')+' can retake this cheaply ('+Math.max(0,(r._resist.until||0)-G.tick)+'t)</span>':'')):'';
   const flags=[incRegions.has(r.id)?'<span style="color:var(--bad)">⚠ Under attack</span>':'',regionHeat(r)>0?'<span style="color:var(--bad)">🔥 Recent heavy fighting</span>':'',o&&isRecentlyAttacked(o)?'<span style="color:var(--warn)">🩹 Recovering</span>':'',o&&isMobilizing(o)?'<span style="color:var(--bad)">⚠ Mobilizing</span>':'',o&&shieldActive(o)?'<span style="color:var(--accent2)">🛡 Shield up</span>':'',o&&newbieProtected(o)?'<span style="color:var(--ok)">🐣 Beginner protection</span>':'',_rcT,isNx?'<span style="color:var(--gold)">👑 THE ROMA, season objective</span>':''].filter(Boolean);
@@ -13464,7 +13465,7 @@ function reconUnitSupport(c){try{const u=c.units||{};return (u.spec_ops||0)+(u.g
   else if(f&&c&&defC){const mod=intelCombatMod(c,defC,r);if(mod>1)f.coord=(f.coord||1)*mod;}}catch(e){}return _sb.apply(this,arguments);};}
 {const _sc=cmdScoutRegion;cmdScoutRegion=function(c,rid){const r=_sc.apply(this,arguments);try{if(r&&r.ok&&c._regionIntel&&c._regionIntel[rid]){const it=c._regionIntel[rid];
   const boost=Math.min(0.12,reconUnitSupport(c)/8000+(c.agents||0)/200);if(boost>0&&it.hi>it.lo){const mid=(it.lo+it.hi)/2;const half=(it.hi-it.lo)/2*(1-boost);
-    it.lo=Math.max(0,Math.round(mid-half));it.hi=Math.round(mid+half);it.conf=Math.min(99,Math.round((it.conf||50)+boost*40));it._unitBacked=1;}
+    it.lo=Math.max(0,Math.round(mid-half));it.hi=Math.round(mid+half);it.conf=it.exact?100:Math.min(99,Math.round((it.conf||50)+boost*40));it._unitBacked=1;}
   if(c.id===G.you&&isSoloGame()&&boost>0.02)try{toast('🔭 Scout sharpened by recon units / agents');}catch(e){}}}catch(e){}return r;};}
 
 // ---- 1, 2, 3 (patch136) ----
@@ -14593,6 +14594,74 @@ function roleAITick(){(G.clans||[]).forEach(cl=>{try{const mem=clanMembers(cl);i
   }catch(e){}});}
 if(typeof runTick==='function'){const _rt212=runTick;runTick=function(){const out=_rt212.apply(this,arguments);try{roleAITick();}catch(e){}return out;};}
 
+/*p214*/
+// silent fix: units added after the lookup table was built (sappers, decoys and others) fought in the targeting layer with
+// placeholder values (5 attack, 5 defence). The table now holds every unit.
+try{UNIT.forEach(u=>{if(!UBYK[u.k])UBYK[u.k]=u;});}catch(e){}
+const _ub214=k=>(typeof UBYK!=='undefined'&&UBYK[k])||UNIT.find(u=>u.k===k);
+// p214 Update 16.0 "Calculable battles": one exact calculation for every battle, the same one the real battle uses.
+// battleCalc() replays the 3-tick battle exactly like advanceBattle() does for a single fleet: resolveBattle per tick
+// (now without dice), formations, air wings and fatigue (p168Adj), the per-tick loss shares and the targeting layer
+// (targetedLosses: each unit type fires at fixed targets in a fixed order). simulateBattle now runs on it, so the computer,
+// the forecasts and the calculator all agree with the real battle.
+function battleCalc(atkC,atkU0,r,defC,defU0,o){o=o||{};const A={},D={};for(const k in atkU0||{})if((atkU0[k]||0)>0)A[k]=Math.floor(atkU0[k]);for(const k in defU0||{})if((defU0[k]||0)>0)D[k]=Math.floor(defU0[k]);
+  const fl={id:-1,units:A,coord:o.coord||1,_p168form:o.form||(atkC&&atkC._p168form)||'line',_p168age:o.scanAge!=null?o.scanAge:null};
+  const ticks=[],aLost={},dLost={};let R=null;const a0=Object.assign({},A),d0=Object.assign({},D);
+  // like the real battle: the region's own local guard (garrisonUnits) stands again every tick and never dies; losses come off the
+  // rest (home army, stationed troops and allies). An unowned region has nothing but that guard, so it never shrinks.
+  let base={};try{base=garrisonUnits(r)||{};}catch(e){}const rest={};for(const k in D){const b=Math.min(D[k],base[k]||0);rest[k]=D[k]-b;base[k]=b;}for(const k in base)if(!(k in D))delete base[k];
+  // the real battle fights its ticks on later turns (fatigue, shields and scout age are judged per turn), and in a far
+  // province only part of the home army can reach: a loss there costs the home army more than the line in front of you
+  let far=false;try{far=!!(defC&&typeof p17Far==='function'&&p17Far(defC,r));}catch(e){}const reach=far&&typeof P17_REACH!=='undefined'?P17_REACH:1;
+  const T0=o.tick0!=null?o.tick0:G.tick;const realTick=G.tick;
+  try{
+  for(let t=1;t<=BATTLE_TICKS;t++){if(fleetSize(A)<1||fleetSize(D)<1)break;
+    R=resolveBattle(atkC,A,r,defC,o.coord||1,D);G.tick=T0+t;try{if(typeof p168Adj==='function')p168Adj(R,atkC,fl,defC,r,[{c:atkC,f:fl}],A,D);}catch(e){}finally{G.tick=realTick;}
+    // Ironfront battle orders are a guessing game per tick (+25% for the side that guessed right): the calculation shows no edge,
+    // or the best or worst case when asked
+    try{if(typeof ifrOn==='function'&&ifrOn()&&o.ifr&&o.ifr!=='even'){const m=o.ifr==='best'?IFR_EDGE:1/IFR_EDGE;R.ratio*=m;R.success=R.ratio>=1;}}catch(e){}
+    const aF=Math.min(BATTLE_CAP.a[t-1],BATTLE_W.a[t-1]*Math.min(1.4,1/Math.max(.5,R.ratio)));
+    const dF=Math.min(BATTLE_CAP.d[t-1],BATTLE_W.d[t-1]*Math.min(1.6,Math.max(.3,R.ratio)))*(typeof p168DefLm==='function'?p168DefLm(defC):1);
+    const TL=targetedLosses(A,D,aF,dF);let mine=TL.aLost;try{if(typeof p168Mine==='function')mine=p168Mine(TL.aLost,fl);}catch(e){}
+    const tl={t,ratio:R.ratio,aLost:{},dLost:{}};
+    for(const k in mine){const v=Math.min(A[k]||0,mine[k]);if(v>0){A[k]-=v;aLost[k]=(aLost[k]||0)+v;tl.aLost[k]=v;}}
+    for(const k in TL.dLost){const v=defC?Math.min(rest[k]||0,TL.dLost[k]):0;if(v>0){rest[k]=Math.max(0,rest[k]-(reach<1?Math.floor(v*reach):v));dLost[k]=(dLost[k]||0)+v;tl.dLost[k]=v;}}
+    for(const k in D)D[k]=(base[k]||0)+(rest[k]||0);
+    ticks.push(tl);}
+  }finally{G.tick=realTick;}
+  const ratio=R?R.ratio:(fleetSize(A)>0?9:0);const morale=moraleOf(atkC);
+  let captured=!!R&&ratio>=1.25&&morale>.3&&fleetSize(A)>=1;let blocked='';if(captured){G.tick=T0+Math.max(1,ticks.length);try{blocked=calcProtected(r,defC);}finally{G.tick=realTick;}}const wouldTake=captured;if(blocked)captured=false;
+  return {ticks,ratio,success:ratio>=1,captured,wouldTake,blocked,morale,aLost,dLost,aLeft:A,dLeft:D,a0,d0,R,detail:R?R.detail:null,phases:R?R.phases:[]};}
+// The same protections as finalizeBattle: a planetary shield, beginner protection, an admin shield, the one-time last-region shield.
+function calcProtected(r,defC){if(!defC)return '';try{if(shieldActive(defC)&&!r.nexus)return 'shield';}catch(e){}try{if(newbieProtected(defC))return 'beginner';}catch(e){}
+  if((defC._adminProtect||0)>G.tick)return 'admin';if(regionsOf(defC).length<=1&&(defC._capShieldUntil||0)>G.tick)return 'emergency';
+  if(regionsOf(defC).length<=1&&!defC._capShieldUsed)return 'last';return '';}
+// The old forecast helper (used by the computer and many screens) now runs on the exact calculation.
+simulateBattle=function(atkC,atkU0,r,defC,defU0){const B=battleCalc(atkC,atkU0,r,defC,defU0||{});
+  const aHome={};for(const k in atkU0||{})aHome[k]=Math.max(0,(atkU0[k]||0)-(B.aLost[k]||0));const dLeft={};for(const k in defU0||{})dLeft[k]=Math.max(0,(defU0[k]||0)-(B.dLost[k]||0));
+  return {aLost:B.aLost,dLost:B.dLost,ratio:B.ratio,ticks:B.ticks.length,aHome,dLeft,captured:B.captured};};
+// What does it take? Scale the whole force, or add one unit type, until the calculation takes the region (or holds it).
+function calcNeedAttack(atkC,atkU,r,defC,defU,o,avail){const out={scale:null,add:[]};const base=battleCalc(atkC,atkU,r,defC,defU,o);if(base.wouldTake){out.scale=1;return out;}
+  const take=k=>{const A={};for(const q in atkU)A[q]=Math.ceil((atkU[q]||0)*k);return battleCalc(atkC,A,r,defC,defU,o).wouldTake;};
+  let lo=1,hi=2;while(hi<64&&!take(hi)){lo=hi;hi*=2;}if(hi<64||take(hi)){for(let i=0;i<14;i++){const m=(lo+hi)/2;if(take(m))hi=m;else lo=m;}out.scale=Math.ceil(hi*100)/100;}
+  (avail||UNIT.map(u=>u.k)).forEach(k=>{const u=_ub214(k);if(!u||u.cls==='support')return;const tryN=n=>{const A=Object.assign({},atkU);A[k]=(A[k]||0)+n;return battleCalc(atkC,A,r,defC,defU,o).wouldTake;};
+    let h=Math.max(10,fleetSize(atkU)||10),l=0;let g=0;while(!tryN(h)&&g<8){l=h;h*=2;g++;}if(!tryN(h))return;for(let i=0;i<16;i++){const m=Math.floor((l+h)/2);if(m<=l)break;if(tryN(m))h=m;else l=m;}out.add.push({k,n:h});});
+  out.add.sort((a,b)=>unitCostMoney(a.k)*a.n-unitCostMoney(b.k)*b.n);out.add=out.add.slice(0,4);return out;}
+function calcNeedDefend(atkC,atkU,r,defC,defU,o,avail){const out={add:[]};const base=battleCalc(atkC,atkU,r,defC,defU,o);if(!base.wouldTake){out.holds=true;return out;}
+  (avail||UNIT.map(u=>u.k)).forEach(k=>{const u=_ub214(k);if(!u||u.cls==='support')return;const tryN=n=>{const D=Object.assign({},defU);D[k]=(D[k]||0)+n;return !battleCalc(atkC,atkU,r,defC,D,o).wouldTake;};
+    let h=Math.max(10,fleetSize(defU)||10),l=0;let g=0;while(!tryN(h)&&g<8){l=h;h*=2;g++;}if(!tryN(h))return;for(let i=0;i<16;i++){const m=Math.floor((l+h)/2);if(m<=l)break;if(tryN(m))h=m;else l=m;}out.add.push({k,n:h});});
+  out.add.sort((a,b)=>unitCostMoney(a.k)*a.n-unitCostMoney(b.k)*b.n);out.add=out.add.slice(0,4);return out;}
+function unitCostMoney(k){const u=_ub214(k);if(!u||!u.cost)return 1;let s=0;for(const q in u.cost)s+=(u.cost[q]||0)*(q==='money'?1:((typeof BASEP!=='undefined'&&BASEP[q])||50));return s||1;}
+// Commander capture follows a fixed rule now: a defeat with 60% losses or more costs the loser one staff member.
+maybeCapture=function(winner,loser,region,heavyLossFrac){
+  if(!winner||!loser||!(loser.commanders||[]).length||heavyLossFrac<0.6)return;
+  const k=loser.commanders[loser.commanders.length-1];loser.commanders=loser.commanders.filter(x=>x!==k);
+  const d=(typeof staffDef==='function'&&staffDef(k))||COMMANDERS.find(x=>x.k===k);const nm=d?d.n:k;
+  (winner._trophies=winner._trophies||[]).push({commander:nm,from:loser.name,tick:G.tick});
+  if(winner.id===G.you&&typeof toast==='function')toast('🎖 Your army captured '+nm+' from '+leaderName(loser)+'!');
+  if(loser.id===G.you&&typeof toast==='function'){toast('💔 '+nm+' was captured by '+leaderName(winner)+' and left your staff.','bad');}};
+
+/*p215*/
 // ---- BOOT ------------------------------------------------------------------
 // GitHub serves the brochure as index.html and this file as play.html.
 // Itch and Newgrounds keep the whole game, landing included, as index.html.
@@ -17978,7 +18047,7 @@ if(false){/*p158 engine*/
           const half=(it.hi-it.lo)/2*(1-boost);
           it.lo=Math.max(0,Math.round(mid-half));
           it.hi=Math.round(mid+half);
-          it.conf=Math.min(99,Math.round((it.conf||50)+boost*40));
+          it.conf=it.exact?100:Math.min(99,Math.round((it.conf||50)+boost*40));
           it._unitBacked=1;
         }
         // Helps campaign recon phase
@@ -20829,7 +20898,7 @@ setInterval(()=>{try{ladder();champCard();}catch(e){}},500);
   window.__pIc=window.__pIc||((k,cls)=>'<svg class="ic'+(cls?' '+cls:'')+'" aria-hidden="true"><use href="#i-'+k+'"></use></svg>');
   window.__pUnitIc=window.__pUnitIc||(cls=>{const R=window.__pGame==='Romaterra';const m=R?{inf:'swords',recon:'eye',armor:'flag',arty:'target',cyber:'book',support:'box',airdef:'wall',air:'crown',sam:'tent',navy:'buoy'}:{inf:'soldier',recon:'binoculars',armor:'tank',arty:'artillery',cyber:'chip',support:'truck',airdef:'radar',air:'plane',sam:'missile',navy:'buoy'};return window.__pIc(m[cls]||'shield');});
   const HUBS=[
-    {k:'war',n:'War',views:[['around','Attack','swords'],['self','Defend','shield'],['covert','Scout','eye'],['battles','Reports','flag'],['staff','Council','medal']]},
+    {k:'war',n:'War',views:[['around','Attack','swords'],['self','Defend','shield'],['covert','Scout','eye'],['battles','Reports','flag'],['calc','Calc','target'],['staff','Council','medal']]},
     {k:'build',n:'Build',views:[['production','Buildings','factory'],['military','Army','medal'],['economy','Economy','chart'],['market','Market','scale']]},
     {k:'ally',n:'Alliance',views:[['clans','War room','handshake'],['diplomacy','Diplomacy','dove'],['roles','Roles','medal']]}];
   const SIDE=['dashboard','map','around','production','research','clans'];
@@ -20933,7 +21002,7 @@ setInterval(()=>{try{ladder();champCard();}catch(e){}},500);
       if(!r){out.innerHTML='<span class="warn">No region at '+E(s||'?')+'. Use the form 1:2:5.</span>';return;}
       const c=you();if(r.owner===c.id){out.textContent=r.name+' is yours.';return;}
       try{window.p186Scout(r.id);}catch(e){}let it=null;try{it=regionIntel(c,r.id);}catch(e){}
-      if(it&&!it.miss){out.innerHTML='🔍 <b>'+E(r.name)+'</b>: defence '+E(full(it.lo))+' to '+E(full(it.hi))+' ('+it.conf+'% sure). <button type="button" class="p195scb" style="padding:8px 14px;margin-left:8px" data-p195plan="'+r.id+'">Plan the strike</button>';
+      if(it&&!it.miss){out.innerHTML='🔍 <b>'+E(r.name)+'</b>: defence '+E(full(it.lo))+' to '+E(full(it.hi))+' ('+(it.exact?'exact':it.conf+'% sure')+'). <button type="button" class="p195scb" style="padding:8px 14px;margin-left:8px" data-p195plan="'+r.id+'">Plan the strike</button>';
         const pb=out.querySelector('[data-p195plan]');if(pb)pb.onclick=()=>{try{window.__p199plan(+pb.dataset.p195plan);}catch(e){}};}
       else if(r.owner==null){out.innerHTML='Unclaimed land needs no scout. <button type="button" class="p195scb" style="padding:8px 14px;margin-left:8px" data-p195plan="'+r.id+'">Plan the strike</button>';const pb=out.querySelector('[data-p195plan]');if(pb)pb.onclick=()=>{try{window.__p199plan(+pb.dataset.p195plan);}catch(e){}};}
       else out.innerHTML='🔍 The scouts came back with nothing: their radar turned them away. Try again next turn.';};
@@ -21395,7 +21464,7 @@ setInterval(()=>{try{ladder();champCard();}catch(e){}},500);
     const own=T.owner?`${E(T.owner.name)} [${E(T.owner.tag||'')}]`:'Unclaimed land';
     const age=T.it?(G.tick-T.it.tick):null;
     const tcard=`<div class="p199card"><div class="k">Target</div><h4>${E(T.r.name)} <span style="font:700 13px var(--mono,monospace);color:var(--hi,#F59E0B)">${E(T.r.coord)}</span></h4><div class="sub">${own}${T.tv?` · ${T.tv} turn${T.tv>1?'s':''} away`:''}</div>
-      ${T.owner?(T.it?`<div class="p199def">${F(T.it.lo)}–${F(T.it.hi)} <small>DEFENCE · ${T.it.conf}% SURE · ${age} TURN${age===1?'':'S'} OLD</small></div>`:`<div class="p199def" style="color:var(--muted)">? <small>NOT SCOUTED</small></div>`):(()=>{let d=0;try{d=regionDef(T.r);}catch(e){}return `<div class="p199def">${F(d)} <small>DEFENCE · GARRISON</small></div>`;})()}
+      ${T.owner?(T.it?`<div class="p199def">${T.it.lo===T.it.hi?F(T.it.lo):F(T.it.lo)+'–'+F(T.it.hi)} <small>DEFENCE · ${T.it.exact?'EXACT':T.it.conf+'% SURE'} · ${age} TURN${age===1?'':'S'} OLD</small></div>`:`<div class="p199def" style="color:var(--muted)">? <small>NOT SCOUTED</small></div>`):(()=>{let d=0;try{d=regionDef(T.r);}catch(e){}return `<div class="p199def">${F(d)} <small>DEFENCE · GARRISON</small></div>`;})()}
       ${T.defU?`<div class="p199comp">${Object.keys(T.defU).filter(k=>T.defU[k]>0).map(k=>`<span title="${E(U(k).n)}">${window.__pUnitIc(U(k).cls)} ${F(T.defU[k])}</span>`).join('')}</div>`:''}
       ${!T.known?`<div class="p199note">You do not know what holds this land. Scout it first, the forecast needs a report.</div><div class="p199go"><button type="button" class="p199btn gold" data-p199="scout">Scout ${E(T.r.coord)}</button></div>`:''}</div>`;
     const keys=Object.keys(H);
@@ -21412,7 +21481,7 @@ setInterval(()=>{try{ladder();champCard();}catch(e){}},500);
         fcHTML=`<div class="p199fc"><div class="p199verdict"><b style="color:${col}">${verdict}</b><span class="r">ratio ${Math.abs(rh-rl)<0.02?r.toFixed(2):rl.toFixed(2)+'–'+rh.toFixed(2)}</span></div>
           <div class="p199gauge"><i style="width:${pct}%;background:${col}"></i><span class="m" style="left:50%"></span><span class="ml" style="left:50%">1.00 ground</span><span class="m" style="left:62.5%"></span><span class="ml" style="left:62.5%;top:-16px">1.25 capture</span></div>
           <div class="p199loss"><div>You lose about<b style="color:#fca5a5">${F(aL)}</b></div><div>They lose about<b style="color:#93c5fd">${F(dL)}</b></div></div>
-          ${T.owner&&T.it?`<div class="p199note">Scout report ${age} turn${age===1?'':'s'} old at ${T.it.conf}% confidence, so the forecast is a range. The verdict uses the worst end. Their allies can still send help.</div>`:''}
+          ${T.owner&&T.it?`<div class="p199note">Scout report ${age} turn${age===1?'':'s'} old. ${T.it.exact?'The report is exact, so this is the exact result if nothing moves. War → Calc shows every number.':'At '+T.it.conf+'% confidence the forecast is a range; the verdict uses the worst end.'} Their allies can still send help.</div>`:''}
           ${homeWarn}<div class="p199go"><button type="button" class="p199btn${rh<1?' red':''}" data-p199="go">${rh<1?'Attack anyway with ':'Attack with '}${F(sent)}</button>${(c.clan!=null&&typeof isClanOfficer==='function'&&isClanOfficer(c))?'<button type="button" class="p199btn ghost" data-p199="acs">Make it a joint strike</button>':''}</div></div>`;}
       else fcHTML='<div class="p199fc"><div class="p199note">No forecast available for this target.</div></div>';}
     box.innerHTML=pick+`<div class="p199grid">${tcard}<div>${force}${fcHTML}</div></div>`;wire(box,c,T);}
@@ -21956,12 +22025,12 @@ if(typeof module!=='undefined'&&module.exports)module.exports=BANNER;
   .p206v .k{font-family:var(--display),system-ui,sans-serif;font-size:20px;font-weight:800;letter-spacing:1px;color:var(--c)}
   .p206v .d{flex:1;min-width:200px;font-size:13px;line-height:1.45}
   .p206jf{margin-top:10px;max-width:760px}`;document.head.appendChild(css);
-  const LUCK=0.08;
+  const LUCK=0;
   // ratio range for a forecast that used the middle of the scout report (or the garrison for unclaimed land)
   function range(c,tgt,r){try{if(!tgt)return null;if(tgt.owner==null)return {lo:r*(1-LUCK),hi:r*(1+LUCK),known:true,age:0,exact:true};
       if(tgt.owner===c.id)return null;const it=regionIntel(c,tgt.id);if(!it)return {known:false,bounced:scanMissed(c,tgt.id)};
       const age=Math.max(0,G.tick-it.tick);const lo=Math.max(1,it.lo||0),hi=Math.max(lo,it.hi||lo),mid=(lo+hi)/2;
-      const worst=hi*(1+0.04*age),best=lo;return {lo:r*mid/worst*(1-LUCK),hi:r*mid/best*(1+LUCK),known:true,age,conf:it.conf};}catch(e){return null;}}
+      const worst=hi,best=lo;return {lo:r*mid/worst*(1-LUCK),hi:r*mid/best*(1+LUCK),known:true,age,conf:it.conf};}catch(e){return null;}}
   function verdict(R){if(!R)return null;
     if(!R.known)return {k:'UNKNOWN',c:'var(--warn,#F59E0B)',hint:R.bounced?'The last scan bounced. You know nothing about this garrison yet, so there are no odds to show. Scan again first.':'No scan on this region, so there are no odds to show. Scout it first, then this panel gives a real forecast.'};
     const rng=R.exact?'':` · ratio <b class="mono">${R.lo.toFixed(2)}–${R.hi.toFixed(2)}</b>`;
@@ -22372,6 +22441,101 @@ if(typeof module!=='undefined'&&module.exports)module.exports=BANNER;
     const lc=document.getElementById('lcamp');if(lc&&!document.getElementById('lstory')){const b=document.createElement('button');b.className='btn';b.id='lstory';b.style.cssText='font-size:16px;padding:15px 24px';b.textContent='Story mode, 10 chapters';b.onclick=showStory;lc.insertAdjacentElement('beforebegin',b);}
     const sc=document.getElementById('setCamp');if(sc&&!document.getElementById('setStory')){const b=document.createElement('button');b.className='btn sec sm';b.id='setStory';b.textContent='Story mode';b.onclick=()=>{const m=sc.closest('.modal-bg');if(m)m.remove();showStory();};sc.insertAdjacentElement('afterend',b);}}
   try{new MutationObserver(hook).observe(document.body,{childList:true,subtree:true});}catch(e){}hook();
+})();
+
+</script>
+<script>/*p214ui*/
+/* p214 Update 16.0: the battle calculator (War → Calc). The same exact calculation as the real battle: no dice.
+   Fill the attacker from your army or from an incoming enemy army you have seen, the defender from a scouting report or from your own
+   region, and read the result per tick, the losses per unit type, every factor, and what it takes to win or to hold. */
+(function(){
+  if(typeof battleCalc!=='function')return;
+  const E=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+  const F=n=>full(Math.round(n||0));
+  const IRON=typeof ifrOn==='function'&&ifrOn();const ROME=typeof p168T==='function'&&p168T()==='romaterra';
+  const S=window.__p214=window.__p214||{atk:{},def:{},rid:null,mode:'attack',ifr:'even',form:'line',atkCid:null};
+  const css=document.createElement('style');css.id='p214css';
+  css.textContent=`
+  .p214grid{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:12px}
+  .p214t{width:100%;border-collapse:collapse;font-size:13px}.p214t td,.p214t th{padding:4px 6px;border-top:1px solid var(--border);text-align:right}.p214t td:first-child,.p214t th:first-child{text-align:left}
+  .p214t input{width:86px;min-height:34px;text-align:right;background:var(--bg2);color:var(--text);border:1px solid var(--border2);border-radius:6px;padding:2px 6px;font:inherit}
+  .p214v{font-size:22px;font-weight:800;margin:2px 0}.p214v.win{color:var(--good)}.p214v.lose{color:var(--bad)}.p214v.mid{color:var(--warn,#f6b62b)}
+  .p214row{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:6px 0}
+  .p214row select{min-height:38px;background:var(--bg2);color:var(--text);border:1px solid var(--border2);border-radius:6px;padding:0 8px;font:inherit;max-width:100%}
+  .p214f{display:grid;grid-template-columns:1fr auto;gap:2px 10px;font-size:12.5px}.p214f span:nth-child(even){font-family:var(--mono,monospace);text-align:right}
+  .p214need li{margin:3px 0}
+  @media (max-width:760px){.p214grid{grid-template-columns:1fr}.p214t input{width:72px}}`;
+  document.head.appendChild(css);
+  const scans=c=>{const out=[];const I=c._regionIntel||{};for(const id in I){const it=regionIntel(c,+id);const r=_rgId(+id);if(it&&r&&it.comp)out.push({r,it,age:G.tick-it.tick});}return out.sort((a,b)=>a.age-b.age);};
+  const seenIncoming=c=>{let inc=[];try{inc=incomingTo(c.id)||[];}catch(e){}return inc.filter(x=>x.fleet&&x.region&&x.from&&x.from.id!=null).map(x=>{let v={mode:'hidden'};try{v=forceView(c,x.fleet);}catch(e){}return {x,v};});};
+  const homeArmy=c=>{const o={};for(const k in c.units||{})if((c.units[k]||0)>0)o[k]=Math.floor(c.units[k]);return o;};
+  function setup(c){let r=null,atkC=c,defC=null;
+    if(S.mode==='defend'){r=_rgId(S.rid);defC=c;atkC=G.countries[S.atkCid]||null;}
+    else{r=S.rid!=null?_rgId(S.rid):null;defC=r&&r.owner!=null?G.countries[r.owner]:null;}
+    if(!r){r={id:-1,name:'Open ground',infra:0,stab:0,sv:0,x:0,y:0,cluster:-1};}
+    if(!atkC)atkC=makeSimStub(-3,{},[], 'ready',[]);
+    return {r,atkC,defC};}
+  VIEWS.calc=v=>{const c=you();if(!c)return;
+    v.appendChild(h(`<div class="ptitle"><h2>Calc</h2><span class="h">The exact battle: the same calculation as the real fight, no dice.</span></div>`));
+    const sc=scans(c),inc=seenIncoming(c);
+    const scanOpts=sc.map(s=>`<option value="a:${s.r.id}"${S.mode==='attack'&&S.rid===s.r.id?' selected':''}>${E(s.r.name)} (report ${s.age} turn${s.age===1?'':'s'} old)</option>`).join('');
+    const incOpts=inc.map((o,i)=>`<option value="d:${i}"${S.mode==='defend'&&S.rid===o.x.region.id&&S.atkCid===o.x.from.id?' selected':''}>${E(o.x.from.name)} on ${E(o.x.region.name)}, in ${Math.max(0,o.x.eta)} turns${o.v.mode==='full'?'':' (army not seen)'}</option>`).join('');
+    v.appendChild(h(`<div class="card mb" style="margin-bottom:12px"><div class="p214row"><b>Battle</b><select id="p214pick" aria-label="Pick a battle"><option value="m">Enter both sides by hand</option>${scanOpts?'<optgroup label="Attack a region you scouted">'+scanOpts+'</optgroup>':''}${incOpts?'<optgroup label="Defend against an incoming army">'+incOpts+'</optgroup>':''}</select></div>
+      <div class="small muted">${sc.length?'':'No fresh scouting report yet: scout a region on War → Scout, then it shows up here. '}A scouting report shows the exact defending army for ${SCOUT_TTL} turns. Without one, the calculator only knows what you type.</div>
+      <div class="p214row">${IRON?`<label class="small">Battle orders <select id="p214ifr"><option value="even"${S.ifr==='even'?' selected':''}>no edge</option><option value="best"${S.ifr==='best'?' selected':''}>attacker guesses right every tick</option><option value="worst"${S.ifr==='worst'?' selected':''}>defender guesses right every tick</option></select></label>`:''}${ROME?`<label class="small">Attack formation <select id="p214form">${Object.keys(P168F).map(k=>`<option value="${k}"${S.form===k?' selected':''}>${E(P168F[k].n)}</option>`).join('')}</select></label>`:''}
+      <button class="btn ghost sm" id="p214mine">My home army attacks</button><button class="btn ghost sm" id="p214clear">Clear</button></div></div>`));
+    const {r,atkC,defC}=setup(c);
+    const keys=UNIT.filter(u=>(S.atk[u.k]||0)>0||(S.def[u.k]||0)>0||(c.units[u.k]||0)>0||(typeof unitUnlocked!=='function'||unitUnlocked(c,u.k))).map(u=>u.k);
+    const res=fleetSize(S.atk)&&fleetSize(S.def)?battleCalc(atkC,S.atk,r,defC,S.def,{ifr:S.ifr,form:S.form}):null;
+    const tbl=`<table class="p214t"><thead><tr><th>Unit</th><th>Attacker</th><th>Defender</th>${res?'<th>Att. lost</th><th>Def. lost</th>':''}</tr></thead><tbody>${keys.map(k=>`<tr><td>${E(_ub214(k).n)}</td><td><input type="number" min="0" inputmode="numeric" data-p214a="${k}" value="${S.atk[k]||''}" aria-label="Attacker ${E(_ub214(k).n)}"></td><td><input type="number" min="0" inputmode="numeric" data-p214d="${k}" value="${S.def[k]||''}" aria-label="Defender ${E(_ub214(k).n)}"></td>${res?`<td>${res.aLost[k]?F(res.aLost[k]):''}</td><td>${res.dLost[k]?F(res.dLost[k]):''}</td>`:''}</tr>`).join('')}</tbody></table>`;
+    let out='<div class="small muted">Enter both sides to see the result.</div>';
+    if(res){const d=res.detail||{};const verdict=res.captured?['win','Region taken']:res.success?['mid','Attacker wins the field, region not taken']:['lose','Attack repelled'];
+      out=`<div class="p214v ${verdict[0]}">${verdict[1]}</div><div class="small">Power ratio after the last tick: <b>${res.ratio.toFixed(2)}</b>. Taking a region needs 1.25 and morale above 0.30 (now ${res.morale.toFixed(2)}).${res.blocked?' <b>Protected:</b> '+E({shield:'a planetary shield is up',beginner:'beginner protection',admin:'an admin shield',emergency:'the emergency shield is still up',last:'the last region has a one-time emergency shield'}[res.blocked]||res.blocked)+', so it cannot be taken now.':''}</div>
+        <table class="p214t" style="margin-top:6px"><thead><tr><th>Tick</th><th>Ratio</th><th>Att. lost</th><th>Def. lost</th></tr></thead><tbody>${res.ticks.map(t=>`<tr><td>${t.t}</td><td>${t.ratio.toFixed(2)}</td><td>${F(fleetSize(t.aLost))}</td><td>${F(fleetSize(t.dLost))}</td></tr>`).join('')}</tbody></table>
+        <h3 class="mt">Every factor (tick 1)</h3><div class="p214f">
+          <span>Attack power</span><span>${F(d.aRaw)}</span><span>Defence power</span><span>${F(d.dRaw)}</span>
+          <span>Logistics attacker / defender</span><span>${Math.round((d.atkLogi||1)*100)}% / ${Math.round((d.defLogi||1)*100)}%</span>
+          <span>Air support</span><span>${Math.round(((d.CAS||1)-1)*100)}%</span><span>Cyber: enemy readiness hit / yours</span><span>−${Math.round((d.empDef||0)*100)}% / −${Math.round((d.empAtk||0)*100)}%</span>
+          <span>Ground of the region (defence)</span><span>×${(d.terr||1).toFixed(2)}</span><span>Home ground (defence, always)</span><span>×${(typeof DEF_HOME!=='undefined'?DEF_HOME:1).toFixed(2)}</span><span>Joint strike</span><span>×${(d.coord||1).toFixed(2)}</span>
+          <span>Your commanders and alliance (attack)</span><span>+${Math.round((commanderMods(atkC).atk||0)*100)}%</span><span>Readiness attacker</span><span>${E((READY[atkC.ready]||READY.ready).l)}</span>
+        </div><div class="small muted mt">${(res.phases||[]).map(p=>E(p.p)+': '+E(p.t)).join(' · ')}</div>`;}
+    v.appendChild(h(`<div class="p214grid"><div class="card" style="overflow-x:auto">${tbl}</div><div class="card" id="p214res">${out}<div id="p214need"></div></div></div>`));
+    // what does it take
+    if(res){const need=v.querySelector('#p214need');const avail=keys.filter(k=>typeof unitUnlocked!=='function'||unitUnlocked(S.mode==='defend'?c:atkC,k));
+      if(S.mode==='defend'){const N=calcNeedDefend(atkC,S.atk,r,defC,S.def,{ifr:S.ifr,form:S.form},avail);
+        need.innerHTML=N.holds?'<h3 class="mt">You hold</h3><div class="small">With this defence the region stays yours.</div>':`<h3 class="mt">To hold the region</h3><ul class="p214need small">${N.add.map(x=>`<li>add <b>${F(x.n)}</b> ${E(_ub214(x.k).n)} (you have ${F(c.units[x.k]||0)} at home)</li>`).join('')||'<li>No single unit type is enough. Combine, call allies, or pull back.</li>'}</ul>`;}
+      else if(!res.wouldTake){const N=calcNeedAttack(atkC,S.atk,r,defC,S.def,{ifr:S.ifr,form:S.form},avail);
+        need.innerHTML=`<h3 class="mt">To take the region</h3><ul class="p214need small">${N.scale?`<li>send this army <b>×${N.scale.toFixed(2)}</b></li>`:''}${N.add.map(x=>`<li>or add <b>${F(x.n)}</b> ${E(_ub214(x.k).n)}</li>`).join('')}${!N.scale&&!N.add.length?'<li>Not reachable with these unit types.</li>':''}</ul>${res.blocked?'<div class="small muted">The region is protected now, even a big enough army cannot take it yet.</div>':''}`;}}
+    // wiring
+    const redo=()=>go('calc');
+    v.querySelector('#p214pick').onchange=e=>{const val=e.target.value;if(val==='m'){S.mode='attack';S.rid=null;S.atkCid=null;redo();return;}
+      if(val[0]==='a'){const id=+val.slice(2);const it=regionIntel(c,id);S.mode='attack';S.rid=id;S.atkCid=null;S.def=Object.assign({},it&&it.comp||{});if(!fleetSize(S.atk))S.atk=homeArmy(c);redo();return;}
+      const o=inc[+val.slice(2)];if(!o)return;S.mode='defend';S.rid=o.x.region.id;S.atkCid=o.x.from.id;S.atk=o.v.mode==='full'?Object.assign({},o.v.units):{};try{S.def=Object.assign({},defenderPool(o.x.region,c).units);}catch(e2){S.def=homeArmy(c);}
+      if(o.v.mode!=='full')toast('You have not seen this army yet: enter what you expect, or raise your radar.','warn');redo();};
+    const ifs=v.querySelector('#p214ifr');if(ifs)ifs.onchange=e=>{S.ifr=e.target.value;redo();};
+    const fs=v.querySelector('#p214form');if(fs)fs.onchange=e=>{S.form=e.target.value;redo();};
+    v.querySelector('#p214mine').onclick=()=>{S.mode='attack';S.atk=homeArmy(c);redo();};
+    v.querySelector('#p214clear').onclick=()=>{S.atk={};S.def={};S.rid=null;S.mode='attack';redo();};
+    let tm=0;const upd=()=>{clearTimeout(tm);tm=setTimeout(()=>{const sy=window.scrollY;const ae=document.activeElement;const sel=ae&&ae.dataset?(ae.dataset.p214a?'[data-p214a="'+ae.dataset.p214a+'"]':ae.dataset.p214d?'[data-p214d="'+ae.dataset.p214d+'"]':null):null;redo();window.scrollTo(0,sy);if(sel){const el=document.querySelector(sel);if(el){el.focus();try{const L=el.value.length;el.setSelectionRange(L,L);}catch(e){}}}},700);};
+    v.querySelectorAll('[data-p214a]').forEach(i=>i.oninput=()=>{const n=Math.max(0,Math.floor(+i.value||0));if(n)S.atk[i.dataset.p214a]=n;else delete S.atk[i.dataset.p214a];upd();});
+    v.querySelectorAll('[data-p214d]').forEach(i=>i.oninput=()=>{const n=Math.max(0,Math.floor(+i.value||0));if(n)S.def[i.dataset.p214d]=n;else delete S.def[i.dataset.p214d];upd();});
+  };
+  // Defend tab: for every incoming army you have seen, the exact result of the battle as things stand, and a button to the calculator
+  let _dk='',_dh='';
+  function defendCard(){try{if(typeof view==='undefined'||view!=='self')return;const v=document.getElementById('view');if(!v)return;const c=you();if(!c)return;
+      const list=seenIncoming(c).filter(o=>o.v.mode==='full').slice(0,5);let el=v.querySelector(':scope > .p214def');
+      if(!list.length){if(el)el.remove();return;}
+      const key=G.tick+'|'+list.map(o=>o.x.fleet.id+':'+o.x.region.id).join(',');
+      if(key!==_dk){_dk=key;_dh=list.map(o=>{let pool={};try{pool=defenderPool(o.x.region,c).units;}catch(e){}
+          const B=battleCalc(o.x.from,o.v.units,o.x.region,c,pool,{tick0:G.tick+Math.max(0,o.x.eta)-1});
+          const st=B.captured?['var(--bad)','They take it']:B.wouldTake?['var(--warn,#f6b62b)','They break through, but '+(B.blocked==='beginner'?'beginner protection':B.blocked==='shield'?'your shield':'a protection')+' keeps the region']:B.success?['var(--warn,#f6b62b)','You keep the region, they win the field']:['var(--good)','You hold'];
+          return `<div class="p212row"><span><b>${E(o.x.region.name)}</b> <span class="muted small">${E(o.x.from.name)} · ${F(fleetSize(o.v.units))} units · in ${Math.max(0,o.x.eta)} turns</span><br><span class="small" style="color:${st[0]};font-weight:700">${st[1]}</span> <span class="small muted">(ratio ${B.ratio.toFixed(2)})</span></span><span class="acts"><button class="btn ghost sm" data-p214def="${o.x.region.id}:${o.x.from.id}">Work it out</button></span></div>`;}).join('');}
+      if(!el){el=document.createElement('div');el.className='card p214def';el.style.marginBottom='12px';const t=v.querySelector(':scope > .ptitle');if(t)t.insertAdjacentElement('afterend',el);else v.prepend(el);}
+      const html='<h3>Incoming, worked out</h3><div class="small muted">Exact result for armies you have seen, if nothing changes before they land.</div>'+_dh;
+      if(el.dataset.k!==_dk){el.dataset.k=_dk;el.innerHTML=html;el.querySelectorAll('[data-p214def]').forEach(b=>b.onclick=()=>{const [rid,aid]=b.dataset.p214def.split(':').map(Number);const o=list.find(x=>x.x.region.id===rid&&x.x.from.id===aid);
+          S.mode='defend';S.rid=rid;S.atkCid=aid;S.atk=o?Object.assign({},o.v.units):{};try{S.def=Object.assign({},defenderPool(_rgId(rid),c).units);}catch(e){}go('calc');});}}catch(e){}}
+  window.__p214apply=defendCard;if(window.__pLayers&&window.__pLayers.indexOf('__p214apply')<0)window.__pLayers.push('__p214apply');
+  window.p214Open=(mode,rid,atkCid)=>{S.mode=mode||'attack';S.rid=rid;S.atkCid=atkCid||null;try{const c=you();if(mode==='attack'){const it=regionIntel(c,rid);S.def=Object.assign({},it&&it.comp||{});if(!fleetSize(S.atk))S.atk=homeArmy(c);}}catch(e){}go('calc');};
 })();
 
 </script>
