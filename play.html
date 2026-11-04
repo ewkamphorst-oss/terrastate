@@ -14376,6 +14376,43 @@ function p217About(c,oid){const m=c&&c._mem&&c._mem[oid];const out={trust:Math.r
   try{const v=c.vsYou;if(v&&v.mem&&oid===G.you&&!out.events.length)out.events=v.mem.slice(0,2).map(x=>({t:x.tick,w:({attacked_me:'you attacked them',captured_my_region:'you took their land',broke_nap:'you broke a pact',helped_me:'you helped them',traded:'you traded',honored_nap:'you kept a pact',defeated_my_army:'you beat their army'})[x.type]||x.type}));}catch(e){}
   return out;}
 
+/*p218*/
+// p218 Update 18.0 "A world you can see": the paper of the turn. What happened this turn, in a few lines, written from
+// the battles and the world news. Kept in the game state (works in multiplayer too); the screens only draw it.
+const P218_KEEP=20;
+function p218W(){try{return typeof staffWorld==='function'?staffWorld():'T';}catch(e){return 'T';}}
+function p218Nm(id){const c=id!=null?G.countries[id]:null;return c?c.name:'a garrison';}
+function p218Push(s,t,ids){try{const b=G._p218b=G._p218b||{items:[]};
+  if(b.items.length>80)return;b.items.push({s,t,ids:(ids||[]).filter(x=>x!=null),rn:arguments[3]||'',k:arguments[4]||''});}catch(e){}}
+function p218IsCap(c,r){try{if(!c||!r)return false;if(c._cap!=null)return c._cap===r.id;const h=typeof homeRegionOf==='function'?homeRegionOf(c):null;return !!(h&&h.id===r.id);}catch(e){return false;}}
+function p218IsPrize(r){try{return typeof prizeIds==='function'&&prizeIds().indexOf(r.id)>=0;}catch(e){return false;}}
+// every battle that ends: who took what from whom, and the defences that held where it mattered
+if(typeof finalizeBattle==='function'){const _fb218=finalizeBattle;finalizeBattle=function(c,f,r,defC,R,retreated){const before=r?r.owner:null;
+  const cap=defC&&r?p218IsCap(defC,r):false;const out=_fb218.apply(this,arguments);
+  try{if(c&&r){const took=r.owner===c.id&&before!==c.id;const W=p218W();const A=c.name,D=defC?defC.name:null,RN=r.name;
+    const human=(c.isAI===false)||(defC&&defC.isAI===false);const prize=p218IsPrize(r);const rev=f&&f._p217==='revenge';
+    if(took){let s=4+(cap?4:0)+(prize?5:0)+(human?4:0)+(rev?2:0);let t;
+      if(!D)t=W==='R'?A+' brings '+RN+' under its rule.':A+' takes the open ground of '+RN+'.';
+      else if(cap)t=W==='R'?D+' loses its seat of power, '+RN+', to '+A+'.':D+' loses its capital '+RN+' to '+A+'.';
+      else if(rev)t=A+' takes back '+RN+' from '+D+'. An old score, settled.';
+      else t=(W==='R'?A+' seizes ':A+' takes ')+RN+' from '+D+'.';
+      if(prize)t=A+' holds '+RN+' now. '+t;
+      if(D||human||prize||cap)p218Push(s,t,[c.id,defC?defC.id:null],RN);}
+    else if(defC&&!retreated&&(cap||prize||human)){const s=1+(cap?1:0)+(prize?4:0)+(human?4:0);
+      p218Push(s,(W==='R'?D+' stands firm at ':D+' holds ')+RN+' against '+A+'.',[c.id,defC.id],RN,'h');}}}catch(e){}
+  return out;};}
+// at the end of the turn the paper is made: the biggest story on top, then four more
+const P218_SEEN=new WeakSet();
+function p218Make(){try{const b=G._p218b;const items=b?b.items.slice():[];const rns=items.map(x=>x.rn).filter(Boolean);const minT=G._paper?G._paper.tick-1:-1e9;
+  (G.news||[]).slice(0,30).forEach(n=>{if(!n||!n.head||P218_SEEN.has(n)||n.tick<minT)return;P218_SEEN.add(n);const t=String(n.head).trim();
+    if(rns.some(r=>t.indexOf(r)>=0)||items.some(x=>x.t===t))return;items.push({s:n.cat==='war'?1.5:1,t,ids:[]});});
+  items.sort((a,b)=>b.s-a.s);const seen=new Set();const pick=[];let holds=0;for(const x of items){const k=x.t.slice(0,60);if(seen.has(k))continue;if(x.k==='h'&&!(x.ids||[]).some(i=>G.countries[i]&&G.countries[i].isAI===false)){if(holds>=1)continue;holds++;}seen.add(k);pick.push(x);if(pick.length>=5)break;}
+  const W=p218W();const quiet=W==='R'?'A quiet day in the provinces.':W==='I'?'A quiet day along the front.':'A quiet turn across the world.';
+  const P={tick:G.tick,head:pick.length?pick[0].t:quiet,hids:pick.length?pick[0].ids:[],items:pick.slice(1).map(x=>({t:x.t,ids:x.ids}))};
+  G._paper=P;const A=G._papers=G._papers||[];A.unshift(P);if(A.length>P218_KEEP)A.length=P218_KEEP;G._p218b=null;}catch(e){}}
+function p218Paper(){return G._paper||null;}
+if(typeof runTick==='function'){const _rt218=runTick;runTick=function(){const out=_rt218.apply(this,arguments);try{p218Make();}catch(e){}return out;};}
+
 // ---- BOOT ------------------------------------------------------------------
 // GitHub serves the brochure as index.html and this file as play.html.
 // Itch and Newgrounds keep the whole game, landing included, as index.html.
@@ -22310,6 +22347,138 @@ if(typeof module!=='undefined'&&module.exports)module.exports=BANNER;
   }catch(e){}}
   function run(){apply();setTimeout(apply,80);}
   window.__p217apply=run;if(window.__pLayers&&window.__pLayers.indexOf('__p217apply')<0)window.__pLayers.push('__p217apply');
+})();
+
+</script>
+<script>/*p218ui*/
+// p218ui (18.0) "A world you can see": armies that move over the map, a short replay of every battle, and the paper
+// of the turn on Home. Drawing only: every number comes from the game state the engine already keeps.
+(function(){
+  const W=(()=>{try{return typeof staffWorld==='function'?staffWorld():'T';}catch(e){return 'T';}})();
+  const E=s=>(typeof esc==='function'?esc(String(s)):String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])));
+  function motion(){try{if(window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches)return false;}catch(e){}try{return typeof SETTINGS==='undefined'||SETTINGS.motion!==false;}catch(e){return true;}}
+  const st=document.createElement('style');st.textContent=`
+  .p218arm{cursor:pointer}.p218arm .ring{fill:#08121e;stroke-width:1.6}.p218arm text{font-family:IBM Plex Mono,monospace;font-weight:700;pointer-events:none}
+  .p218arm.soon .ring{animation:p218pulse 1.1s ease-in-out infinite}@keyframes p218pulse{50%{stroke-width:4;stroke-opacity:.55}}
+  .p218pop{position:absolute;z-index:30;min-width:220px;max-width:300px;background:var(--panel,#0e1826);border:1px solid var(--border,#2a3850);border-radius:10px;padding:10px 12px;box-shadow:0 8px 28px rgba(0,0,0,.45);font-size:13px}
+  .p218pop .row{gap:8px;margin-top:8px}
+  .p218paper{border:1px solid var(--border,#2a3850);border-radius:10px;padding:12px 14px;margin-bottom:12px;background:var(--panel,#111b2a)}
+  .p218paper .mast{display:flex;justify-content:space-between;align-items:baseline;gap:8px;border-bottom:2px solid var(--text,#dfe7f3);padding-bottom:4px;margin-bottom:8px;letter-spacing:.14em;font-size:12px;font-weight:800;text-transform:uppercase}
+  .p218paper .mast span{letter-spacing:.04em;font-weight:500;color:var(--muted,#8a9bb4);text-transform:none}
+  .p218paper .head{font-size:19px;line-height:1.25;font-weight:800;margin:2px 0 6px}
+  .p218paper ul{margin:0;padding-left:18px}.p218paper li{margin:3px 0;font-size:13.5px}
+  .p218paper .you{color:var(--accent2,#e8c14a);font-weight:700}
+  .p218paper.R .mast,.p218paper.R .head{font-family:Cinzel,Georgia,serif}.p218paper.R .mast{letter-spacing:.2em}
+  .p218paper.I .head{font-family:Georgia,'Times New Roman',serif}.p218paper.I .mast{font-family:IBM Plex Mono,monospace}
+  .p218rp .modal{max-width:760px;width:calc(100vw - 32px)}
+  .p218side{flex:1;min-width:0}.p218side h3{margin:0 0 4px;font-size:15px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .p218bar{height:12px;border-radius:6px;background:var(--border,#2a3850);overflow:hidden;margin:4px 0 8px}.p218bar i{display:block;height:100%;transition:width .9s ease}
+  .p218line{display:flex;flex-wrap:wrap;gap:3px;min-height:40px;align-content:flex-start}
+  .p218blk{width:12px;height:12px;border-radius:2px;transition:opacity .6s ease,transform .6s ease}.p218blk.gone{opacity:.12;transform:translateY(5px) scale(.7)}
+  .p218u{font-size:12px;display:flex;justify-content:space-between;gap:6px;border-bottom:1px dashed var(--border,#2a3850);padding:2px 0}
+  .p218u b{font-variant-numeric:tabular-nums}.p218u .l{color:#f0625f}
+  .p218rd{font-family:IBM Plex Mono,monospace;font-size:12px;text-align:center;margin:8px 0;min-height:34px;color:var(--muted,#8a9bb4)}
+  .p218end{text-align:center;font-size:22px;font-weight:800;margin:10px 0 4px;min-height:30px}
+  .p218vs{display:flex;gap:16px;align-items:flex-start}@media (max-width:600px){.p218vs{gap:10px}.p218blk{width:9px;height:9px}}
+  .p218rp.nomo .p218bar i,.p218rp.nomo .p218blk{transition:none}`;document.head.appendChild(st);
+
+  // ---------------------------------------------------------------- 1. armies on the map
+  function glyph(){return W==='I'?'▣':W==='R'?'⚑':'➤';}
+  function quad(a,b,t){const dx=b.x-a.x,dy=b.y-a.y,d=Math.hypot(dx,dy)||1;const bul=Math.min(40,d*0.18);const mx=(a.x+b.x)/2-dy/d*bul,my=(a.y+b.y)/2+dx/d*bul;const u=1-t;
+    return {x:u*u*a.x+2*u*t*mx+t*t*b.x,y:u*u*a.y+2*u*t*my+t*t*b.y};}
+  window.__p218pos=window.__p218pos||{};
+  function marker(key,from,to,frac,col,k,label,soon,info){const a=regionXY(from),b=regionXY(to);const t=Math.max(0.04,Math.min(0.96,frac));const p=quad(a,b,t);
+    const prev=window.__p218pos[key];let anim='';
+    if(prev&&prev.tick<G.tick&&motion()&&(Math.abs(prev.x-p.x)+Math.abs(prev.y-p.y))>0.05)anim=`<animateTransform attributeName="transform" type="translate" from="${prev.x.toFixed(2)} ${prev.y.toFixed(2)}" to="${p.x.toFixed(2)} ${p.y.toFixed(2)}" dur="1.1s" fill="freeze" calcMode="spline" keySplines=".4 0 .2 1" keyTimes="0;1"/>`;
+    if(!prev||prev.tick!==G.tick)window.__p218pos[key]={tick:G.tick,x:p.x,y:p.y};
+    const s=(1/k).toFixed(4);
+    return `<g transform="translate(${p.x.toFixed(2)} ${p.y.toFixed(2)})">${anim}<g class="p218arm${soon?' soon':''}" data-p218i="${E(info)}" transform="scale(${s})"><circle class="ring" r="10.5" stroke="${col}"/><text y="4.5" text-anchor="middle" font-size="12" fill="${col}">${glyph()}</text>${label?`<text y="21" text-anchor="middle" font-size="9" fill="${col}">${E(label)}</text>`:''}</g></g>`;}
+  function frac(f){const tr=Math.max(1,f.travel||1);if(f.status==='returning'){const left=(f.rEta||G.tick)-G.tick;return 1-left/tr;}return 1-(f.eta-G.tick)/tr;}
+  if(typeof wmFleetArcs==='function'){const _wf=wmFleetArcs;wmFleetArcs=function(c,k,ctx){let out=_wf.apply(this,arguments);
+    try{const R=ctx.byId;const add=[];
+      (c.fleets||[]).forEach(f=>{const home=R.get(f.home),tgt=R.get(f.target);if(!home||!tgt)return;const n=fleetSize(f.units||{});
+        if(f.status==='outbound'){const left=Math.max(0,f.eta-G.tick);add.push(marker('o'+f.id,home,tgt,frac(f),f.intent==='garrison'?RELCOL.ally:RELCOL.self,k,'',false,
+          JSON.stringify({w:'own',n,to:tgt.name,eta:left,g:f.intent==='garrison'?1:0,r:tgt.id})));}
+        else if(f.status==='returning'){add.push(marker('r'+f.id,tgt,home,frac(f),'#9fb0c9',k,'',false,JSON.stringify({w:'back',n,to:home.name,eta:Math.max(0,(f.rEta||G.tick)-G.tick)})));}});
+      (ctx.incoming||[]).forEach((i,ix)=>{const f=i.fleet;if(!f||!i.region||f.home==null)return;const from=R.get(f.home);if(!from)return;
+        add.push(marker('i'+(f.id!=null?f.id:ix),from,i.region,frac(f),RELCOL.enemy,k,'',i.eta<=1,JSON.stringify({w:'foe',from:i.from?i.from.name:'',to:i.region.name,eta:Math.max(0,i.eta),r:i.region.id,st:i.stealth?1:0})));});
+      if(add.length)out+=add.join('');}catch(e){}
+    return out;};}
+  // tap an army: who, where, when, and the calculator
+  function pop(e){const g=e.target.closest&&e.target.closest('.p218arm');const old=document.querySelector('.p218pop');if(old)old.remove();if(!g)return;
+    e.stopPropagation();e.preventDefault();let d={};try{d=JSON.parse(g.getAttribute('data-p218i')||'{}');}catch(_){}
+    const wrap=document.getElementById('wmap');if(!wrap)return;const rb=wrap.getBoundingClientRect(),gb=g.getBoundingClientRect();
+    const t=d.eta===0?'this turn':d.eta===1?'next turn':'in '+d.eta+' turns';
+    let html=d.w==='own'?`<b>${d.g?'Your defenders':'Your army'}</b><div class="muted">${full(d.n)} units to ${E(d.to)}, arrives ${t}.</div>`:
+      d.w==='back'?`<b>Your army, coming home</b><div class="muted">${full(d.n)} units back at ${E(d.to)} ${t}.</div>`:
+      `<b style="color:#f0625f">${d.st?'Unknown army':'Army of '+E(d.from||'an enemy')}</b><div class="muted">Coming for ${E(d.to)}, arrives ${t}.</div>`;
+    html+=`<div class="row">${d.w==='foe'?`<button class="btn sm" data-p218go="calc">Work it out</button><button class="btn ghost sm" data-p218go="self">Defend</button>`:d.w==='own'?`<button class="btn ghost sm" data-p218go="fleets">Armies</button>`:''}</div>`;
+    const p=document.createElement('div');p.className='p218pop';p.innerHTML=html;wrap.appendChild(p);
+    const x=Math.min(rb.width-310,Math.max(8,gb.left-rb.left-20)),y=Math.min(rb.height-120,Math.max(8,gb.top-rb.top+24));p.style.left=x+'px';p.style.top=y+'px';}
+  document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('[data-p218go]');if(b){const v=b.getAttribute('data-p218go');const o=document.querySelector('.p218pop');if(o)o.remove();try{if(v==='self'&&typeof warTab!=='undefined')warTab='defence';}catch(_){}try{go(v);}catch(_){}return;}
+    if(e.target.closest&&e.target.closest('#wsvg'))pop(e);else{const o=document.querySelector('.p218pop');if(o&&!e.target.closest('.p218pop'))o.remove();}},true);
+
+  // ---------------------------------------------------------------- 2. the battle, replayed
+  const sum=o=>Object.values(o||{}).reduce((a,x)=>a+(+x||0),0);
+  function uname(k){try{return (UBYK[k]||{n:k}).n;}catch(e){return k;}}
+  function canReplay(b){return !!(b&&b.detail&&(sum(b.detail.atkComp)>0||sum(b.detail.defComp)>0)&&!b.protected);}
+  function btn(b){try{const i=(G.battles||[]).indexOf(b);if(i<0||!canReplay(b))return '';return `<button class="btn sm p218wb" data-p218rp="${i}" style="margin-top:6px">▶ Watch the battle</button>`;}catch(e){return '';}}
+  ['battleCardHTML','battleReportHTML'].forEach(n=>{try{const f=eval(n);if(typeof f!=='function')return;const w=function(b){const out=f.apply(this,arguments);try{if(typeof out==='string'&&out.indexOf('data-p218rp')<0){const x=btn(b);if(x){const j=out.lastIndexOf('</');return j>0?out.slice(0,j)+x+out.slice(j):out+x;}}}catch(e){}return out;};
+    if(n==='battleCardHTML')battleCardHTML=w;else battleReportHTML=w;}catch(e){}});
+  function rounds(b){const d=b.detail;const T=(b.ticks||[]).filter(t=>t&&(t.aLostT||t.dLostT));
+    if(T.length)return T.map(t=>({a:t.aLostT||{},d:t.dLostT||{},ratio:t.ratio,ph:(t.phases||[]).filter(p=>p&&p.t).slice(0,3)}));
+    return [{a:d.atkLost||{},d:d.defLost||{},ratio:+b.ratio||d.ratio||0,ph:(b.phases||[]).filter(p=>p&&p.t).slice(0,3)}];}
+  function verdict(b){const me=typeof you==='function'?you():null;const youA=me&&b.atkId===me.id,youD=me&&b.defId===me.id;
+    const took=b.outcome==='captured';if(b.retreated)return {t:youA?'You pulled back':youD?'They pulled back':'The attacker pulled back',c:'#e8c14a'};
+    if(youA)return took?{t:'Taken',c:'#37d9a9'}:{t:'Beaten back',c:'#f0625f'};if(youD)return took?{t:'Lost',c:'#f0625f'}:{t:'Held',c:'#37d9a9'};
+    return took?{t:'Taken',c:'#e8c14a'}:{t:'Held',c:'#e8c14a'};}
+  window.p218Replay=function(i){const b=(G.battles||[])[i];if(!canReplay(b))return;const d=b.detail;const R=rounds(b);const mo=motion();
+    const sides=[{nm:b.atkName||'Attacker',col:b.atkColor||'#4f8cff',comp:Object.assign({},d.atkComp||{}),k:'a',role:'Attack'},{nm:b.defName||'Defender',col:b.defColor||'#f0625f',comp:Object.assign({},d.defComp||{}),k:'d',role:'Defence'}];
+    sides.forEach(s=>{s.start=sum(s.comp);s.left=Object.assign({},s.comp);s.blocks=Math.max(1,Math.min(60,s.start));s.per=s.start/s.blocks;});
+    const side=(s,ix)=>`<div class="p218side"><div class="muted small">${s.role}</div><h3 style="color:${E(s.col)}">${E(s.nm)}</h3>
+      <div class="p218bar"><i id="p218bar${ix}" style="width:100%;background:${E(s.col)}"></i></div>
+      <div class="p218line" id="p218line${ix}">${Array.from({length:s.blocks},()=>`<span class="p218blk" style="background:${E(s.col)}"></span>`).join('')}</div>
+      <div id="p218units${ix}" style="margin-top:8px">${Object.keys(s.comp).filter(k=>s.comp[k]>0).sort((x,y)=>s.comp[y]-s.comp[x]).slice(0,6).map(k=>`<div class="p218u"><span>${E(uname(k))}</span><span><b data-u="${E(k)}">${full(s.comp[k])}</b> <span class="l" data-l="${E(k)}"></span></span></div>`).join('')}</div></div>`;
+    const bg=h(`<div class="modal-bg p218rp${mo?'':' nomo'}"><div class="modal"><div class="row between"><h2 style="margin:0;font-size:18px">${E(b.region||'Battle')} <span class="muted small">turn ${b.tick}</span></h2><button class="btn ghost sm" data-x>✕</button></div>
+      <div class="p218rd" id="p218rd">The lines form up.</div><div class="p218vs">${side(sides[0],0)}${side(sides[1],1)}</div>
+      <div class="p218end" id="p218end"></div><div class="muted small" id="p218why" style="text-align:center"></div>
+      <div class="row" style="justify-content:center;gap:8px;margin-top:10px"><button class="btn sm" id="p218again">▶ Again</button><button class="btn ghost sm" id="p218skip">Skip to the end</button></div></div></div>`);
+    document.body.appendChild(bg);let timers=[];const close=()=>{timers.forEach(clearTimeout);bg.remove();};
+    bg.addEventListener('click',e=>{if(e.target===bg||e.target.closest('[data-x]'))close();});
+    function paint(n){sides.forEach((s,ix)=>{s.left=Object.assign({},s.comp);for(let r=0;r<n;r++){const L=R[r][s.k];for(const k in L)s.left[k]=Math.max(0,(s.left[k]||0)-(+L[k]||0));}
+        const now=sum(s.left);const pct=s.start?Math.max(0,now/s.start*100):0;const bar=bg.querySelector('#p218bar'+ix);if(bar)bar.style.width=pct.toFixed(1)+'%';
+        const gone=Math.round((s.start-now)/s.per);bg.querySelectorAll('#p218line'+ix+' .p218blk').forEach((el,j)=>el.classList.toggle('gone',j>=s.blocks-gone));
+        bg.querySelectorAll('#p218units'+ix+' [data-u]').forEach(el=>{const k=el.getAttribute('data-u');el.textContent=full(s.left[k]||0);const l=bg.querySelector('#p218units'+ix+' [data-l="'+k+'"]');const lost=(s.comp[k]||0)-(s.left[k]||0);if(l)l.textContent=lost>0?'−'+full(lost):'';});});
+      const rd=bg.querySelector('#p218rd');if(n===0)rd.textContent='The lines form up.';else{const x=R[n-1];rd.innerHTML='Round '+n+' of '+R.length+(x.ratio!=null?' · power ratio '+(+x.ratio).toFixed(2):'')+(x.ph.length?'<br>'+x.ph.map(p=>E(p.t)).join(' · '):'');}
+      const end=bg.querySelector('#p218end'),why=bg.querySelector('#p218why');if(n>=R.length){const v=verdict(b);end.textContent=v.t;end.style.color=v.c;why.textContent=b.why||'';}else{end.textContent='';why.textContent='';}}
+    function play(){timers.forEach(clearTimeout);timers=[];paint(0);if(!mo){paint(R.length);return;}R.forEach((_,r)=>timers.push(setTimeout(()=>paint(r+1),900+r*1400)));}
+    bg.querySelector('#p218again').onclick=play;bg.querySelector('#p218skip').onclick=()=>{timers.forEach(clearTimeout);paint(R.length);};play();};
+  document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('[data-p218rp]');if(!b)return;e.preventDefault();e.stopPropagation();try{p218Replay(+b.getAttribute('data-p218rp'));}catch(err){}},true);
+  // the battles that matter most open by themselves, once: your capital, or the prize of the world
+  function autoBig(){try{const me=typeof you==='function'?you():null;if(!me||document.hidden)return;G._p218seen=G._p218seen||{};
+      const prize=new Set(typeof prizeIds==='function'?prizeIds():[]);const cap=me._cap;
+      const i=(G.battles||[]).findIndex(b=>b&&b.tick>=G.tick-1&&canReplay(b)&&(b.atkId===me.id||b.defId===me.id)&&!G._p218seen[b.tick+'|'+b.coord]&&(()=>{const r=G.regions.find(x=>x.coord===b.coord);return r&&(prize.has(r.id)||(b.defId===me.id&&r.id===cap));})());
+      if(i<0)return;const b=G.battles[i];G._p218seen[b.tick+'|'+b.coord]=1;const ks=Object.keys(G._p218seen);if(ks.length>40)delete G._p218seen[ks[0]];
+      setTimeout(()=>{if(!document.querySelector('.modal-bg'))p218Replay(i);},700);}catch(e){}}
+
+  // ---------------------------------------------------------------- 3. the paper of the turn
+  const MAST={T:'World Wire',R:'Acta Diurna',I:'Front Dispatch'};
+  function line(t,ids){t=String(t).trim();t=t.charAt(0).toUpperCase()+t.slice(1);const me=typeof you==='function'?you():null;const mine=me&&(ids||[]).indexOf(me.id)>=0;return mine?`<span class="you">◆ ${E(t)}</span>`:E(t);}
+  function paperHTML(P,old){return `<div class="p218paper ${W}${old?' old':''}"><div class="mast">${MAST[W]||MAST.T}<span>turn ${P.tick}</span></div><div class="head">${line(P.head,P.hids)}</div>${(P.items||[]).length?`<ul>${P.items.map(x=>`<li>${line(x.t,x.ids)}</li>`).join('')}</ul>`:''}</div>`;}
+  window.p218Archive=function(){const A=(G._papers||[]).slice(1);const bg=h(`<div class="modal-bg"><div class="modal" style="max-width:640px"><div class="row between"><h2 style="margin:0">${MAST[W]||MAST.T}: earlier</h2><button class="btn ghost sm" data-x>✕</button></div><div style="margin-top:10px">${A.length?A.map(p=>paperHTML(p,1)).join(''):'<div class="muted">Nothing earlier yet.</div>'}</div></div></div>`);
+    document.body.appendChild(bg);bg.addEventListener('click',e=>{if(e.target===bg||e.target.closest('[data-x]'))bg.remove();});};
+  function apply(){try{if(typeof view==='undefined'||view!=='dashboard')return;const v=document.getElementById('view');if(!v||v.querySelector('.p218paper'))return;const P=G._paper;if(!P)return;
+      const el=h(paperHTML(P));if((G._papers||[]).length>1){const a=document.createElement('div');a.style.cssText='text-align:right;margin-top:6px';a.innerHTML='<button class="btn ghost sm" data-p218arch>Earlier</button>';el.appendChild(a);}
+      const after=v.querySelector('.p18home')||v.querySelector('.ptitle');if(after&&after.parentElement===v)after.after(el);else v.prepend(el);}catch(e){}}
+  document.addEventListener('click',e=>{if(e.target.closest&&e.target.closest('[data-p218arch]')){e.preventDefault();p218Archive();}});
+
+  // ---------------------------------------------------------------- 4. END TURN and the side menu are real buttons for keyboards and screen readers
+  function a11y(){try{document.querySelectorAll('.tick.turnmode, .nav').forEach(el=>{if(el.getAttribute('role')!=='button'){el.setAttribute('role','button');el.setAttribute('tabindex','0');}
+      if(el.classList.contains('nav'))el.setAttribute('aria-current',el.classList.contains('on')?'page':'false');});}catch(e){}}
+  document.addEventListener('keydown',e=>{if(e.key!=='Enter'&&e.key!==' ')return;const t=e.target;if(t&&t.matches&&t.matches('.tick.turnmode[role=button], .nav[role=button]')){e.preventDefault();t.click();}});
+  function run(){apply();a11y();setTimeout(apply,80);setTimeout(()=>{apply();a11y();},400);}
+  window.__p218apply=run;if(window.__pLayers&&window.__pLayers.indexOf('__p218apply')<0)window.__pLayers.push('__p218apply');
+  if(typeof runTick==='function'){const _rt=runTick;runTick=function(){const out=_rt.apply(this,arguments);try{autoBig();}catch(e){}return out;};}
 })();
 
 </script>
