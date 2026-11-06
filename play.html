@@ -16,7 +16,7 @@
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="https://playterrastate.nl/img/v4/terrastate-share.jpg">
 <meta name="author" content="Wim Kamphorst">
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"VideoGame","@id":"https://playterrastate.nl/play.html#game","name":"Terrastate","url":"https://playterrastate.nl/play.html","description":"Free Planetarion-style grand strategy in your browser. Lead one nation against 500 AI nations on a world map, form alliances and fight for the Nexus. No account, no download, no pay-to-win.","image":"https://playterrastate.nl/img/v4/terrastate-share.jpg","genre":["Strategy","Grand strategy","Turn-based strategy","4X","Browser game"],"gamePlatform":["Web browser","Windows","macOS","Linux","Android","iOS"],"applicationCategory":"Game","operatingSystem":"Any (web browser)","playMode":"SinglePlayer","inLanguage":"en","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"EUR","availability":"https://schema.org/InStock"},"author":{"@type":"Person","@id":"https://playterrastate.nl/#wim","name":"Wim Kamphorst","url":"https://wimkamphorst.nl"},"publisher":{"@type":"Person","@id":"https://playterrastate.nl/#wim","name":"Wim Kamphorst","url":"https://wimkamphorst.nl"},"softwareVersion":"19.0.1","sameAs":["https://wimkamphorstcoaching.itch.io/terrastate"]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"VideoGame","@id":"https://playterrastate.nl/play.html#game","name":"Terrastate","url":"https://playterrastate.nl/play.html","description":"Free Planetarion-style grand strategy in your browser. Lead one nation against 500 AI nations on a world map, form alliances and fight for the Nexus. No account, no download, no pay-to-win.","image":"https://playterrastate.nl/img/v4/terrastate-share.jpg","genre":["Strategy","Grand strategy","Turn-based strategy","4X","Browser game"],"gamePlatform":["Web browser","Windows","macOS","Linux","Android","iOS"],"applicationCategory":"Game","operatingSystem":"Any (web browser)","playMode":"SinglePlayer","inLanguage":"en","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"EUR","availability":"https://schema.org/InStock"},"author":{"@type":"Person","@id":"https://playterrastate.nl/#wim","name":"Wim Kamphorst","url":"https://wimkamphorst.nl"},"publisher":{"@type":"Person","@id":"https://playterrastate.nl/#wim","name":"Wim Kamphorst","url":"https://wimkamphorst.nl"},"softwareVersion":"19.2","sameAs":["https://wimkamphorstcoaching.itch.io/terrastate"]}</script>
 <link rel="manifest" href="terrastate.webmanifest"><meta name="theme-color" content="#0d1420"><link rel="icon" href="icons/terrastate-64.png"><link rel="apple-touch-icon" href="icons/terrastate-180.png">
 <script>window.__MP_URL__=''; /* '' = live multiplayer not open yet */ if('serviceWorker' in navigator)addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));</script>
 <script data-goatcounter="https://playterrastatenl.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
@@ -23223,7 +23223,7 @@ function head(t,sub){return '<div class="p250top"><h2>'+t+'</h2>'+(sub?'<div cla
 function now(c,limit){const out=[];
   inc(c).forEach(g=>{out.push(row('<b class="bad">Attack on '+RN(g.r)+'</b> in '+T(g.eta),'their attack '+F(g.atk)+' vs your defence '+F(def(g.r)),B('def50',g.r.id,'Send half')+B('defall',g.r.id,'Send all')+B('go','p250b','Train'),'alert'));});
   regionsOf(c).filter(r=>isNew(r)&&onLand(c,r.id)===0&&!inc(c).some(g=>g.r.id===r.id)).slice(0,3).forEach(r=>{out.push(row('<span class="p250new">NEW</span> '+RN(r)+' has no '+W.troops,'defence '+F(def(r)),B('st25',r.id,'Station 25%')+B('st50',r.id,'Station 50%')));});
-  try{const pj=projection(c);['food','energy','fuel','money'].forEach(k=>{const net=pj.net[k]||0,have=(c.res||{})[k]||0;if(net<0&&have/(-net)<12){const t=Math.max(0,Math.floor(have/(-net)));out.push(row('<b class="warn">'+E(rl(k))+' runs out in '+T(t)+'</b>',F(net)+' per turn',B('go','market','Buy')+B('go','p250b','Build')));}});}catch(e){}
+  try{const pj=projection(c);['food','energy','fuel','money'].forEach(k=>{const net=pj.net[k]||0,have=(c.res||{})[k]||0;if(net<0&&have/(-net)<12){const t=Math.max(0,Math.floor(have/(-net)));out.push(row('<b class="warn">'+E(rl(k))+(t<=0?' has run out':' runs out in '+T(t))+'</b>',F(net)+' per turn',B('go','market','Buy')+B('go','p250b','Build')));}});}catch(e){}
   return limit?out.slice(0,limit):out;}
 
 /* ---------- pages ---------- */
@@ -23231,7 +23231,7 @@ VIEWS.p250o=v=>{const c=ME();if(!c)return;seen();const A0=armies(c);let html=hea
   const todo=now(c,6);
   let nx=null;try{nx=typeof p186Next==='function'?p186Next(c):null;}catch(e){}
   if(nx&&nx.r){let atk=0;try{atk=power(c,'atk');}catch(e){}const known=nx.def!=null;
-    todo.push(row('Next land: '+RN(nx.r)+(nx.own?' · '+E(nx.own.name):''),(known?'defence '+F(nx.def)+' · your attack '+F(atk):'not scouted yet')+(nx.t!=null?' · '+T(nx.t)+' march':''),B('take',nx.r.id,known?'Take it':'Scout it')));}
+    todo.push(row('Next land: '+RN(nx.r)+(nx.own?' · '+E(nx.own.name):''),(known?'defence '+F(nx.def)+' · your attack '+F(atk):'not scouted yet')+(nx.t!=null?' · '+T(nx.t)+' march':''),B('take',nx.r.id,known?(nx.def!=null&&atk<nx.def*1.3?'Train first':'Take it'):'Scout it')));}
   html+=box('Do now',todo.length?todo.join(''):row('All quiet','nothing needs you right now',B('until','x','Play until something happens')));
   const bt=(G.battles||[]).filter(b=>b&&(b.atkId===c.id||b.defId===c.id)).slice(0,3);
   html+=box('Last battles',bt.map(b=>{const mine=b.atkId===c.id;const won=mine?(b.outcome==='captured'||b.outcome==='partial'):(b.outcome!=='captured');
@@ -23249,7 +23249,7 @@ VIEWS.p250a=v=>{const c=ME();if(!c)return;let atk0=0;try{atk0=power(c,'atk');}ca
     .filter(x=>x.t<=6&&!busy.has(x.r.id)&&(x.r.owner==null||regionIntel(c,x.r.id))).sort((a,b)=>a.t-b.t||def(a.r)-def(b.r)).slice(0,8).forEach(x=>{if(!T0.includes(x.r))T0.push(x.r);});}catch(e){}
   let atk=0;try{atk=power(c,'atk');}catch(e){}
   html+=box('Targets',T0.slice(0,8).map(r=>{const o=r.owner!=null?G.countries[r.owner]:null;const known=!o||(typeof regionIntel==='function'&&regionIntel(c,r.id));
-    return row(RN(r)+(o?' · '+E(o.name):' · empty'),(known?'defence '+F(def(r))+(def(r)*1.3<=atk?' · <b class="good">you can take it</b>':''):'not scouted'),known?B('take',r.id,'Take it'):B('scout',r.id,'Scout'));}).join(''),'<a data-p250="go" data-id="map">map</a>');
+    return row(RN(r)+(o?' · '+E(o.name):' · empty'),(known?'defence '+F(def(r))+(def(r)*1.3<=atk?' · <b class="good">you can take it</b>':''):'not scouted'),known?B('take',r.id,def(r)*1.3<=atk?'Take it':'Train first'):B('scout',r.id,'Scout'));}).join(''),'<a data-p250="go" data-id="map">map</a>');
   html+=box('Defend a land',regionsOf(c).slice(0,12).map(r=>row(RN(r)+(isNew(r)?' <span class="p250new">NEW</span>':''),'defence '+F(def(r))+' · '+F(onLand(c,r.id))+' '+W.troops+' stationed',B('st25',r.id,'Station 25%')+B('st50',r.id,'50%')+B('st100',r.id,'All'))).join(''));
   v.innerHTML=html;};
 
@@ -23310,7 +23310,7 @@ VIEWS.p250m=v=>{const c=ME();if(!c)return;let pj=null;try{pj=projection(c);}catc
   const short=(typeof MARKET!=='undefined'?MARKET:[]).filter(r=>pj&&(pj.net[r]||0)<0&&((c.res||{})[r]||0)/(-(pj.net[r]))<12);
   const top=short.length?row('<b class="warn">Running short: '+short.map(r=>E(rl(r))).join(', ')+'</b>','buys 10 turns of what you use',B('buyshort','x','Buy all')):'';
   html+=box('Prices',top+(typeof MARKET!=='undefined'?MARKET:[]).map(r=>{const net=pj?(pj.net[r]||0):0;const have=(c.res||{})[r]||0;const pr=Math.max(1,(G.prices||{})[r]||1);let q=net<0?-net*5:1000;q=Math.min(q,((c.res||{}).money||0)*0.25/(pr*1.3));q=Math.max(10,Math.round(q/10)*10);
-    return row(E(rl(r))+' <span class="p250c">'+F((G.prices||{})[r]||0)+' each</span>','you have '+F(have)+' · '+(net>=0?'+':'')+F(net)+' per turn'+(net<0&&have/(-net)<12?' · <b class="warn">runs out in '+T(Math.floor(have/(-net)))+'</b>':''),
+    return row(E(rl(r))+' <span class="p250c">'+F((G.prices||{})[r]||0)+' each</span>','you have '+F(have)+' · '+(net>=0?'+':'')+F(net)+' per turn'+(net<0&&have/(-net)<12?' · <b class="warn">'+(Math.floor(have/(-net))<=0?'has run out':'runs out in '+T(Math.floor(have/(-net))))+'</b>':''),
       '<input class="p250n" type="number" min="1" value="'+q+'" data-q="'+E(r)+'">'+B('qmax',r+'|buy','Max','alt')+B('qmax',r+'|sell','All','alt')+B('buy',r,'Buy','p250main')+B('sell',r,'Sell'));}).join(''));
   html+=box('Automatic',row('Auto-buy shortages',c._p18auto?'on: the game buys food, energy and fuel before they run out':'off',B('autobuy','x',c._p18auto?'Turn off':'Turn on')));
   v.innerHTML=html;};
@@ -23323,7 +23323,7 @@ VIEWS.p250e=v=>{const c=ME();if(!c)return;let pj=null;try{pj=projection(c);}catc
   v.innerHTML=html;};
 VIEWS.p250k=v=>{const c=ME();if(!c)return;let L=[];try{L=activeRanked();}catch(e){}const idx=L.findIndex(x=>x.id===c.id);
   let html=head('Rankings',idx>=0?'you are #'+(idx+1)+' of '+L.length:'');
-  const rr=(m,i)=>{let sc=0;try{sc=scores(m).overall;}catch(e){}return row('#'+(i+1)+' '+E(m.name)+' <span class="p250c">'+E(m.tag||'')+'</span>'+(m.id===c.id?' <b class="good">you</b>':''),regionsOf(m).length+' lands · score '+F(sc),'');};
+  const rr=(m0,i)=>{const m=(m0&&m0.id!=null&&G.countries[m0.id])||m0;let sc=0;try{sc=scores(m).overall;}catch(e){}return row('#'+(i+1)+' '+E(m.name)+' <span class="p250c">'+E(m.tag||'')+'</span>'+(m.id===c.id?' <b class="good">you</b>':''),regionsOf(m).length+' lands · score '+F(sc),'');};
   html+=box('Top 20',L.slice(0,20).map(rr).join(''))+box('Around you',L.slice(Math.max(0,idx-5),idx+6).map((m,j)=>rr(m,Math.max(0,idx-5)+j)).join(''));
   html+=box('World list',row('Best seasons of all players','',B('classic','rankings','Open')));
   v.innerHTML=html;};
@@ -23350,12 +23350,12 @@ VIEWS.p250s=v=>{const c=ME();if(!c)return;let html=head('Scouting','see a land b
   near.sort((a,b)=>a.t-b.t);
   const un=near.filter(x=>!regionIntel(c,x.r.id)).slice(0,15),kn=near.filter(x=>regionIntel(c,x.r.id)).slice(0,15);
   html+=box('Not scouted',un.map(x=>{const o=G.countries[x.r.owner];return row(RN(x.r)+' · '+E(o?o.name:'?'),T(x.t)+' march',B('scout',x.r.id,'Scout'));}).join(''),un.length||'');
-  html+=box('Scouted',kn.map(x=>{const o=G.countries[x.r.owner];const it=regionIntel(c,x.r.id);return row(RN(x.r)+' · '+E(o?o.name:'?'),'defence '+F(def(x.r))+' · seen turn '+(it?it.tick:'?'),B('take',x.r.id,'Take it'));}).join(''),kn.length||'');
+  html+=box('Scouted',kn.map(x=>{const o=G.countries[x.r.owner];const it=regionIntel(c,x.r.id);return row(RN(x.r)+' · '+E(o?o.name:'?'),'defence '+F(def(x.r))+' · seen turn '+(it?it.tick:'?'),B('take',x.r.id,def(x.r)*1.3<=(()=>{try{return power(c,'atk');}catch(e){return 0;}})()?'Take it':'Train first'));}).join(''),kn.length||'');
   html+=box('Spy missions',row('Sabotage and spying','needs a Covert Ops Center',B('classic','covert','Open')));
   v.innerHTML=html;};
-VIEWS.p250c=v=>{const c=ME();if(!c)return;const M=(c.mail||[]).slice(-25).reverse();try{(c.mail||[]).forEach(m=>{m.read=true;});}catch(e){}
+VIEWS.p250c=v=>{const c=ME();if(!c)return;const M=(c.mail||[]).slice(-25).reverse();try{M.forEach(m=>{m.read=true;});}catch(e){}
   let html=head('Comms');
-  html+=box('Messages',M.map(m=>row(E(m.mine?'You':(m.authorName||'?'))+(m.authorTag?' <span class="p250c">'+E(m.authorTag)+'</span>':'')+(m.kind&&m.kind!=='dm'?' <span class="p250c">'+E(m.kind)+'</span>':''),E(m.text||''),(!m.mine&&m.peerId!=null)?B('reply',m.peerId,'Reply'):'')).join(''),M.length||'');
+  html+=box('Messages',M.map(m=>row(E(m.mine?'You':(m.authorName||m.peerName||'?'))+((m.authorTag||m.peerTag)?' <span class="p250c">'+E(m.authorTag||m.peerTag)+'</span>':'')+(m.kind&&m.kind!=='dm'?' <span class="p250c">'+E(m.kind)+'</span>':''),E(m.text||''),(!m.mine&&m.peerId!=null)?B('reply',m.peerId,'Reply'):'')).join(''),M.length||'');
   html+=box('Write',clanOf(c)?row('To your alliance','<textarea class="p250ta" maxlength="500" placeholder="Message"></textarea>',B('send','clan','Send')):row('No alliance yet','you can reply to nations under Messages',''));
   v.innerHTML=html;};
 
@@ -23410,10 +23410,10 @@ const _sv=VIEWS.p250s;VIEWS.p250s=v=>{_sv(v);try{const c=ME();v.querySelectorAll
     const sel='<select class="p250sel" data-tgt="1">'+tg.slice(0,30).map(id=>{const o=G.countries[id];return o&&!o.retired?'<option value="'+id+'">'+E(o.name)+'</option>':'';}).join('')+'</select>';
     html=box('Spy missions',row('Target',F(c.agents||0)+' agents · '+F((c.res||{}).influence||0)+' influence',sel)+COVERT_OPS.map(op=>row(E(op.n),E(op.d)+' · '+op.min+' agents · '+F(op.infl)+' influence',B('spy',op.k,'Run'))).join(''));}
   v.insertAdjacentHTML('beforeend',html);}catch(e){}};
-VIEWS.p250c=v=>{const c=ME();if(!c)return;const M=(c.mail||[]).slice(-25).reverse();try{(c.mail||[]).forEach(m=>{m.read=true;});}catch(e){}
+VIEWS.p250c=v=>{const c=ME();if(!c)return;const M=(c.mail||[]).slice(-25).reverse();try{M.forEach(m=>{m.read=true;});}catch(e){}
   const peers={};M.forEach(m=>{if(!m.mine&&m.peerId!=null&&G.countries[m.peerId])peers[m.peerId]=G.countries[m.peerId].name;});
   let html=head('Comms');
-  html+=box('Messages',M.map(m=>row(E(m.mine?'You':(m.authorName||'?'))+(m.authorTag?' <span class="p250c">'+E(m.authorTag)+'</span>':''),E(m.text||''),'')).join(''),M.length||'');
+  html+=box('Messages',M.map(m=>row(E(m.mine?'You':(m.authorName||m.peerName||'?'))+((m.authorTag||m.peerTag)?' <span class="p250c">'+E(m.authorTag||m.peerTag)+'</span>':''),E(m.text||''),'')).join(''),M.length||'');
   const to='<select class="p250sel" data-to="1">'+(clanOf(c)?'<option value="clan">Your alliance</option>':'')+Object.keys(peers).map(id=>'<option value="'+id+'">'+E(peers[id])+'</option>').join('')+'</select>';
   html+=box('Write',(clanOf(c)||Object.keys(peers).length)?row('To '+to,'<textarea class="p250ta" maxlength="500" placeholder="Message"></textarea>',B('mail','x','Send')):row('Nobody to write to yet','join an alliance or wait for a nation to write to you',''));
   v.innerHTML=html;};
@@ -23514,7 +23514,7 @@ go=function(k){if(k&&k.indexOf&&k.indexOf('p250')!==0){if(window.__p250classic==
 try{window.go=go;}catch(e){}
 const IC=k=>'<svg class="ic" aria-hidden="true"><use href="#'+k+'"></use></svg>';
 function sideHTML(){return '<div class="p250nav">'+PAGES.map(([k,n,i])=>'<a class="p250n2" data-p250="go" data-id="'+k+'" data-k="'+k+'">'+IC(i)+'<span>'+n+'</span><b class="p250badge" data-badge="'+k+'"></b></a>').join('')+
-  '<details class="p250more"><summary>More</summary>'+MORE.map(([k,n])=>'<a data-p250="go" data-id="'+k+'">'+n+'</a>').join('')+'</details></div>';}
+  '<details class="p250more" open><summary>More</summary>'+MORE.map(([k,n])=>'<a data-p250="go" data-id="'+k+'">'+n+'</a>').join('')+'</details></div>';}
 function bnHTML(){return '<div class="p250bn">'+PAGES.slice(0,4).map(([k,n,i])=>'<a data-p250="go" data-id="'+k+'" data-k="'+k+'">'+IC(i)+'<span>'+n+'</span></a>').join('')+'<a data-p250="sheet">'+IC('i-menu')+'<span>More</span></a><button class="p250end" type="button">END TURN</button></div>';}
 function sheet(){let s=document.getElementById('p250sheet');if(s){s.remove();return;}s=document.createElement('div');s.id='p250sheet';
   s.innerHTML='<div class="p250sh">'+PAGES.slice(4).concat(MORE.map(x=>[x[0],x[1]])).map(([k,n])=>'<a data-p250="go" data-id="'+k+'">'+n+'</a>').join('')+'</div>';
@@ -23595,6 +23595,150 @@ b.bad{color:var(--danger,#ef4444)}b.warn{color:var(--warn,#f59e0b)}b.good{color:
 @media (max-width:700px){.p250row{flex-wrap:wrap}.p250m{flex:1 1 55%}.p250b{margin-left:auto;align-items:center}.p250b:has(input),.p250b:has(select){width:100%;justify-content:flex-start;margin-left:0}.p250b:has(input) .p250main{margin-left:auto}.p250desc{display:none}.p250top h2{font-size:19px}.p250pick select{flex:1}}
 `;document.head.appendChild(st);
 }catch(e){try{console.error('p250',e);}catch(_){}}})();
+</script>
+<script>/*p260*/
+// 19.1 "Small fixes" (solo, browser): the field training on the clean Overview, a turn number on the phone,
+// auto-buy on in a new game, Comms only marks what it shows, a cancelled order never loses goods,
+// and tab rows that run off a small screen show that there is more.
+(function(){try{
+if(window.__MP__||typeof VIEWS==='undefined'||typeof go!=='function')return;
+const ME=()=>{try{return G.countries[G.you];}catch(e){return null;}};
+const E=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+/* ---------- 1. field training as the top card of Overview ---------- */
+const TXT={research:['Start a research','Pick any project in Research. It makes your army or your economy stronger.','Open Research','p250r',null],
+  build:['Queue a building','Pick any building in Build. It is ready in a few turns.','Open Build','p250b','Buildings'],
+  army:['Train some troops','Open Build, tab Troops, and train a batch.','Open Troops','p250b','Troops'],
+  drill:[null,null,'Attack',null,null],
+  endturn:['End your turn','Press END TURN. Everything moves one step: your army marches, buildings grow.','END TURN',null,null]};
+function trainBox(c){if(typeof trainOn!=='function'||!trainOn(c)||typeof trainCur!=='function')return '';const cur=trainCur(c);if(!cur)return '';
+  const t0=TXT[cur.t.k]||[null,null,cur.t.btn,null,null];const t=[t0[0]||cur.t.t,t0[1]||cur.t.d,t0[2]||cur.t.btn];const N=(typeof TRAIN_TASKS!=='undefined'?TRAIN_TASKS.length:5);
+  return '<section class="p250box pin p260train"><div class="p250h">Field training '+(cur.i+1)+' of '+N+'<span><a data-p260="skip">skip</a></span></div>'+
+    '<div class="p250row"><div class="p250m"><div class="p250t">'+E(t[0])+'</div><div class="p250s">'+E(t[1])+'</div></div><div class="p250b"><button class="btn sm p250btn p250main" data-p260="train" data-k="'+E(cur.t.k)+'">'+E(t[2])+'</button></div></div></section>';}
+const _o=VIEWS.p250o;VIEWS.p250o=v=>{const r=_o(v);try{const c=ME();const html=trainBox(c);if(html){const top=v.querySelector('.p250top');if(top)top.insertAdjacentHTML('afterend',html);else v.insertAdjacentHTML('afterbegin',html);}}catch(e){}return r;};
+document.addEventListener('click',e=>{const b=e.target&&e.target.closest&&e.target.closest('[data-p260]');if(!b)return;e.preventDefault();e.stopPropagation();
+  const a=b.dataset.p260;try{
+    if(a==='skip'){trainSkip();go('p250o');return;}
+    if(a==='train'){const k=b.dataset.k;const t=TXT[k];
+      if(k==='drill'){trainDrill();return;}
+      if(k==='endturn'){try{p6EndTurn();}catch(x){soloAdvance();}return;}
+      if(t&&t[3]){if(t[4])(window._p250tab||(window._p250tab={}))[t[3]]=t[4];go(t[3]);return;}}
+  }catch(x){try{toast('Not possible right now.','bad');}catch(_){}}},true);
+
+/* ---------- 2. turn number on the phone ---------- */
+function turnChip(){try{const n=document.getElementById('topNation');if(!n||typeof G==='undefined'||!G)return;let s=n.querySelector('.p260turn');
+  if(!s){s=document.createElement('span');s.className='p260turn';n.appendChild(s);}const t='Turn '+(G.tick||0);if(s.textContent!==t)s.textContent=t;}catch(e){}}
+
+/* ---------- 3. auto-buy on in a new game (old saves keep their choice) ---------- */
+function autoBuyDefault(){try{if(!G||G._p260ab)return;const c=ME();if(!c)return;G._p260ab=1;if((G.tick||0)<=1&&c._p18auto==null&&typeof cmdSetAutoBuy==='function')cmdSetAutoBuy(c,true);}catch(e){}}
+
+/* ---------- 4. cancelling an order never loses goods ---------- */
+if(typeof cmdCancelOrder==='function'){const _cc=cmdCancelOrder;cmdCancelOrder=function(c,id){try{for(const res in (G.orders||{})){const o=(G.orders[res]||[]).find(x=>x.id===id&&x.owner===c.id);if(!o)continue;
+      if(o.side==='bid'){if((c.res.money||0)+o.price*o.qty>CAP.money)return err('Your treasury is full. Spend some money first, then cancel.');}
+      else if((c.res[res]||0)+o.qty>capOf(c,res))return err('Not enough storage for '+((RMETA[res]&&RMETA[res].l)||res)+'. Make room first, then cancel.');
+      break;}}catch(e){}return _cc.apply(this,arguments);};try{window.cmdCancelOrder=cmdCancelOrder;}catch(e){}}
+
+/* ---------- 5. tab rows that do not fit show a soft edge ---------- */
+function tabEdges(){try{document.querySelectorAll('.p250tabs').forEach(t=>{const more=t.scrollWidth>t.clientWidth+2&&t.scrollLeft+t.clientWidth<t.scrollWidth-2;t.classList.toggle('p260more',more);
+  if(!t._p260){t._p260=1;t.addEventListener('scroll',()=>{const m=t.scrollLeft+t.clientWidth<t.scrollWidth-2;t.classList.toggle('p260more',m);},{passive:true});}});}catch(e){}}
+
+/* ---------- hooks ---------- */
+const _go=go;go=function(){const r=_go.apply(this,arguments);try{turnChip();tabEdges();autoBuyDefault();}catch(e){}return r;};try{window.go=go;}catch(e){}
+try{const _rt=runTick;runTick=function(){const r=_rt.apply(this,arguments);try{turnChip();}catch(e){}return r;};window.runTick=runTick;}catch(e){}
+setInterval(()=>{turnChip();autoBuyDefault();},1500);
+
+const st=document.createElement('style');st.textContent=`
+.p260turn{display:none;margin-left:6px;padding:1px 7px;border-radius:9px;border:1px solid var(--border2,#475569);color:var(--text);font:700 11px/16px var(--mono,monospace);white-space:nowrap}
+@media (max-width:880px){.p260turn{display:inline-block}}
+.p260train{border-color:var(--accent)}
+.p250tabs.p260more{-webkit-mask-image:linear-gradient(to right,#000 82%,transparent);mask-image:linear-gradient(to right,#000 82%,transparent)}
+`;document.head.appendChild(st);
+}catch(e){try{console.error('p260',e);}catch(_){}}})();
+</script>
+<script>/*p261*/
+// 19.2 "Rank and goal" (solo, browser): Rankings with three tabs (nations, alliances, around you) and rank arrows,
+// your rank and the season goal on Overview, the season winner and your place on the end screen,
+// and a rival who stays close to you in the ranking. Drawing only, plus the rival choice; the engine is untouched.
+(function(){try{
+if(window.__MP__||typeof VIEWS==='undefined'||typeof go!=='function')return;
+const ME=()=>{try{return G.countries[G.you];}catch(e){return null;}};
+const E=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const F=n=>{try{return fmt(n);}catch(e){return String(Math.round(n||0));}};
+const GAME=/Romaterra/i.test(document.title)?'R':/Ironfront/i.test(document.title)?'I':'T';
+const GOAL=(()=>{try{return prizeName();}catch(e){return GAME==='R'?'Roma':GAME==='I'?'the Capital Sectors':'the Nexus';}})();
+
+/* ---------- the numbers, once per turn ---------- */
+let cache=null;
+function data(){if(cache&&cache.t===G.tick&&cache.n===G.countries.length)return cache;
+  const L=activeRanked();const pos={},sc={};L.forEach((x,i)=>{pos[x.id]=i+1;sc[x.id]=x.s;});
+  const cl=(G.clans||[]).map(k=>{let ms=[];try{ms=clanMembers(k);}catch(e){}return {k,n:ms.length,s:ms.reduce((a,m)=>a+(sc[m.id]||0),0)};}).filter(x=>x.n>0).sort((a,b)=>b.s-a.s);
+  const cpos={};cl.forEach((x,i)=>{cpos[x.k.id]=i+1;});
+  cache={t:G.tick,n:G.countries.length,L,pos,sc,cl,cpos};return cache;}
+function arrow(c){try{const t=rankTrend(c);if(t.mv>0)return '<b class="good">▲'+t.mv+'</b>';if(t.mv<0)return '<b class="bad">▼'+(-t.mv)+'</b>';}catch(e){}return '';}
+function row(main,sub,btns,cls){return '<div class="p250row'+(cls?' '+cls:'')+'"><div class="p250m"><div class="p250t">'+main+'</div>'+(sub?'<div class="p250s">'+sub+'</div>':'')+'</div><div class="p250b">'+(btns||'')+'</div></div>';}
+function nationRow(id,d,me){const m=G.countries[id];if(!m)return '';const k=clanOf(m);const lands=(()=>{try{return regionsOf(m).length;}catch(e){return 0;}})();
+  return row('#'+d.pos[id]+' '+E(m.name)+' <span class="p250c">['+E(m.tag||'')+']'+(k?' '+E(k.tag):'')+'</span>'+(id===me.id?' <b class="good">you</b>':'')+' '+arrow(m),
+    lands+' land'+(lands===1?'':'s')+' · score '+F(d.sc[id]||0),'',id===me.id?'p261me':'');}
+
+/* ---------- Rankings: three tabs ---------- */
+const TABS=['Nations','Alliances','Around you'];
+VIEWS.p250k=v=>{const c=ME();if(!c)return;const d=data();const my=d.pos[c.id]||0;const st=window._p250tab||(window._p250tab={});let tab=st.p250k;if(TABS.indexOf(tab)<0)tab=TABS[0];
+  let html='<div class="p250top"><h2>Rankings</h2><div class="p250sub">'+(my?'you are #'+my+' of '+d.L.length+' · ':'')+'the season is won at '+E(GOAL)+'; this list shows who is strongest</div></div>';
+  html+='<div class="p250tabs" role="tablist">'+TABS.map(t=>'<button role="tab" class="p250tab'+(t===tab?' on':'')+'" data-p261tab="'+E(t)+'">'+E(t)+'</button>').join('')+'</div>';
+  let inner='';
+  if(tab==='Nations'){inner=d.L.slice(0,20).map(x=>nationRow(x.id,d,c)).join('');if(my>20)inner+=nationRow(c.id,d,c);}
+  else if(tab==='Alliances'){const mine=clanOf(c);const top=d.cl.slice(0,30);if(mine&&!top.some(x=>x.k.id===mine.id)){const x=d.cl.find(y=>y.k.id===mine.id);if(x)top.push(x);}
+    inner=top.map(x=>row('#'+d.cpos[x.k.id]+' '+E(x.k.name)+' <span class="p250c">['+E(x.k.tag)+']</span>'+(mine&&mine.id===x.k.id?' <b class="good">yours</b>':'')+' '+arrow(x.k),
+      x.n+' member'+(x.n===1?'':'s')+' · score '+F(x.s),'',mine&&mine.id===x.k.id?'p261me':'')).join('')||'<div class="p250e">No alliances yet.</div>';}
+  else{const i=Math.max(0,my-1);const up=i>0?d.L[i-1]:null;const gap=up?Math.max(0,Math.ceil(up.s-(d.sc[c.id]||0))):0;
+    inner=(up?row('<b>'+F(gap)+' points to #'+(i)+'</b>','that is '+E((G.countries[up.id]||{}).name||'?'),''):row('<b>You are #1</b>','hold it until the end of the season',''))+
+      d.L.slice(Math.max(0,i-5),i+6).map(x=>nationRow(x.id,d,c)).join('');}
+  html+='<section class="p250box" style="border-top-left-radius:0">'+inner+'</section>';
+  html+='<section class="p250box">'+row('Best seasons online','the hall of fame of all players','<a class="btn sm p250btn" href="https://playterrastate.nl/hall-of-fame.html" target="_blank" rel="noopener">Open</a>')+'</section>';
+  v.innerHTML=html;};
+document.addEventListener('click',e=>{const b=e.target&&e.target.closest&&e.target.closest('[data-p261tab],[data-p261]');if(!b)return;e.preventDefault();e.stopPropagation();
+  if(b.dataset.p261tab){(window._p250tab||(window._p250tab={})).p250k=b.dataset.p261tab;go('p250k');return;}
+  if(b.dataset.p261==='rank'){go('p250k');}},true);
+
+/* ---------- Overview: the season goal and your rank, two short lines ---------- */
+function goalLine(){try{if(typeof nexusLine!=='function')return '';const l=nexusLine(true);if(!l)return '';let sc=null;try{sc=typeof curScenario==='function'?curScenario():null;}catch(e){}return sc?l:'<b>Season goal:</b> take and hold '+E(GOAL)+' \u00b7 '+l;}catch(e){return '';}}
+function rankLine(){try{const c=ME();const d=data();const p=d.pos[c.id];if(!p)return '';const k=clanOf(c);
+  return 'You #'+p+' '+arrow(c)+(k&&d.cpos[k.id]?' · Alliance ['+E(k.tag)+'] #'+d.cpos[k.id]:'');}catch(e){return '';}}
+const _o=VIEWS.p250o;VIEWS.p250o=v=>{const r=_o(v);try{const g=goalLine(),rk=rankLine();if(g||rk){const html='<div class="p261bar">'+(g?'<div class="p261goal">'+g+'</div>':'')+(rk?'<a class="p261rank" data-p261="rank">'+rk+' ›</a>':'')+'</div>';
+    const top=v.querySelector('.p250top');if(top)top.insertAdjacentHTML('afterend',html);else v.insertAdjacentHTML('afterbegin',html);}}catch(e){}return r;};
+
+/* ---------- end screen: who won the season, and your place ---------- */
+function endLines(){try{const c=ME();if(!c)return;setTimeout(()=>{const ms=[...document.querySelectorAll('.modal-bg .modal')];const m=ms[ms.length-1];if(!m||m.querySelector('.p261end'))return;
+    let wid=null;try{if(G._winner!=null)wid=G._winner;else if(G._finale&&G._finale.winner!=null)wid=G._finale.winner;}catch(e){}
+    const w=wid!=null?G.countries[wid]:null;const wk=w?clanOf(w):null;let rt={pos:0,total:0};try{rt=rankTitle(c.id);}catch(e){}
+    let best=0;try{const h=(playerLegacyHistory()||[]).slice(0,-1).filter(x=>x&&x.rank>0);if(h.length)best=Math.min.apply(null,h.map(x=>x.rank));}catch(e){}
+    const el=document.createElement('div');el.className='p261end';
+    el.innerHTML='<div><span>Season winner</span><b>'+(w?(w.id===c.id?'You':E(w.name)+(w.tag?' ['+E(w.tag)+']':''))+(wk&&w.id!==c.id?' · alliance '+E(wk.tag):''):'nobody held '+E(GOAL))+'</b></div>'+
+      '<div><span>Your place</span><b>#'+(rt.pos||'?')+' of '+(rt.total||'?')+'</b>'+(best?' <span class="muted">your best before: #'+best+'</span>':'')+'</div>';
+    const h2=m.querySelector('h1,h2');if(h2)h2.insertAdjacentElement('afterend',el);else m.prepend(el);},0);}catch(e){}}
+['showSeasonEnd','showVictory'].forEach(fn=>{try{const f=window[fn];if(typeof f!=='function'||f._p261)return;const g=function(){const r=f.apply(this,arguments);endLines();return r;};g._p261=1;
+  window[fn]=g;if(fn==='showSeasonEnd')showSeasonEnd=g;else showVictory=g;}catch(e){}});
+
+/* ---------- a rival who stays close to you in the ranking ---------- */
+function rivalCheck(){try{if(typeof rivalOf!=='function'||G._rival==null)return;const c=ME();if(!c)return;const start=(G.season&&G.season.startTick)||0;if(G.tick-start<20||G.tick%10!==0)return;
+  const d=data();const me=d.pos[c.id];const r=rivalOf();if(!me)return;if(r&&Math.abs((d.pos[r.id]||999)-me)<=40)return;
+  const home=regionsOf(c)[0];let best=null,bs=1e18;
+  d.L.forEach(x=>{const o=G.countries[x.id];if(!o||!o.isAI||o.retired||o.id===c.id)return;if(c.clan!=null&&o.clan===c.clan)return;const p=d.pos[o.id];if(Math.abs(p-me)>10)return;
+    const r0=regionsOf(o)[0];const dist=home&&r0?Math.hypot((r0.x||0)-(home.x||0),(r0.y||0)-(home.y||0)):0;const s=Math.abs(p-me)*40+dist;if(s<bs){bs=s;best=o;}});
+  if(!best)return;G._rival=best.id;G._rivalFights=0;try{sitrep(c,'intel','A new rival: '+best.name+(best.tag?' ['+best.tag+']':'')+' is close to you in the ranking (#'+d.pos[best.id]+').',{go:'p250k'});}catch(e){}}catch(e){}}
+try{const _rt=runTick;runTick=function(){const r=_rt.apply(this,arguments);try{rivalCheck();}catch(e){}return r;};window.runTick=runTick;}catch(e){}
+
+const st=document.createElement('style');st.textContent=`
+.p261bar{display:flex;flex-wrap:wrap;gap:4px 14px;align-items:center;margin:-4px 0 10px;padding:8px 12px;border:1px solid var(--border);border-radius:10px;background:var(--panel)}
+.p261goal{flex:1 1 260px;font-size:13px;min-width:0}
+.p261goal span{white-space:normal!important}
+.p261rank{font:700 13px var(--mono,monospace);color:var(--text);cursor:pointer;text-decoration:none;white-space:nowrap}
+.p261rank:hover{color:var(--accent)}
+.p250row.p261me{background:color-mix(in srgb,var(--accent) 12%,transparent)}
+.p261end{margin:8px 0 12px;padding:10px 12px;border:1px solid var(--border2,#475569);border-radius:10px;display:grid;gap:4px;text-align:left}
+.p261end span:first-child{display:inline-block;min-width:110px;color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.08em}
+`;document.head.appendChild(st);
+}catch(e){try{console.error('p261',e);}catch(_){}}})();
 </script>
 </body>
 </html>
