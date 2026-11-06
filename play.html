@@ -23160,5 +23160,242 @@ window.p240PruneIntel=pruneIntel;
   try{window.startNextSeason=startNextSeason;}catch(e){}
 }catch(e){}})();
 </script>
+<script>/*p243*/
+// A double click or double tap on END TURN used to play two turns. A second click within 0.7 s now does nothing.
+(function(){try{if(window.__MP__)return;
+  function endBtn(t){if(!t||!t.closest)return null;const h=t.closest('header .tick,#mEnd');if(h)return h;
+    const bn=t.closest('#bottomnav');if(!bn)return null;let x=t;
+    while(x&&x!==bn){const s=(x.textContent||'').trim();if(/^END TURN/i.test(s)&&s.length<24)return x;x=x.parentElement;}return null;}
+  document.addEventListener('click',function(e){try{if(!e.isTrusted)return;const b=endBtn(e.target);if(!b)return;const now=Date.now();
+    if(now-(window._p243last||0)<700){e.stopImmediatePropagation();e.preventDefault();return;}window._p243last=now;}catch(_){}},true);
+}catch(e){}})();
+</script>
+<script>/*p250*/
+/* Update 19.0 "Clean": six action pages in the style of Planetarion. One table per page, the button sits on the row.
+   Overview, Army, Lands, Build, Research, Alliance. Everything else lives under More. The engine is untouched:
+   every button calls the same commands the old screens use. */
+(function(){try{
+if(window.__MP__||typeof VIEWS==='undefined'||typeof go!=='function')return;
+const ME=()=>G.countries[G.you];
+const E=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const F=n=>{try{return fmt(n);}catch(e){return String(Math.round(n||0));}};
+const N=u=>{try{return fleetSize(u||{});}catch(e){return 0;}};
+const R=id=>{try{return _rgId(id);}catch(e){return null;}};
+const RN=r=>r?E(r.name)+(r.coord?' <span class="p250c">'+E(r.coord)+'</span>':''):'?';
+const T=n=>n==null?'':(n<=0?'now':n===1?'1 turn':n+' turns');
+const GAME=/Romaterra/i.test(document.title)?'R':/Ironfront/i.test(document.title)?'I':'T';
+const W=GAME==='R'?{army:'Legions',troops:'troops'}:{army:'Army',troops:'troops'};
+const PAGES=[['p250o','Overview','i-home'],['p250a',W.army,'i-shield'],['p250l','Lands','i-map'],['p250b','Build','i-factory'],['p250r','Research','i-book'],['p250al','Alliance','i-handshake']];
+const MAP={dashboard:'p250o',fleets:'p250a',around:'p250a',self:'p250a',production:'p250b',military:'p250b',research:'p250r',clans:'p250al'};
+const MORE=[['map','Map'],['market','Market'],['diplomacy','Diplomacy'],['rankings','Rankings'],['mail','Comms'],['reports','Reports'],['battles','Battle reports'],['covert','Scouting'],['economy','Economy & tax'],['staff','Staff'],['story','Story mode'],['codex','Field manual']];
+const CLASSIC=[['dashboard','Home (full)'],['self','War (full)'],['production','Buildings (full)'],['military','Armed forces (full)'],['research','R&D (full)'],['clans','Alliance (full)']];
+
+/* ---------- state helpers ---------- */
+function seen(){const c=ME();if(!c)return {};let s=G._p250seen;if(!s||typeof s!=='object'){s=G._p250seen={};regionsOf(c).forEach(r=>{s[r.id]=-999;});}
+  regionsOf(c).forEach(r=>{if(s[r.id]==null)s[r.id]=G.tick<=1?-999:G.tick;});return s;}
+function isNew(r){const s=seen();try{const h=homeRegionOf(ME());if(h&&h.id===r.id)return false;}catch(e){}return s[r.id]!=null&&G.tick-s[r.id]<=10&&s[r.id]>-999;}
+function share(c,p){const o={};for(const k in (c.units||{})){const n=Math.floor((c.units[k]||0)*p);if(n>0)o[k]=n;}return o;}
+function onLand(c,rid){let n=0;(c.fleets||[]).forEach(f=>{if(f&&f.target===rid&&(f.status==='garrison'||(f.status==='outbound'&&f.intent==='garrison')))n+=N(f.units);});return n;}
+function inc(c){let L=[];try{L=incomingTo(c.id)||[];}catch(e){}const by={};L.forEach(x=>{if(!x||!x.region)return;const id=x.region.id;const g=by[id]||(by[id]={r:x.region,atk:0,eta:99,from:x.from,n:0});g.atk+=x.atkP||0;g.eta=Math.min(g.eta,x.eta);g.n++;});
+  return Object.values(by).sort((a,b)=>a.eta-b.eta);}
+function def(r){try{return regionDef(r);}catch(e){return 0;}}
+function rl(k){try{return (RMETA[k]&&RMETA[k].l)||k;}catch(e){return k;}}
+function cost(o){return Object.keys(o||{}).filter(k=>o[k]>0).map(k=>F(o[k])+' '+E(rl(k))).join(' · ');}
+function armies(c){const L=[];
+  (c.fleets||[]).forEach(f=>{if(!f)return;const r=R(f.target);const n=N(f.units);const a={r,n,id:f.id,btn:''};
+    if(f.status==='staged'){a.what='Attack (scheduled)';a.st=T((f.departTick||G.tick)-G.tick)+' to departure';a.btn=B('recall',f.id,'Recall');}
+    else if(f.status==='battle'){a.what='In battle';a.st='phase '+Math.min(3,f.bTick||1)+'/3'+(f.order==='retreat'?' · retreating':'');
+      if((f.bTick||0)<BATTLE_TICKS&&n>0)a.btn=B('retreat',f.id,'Retreat','warn')+B('press',f.id,'Press on');}
+    else if(f.status==='outbound'&&f.intent==='garrison'){a.what='Moving to defend';a.st='arrives in '+T(f.eta-G.tick);a.btn=B('recall',f.id,'Recall');}
+    else if(f.status==='outbound'){a.what='Attack';a.st='lands in '+T(f.eta-G.tick);a.btn=(f.eta-G.tick)>1?B('recall',f.id,'Recall'):'<span class="p250s">too close to turn back</span>';}
+    else if(f.status==='garrison'){a.what='Stationed';a.st='defending';a.btn=B('recall',f.id,'Bring home');}
+    else if(f.status==='returning'){a.what='Coming home';a.st='home in '+T((f.rEta||G.tick)-G.tick);}
+    else return;L.push(a);});
+  (G.acs||[]).forEach(op=>{if(!op||!(op.fleets||[]).some(f=>f.owner===c.id))return;const r=R(op.target);const left=op.landTick-G.tick;const lead=op.leader===c.id;
+    const n=(op.fleets||[]).reduce((s,f)=>s+N(f.units),0);const ld=G.countries[op.leader];
+    L.push({r,n,what:'Joint attack'+(lead?' (you lead)':' with '+(ld?ld.name:'ally')),st:'lands in '+T(left),btn:left>=1?(lead?B('calloff',op.id,'Call off','warn'):B('leave',op.id,'Leave')):''});});
+  return L;}
+function B(a,id,label,cls){return '<button class="p250btn'+(cls?' '+cls:'')+'" data-p250="'+a+'" data-id="'+E(id)+'">'+label+'</button>';}
+function row(main,sub,btns,cls){return '<div class="p250row'+(cls?' '+cls:'')+'"><div class="p250m"><div class="p250t">'+main+'</div>'+(sub?'<div class="p250s">'+sub+'</div>':'')+'</div><div class="p250b">'+(btns||'')+'</div></div>';}
+function box(title,inner,extra){return '<section class="p250box"><div class="p250h">'+title+(extra?'<span>'+extra+'</span>':'')+'</div>'+(inner||'<div class="p250e">Nothing here.</div>')+'</section>';}
+function head(t,sub){return '<div class="p250top"><h2>'+t+'</h2>'+(sub?'<div class="p250sub">'+sub+'</div>':'')+'</div>';}
+function now(c,limit){const out=[];
+  inc(c).forEach(g=>{out.push(row('<b class="bad">Attack on '+RN(g.r)+'</b> in '+T(g.eta),'their attack '+F(g.atk)+' vs your defence '+F(def(g.r)),B('def50',g.r.id,'Send half')+B('defall',g.r.id,'Send all')+B('go','p250b','Train'),'alert'));});
+  regionsOf(c).filter(r=>isNew(r)&&onLand(c,r.id)===0&&!inc(c).some(g=>g.r.id===r.id)).slice(0,3).forEach(r=>{out.push(row('<span class="p250new">NEW</span> '+RN(r)+' has no '+W.troops,'defence '+F(def(r)),B('st25',r.id,'Station 25%')+B('st50',r.id,'Station 50%')));});
+  try{const pj=projection(c);['food','energy','fuel','money'].forEach(k=>{const net=pj.net[k]||0,have=(c.res||{})[k]||0;if(net<0&&have/(-net)<12){const t=Math.max(0,Math.floor(have/(-net)));out.push(row('<b class="warn">'+E(rl(k))+' runs out in '+T(t)+'</b>',F(net)+' per turn',B('go','market','Buy')+B('go','p250b','Build')));}});}catch(e){}
+  return limit?out.slice(0,limit):out;}
+
+/* ---------- pages ---------- */
+VIEWS.p250o=v=>{const c=ME();if(!c)return;seen();let html=head('Overview');
+  const todo=now(c,6);
+  let nx=null;try{nx=typeof p186Next==='function'?p186Next(c):null;}catch(e){}
+  if(nx&&nx.r){let atk=0;try{atk=power(c,'atk');}catch(e){}const known=nx.def!=null;
+    todo.push(row('Next land: '+RN(nx.r)+(nx.own?' · '+E(nx.own.name):''),(known?'defence '+F(nx.def)+' · your attack '+F(atk):'not scouted yet')+(nx.t!=null?' · '+T(nx.t)+' march':''),B('take',nx.r.id,known?'Take it':'Scout it')));}
+  html+=box('Do now',todo.length?todo.join(''):'<div class="p250e">All quiet. End the turn.</div>');
+  const A=armies(c);html+=box(W.army,row(F(N(c.units))+' '+W.troops+' at home',A.length?A.length+' on the move':'none on the move',B('go','p250a','Open '+W.army)));
+  const bt=(G.battles||[]).filter(b=>b&&(b.atkId===c.id||b.defId===c.id)).slice(0,3);
+  html+=box('Last battles',bt.map(b=>{const mine=b.atkId===c.id;const won=mine?(b.outcome==='captured'||b.outcome==='partial'):(b.outcome!=='captured');
+    return row((won?'<b class="good">Won</b>':'<b class="bad">Lost</b>')+' '+(mine?'attack on ':'defence of ')+E(b.region),'turn '+b.tick+(b.outcome==='captured'?' · land changed hands':''),'');}).join(''),'<a data-p250="go" data-id="battles">all</a>');
+  v.innerHTML=html;};
+
+VIEWS.p250a=v=>{const c=ME();if(!c)return;let atk0=0;try{atk0=power(c,'atk');}catch(e){}let html=head(W.army,F(N(c.units))+' '+W.troops+' at home · attack '+F(atk0));
+  const al=now(c).filter(x=>/alert/.test(x));if(al.length)html+=box('Under attack',al.join(''));
+  const A=armies(c);
+  html+=box('On the move',A.map(a=>row(E(a.what)+' · '+RN(a.r),F(a.n)+' '+W.troops+' · '+a.st,a.btn)).join(''),A.length?A.length:'');
+  // targets: the next land, scouted lands and empty lands within reach
+  const busy=new Set((c.fleets||[]).filter(f=>f&&f.status!=='returning').map(f=>f.target));(G.acs||[]).forEach(op=>{if(op&&(op.fleets||[]).some(f=>f.owner===c.id))busy.add(op.target);});
+  const T0=[];let nx=null;try{nx=p186Next(c);}catch(e){}if(nx&&nx.r&&!busy.has(nx.r.id))T0.push(nx.r);
+  try{const hm=regionsOf(c);G.regions.filter(r=>r&&r.owner!==c.id&&!r.nexus&&r.id!==G.nexusId).map(r=>{let t=99;try{const h=homeFor(c,r);if(h)t=travelFor(c,h,r);}catch(e){}return {r,t};})
+    .filter(x=>x.t<=6&&!busy.has(x.r.id)&&(x.r.owner==null||regionIntel(c,x.r.id))).sort((a,b)=>a.t-b.t||def(a.r)-def(b.r)).slice(0,8).forEach(x=>{if(!T0.includes(x.r))T0.push(x.r);});}catch(e){}
+  let atk=0;try{atk=power(c,'atk');}catch(e){}
+  html+=box('Targets',T0.slice(0,8).map(r=>{const o=r.owner!=null?G.countries[r.owner]:null;const known=!o||(typeof regionIntel==='function'&&regionIntel(c,r.id));
+    return row(RN(r)+(o?' · '+E(o.name):' · empty'),(known?'defence '+F(def(r))+(def(r)*1.3<=atk?' · <b class="good">you can take it</b>':''):'not scouted'),known?B('take',r.id,'Take it'):B('scout',r.id,'Scout'));}).join(''),'<a data-p250="go" data-id="map">map</a>');
+  html+=box('Defend a land',regionsOf(c).slice(0,12).map(r=>row(RN(r)+(isNew(r)?' <span class="p250new">NEW</span>':''),'defence '+F(def(r))+' · '+F(onLand(c,r.id))+' '+W.troops+' stationed',B('st25',r.id,'Station 25%')+B('st50',r.id,'50%'))).join(''));
+  v.innerHTML=html;};
+
+VIEWS.p250l=v=>{const c=ME();if(!c)return;seen();const I={};inc(c).forEach(g=>{I[g.r.id]=g;});
+  const L=regionsOf(c).slice().sort((a,b)=>(I[b.id]?2:0)+(isNew(b)?1:0)-((I[a.id]?2:0)+(isNew(a)?1:0)));
+  let html=head('Lands',L.length+' lands');
+  html+=box('Your lands',L.map(r=>{const g=I[r.id];const nb=(c.buildings||[]).filter(b=>b.rid===r.id).length;
+    return row((isNew(r)?'<span class="p250new">NEW</span> ':'')+RN(r)+(g?' <b class="bad">attack in '+T(g.eta)+'</b>':''),'defence '+F(def(r))+(g?' vs attack '+F(g.atk):'')+' · '+F(onLand(c,r.id))+' '+W.troops+' stationed · '+nb+' buildings',
+      B('st25',r.id,'Station 25%')+B('st50',r.id,'50%')+B('build',r.id,'Build'),g?'alert':'');}).join(''));
+  v.innerHTML=html;};
+
+VIEWS.p250b=v=>{const c=ME();if(!c)return;const L=regionsOf(c);let rid=window._p250rid;if(!L.some(r=>r.id===rid))rid=(L[0]||{}).id;window._p250rid=rid;const r=R(rid);
+  let html=head('Build');
+  html+='<div class="p250pick">Land: <select id="p250land">'+L.map(x=>'<option value="'+x.id+'"'+(x.id===rid?' selected':'')+'>'+E(x.name)+'</option>').join('')+'</select>';
+  try{html+=' <span class="p250s">'+regionFootprintUsed(c,rid)+'/'+REGION_DP+' points used</span>';}catch(e){}html+='</div>';
+  const q=(c.queue||[]).map(x=>{const d=BUILD.find(b=>b.k===x.k);const rr=R(x.rid);return (d?d.n:x.k)+' L'+(x.target||'')+' in '+(rr?rr.name:'?')+(x.ticks!=null?' · '+T(x.ticks):'');});
+  const mq=(c.mq||[]).map(x=>{const u=UNIT.find(y=>y.k===x.k);return F(x.n||0)+' '+(u?u.n:x.k)+(x.ticks!=null?' · '+T(x.ticks):'');});
+  if(q.length||mq.length)html+=box('In progress',row(E(q.concat(mq).slice(0,6).join(' · ')),'',''));
+  html+=box('Buildings in '+(r?E(r.name):'?'),BUILD.filter(d=>{try{return buildUnlocked(c,d);}catch(e){return true;}}).map(d=>{let lv=0;try{lv=blevel(c,rid,d.k);}catch(e){}
+    const qd=(c.queue||[]).some(x=>x.rid===rid&&x.k===d.k);let co='';try{co=cost(bcost(d.k,lv));}catch(e){}
+    return row(E(d.n)+' <span class="p250c">L'+lv+'</span>',E(d.d||'')+(co?' · '+co:''),qd?'<span class="p250s">building</span>':B('bld',d.k,lv?'Upgrade':'Build'));}).join(''));
+  html+=box('Train '+W.troops,UNIT.filter(u=>{try{return unitUnlocked(c,u);}catch(e){return !u.req;}}).map(u=>row(E(u.n)+' <span class="p250c">'+F((c.units||{})[u.k]||0)+' at home</span>','attack '+u.atk+' · defence '+u.def+' · '+cost(u.cost)+' each',
+    '<input class="p250n" type="number" min="1" value="50" data-u="'+E(u.k)+'">'+B('rec',u.k,'Train'))).join(''));
+  v.innerHTML=html;const s=v.querySelector('#p250land');if(s)s.onchange=()=>{window._p250rid=+s.value;go('p250b');};};
+
+VIEWS.p250r=v=>{const c=ME();if(!c)return;let html=head('Research',F((c.res||{}).research||0)+' research points');
+  if(!c.path)html+=box('Do now',row('<b>Choose your national path</b>','one choice per season, it unlocks your own buildings',B('classic','research','Choose')));
+  const rq=(c.rq||[]).map(x=>{const d=TECH.find(t=>t.k===x.k);return row(E(d?d.n:x.k),T(x.ticks)+' left','');});
+  if(rq.length)html+=box('Researching',rq.join(''));
+  const av=TECH.filter(d=>!(c.tech||[]).includes(d.k)&&!(c.rq||[]).some(x=>x.k===d.k)&&!(d.req||[]).some(q=>!(c.tech||[]).includes(q))&&!(d.excludes||[]).some(e=>(c.tech||[]).includes(e)||(c.rq||[]).some(q=>q.k===e)))
+    .sort((a,b)=>(a.cost.research||0)-(b.cost.research||0)).slice(0,14);
+  html+=box('Available',av.map(d=>{const can=((c.res||{}).research||0)>=(d.cost.research||0)&&((c.res||{}).money||0)>=(d.cost.money||0);
+    return row(E(d.n),E(d.d||'')+' · '+cost(d.cost)+' · '+T(d.ticks),can?B('res',d.k,'Start'):'<span class="p250s">not enough yet</span>');}).join(''),'<a data-p250="classic" data-id="research">tech tree</a>');
+  v.innerHTML=html;};
+
+VIEWS.p250al=v=>{const c=ME();if(!c)return;const cl=clanOf(c);
+  if(!cl){v.innerHTML=head('Alliance')+box('Do now',row('You are not in an alliance','allies defend you and attack with you',B('classic','clans','Find or found one')));return;}
+  let html=head('Alliance',E(cl.name)+' ['+E(cl.tag)+']');
+  const ops=(G.acs||[]).filter(op=>op&&op.clan===cl.id);
+  html+=box('Joint attacks',ops.map(op=>{const r=R(op.target);const left=op.landTick-G.tick;const inn=(op.fleets||[]).some(f=>f.owner===c.id);const lead=op.leader===c.id;const ld=G.countries[op.leader];
+    const btn=left<1?'':lead?B('calloff',op.id,'Call off','warn'):inn?B('leave',op.id,'Leave'):B('join',op.id,'Join');
+    return row(RN(r)+' · led by '+(lead?'you':E(ld?ld.name:'?')),F((op.fleets||[]).reduce((s,f)=>s+N(f.units),0))+' '+W.troops+' · '+(op.fleets||[]).length+' armies · lands in '+T(left)+(inn?' · you are in':''),btn);}).join(''));
+  let ms=[];try{ms=clanMembers(cl);}catch(e){}
+  html+=box('Members',ms.map(m=>{const ia=inc(m);return row(E(m.name)+(m.id===c.id?' (you)':''),E((cl.roles||{})[m.id]||'member')+' · '+regionsOf(m).length+' lands'+(ia.length?' · <b class="bad">under attack</b>':''),ia.length&&m.id!==c.id?B('def50',ia[0].r.id,'Help defend'):'');}).join(''),ms.length);
+  html+=box('Chat, treasury and roles',row('All alliance details','',B('classic','clans','Open')));
+  v.innerHTML=html;};
+
+/* ---------- actions ---------- */
+async function act(b){try{const sh=document.getElementById('p250sheet');if(sh)sh.remove();}catch(e){}const a=b.dataset.p250,id=b.dataset.id;const c=ME();if(!c)return;let r=null,msg='';
+  const num=x=>isNaN(+x)?x:+x;
+  try{
+    if(a==='go'){go(id);return;}
+    if(a==='classic'){window.__p250classic=id;go(id);return;}
+    if(a==='take'){if(typeof p186Take==='function')p186Take(num(id));return;}
+    if(a==='scout'){if(typeof p186Scout==='function')p186Scout(num(id));return;}
+    if(a==='build'){window._p250rid=num(id);go('p250b');return;}
+    if(a==='join'){if(typeof OPEN_JOINOP==='function'){window.__p250classic='clans';OPEN_JOINOP(num(id));}return;}
+    if(a==='recall'){r=await recallFleet(c,num(id));msg='Recalled, your '+W.troops+' come home.';}
+    else if(a==='retreat'){r=await cmdBattleOrder(c,num(id),'retreat');msg='Retreat ordered.';}
+    else if(a==='press'){r=await cmdBattleOrder(c,num(id),'press');msg='Your '+W.troops+' press on.';}
+    else if(a==='calloff'){r=await cmdCancelACS(c,num(id));msg='Joint attack called off.';}
+    else if(a==='leave'){r=await cmdLeaveACS(c,num(id));msg='You left the joint attack.';}
+    else if(a==='st25'||a==='st50'||a==='def50'||a==='defall'){const p=a==='st25'?0.25:a==='defall'?1:0.5;const com=share(c,p);
+      if(!N(com)){toast('No '+W.troops+' at home. Train some first.','warn');go('p250b');return;}r=await cmdStation(c,num(id),com);msg=F(N(com))+' '+W.troops+' on their way.';}
+    else if(a==='bld'){r=await cmdBuild(c,window._p250rid,id);msg='Building started.';}
+    else if(a==='rec'){const inp=b.parentElement.querySelector('input[data-u]');const n=Math.max(1,Math.floor(+((inp||{}).value)||0));r=await cmdRecruit(c,id,n);msg='Training '+F(n)+'.';}
+    else if(a==='res'){r=await cmdResearch(c,id);msg='Research started.';}
+    if(r){if(r.ok){toast(msg,'good');try{sfx('ok');}catch(e){}}else toast(r.error||'Not possible right now.','bad');}
+    try{save();drawTop();}catch(e){}go(view);
+  }catch(e){toast('Not possible right now.','bad');}}
+document.addEventListener('click',e=>{const b=e.target&&e.target.closest&&e.target.closest('[data-p250]');if(!b)return;e.preventDefault();e.stopPropagation();if(b.disabled)return;act(b);},true);
+
+/* ---------- navigation ---------- */
+const _go=go;
+go=function(k){if(k&&k.indexOf&&k.indexOf('p250')!==0){if(window.__p250classic===k){}else if(MAP[k]){window.__p250classic=null;k=MAP[k];}}else window.__p250classic=null;
+  const r=_go.apply(this,[k].concat([].slice.call(arguments,1)));try{mark();}catch(e){}return r;};
+try{window.go=go;}catch(e){}
+const IC=k=>'<svg class="ic" aria-hidden="true"><use href="#'+k+'"></use></svg>';
+function sideHTML(){return '<div class="p250nav">'+PAGES.map(([k,n,i])=>'<a class="p250n2" data-p250="go" data-id="'+k+'" data-k="'+k+'">'+IC(i)+'<span>'+n+'</span><b class="p250badge" data-badge="'+k+'"></b></a>').join('')+
+  '<details class="p250more"><summary>More</summary>'+MORE.map(([k,n])=>'<a data-p250="go" data-id="'+k+'">'+n+'</a>').join('')+'<div class="p250mh">Full screens</div>'+CLASSIC.map(([k,n])=>'<a data-p250="classic" data-id="'+k+'">'+n+'</a>').join('')+'</details></div>';}
+function bnHTML(){return '<div class="p250bn">'+PAGES.slice(0,4).map(([k,n,i])=>'<a data-p250="go" data-id="'+k+'" data-k="'+k+'">'+IC(i)+'<span>'+n+'</span></a>').join('')+'<a data-p250="sheet">'+IC('i-menu')+'<span>More</span></a><button class="p250end" type="button">END TURN</button></div>';}
+function sheet(){let s=document.getElementById('p250sheet');if(s){s.remove();return;}s=document.createElement('div');s.id='p250sheet';
+  s.innerHTML='<div class="p250sh">'+PAGES.slice(4).concat(MORE.map(x=>[x[0],x[1]])).map(([k,n])=>'<a data-p250="go" data-id="'+k+'">'+n+'</a>').join('')+'<div class="p250mh">Full screens</div>'+CLASSIC.map(([k,n])=>'<a data-p250="classic" data-id="'+k+'">'+n+'</a>').join('')+'</div>';
+  s.onclick=e=>{if(e.target===s||e.target.closest('a'))setTimeout(()=>s.remove(),0);};document.body.appendChild(s);}
+document.addEventListener('click',e=>{const b=e.target&&e.target.closest&&e.target.closest('[data-p250="sheet"]');if(b){e.preventDefault();e.stopPropagation();sheet();}},true);
+document.addEventListener('click',e=>{const b=e.target&&e.target.closest&&e.target.closest('.p250end');if(!b)return;e.preventDefault();try{p6EndTurn();}catch(x){try{soloAdvance();}catch(_){}}},true);
+function mount(){const sd=document.getElementById('side');if(sd&&!sd.querySelector('.p250nav'))sd.insertAdjacentHTML('beforeend',sideHTML());
+  const bn=document.getElementById('bottomnav');if(bn&&!bn.querySelector('.p250bn'))bn.insertAdjacentHTML('beforeend',bnHTML());mark();}
+function mark(){const k=window.__p250classic||view;document.querySelectorAll('.p250nav [data-k],.p250bn [data-k]').forEach(a=>a.classList.toggle('on',a.dataset.k===k));
+  const vw=document.getElementById('view');if(vw)vw.classList.toggle('p250v',String(view).indexOf('p250')===0);
+  try{const c=ME();if(!c)return;const n=inc(c).length;document.querySelectorAll('[data-badge="p250a"]').forEach(x=>{x.textContent=n||'';x.style.display=n?'':'none';});
+    const nl=regionsOf(c).filter(isNew).length;document.querySelectorAll('[data-badge="p250l"]').forEach(x=>{x.textContent=nl?'NEW':'';x.style.display=nl?'':'none';});}catch(e){}}
+new MutationObserver(()=>{try{mount();}catch(e){}}).observe(document.body,{childList:true,subtree:false});
+['side','bottomnav'].forEach(id=>{const el=document.getElementById(id);if(el)new MutationObserver(()=>{try{mount();}catch(e){}}).observe(el,{childList:true});});
+mount();
+try{const _rt=runTick;runTick=function(){const r=_rt.apply(this,arguments);try{seen();}catch(e){}return r;};window.runTick=runTick;}catch(e){}
+// land on the clean Overview when the game opens on Home
+setTimeout(()=>{try{if(MAP[view])go(view);}catch(e){}},0);
+
+/* ---------- look ---------- */
+const st=document.createElement('style');st.id='p250css';st.textContent=`
+#side>:not(.p250nav){display:none!important}
+#bottomnav>:not(.p250bn){display:none!important}
+#mEnd,.advisor-fab,#advisor-fab,.advisor-rail,.p19d,.p19digest,.s0bar,.s0card{display:none!important}
+.p250nav{display:flex;flex-direction:column;gap:2px;padding:10px 8px}
+.p250n2{display:flex;align-items:center;gap:12px;padding:11px 14px;border-radius:8px;color:var(--muted);text-decoration:none;font-weight:600;font-size:15px;cursor:pointer}
+.p250n2:hover{color:var(--text);background:color-mix(in srgb,var(--hi,#F59E0B) 10%,transparent)}
+.p250n2.on{color:var(--text);background:color-mix(in srgb,var(--hi,#F59E0B) 16%,transparent);box-shadow:inset 3px 0 0 var(--hi,#F59E0B)}
+.p250n2 .ic{width:18px;height:18px}
+.p250badge{margin-left:auto;min-width:18px;padding:0 6px;border-radius:9px;background:var(--danger,#ef4444);color:#fff;font:700 11px/18px var(--mono,monospace);text-align:center;display:none}
+.p250more{margin-top:10px;border-top:1px solid var(--border);padding-top:8px}
+.p250more summary{cursor:pointer;color:var(--muted);font:600 13px/1 inherit;letter-spacing:.08em;text-transform:uppercase;padding:10px 14px;list-style:none}
+.p250more a,.p250sh a{display:block;padding:8px 14px;color:var(--text);text-decoration:none;font-size:14px;cursor:pointer;border-radius:6px}
+.p250more a:hover,.p250sh a:hover{background:color-mix(in srgb,var(--hi,#F59E0B) 10%,transparent)}
+.p250mh{margin:10px 14px 4px;color:var(--muted);font-size:11px;letter-spacing:.12em;text-transform:uppercase}
+#view.p250v{max-width:980px}
+.p250top{display:flex;align-items:baseline;gap:14px;margin:4px 0 14px}.p250top h2{margin:0;font-size:24px}
+.p250sub{color:var(--muted);font-size:14px}
+.p250box{border:1px solid var(--border);border-radius:10px;background:var(--panel);margin-bottom:14px;overflow:hidden}
+.p250h{display:flex;justify-content:space-between;padding:10px 16px;font:700 12px/1.2 var(--mono,monospace);letter-spacing:.14em;text-transform:uppercase;color:var(--hi,#F59E0B);border-bottom:1px solid var(--border)}
+.p250h a{color:var(--muted);cursor:pointer;text-transform:none;letter-spacing:0}
+.p250row{display:flex;align-items:center;gap:12px;padding:11px 16px;border-top:1px solid var(--border)}
+.p250row:first-of-type{border-top:0}
+.p250row.alert{background:color-mix(in srgb,var(--danger,#ef4444) 10%,transparent);box-shadow:inset 3px 0 0 var(--danger,#ef4444)}
+.p250m{flex:1;min-width:0}.p250t{font-size:15px;font-weight:600}.p250s{color:var(--muted);font-size:13px;margin-top:2px}
+.p250b{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end;align-items:center}
+.p250btn{padding:8px 14px;border:1px solid var(--border2,#475569);border-radius:6px;background:var(--panel2,#1e293b);color:var(--text);font:700 13px/1 inherit;cursor:pointer;white-space:nowrap}
+.p250btn:hover{border-color:var(--hi,#F59E0B)}
+.p250btn.warn{border-color:var(--danger,#ef4444);color:var(--danger,#ef4444)}
+.p250row .p250b .p250btn:first-child{background:var(--hi,#F59E0B);border-color:var(--hi,#F59E0B);color:#111}
+.p250row .p250b .p250btn.warn:first-child{background:var(--danger,#ef4444);border-color:var(--danger,#ef4444);color:#fff}
+.p250e{padding:14px 16px;color:var(--muted)}
+.p250c{color:var(--muted);font:500 12px var(--mono,monospace)}
+.p250new{display:inline-block;padding:1px 7px;border-radius:4px;background:var(--good,#22c55e);color:#04210f;font:800 11px/16px var(--mono,monospace);letter-spacing:.06em}
+.p250n{width:74px;padding:7px 8px;border:1px solid var(--border2,#475569);border-radius:6px;background:var(--bg2);color:var(--text)}
+.p250pick{margin:0 0 12px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}.p250pick select{padding:8px;border-radius:6px;background:var(--bg2);color:var(--text);border:1px solid var(--border2,#475569)}
+b.bad{color:var(--danger,#ef4444)}b.warn{color:var(--warn,#f59e0b)}b.good{color:var(--good,#22c55e)}
+.p250bn{display:flex;width:100%;align-items:stretch}
+.p250bn a{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:8px 2px;color:var(--muted);font-size:11px;text-decoration:none;cursor:pointer}
+.p250bn a.on{color:var(--hi,#F59E0B)}.p250bn .ic{width:20px;height:20px}
+.p250end{flex:1.4;margin:6px;border:0;border-radius:8px;background:var(--hi,#F59E0B);color:#111;font:800 13px/1 inherit;letter-spacing:.06em;cursor:pointer}
+#p250sheet{position:fixed;inset:0;z-index:9000;background:rgba(0,0,0,.5);display:flex;align-items:flex-end}
+.p250sh{width:100%;max-height:75vh;overflow:auto;background:var(--panel);border-radius:14px 14px 0 0;padding:12px 6px calc(12px + env(safe-area-inset-bottom))}
+@media (max-width:700px){.p250row{flex-wrap:wrap}.p250b{width:100%;justify-content:flex-start}.p250top h2{font-size:20px}}
+`;document.head.appendChild(st);
+}catch(e){try{console.error('p250',e);}catch(_){}}})();
+</script>
 </body>
 </html>
