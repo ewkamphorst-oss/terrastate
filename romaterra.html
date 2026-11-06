@@ -16,7 +16,7 @@
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="https://playterrastate.nl/img/v4/romaterra-share.jpg">
 <meta name="author" content="Wim Kamphorst">
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"VideoGame","@id":"https://playterrastate.nl/romaterra.html#game","name":"Romaterra","url":"https://playterrastate.nl/romaterra.html","description":"Free Roman grand strategy in your browser. Rule a people of the ancient world against hundreds of AI rivals, take Roma, raise the Imperial Palace and hold it. No account, no download.","image":"https://playterrastate.nl/img/v4/romaterra-share.jpg","genre":["Strategy","Grand strategy","Turn-based strategy","4X","Browser game"],"gamePlatform":["Web browser","Windows","macOS","Linux","Android","iOS"],"applicationCategory":"Game","operatingSystem":"Any (web browser)","playMode":"SinglePlayer","inLanguage":"en","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"EUR","availability":"https://schema.org/InStock"},"author":{"@type":"Person","@id":"https://playterrastate.nl/#wim","name":"Wim Kamphorst","url":"https://wimkamphorst.nl"},"publisher":{"@type":"Person","@id":"https://playterrastate.nl/#wim","name":"Wim Kamphorst","url":"https://wimkamphorst.nl"},"softwareVersion":"19.2","sameAs":["https://wimkamphorstcoaching.itch.io/romaterra"]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"VideoGame","@id":"https://playterrastate.nl/romaterra.html#game","name":"Romaterra","url":"https://playterrastate.nl/romaterra.html","description":"Free Roman grand strategy in your browser. Rule a people of the ancient world against hundreds of AI rivals, take Roma, raise the Imperial Palace and hold it. No account, no download.","image":"https://playterrastate.nl/img/v4/romaterra-share.jpg","genre":["Strategy","Grand strategy","Turn-based strategy","4X","Browser game"],"gamePlatform":["Web browser","Windows","macOS","Linux","Android","iOS"],"applicationCategory":"Game","operatingSystem":"Any (web browser)","playMode":"SinglePlayer","inLanguage":"en","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"EUR","availability":"https://schema.org/InStock"},"author":{"@type":"Person","@id":"https://playterrastate.nl/#wim","name":"Wim Kamphorst","url":"https://wimkamphorst.nl"},"publisher":{"@type":"Person","@id":"https://playterrastate.nl/#wim","name":"Wim Kamphorst","url":"https://wimkamphorst.nl"},"softwareVersion":"19.3","sameAs":["https://wimkamphorstcoaching.itch.io/romaterra"]}</script>
 <link rel="manifest" href="romaterra.webmanifest"><meta name="theme-color" content="#1a1410"><link rel="icon" href="icons/romaterra-64.png"><link rel="apple-touch-icon" href="icons/romaterra-180.png">
 <script>window.__MP_URL__=''; /* '' = live multiplayer not open yet */ if('serviceWorker' in navigator)addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));</script>
 <script data-goatcounter="https://playterrastatenl.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
@@ -24121,6 +24121,65 @@ const st=document.createElement('style');st.textContent=`
 .p261end span:first-child{display:inline-block;min-width:110px;color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.08em}
 `;document.head.appendChild(st);
 }catch(e){try{console.error('p261',e);}catch(_){}}})();
+</script>
+<script>/*p262*/
+// 19.3 "Bots use the whole game" (solo engine): computer nations build their path building, their doctrine building and
+// the buildings of their temperament; expanding nations take empty land early; and no nation trains more than 24 turns
+// ahead (before, late in a season tens of thousands of orders waited that would only finish after the season ended).
+// Same commands as the player (cmdBuild, cmdOp, cmdRecruit). Player starter and ladder lands stay off limits.
+(function(){try{
+if(typeof window==='undefined'||window.__MP__)return;
+const SOLO=()=>{try{return typeof isSoloGame!=='function'||isSoloGame();}catch(e){return true;}};
+
+/* ---------- A. training horizon: at most 24 turns ahead (computer nations) ---------- */
+const HZ=24;
+function room(c,bt){let cap=800;try{cap=trainCap(c);}catch(e){}const load={};(c.mq||[]).forEach(q=>{if(q)load[q.ticks]=(load[q.ticks]||0)+(q.count||0);});
+  let r=0;for(let t=Math.max(1,bt||1);t<=HZ;t++)r+=Math.max(0,cap-(load[t]||0));return r;}
+window.__p262room=room;
+if(typeof cmdRecruit==='function'){const _r=cmdRecruit;cmdRecruit=function(c,k,n){try{if(c&&c.isAI&&SOLO()){const d=UNIT.find(x=>x.k===k);if(d){const rm=room(c,d.bt);if(rm<=0)return err('Training is booked for the next '+HZ+' turns');n=Math.min(Math.floor(n),rm);}}}catch(e){}
+  return _r.call(this,c,k,n);};try{window.cmdRecruit=cmdRecruit;}catch(e){}}
+if(typeof cmdRecruitBatch==='function'){const _b=cmdRecruitBatch;cmdRecruitBatch=function(c,order){try{if(c&&c.isAI&&SOLO()&&order){let tot=0,bt=99;for(const k in order){const n=Math.floor(order[k]||0);if(n>0){tot+=n;const d=UNIT.find(x=>x.k===k);if(d)bt=Math.min(bt,d.bt);}}
+      if(tot>0){const rm=room(c,bt===99?1:bt);if(rm<=0)return err('Training is booked for the next '+HZ+' turns');if(tot>rm){const o={};const f=rm/tot;for(const k in order){const n=Math.floor((order[k]||0)*f);if(n>0)o[k]=n;}if(!Object.keys(o).length)return err('Training is booked');order=o;}}}}catch(e){}
+  return _b.apply(this,[c,order].concat([].slice.call(arguments,2)));};try{window.cmdRecruitBatch=cmdRecruitBatch;}catch(e){}}
+
+/* ---------- B. computer nations build their own identity ---------- */
+const PATHB={industrial:'heavy_complex',green:'renewable_grid',scientific:'research_campus',fortress:'fortress_network',trade:'trade_hub'};
+const ARCH={defensive:[['bunker',2],['radar',1],['shield',1]],scientific:[['data_haven',1],['radar',1]],research:[['data_haven',1],['intel',1]],
+  economic:[['silo',1],['shipyard',1]],trader:[['shipyard',1],['silo',1]],diplomatic:[['silo',1],['monument',1]],industrial:[['deep_mine',1]],
+  aggressive:[['radar',1]],expansionist:[['silo',1]],opportunistic:[['radar',1]],balanced:[['silo',1]]};
+function wants(c){const L=[];if(c.path&&PATHB[c.path])L.push([PATHB[c.path],3]);const t=c.tech||[];
+  if(t.includes('mil_asymmetric'))L.push(['drone_hive',2]);if(t.includes('mil_juggernaut'))L.push(['logi_hub',1]);
+  ((c.pers&&ARCH[c.pers.arch])||[]).forEach(x=>L.push(x));return L;}
+function buildOne(c){const rg=regionsOf(c);if(!rg.length)return false;
+  for(const [k,cap] of wants(c)){const d=BUILD.find(x=>x.k===k);if(!d)continue;try{if(!buildUnlocked(c,d))continue;}catch(e){continue;}
+    if(bTotal(c,k)+(c.queue||[]).filter(q=>q.k===k).length>=cap)continue;
+    const sites=rg.slice().sort((a,b)=>{try{return regionFootprintUsed(c,a.id)-regionFootprintUsed(c,b.id);}catch(e){return 0;}});
+    for(const r of sites){let cost;try{cost=bcost(k,blevel(c,r.id,k));}catch(e){continue;}if(!afford(c,cost))break;if((c.res.money||0)-(cost.money||0)<2e6)break;
+      const res=cmdBuild(c,r.id,k);if(res&&res.ok){c._p262b=(c._p262b||0)+1;return true;}}}
+  return false;}
+
+/* ---------- C. expanding nations take empty land early ---------- */
+const EXP={aggressive:1,expansionist:1,opportunistic:1,industrial:0.6};
+function expandOne(c){const p=c.pers||{};const w=EXP[p.arch]||((p.expand||0)>55?0.6:0);if(!w)return false;
+  const diff=(G.solo&&G.solo.diff)||'veteran';const ch=(diff==='recruit'?0.12:diff==='warlord'?0.4:0.25)*w;if(Math.random()>=ch)return false;
+  const home=regionsOf(c);if(!home.length)return false;const nx=new Set([G.nexusId].concat(G.nexusIds||[]));
+  const busy=new Set((c.fleets||[]).filter(f=>f&&f.status!=='done'&&f.status!=='returning').map(f=>f.target));
+  const atk=power(c,'atk');if(!(atk>0))return false;let best=null,bt=99,bd=1e18;
+  G.regions.forEach(r=>{if(r.owner!=null||r.nexus||nx.has(r.id)||r._p183s||r._p186s||busy.has(r.id))return;let hm=null,t=99;try{hm=homeFor(c,r);if(hm)t=travelFor(c,hm,r);}catch(e){}if(t>4)return;
+    const d=regionDef(r);if(atk<d*1.6)return;if(t<bt||(t===bt&&d<bd)){best=r;bt=t;bd=d;}});
+  if(!best)return false;const f=Math.min(1,bd*1.8/atk);if(f>0.6)return false;const com={};for(const k in (c.units||{})){const n=Math.ceil((c.units[k]||0)*f);if(n>0)com[k]=n;}
+  if(!Object.keys(com).length)return false;let res=null;try{res=cmdOp(c,best.id,com,{});}catch(e){}if(res&&res.ok){c._p262x=(c._p262x||0)+1;return true;}return false;}
+
+if(typeof aiDecide==='function'){const _ad=aiDecide;aiDecide=function(c){const r=_ad.apply(this,arguments);try{if(c&&c.isAI&&!c.retired&&SOLO()){
+    if((c.cp||0)>=2&&Math.random()<0.2)buildOne(c);
+    if((c.cp||0)>=2)expandOne(c);}}catch(e){}return r;};try{window.aiDecide=aiDecide;}catch(e){}}
+
+/* ---------- old saves: trim queues that run past the horizon (troops are refunded at cost) ---------- */
+function trimAll(){try{if(!G||!G.countries||G._p262trim)return;G._p262trim=1;G.countries.forEach(c=>{if(!c||!c.isAI||!(c.mq||[]).length)return;const keep=[];
+    c.mq.forEach(q=>{if(q.ticks<=HZ+6)keep.push(q);else{const d=UNIT.find(x=>x.k===q.k);if(d)for(const k in d.cost)c.res[k]=Math.min(capOf(c,k),(c.res[k]||0)+d.cost[k]*q.count);}});c.mq=keep;});}catch(e){}}
+window.__p262={buildOne,expandOne,trimAll,room};
+try{const _rt=runTick;runTick=function(){trimAll();return _rt.apply(this,arguments);};window.runTick=runTick;}catch(e){}
+}catch(e){try{console.error('p262',e);}catch(_){}}})();
 </script>
 </body>
 </html>
