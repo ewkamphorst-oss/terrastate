@@ -23296,7 +23296,7 @@ VIEWS.p250al=v=>{const c=ME();if(!c)return;const cl=clanOf(c);
   let html=head('Alliance',E(cl.name)+' ['+E(cl.tag)+']');
   const ops=(G.acs||[]).filter(op=>op&&op.clan===cl.id);
   html+=box('Joint attacks',ops.map(op=>{const r=R(op.target);const left=op.landTick-G.tick;const inn=(op.fleets||[]).some(f=>f.owner===c.id);const lead=op.leader===c.id;const ld=G.countries[op.leader];
-    const btn=left<1?'':lead?B('calloff',op.id,'Call off','warn'):inn?B('leave',op.id,'Leave'):B('join',op.id,'Join');
+    const btn=left<1?'':lead?B('calloff',op.id,'Call off','warn'):inn?B('leave',op.id,'Leave'):B('join',op.id,'Join with 50%');
     return row(RN(r)+' · led by '+(lead?'you':E(ld?ld.name:'?')),F((op.fleets||[]).reduce((s,f)=>s+N(f.units),0))+' '+W.troops+' · '+(op.fleets||[]).length+' armies · lands in '+T(left)+(inn?' · you are in':''),btn);}).join(''));
   let ms=[];try{ms=clanMembers(cl);}catch(e){}
   html+=box('Members',ms.map(m=>{const ia=inc(m);return row(E(m.name)+(m.id===c.id?' (you)':''),E((cl.roles||{})[m.id]||'member')+' · '+regionsOf(m).length+' lands'+(ia.length?' · <b class="bad">under attack</b>':''),ia.length&&m.id!==c.id?B('def50',ia[0].r.id,'Help defend'):'');}).join(''),ms.length);
@@ -23359,6 +23359,67 @@ VIEWS.p250c=v=>{const c=ME();if(!c)return;const M=(c.mail||[]).slice(-25).revers
   html+=box('Write',clanOf(c)?row('To your alliance','<textarea class="p250ta" maxlength="500" placeholder="Message"></textarea>',B('send','clan','Send')):row('No alliance yet','you can reply to nations under Messages',''));
   v.innerHTML=html;};
 
+/* ---------- 19.0 round 2: everything that used to open an old screen now has its own clean tab ---------- */
+const _ov=VIEWS.p250o;VIEWS.p250o=v=>{_ov(v);try{const ns=(G.news||[]).slice(0,10);
+  v.insertAdjacentHTML('beforeend',box('World',ns.map(n=>row(E(n.head||''),'turn '+n.tick,'')).join(''),'<a data-p250="go" data-id="p250rep">more</a>'));}catch(e){}};
+VIEWS.p250al=v=>{const c=ME();if(!c)return;const cl=clanOf(c);
+  if(!cl){let html=head('Alliance','allies defend you and attack with you');
+    const L=(G.clans||[]).filter(k=>{try{return clanMembers(k).length>0;}catch(e){return false;}}).sort((a,b)=>clanMembers(b).length-clanMembers(a).length).slice(0,10);
+    html+=box('Join',L.map(k=>row(E(k.name)+' <span class="p250c">'+E(k.tag)+'</span>',clanMembers(k).length+' members',B('askjoin',k.id,'Ask to join'))).join(''));
+    html+=box('Found your own',row('Name and tag','<input class="p250ti" maxlength="28" placeholder="Alliance name" data-f="n"> <input class="p250ti p250tag" maxlength="5" placeholder="TAG" data-f="t">',B('found','x','Found')));
+    html+=box('Invite code',row('Got a code from a friend?','<input class="p250ti" maxlength="14" placeholder="e.g. NWO-7F3K" data-f="code">',B('joincode','x','Join')));
+    v.innerHTML=html;return;}
+  const lead=(cl.roles||{})[c.id]==='leader';let html=head('Alliance',E(cl.name)+' ['+E(cl.tag)+'] · '+((cl.roles||{})[c.id]||'member'));
+  const ops=(G.acs||[]).filter(op=>op&&op.clan===cl.id);
+  html+=box('Joint attacks',ops.map(op=>{const r=R(op.target);const left=op.landTick-G.tick;const inn=(op.fleets||[]).some(f=>f.owner===c.id);const ld=G.countries[op.leader];const me=op.leader===c.id;
+    const btn=left<1?'':me?B('calloff',op.id,'Call off','warn'):inn?B('leave',op.id,'Leave'):B('join',op.id,'Join with 50%');
+    return row(RN(r)+' · led by '+(me?'you':E(ld?ld.name:'?')),F((op.fleets||[]).reduce((s,f)=>s+N(f.units),0))+' '+W.troops+' · lands in '+T(left)+(inn?' · you are in':''),btn);}).join(''),ops.length||'');
+  let ms=[];try{ms=clanMembers(cl);}catch(e){}
+  html+=box('Members',ms.map(m=>{const ia=inc(m);const role=(cl.roles||{})[m.id]||'member';
+    const sel=lead&&m.id!==c.id?'<select class="p250sel" data-role="'+m.id+'">'+['member','officer'].map(x=>'<option'+(x===role?' selected':'')+'>'+x+'</option>').join('')+'</select>'+B('role',m.id,'Set','alt'):'';
+    return row(E(m.name)+(m.id===c.id?' (you)':''),E(role)+' · '+regionsOf(m).length+' lands'+(ia.length?' · <b class="bad">under attack</b>':''),(ia.length&&m.id!==c.id?B('def50',ia[0].r.id,'Help defend'):'')+sel);}).join(''),ms.length);
+  const fo=(cl.forum||[]).slice(0,15);
+  html+=box('Chat',row('Write to your alliance','<textarea class="p250ta" maxlength="240" placeholder="Message"></textarea>',B('post','x','Send'))+fo.map(p=>{const a=G.countries[p.by];return row(E(a?a.name:'?'),E(p.text),'');}).join(''));
+  const tr=cl.treasury||{};const RS=Object.keys(tr).filter(k=>tr[k]>0).concat((typeof RES!=='undefined'?RES:[]).filter(k=>!(tr[k]>0))).slice(0,8);
+  html+=box('Treasury',RS.map(k=>row(E(rl(k)),F(tr[k]||0)+' in the treasury · you have '+F((c.res||{})[k]||0),'<input class="p250n" type="number" min="1" value="1000" data-q="'+E(k)+'">'+B('donate',k,'Donate')+(['leader','officer'].includes((cl.roles||{})[c.id])?B('withdraw',k,'Take'):''))).join(''));
+  html+=box('Leave',row('Leave this alliance','your troops in joint attacks come home',B('leaveclan','x','Leave alliance','warn')));
+  v.innerHTML=html;};
+const _rv=VIEWS.p250r;VIEWS.p250r=v=>{_rv(v);try{const c=ME();if(!c||c.path)return;const can=typeof canChoosePath!=='function'||canChoosePath(c);
+  const html=box('National path',(typeof PATHS!=='undefined'?PATHS:[]).map(p=>row(E(p.n),E((p.gain||[]).join(', '))+(p.lose&&p.lose.length?' · <span class="bad">'+E(p.lose.join(', '))+'</span>':''),can?B('path',p.k,'Choose'):'')).join('')+(can?'':row('<b>Fight one battle first</b>','then this choice opens, and it locks for the season','')));
+  const pin=v.querySelector('.p250box');if(pin)pin.remove();v.insertAdjacentHTML('beforeend',html);
+  v.querySelectorAll('[data-p250="classic"]').forEach(a=>a.remove());}catch(e){}};
+VIEWS.p250e=v=>{const c=ME();if(!c)return;let pj=null;try{pj=projection(c);}catch(e){}const net=pj?(pj.net.money||0):0;
+  let html=head('Economy',(net>=0?'+':'')+F(net)+' money per turn');
+  const tax=(typeof TAX!=='undefined'&&Array.isArray(TAX))?TAX:[0,10,20,30];
+  html+=box('Tax',row('Tax rate <span class="p250c">now '+E(c.tax)+'%</span>','higher tax brings money, lower stability','<select class="p250sel" data-tax="1">'+tax.map(t=>'<option value="'+t+'"'+(t===c.tax?' selected':'')+'>'+t+'%</option>').join('')+'</select>'+B('tax','x','Set')));
+  const g=GOV[c.gov]||{},d=DOC[c.doc]||{};
+  html+=box('Government',row('Government <span class="p250c">'+E(g.n||c.gov)+'</span>',E(g.d||''),'<select class="p250sel" data-gov="1">'+Object.keys(GOV).map(k=>'<option value="'+k+'"'+(k===c.gov?' selected':'')+'>'+E(GOV[k].n)+'</option>').join('')+'</select>')
+    +row('Doctrine <span class="p250c">'+E(d.n||c.doc)+'</span>',E(d.d||''),'<select class="p250sel" data-doc="1">'+Object.keys(DOC).map(k=>'<option value="'+k+'"'+(k===c.doc?' selected':'')+'>'+E(DOC[k].n)+'</option>').join('')+'</select>'+B('policy','x','Set')));
+  v.innerHTML=html;};
+const _dv=VIEWS.p250d;VIEWS.p250d=v=>{_dv(v);try{const c=ME();const cl=clanOf(c);if(!cl)return;v.querySelectorAll('.p250box').forEach(b=>{if(/Propose/.test((b.querySelector('.p250h')||{}).textContent||''))b.remove();});
+  const L=(G.clans||[]).filter(k=>k.id!==cl.id&&(()=>{try{return clanMembers(k).length>0;}catch(e){return false;}})()).slice(0,12);
+  v.insertAdjacentHTML('beforeend',box('Propose',L.map(k=>{let st='neutral';try{st=dipStatus(cl.id,k.id);}catch(e){}return row(E(k.name)+' <span class="p250c">'+E(k.tag)+'</span>',E(st)+' · '+clanMembers(k).length+' members',st==='war'?'<span class="p250s">at war</span>':B('nap',k.id,'Offer NAP')+B('ally',k.id,'Offer alliance'));}).join('')));}catch(e){}};
+const _rp=VIEWS.p250rep;VIEWS.p250rep=v=>{_rp(v);try{const c=ME();v.querySelectorAll('.p250box').forEach(b=>{if(/Full reports/.test((b.querySelector('.p250h')||{}).textContent||''))b.remove();});
+  const bt=(G.battles||[]).filter(b=>b&&(b.atkId===c.id||b.defId===c.id)).slice(0,25);const rows=v.querySelectorAll('.p250box')[0];
+  if(rows){[...rows.querySelectorAll('.p250row')].forEach((r,i)=>{const b=bt[i];if(!b||!b.detail||b.protected)return;const j=G.battles.indexOf(b);r.querySelector('.p250b').insertAdjacentHTML('beforeend','<button class="btn sm p250btn" data-p218rp="'+j+'">Watch</button>');});}
+  const ns=(G.news||[]).slice(0,30);v.insertAdjacentHTML('beforeend',box('World',ns.map(n=>row(E(n.head||''),'turn '+n.tick,'')).join(''),ns.length||''));}catch(e){}};
+const _sv=VIEWS.p250s;VIEWS.p250s=v=>{_sv(v);try{const c=ME();v.querySelectorAll('.p250box').forEach(b=>{if(/Spy missions/.test((b.querySelector('.p250h')||{}).textContent||''))b.remove();});
+  let html='';let has=0;try{has=bTotal(c,'covert');}catch(e){}
+  if(!has)html=box('Spy missions',row('You need a Covert Ops Center','build it in one of your lands',B('go','p250b','Build')));
+  else{const tg=[];try{G.regions.forEach(r=>{if(r&&r.owner!=null&&r.owner!==c.id&&!tg.includes(r.owner))tg.push(r.owner);});}catch(e){}
+    const sel='<select class="p250sel" data-tgt="1">'+tg.slice(0,30).map(id=>{const o=G.countries[id];return o&&!o.retired?'<option value="'+id+'">'+E(o.name)+'</option>':'';}).join('')+'</select>';
+    html=box('Spy missions',row('Target',F(c.agents||0)+' agents · '+F((c.res||{}).influence||0)+' influence',sel)+COVERT_OPS.map(op=>row(E(op.n),E(op.d)+' · '+op.min+' agents · '+F(op.infl)+' influence',B('spy',op.k,'Run'))).join(''));}
+  v.insertAdjacentHTML('beforeend',html);}catch(e){}};
+VIEWS.p250c=v=>{const c=ME();if(!c)return;const M=(c.mail||[]).slice(-25).reverse();try{(c.mail||[]).forEach(m=>{m.read=true;});}catch(e){}
+  const peers={};M.forEach(m=>{if(!m.mine&&m.peerId!=null&&G.countries[m.peerId])peers[m.peerId]=G.countries[m.peerId].name;});
+  let html=head('Comms');
+  html+=box('Messages',M.map(m=>row(E(m.mine?'You':(m.authorName||'?'))+(m.authorTag?' <span class="p250c">'+E(m.authorTag)+'</span>':''),E(m.text||''),'')).join(''),M.length||'');
+  const to='<select class="p250sel" data-to="1">'+(clanOf(c)?'<option value="clan">Your alliance</option>':'')+Object.keys(peers).map(id=>'<option value="'+id+'">'+E(peers[id])+'</option>').join('')+'</select>';
+  html+=box('Write',(clanOf(c)||Object.keys(peers).length)?row('To '+to,'<textarea class="p250ta" maxlength="500" placeholder="Message"></textarea>',B('mail','x','Send')):row('Nobody to write to yet','join an alliance or wait for a nation to write to you',''));
+  v.innerHTML=html;};
+const _kv=VIEWS.p250k;VIEWS.p250k=v=>{_kv(v);try{v.querySelectorAll('.p250box').forEach(b=>{if(/World list/.test((b.querySelector('.p250h')||{}).textContent||''))b.remove();});
+  v.insertAdjacentHTML('beforeend',box('Best seasons online',row('The hall of fame of all players','opens in a new tab','<a class="btn sm p250btn" href="https://playterrastate.nl/hall-of-fame.html" target="_blank" rel="noopener">Open</a>')));}catch(e){}};
+
 /* ---------- tabs: the boxes of a page sit side by side as tabs, one shown at a time ---------- */
 function tabify(v,page){try{const boxes=[...v.querySelectorAll(':scope>.p250box:not(.pin)')];if(boxes.length<2)return;
   const st=window._p250tab||(window._p250tab={});const names=boxes.map(b=>{const h=b.querySelector('.p250h');return h?(h.childNodes[0]&&h.childNodes[0].textContent||'').trim():'';});
@@ -23401,12 +23462,24 @@ async function act(b){try{const sh=document.getElementById('p250sheet');if(sh)sh
     if(a==='take'){if(typeof p186Take==='function')p186Take(num(id));return;}
     if(a==='scout'){if(typeof p186Scout==='function')p186Scout(num(id));return;}
     if(a==='build'){window._p250rid=num(id);go('p250b');return;}
-    if(a==='join'){if(typeof OPEN_JOINOP==='function'){window.__p250classic='clans';OPEN_JOINOP(num(id));}return;}
+    if(a==='join'){const com=share(c,0.5);if(!N(com)){toast('No '+W.troops+' at home. Train some first.','warn');return;}r=await cmdJoinACS(c,num(id),com);if(r&&r.ok){toast('You joined the joint attack with '+F(N(com))+' '+W.troops+'.','good');}else toast((r&&r.error)||'Not possible right now.','bad');try{save();drawTop();}catch(e){}go(view);return;}
     if(a==='recall'){r=await recallFleet(c,num(id));msg='Recalled, your '+W.troops+' come home.';}
     else if(a==='retreat'){r=await cmdBattleOrder(c,num(id),'retreat');msg='Retreat ordered.';}
     else if(a==='press'){r=await cmdBattleOrder(c,num(id),'press');msg='Your '+W.troops+' press on.';}
     else if(a==='calloff'){r=await cmdCancelACS(c,num(id));msg='Joint attack called off.';}
     else if(a==='leave'){r=await cmdLeaveACS(c,num(id));msg='You left the joint attack.';}
+    else if(a==='askjoin'){r=await cmdRequestJoin(c,num(id));msg='Request sent.';}
+    else if(a==='found'){const rw=b.closest('.p250row');const n=(rw.querySelector('[data-f="n"]')||{}).value||'';const t=((rw.querySelector('[data-f="t"]')||{}).value||'').toUpperCase().replace(/[^A-Z0-9]/g,'').slice(0,5);r=await cmdFoundClan(c,n.replace(/[<>]/g,'').trim(),t);msg='Alliance founded.';}
+    else if(a==='joincode'){const rw=b.closest('.p250row');r=await cmdJoinByCode(c,(rw.querySelector('[data-f="code"]')||{}).value||'');msg='You joined the alliance.';}
+    else if(a==='role'){const sel=b.parentElement.querySelector('select[data-role]');r=await cmdClanRole(c,num(id),(sel||{}).value||'member');msg='Role set.';}
+    else if(a==='post'){const ta=b.closest('.p250row').querySelector('textarea');r=await cmdClanPost(c,(ta||{}).value||'','general');msg='Posted.';}
+    else if(a==='donate'||a==='withdraw'){const inp=b.parentElement.querySelector('input[data-q]');const n=Math.max(1,Math.floor(+((inp||{}).value)||0));r=a==='donate'?await cmdDonate(c,id,n):await cmdWithdraw(c,id,n);msg=a==='donate'?'Donated.':'Taken from the treasury.';}
+    else if(a==='leaveclan'){r=await cmdLeaveClan(c);msg='You left the alliance.';}
+    else if(a==='path'){r=await cmdChoosePath(c,id);msg='National path chosen.';}
+    else if(a==='policy'){const g=document.querySelector('#view select[data-gov]'),d=document.querySelector('#view select[data-doc]');r=await cmdSetPolicy(c,(g||{}).value,(d||{}).value);msg='Government set.';}
+    else if(a==='nap'||a==='ally'){r=await cmdDipOffer(c,num(id),a==='nap'?'nap':'allied',30,'');msg='Offer sent.';}
+    else if(a==='spy'){const t=document.querySelector('#view select[data-tgt]');const op=COVERT_OPS.find(x=>x.k===id);r=await cmdCovert(c,+((t||{}).value),id,op?op.min:5);msg='Mission started.';}
+    else if(a==='mail'){const to=document.querySelector('#view select[data-to]');const ta=b.closest('.p250row').querySelector('textarea');const tv=(to||{}).value;r=await cmdSendMail(c,tv==='clan'?'clan':+tv,(ta||{}).value||'');msg='Sent.';}
     else if(a==='qadd'){const [k,q]=String(id).split('|');const inp=b.parentElement.querySelector('input[data-u]');if(!inp)return;
       if(q==='max'){const u=UNIT.find(x=>x.k===k);let mx=Infinity;for(const rk in (u.cost||{}))if(u.cost[rk]>0)mx=Math.min(mx,Math.floor(((c.res||{})[rk]||0)/u.cost[rk]));inp.value=Math.max(0,isFinite(mx)?mx:0);}else inp.value=(Math.floor(+inp.value)||0)+(+q);return;}
     else if(a==='qmax'){const [rr,side]=String(id).split('|');const inp=b.parentElement.querySelector('input[data-q]');if(!inp)return;
@@ -23507,6 +23580,7 @@ html body .p250b .btn.p250btn.warn:not(:first-of-type){background:transparent!im
 .p250new{display:inline-block;padding:1px 7px;border-radius:4px;background:var(--good,#22c55e);color:#04210f;font:800 11px/16px var(--mono,monospace);letter-spacing:.06em}
 .p250ta{width:100%;min-height:60px;margin-top:6px;padding:8px;border:1px solid var(--border2,#475569);border-radius:6px;background:var(--bg2);color:var(--text);font:inherit}
 .p250sel{padding:7px 8px;border:1px solid var(--border2,#475569);border-radius:6px;background:var(--bg2);color:var(--text)}
+.p250ti{padding:7px 8px;border:1px solid var(--border2,#475569);border-radius:6px;background:var(--bg2);color:var(--text);width:180px;max-width:100%}.p250tag{width:80px;text-transform:uppercase}
 .p250n{width:74px;padding:7px 8px;border:1px solid var(--border2,#475569);border-radius:6px;background:var(--bg2);color:var(--text)}
 .p250pick{margin:0 0 12px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}.p250pick select{padding:8px;border-radius:6px;background:var(--bg2);color:var(--text);border:1px solid var(--border2,#475569)}
 b.bad{color:var(--danger,#ef4444)}b.warn{color:var(--warn,#f59e0b)}b.good{color:var(--good,#22c55e)}
