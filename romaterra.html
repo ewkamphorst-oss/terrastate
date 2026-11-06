@@ -16,7 +16,7 @@
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="https://playterrastate.nl/img/v4/romaterra-share.jpg">
 <meta name="author" content="Wim Kamphorst">
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"VideoGame","@id":"https://playterrastate.nl/romaterra.html#game","name":"Romaterra","url":"https://playterrastate.nl/romaterra.html","description":"Free Roman grand strategy in your browser. Rule a people of the ancient world against hundreds of AI rivals, take Roma, raise the Imperial Palace and hold it. No account, no download.","image":"https://playterrastate.nl/img/v4/romaterra-share.jpg","genre":["Strategy","Grand strategy","Turn-based strategy","4X","Browser game"],"gamePlatform":["Web browser","Windows","macOS","Linux","Android","iOS"],"applicationCategory":"Game","operatingSystem":"Any (web browser)","playMode":"SinglePlayer","inLanguage":"en","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"EUR","availability":"https://schema.org/InStock"},"author":{"@type":"Person","@id":"https://playterrastate.nl/#wim","name":"Wim Kamphorst","url":"https://wimkamphorst.nl"},"publisher":{"@type":"Person","@id":"https://playterrastate.nl/#wim","name":"Wim Kamphorst","url":"https://wimkamphorst.nl"},"softwareVersion":"14.0","sameAs":["https://wimkamphorstcoaching.itch.io/romaterra"]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"VideoGame","@id":"https://playterrastate.nl/romaterra.html#game","name":"Romaterra","url":"https://playterrastate.nl/romaterra.html","description":"Free Roman grand strategy in your browser. Rule a people of the ancient world against hundreds of AI rivals, take Roma, raise the Imperial Palace and hold it. No account, no download.","image":"https://playterrastate.nl/img/v4/romaterra-share.jpg","genre":["Strategy","Grand strategy","Turn-based strategy","4X","Browser game"],"gamePlatform":["Web browser","Windows","macOS","Linux","Android","iOS"],"applicationCategory":"Game","operatingSystem":"Any (web browser)","playMode":"SinglePlayer","inLanguage":"en","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"EUR","availability":"https://schema.org/InStock"},"author":{"@type":"Person","@id":"https://playterrastate.nl/#wim","name":"Wim Kamphorst","url":"https://wimkamphorst.nl"},"publisher":{"@type":"Person","@id":"https://playterrastate.nl/#wim","name":"Wim Kamphorst","url":"https://wimkamphorst.nl"},"softwareVersion":"19.0.1","sameAs":["https://wimkamphorstcoaching.itch.io/romaterra"]}</script>
 <link rel="manifest" href="romaterra.webmanifest"><meta name="theme-color" content="#1a1410"><link rel="icon" href="icons/romaterra-64.png"><link rel="apple-touch-icon" href="icons/romaterra-180.png">
 <script>window.__MP_URL__=''; /* '' = live multiplayer not open yet */ if('serviceWorker' in navigator)addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));</script>
 <script data-goatcounter="https://playterrastatenl.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
@@ -3516,7 +3516,7 @@ function cmdDonate(c,res,amt,quiet){const cl=clanOf(c);if(!cl)return err('Not in
 // Treasury governance: a transparent, tamper-proof log of every deposit and withdrawal (anti-roof).
 function treasuryLog(cl,byId,dir,res,amt){cl.tlog=cl.tlog||[];cl.tlog.unshift({tick:G.tick,by:byId,dir,res,amt});if(cl.tlog.length>40)cl.tlog.length=40;}
 function cmdWithdraw(c,res,amt){const cl=clanOf(c);if(!cl)return err('Not in a clan');const mine=cl.roles[c.id];if(mine!=='leader'&&mine!=='officer')return err('Only officers can withdraw');
-  amt=Math.floor(amt);if(!isFinite(amt)||amt<=0)return err('Enter an amount');if((cl.treasury[res]||0)<amt)return err('Treasury lacks that much '+RMETA[res].l);
+  amt=Math.floor(amt);if(!isFinite(amt)||amt<=0)return err('Enter an amount');if((cl.treasury[res]||0)<amt)return err('Treasury lacks that much '+RMETA[res].l);{const _room=Math.floor(capOf(c,res)-(c.res[res]||0));if(_room<=0)return err('Your storage for '+RMETA[res].l+' is full');if(amt>_room)amt=_room;}
   // Governance: a large withdrawal (>40% of the pot) is leader-only, an officer can't drain the treasury.
   if(mine!=='leader'&&amt>(cl.treasury[res]||0)*0.4)return err('That is over 40% of the treasury, only the leader can authorise a withdrawal this large (anti-roof).');
   cl.treasury[res]-=amt;c.res[res]=Math.min(capOf(c,res),(c.res[res]||0)+amt);treasuryLog(cl,c.id,'out',res,amt);
@@ -22078,7 +22078,7 @@ v.querySelectorAll('button[onclick="GO_DEFENCE()"]').forEach(b=>{const row=b.par
     const me=LS('p203name');const rows=(cache||[]).slice(0,10);const sig=JSON.stringify(rows)+(cache?1:0);if(w.dataset.sig===sig)return;w.dataset.sig=sig;
     w.innerHTML=`<h3>World ranking <span class="muted small" style="text-transform:none;letter-spacing:0">solo seasons of other players · <a href="${PAGE}" target="_blank" rel="noopener">full list</a></span></h3>`+
       (!cache?'<div class="muted small">Loading the list.</div>':!rows.length?'<div class="muted small">No seasons on the list yet. Finish a season and be the first.</div>':
-      `<table><tr><th>#</th><th>Name</th><th>Result</th><th>Turns</th><th>Level</th></tr>${rows.map((r,i)=>`<tr${me&&r.name===me?' class="me"':''}><td>${i+1}</td><td><b>${E(r.name)}</b> <span class="muted">${E(r.nation||'')}</span></td><td class="${r.won?'won':''}">${r.won?'Won the season':'#'+r.rank+' of '+r.total}</td><td>${r.turns}</td><td class="muted">${E([r.diff,r.len].filter(Boolean).join(' · '))}</td></tr>`).join('')}</table>`);}
+      `<table><tr><th>#</th><th>Name</th><th>Result</th><th>Turns</th><th>Level</th></tr>${rows.map((r,i)=>`<tr${me&&r.name===me?' class="me"':''}><td>${i+1}</td><td><b>${E(r.name)}</b> <span class="muted">${E(r.nation||'')}</span></td><td class="${r.won?'won':''}">${r.won?'Won the season':'#'+E(+r.rank||0)+' of '+E(+r.total||0)}</td><td>${E(+r.turns||0)}</td><td class="muted">${E([r.diff,r.len].filter(Boolean).join(' · '))}</td></tr>`).join('')}</table>`);}
   function apply(){if(typeof view!=='undefined'&&view==='rankings'&&solo()){paint();load();}}
   window.__p203apply=apply;if(window.__pLayers&&window.__pLayers.indexOf('__p203apply')<0)window.__pLayers.push('__p203apply');
   const v0=()=>{const v=document.getElementById('view');if(v)new MutationObserver(window.__pSched?window.__pSched(apply):apply).observe(v,{childList:true});apply();};
@@ -22253,7 +22253,7 @@ if(typeof module!=='undefined'&&module.exports)module.exports=BANNER;
   async function resync(cl){const r=res();if(!HAS||!r||!cl||r.tag!==cl.tag)return;try{await post({type:'reserve',game:GAME,name:cl.name,tag:cl.tag,banner:window.__bannerOf(cl),motto:cl.motto||'',founder:r.founder,discord:r.discord||'',player:pid()});fcache=null;}catch(e){}}
   function resCard(cl,me){const r=res();const el=document.createElement('div');el.className='p204res';const mine=r&&r.tag===cl.tag;
     if(mine){const row=(fcache||[]).find(x=>x.tag===cl.tag);const link='https://playterrastate.nl/hall-of-fame.html#join-'+r.invite;
-      el.innerHTML=`<h4>Founding alliance · Season 0</h4><div class="s">[${E(cl.tag)}] ${E(cl.name)} is reserved for the live world${row?', with '+row.members+' '+(row.members===1?'friend':'friends')+' signed up':''}. Share the invite code with friends. Keep the claim code to yourself: you need it to found this alliance when the live world opens.</div>
+      el.innerHTML=`<h4>Founding alliance · Season 0</h4><div class="s">[${E(cl.tag)}] ${E(cl.name)} is reserved for the live world${row?', with '+E(+row.members||0)+' '+(row.members===1?'friend':'friends')+' signed up':''}. Share the invite code with friends. Keep the claim code to yourself: you need it to found this alliance when the live world opens.</div>
         <div class="r" style="align-items:center"><span class="s">Invite</span><span class="p204code">${E(r.invite)}</span><button type="button" class="btn ghost sm" data-c="1">Copy invite link</button><span class="s" style="margin-left:8px">Claim</span><span class="p204code">${E(r.claim)}</span></div>`;
       el.querySelector('[data-c]').onclick=()=>{try{copyText?copyText('Join '+cl.name+' ['+cl.tag+'] for the live world of '+'Romaterra'+': '+link,'Invite link copied'):navigator.clipboard.writeText(link);}catch(e){try{navigator.clipboard.writeText(link);toast('Invite link copied','ok');}catch(_){}}};
       return el;}
@@ -23650,7 +23650,7 @@ VIEWS.p250b=v=>{const c=ME();if(!c)return;const L=regionsOf(c);let rid=window._p
   html+='<div class="p250pick"><select id="p250land">'+L.map(x=>'<option value="'+x.id+'"'+(x.id===rid?' selected':'')+'>'+E(x.name)+'</option>').join('')+'</select>';
   try{html+=' <span class="p250s">'+regionFootprintUsed(c,rid)+'/'+REGION_DP+' points used</span>';}catch(e){}html+='</div>';
   const q=(c.queue||[]).map(x=>{const d=BUILD.find(b=>b.k===x.k);const rr=R(x.rid);return (d?d.n:x.k)+' L'+(x.target||'')+' in '+(rr?rr.name:'?')+(x.ticks!=null?' · '+T(x.ticks):'');});
-  const mq=(c.mq||[]).map(x=>{const u=UNIT.find(y=>y.k===x.k);return F(x.n||0)+' '+(u?u.n:x.k)+(x.ticks!=null?' · '+T(x.ticks):'');});
+  const mq=(c.mq||[]).map(x=>{const u=UNIT.find(y=>y.k===x.k);return F(x.count||x.n||0)+' '+(u?u.n:x.k)+(x.ticks!=null?' · '+T(x.ticks):'');});
   html+=box('Buildings',BUILD.filter(d=>{try{return buildUnlocked(c,d);}catch(e){return true;}}).map(d=>{let lv=0;try{lv=blevel(c,rid,d.k);}catch(e){}
     const qd=(c.queue||[]).some(x=>x.rid===rid&&x.k===d.k);let co='';try{co=cost(bcost(d.k,lv));}catch(e){}
     return row(E(d.n)+' <span class="p250c">L'+lv+'</span>',(d.d?'<span class="p250desc">'+E(d.d)+' · </span>':'')+co,qd?'<span class="p250s">building</span>':B('bld',d.k,lv?'Upgrade':'Build'));}).join(''));
@@ -23748,7 +23748,7 @@ VIEWS.p250al=v=>{const c=ME();if(!c)return;const cl=clanOf(c);
   if(!cl){let html=head('Alliance','allies defend you and attack with you');
     const L=(G.clans||[]).filter(k=>{try{return clanMembers(k).length>0;}catch(e){return false;}}).sort((a,b)=>clanMembers(b).length-clanMembers(a).length).slice(0,10);
     html+=box('Join',L.map(k=>row(E(k.name)+' <span class="p250c">'+E(k.tag)+'</span>',clanMembers(k).length+' members',B('askjoin',k.id,'Ask to join'))).join(''));
-    html+=box('Found your own',row('Name and tag','<input class="p250ti" maxlength="28" placeholder="Alliance name" data-f="n"> <input class="p250ti p250tag" maxlength="5" placeholder="TAG" data-f="t">',B('found','x','Found')));
+    html+=box('Found your own',row('Name and tag','<input class="p250ti" maxlength="28" placeholder="Alliance name" data-f="n"> <input class="p250ti p250tag" maxlength="4" placeholder="TAG" data-f="t">',B('found','x','Found')));
     html+=box('Invite code',row('Got a code from a friend?','<input class="p250ti" maxlength="14" placeholder="e.g. NWO-7F3K" data-f="code">',B('joincode','x','Join')));
     v.innerHTML=html;return;}
   const lead=(cl.roles||{})[c.id]==='leader';let html=head('Alliance',E(cl.name)+' ['+E(cl.tag)+'] · '+((cl.roles||{})[c.id]||'member'));
@@ -23851,7 +23851,7 @@ async function act(b){try{const sh=document.getElementById('p250sheet');if(sh)sh
     else if(a==='calloff'){r=await cmdCancelACS(c,num(id));msg='Joint attack called off.';}
     else if(a==='leave'){r=await cmdLeaveACS(c,num(id));msg='You left the joint attack.';}
     else if(a==='askjoin'){r=await cmdRequestJoin(c,num(id));msg='Request sent.';}
-    else if(a==='found'){const rw=b.closest('.p250row');const n=(rw.querySelector('[data-f="n"]')||{}).value||'';const t=((rw.querySelector('[data-f="t"]')||{}).value||'').toUpperCase().replace(/[^A-Z0-9]/g,'').slice(0,5);r=await cmdFoundClan(c,n.replace(/[<>]/g,'').trim(),t);msg='Alliance founded.';}
+    else if(a==='found'){const rw=b.closest('.p250row');const n=(rw.querySelector('[data-f="n"]')||{}).value||'';const t=((rw.querySelector('[data-f="t"]')||{}).value||'').toUpperCase().replace(/[^A-Z0-9]/g,'').slice(0,4);r=await cmdFoundClan(c,n.replace(/[<>]/g,'').trim(),t);msg='Alliance founded.';}
     else if(a==='joincode'){const rw=b.closest('.p250row');r=await cmdJoinByCode(c,(rw.querySelector('[data-f="code"]')||{}).value||'');msg='You joined the alliance.';}
     else if(a==='role'){const sel=b.parentElement.querySelector('select[data-role]');r=await cmdClanRole(c,num(id),(sel||{}).value||'member');msg='Role set.';}
     else if(a==='post'){const ta=b.closest('.p250row').querySelector('textarea');r=await cmdClanPost(c,(ta||{}).value||'','general');msg='Posted.';}
@@ -23865,7 +23865,7 @@ async function act(b){try{const sh=document.getElementById('p250sheet');if(sh)sh
     else if(a==='qadd'){const [k,q]=String(id).split('|');const inp=b.parentElement.querySelector('input[data-u]');if(!inp)return;
       if(q==='max'){const u=UNIT.find(x=>x.k===k);let mx=Infinity;for(const rk in (u.cost||{}))if(u.cost[rk]>0)mx=Math.min(mx,Math.floor(((c.res||{})[rk]||0)/u.cost[rk]));inp.value=Math.max(0,isFinite(mx)?mx:0);}else inp.value=(Math.floor(+inp.value)||0)+(+q);return;}
     else if(a==='qmax'){const [rr,side]=String(id).split('|');const inp=b.parentElement.querySelector('input[data-q]');if(!inp)return;
-      if(side==='sell')inp.value=Math.floor((c.res||{})[rr]||0);else{const pr=Math.max(1,(G.prices||{})[rr]||1);inp.value=Math.max(0,Math.floor(((c.res||{}).money||0)*0.9/(pr*1.5)));}return;}
+      if(side==='sell')inp.value=Math.floor((c.res||{})[rr]||0);else{const pr=Math.max(1,(G.prices||{})[rr]||1);let room=Infinity;try{room=Math.floor(capOf(c,rr)-((c.res||{})[rr]||0));}catch(e){}inp.value=Math.max(0,Math.min(room,Math.floor(((c.res||{}).money||0)*0.9/(pr*1.5))));}return;}
     else if(a==='starter'){const plan=starterDefencePlan(c);r=await cmdRecruitBatch(c,plan.units);msg='Training '+F(plan.count)+' '+W.troops+'.';}
     else if(a==='mix'){const o=p14RecOrder(c,((c.res||{}).money||0)*(+id));if(!o){toast('Nothing to train right now.','warn');return;}r=await cmdRecruitBatch(c,o);msg='Training: '+p7OrderText(o)+'.';}
     else if(a==='repeat'){r=await cmdRecruitBatch(c,c._p7last||{});msg='Order repeated.';}
@@ -23903,14 +23903,15 @@ function sheet(){let s=document.getElementById('p250sheet');if(s){s.remove();ret
   s.onclick=e=>{if(e.target===s||e.target.closest('a'))setTimeout(()=>s.remove(),0);};document.body.appendChild(s);}
 document.addEventListener('click',e=>{const b=e.target&&e.target.closest&&e.target.closest('[data-p250="sheet"]');if(b){e.preventDefault();e.stopPropagation();sheet();}},true);
 document.addEventListener('click',e=>{const b=e.target&&e.target.closest&&e.target.closest('.p250end');if(!b)return;e.preventDefault();try{p6EndTurn();}catch(x){try{soloAdvance();}catch(_){}}},true);
-function mount(){const sd=document.getElementById('side');if(sd&&!sd.querySelector('.p250nav'))sd.insertAdjacentHTML('beforeend',sideHTML());
+function navVis(){try{const app=document.getElementById('app');document.body.classList.toggle('p250pre',!(app&&app.classList.contains('on')));}catch(e){}}
+function mount(){navVis();const sd=document.getElementById('side');if(sd&&!sd.querySelector('.p250nav'))sd.insertAdjacentHTML('beforeend',sideHTML());
   const bn=document.getElementById('bottomnav');if(bn&&!bn.querySelector('.p250bn'))bn.insertAdjacentHTML('beforeend',bnHTML());mark();}
 function mark(){const k=window.__p250classic||view;document.querySelectorAll('.p250nav [data-k],.p250bn [data-k]').forEach(a=>a.classList.toggle('on',a.dataset.k===k));
   const vw=document.getElementById('view');if(vw)vw.classList.toggle('p250v',String(view).indexOf('p250')===0);
   try{const c=ME();if(!c)return;const n=inc(c).length;document.querySelectorAll('[data-badge="p250a"]').forEach(x=>{x.textContent=n||'';x.style.display=n?'':'none';});
     const nl=regionsOf(c).filter(isNew).length;document.querySelectorAll('[data-badge="p250l"]').forEach(x=>{x.textContent=nl?'NEW':'';x.style.display=nl?'':'none';});}catch(e){}}
 new MutationObserver(()=>{try{mount();}catch(e){}}).observe(document.body,{childList:true,subtree:false});
-['side','bottomnav'].forEach(id=>{const el=document.getElementById(id);if(el)new MutationObserver(()=>{try{mount();}catch(e){}}).observe(el,{childList:true});});
+['side','bottomnav'].forEach(id=>{const el=document.getElementById(id);if(el)new MutationObserver(()=>{try{mount();}catch(e){}}).observe(el,{childList:true});});{const ap=document.getElementById('app');if(ap)new MutationObserver(navVis).observe(ap,{attributes:true,attributeFilter:['class']});}
 mount();
 try{const _rt=runTick;runTick=function(){const r=_rt.apply(this,arguments);try{seen();}catch(e){}return r;};window.runTick=runTick;}catch(e){}
 // land on the clean Overview when the game opens on Home
@@ -23920,6 +23921,7 @@ setTimeout(()=>{try{if(MAP[view])go(view);}catch(e){}},0);
 const st=document.createElement('style');st.id='p250css';st.textContent=`
 #side>:not(.p250nav){display:none!important}
 #bottomnav>:not(.p250bn){display:none!important}
+body.p250pre .p250bn,body.p250pre .p250nav{display:none!important}
 #mEnd,.advisor-fab,#advisor-fab,.advisor-rail,.p19d,.p19digest,.s0bar,.s0card{display:none!important}
 .p250nav{display:flex;flex-direction:column;gap:2px;padding:10px 8px}
 .p250n2{display:flex;align-items:center;gap:12px;padding:9px 14px;border-radius:8px;color:var(--muted);text-decoration:none;font-weight:600;font-size:15px;cursor:pointer}
