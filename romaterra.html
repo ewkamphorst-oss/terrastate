@@ -5267,7 +5267,21 @@ function memberActivity(m){if(m._standin)return{ic:'🤖',color:'#7fb2ff',lbl:'s
   if(age<=5)return{ic:'🟢',color:'var(--good)',lbl:'active'};
   if(age<=18)return{ic:'🟠',color:'var(--warn)',lbl:'idle '+age+'t'};
   return{ic:'🔴',color:'var(--bad)',lbl:'dormant'};}
-function load(){try{const s=localStorage.getItem('romaterra');if(!s)return false;const json=(s.slice(0,3)==='LZ1')?_LZ.d(s.slice(3)):s;const d=JSON.parse(json);Object.assign(G,d);
+function saveReviver(k,v){return (k==='__proto__'||k==='constructor'||k==='prototype')?undefined:v;}
+function saveSanitize(d){try{if(!d||typeof d!=='object')return d;
+  const T=x=>String(x==null?'':x).toUpperCase().replace(/[^A-Z0-9]/g,'').slice(0,6);
+  const N=(x,n)=>String(x==null?'':x).replace(/[<>]/g,'').slice(0,n||80);
+  const I=(v,f)=>{const x=Number(v);return Number.isFinite(x)?x:f;};
+  const C=x=>/^\d{1,4}:\d{1,4}:\d{1,4}$/.test(String(x));
+  if(d.you!=null)d.you=I(d.you,0);
+  if(Array.isArray(d.countries))d.countries.forEach((c,i)=>{if(!c||typeof c!=='object')return;c.id=I(c.id,i);if(c.tag!=null)c.tag=T(c.tag)||'X';if(c.name!=null)c.name=N(c.name,60);
+    if(c.clan!=null)c.clan=I(c.clan,null);if(Array.isArray(c.sitrep))c.sitrep.forEach(x=>{if(x&&x.coord!=null&&!C(x.coord))x.coord=null;});});
+  if(Array.isArray(d.clans))d.clans.forEach((cl,i)=>{if(!cl||typeof cl!=='object')return;cl.id=I(cl.id,i);if(cl.tag!=null)cl.tag=T(cl.tag)||'X';if(cl.name!=null)cl.name=N(cl.name,60);});
+  [d.regions,d._setupRegions].forEach(R=>{if(Array.isArray(R))R.forEach((r,i)=>{if(!r||typeof r!=='object')return;r.id=I(r.id,i);if(r.owner!=null)r.owner=I(r.owner,null);if(r.name!=null)r.name=N(r.name,60);
+    if(r.coord!=null&&!C(r.coord))r.coord=(I(r.cluster,0)|0)+':'+(I(r.sector,0)|0)+':'+(I(r.slot,0)|0);});});
+  if(Array.isArray(d.battles))d.battles.forEach(b=>{if(b&&b.coord!=null&&!C(b.coord))b.coord='';});
+}catch(e){}return d;}
+function load(){try{const s=localStorage.getItem('romaterra');if(!s)return false;const json=(s.slice(0,3)==='LZ1')?_LZ.d(s.slice(3)):s;const d=saveSanitize(JSON.parse(json,saveReviver));Object.assign(G,d);
   // Schema backfill: new fields added to G or per-country objects must be initialised on old saves
   // so the game never crashes with 'Cannot read property of undefined' after an engine update.
   if(G._fid==null)G._fid=1000000;if(G.acs==null)G.acs=[];try{(G.regions||[]).forEach(r=>{if(r._geo!==2){const xy=regionXY(r);r.x=xy.x;r.y=xy.y;r._geo=2;}});}catch(e){}if(G.wars==null)G.wars=[];if(G.mail==null)G.mail=[];if(G.bounties==null)G.bounties=[];if(G.polls==null)G.polls=[];
@@ -6773,8 +6787,8 @@ function p13After(){p13Help();const v=document.getElementById('view');const c=yo
   if(!p13On()){p13SeenSet(max);return;}
   p13SeenSet(max);const list=nw.slice().sort((a,b)=>b.tick-a.tick||p13Rank(b)-p13Rank(a)).slice(0,4);
   // wait until no other window is open (an event, a pulse), then show the result
-  clearInterval(window._p13w);let n=0;const tryShow=()=>{n++;if(!document.querySelector('.modal-bg')){clearInterval(window._p13w);p13Show(list,0);return true;}if(n>240)clearInterval(window._p13w);return false;};
-  setTimeout(()=>{if(!tryShow())window._p13w=setInterval(tryShow,700);},250);}
+  clearInterval(window._p13w);clearTimeout(window._p13t);window._p13w=null;let n=0,id=null;const tryShow=()=>{n++;if(!document.querySelector('.modal-bg')){if(id)clearInterval(id);if(window._p13w===id)window._p13w=null;p13Show(list,0);return true;}if(n>240&&id){clearInterval(id);if(window._p13w===id)window._p13w=null;}return false;};
+  window._p13t=setTimeout(()=>{if(!tryShow()){clearInterval(window._p13w);id=setInterval(tryShow,700);window._p13w=id;}},250);}
 // the Field Manual: a page about the moment after a battle (added on first use, HELP is defined further down the script)
 function p13Help(){try{if(typeof HELP!=='undefined'&&Array.isArray(HELP)&&!HELP.some(x=>x.id==='help-newground'))HELP.push({id:'help-newground',sec:'B',ic:'🏳',title:'After a battle: holding new ground',short:'A captured region is weakest right after the fight. Garrison it, calm it, then make it yours for good.',
   bullets:['After a battle the result screen tells you if you won, what it cost, and what to do next. Every report stays in Reports, newest at the top.','New ground starts with a weak defence. Send a garrison from your home army (War Room, Defence) in the same turn.','Neighbours notice. The first turns after a capture are when ground is taken back most often, and the nation you hit may strike back.','Occupied ground has unrest. Calm it before it revolts, and later build a Provincial Capitol so it counts as core ground and produces fully.','Lost a region? Right after the fight the new owner is weak there too: a quick counter-attack often takes it back.','Held the line? The attacker’s army is going home weakened. That is the moment to strike back at their nearest ground.'],
@@ -7018,7 +7032,7 @@ function p16Locked(v){v.querySelectorAll('table').forEach(t=>{if(t._p16)return;c
   lk.forEach(r=>r.style.display='none');const b=h('<button class="btn ghost sm" style="margin:8px 0">'+lk.length+' more units unlock through R&amp;D · show them</button>');b.onclick=()=>{lk.forEach(r=>r.style.display='');b.remove();};t.after(b);});}
 function p16Tidy(){const v=document.getElementById('view');if(!v)return;try{if(P16[view])p16Apply(v,P16[view]);}catch(e){}
   try{if(view==='dashboard')p16Home(v);if(view==='clans')p16Clan(v);if(view==='research')p16Research(v);if(view==='rankings')p16Tables(v);if(view==='map')p16Map(v);if(view==='around'||view==='fleets')p16Near(v);if(view==='military')p16Locked(v);}catch(e){}}
-function p16After(){if(localStorage.getItem('p16off')==='1')return;const _t=()=>{try{p16Tidy();}catch(e){}};_t();setTimeout(_t,0);setTimeout(_t,220);}
+function p16After(){if((function(){try{return localStorage.getItem('p16off');}catch(e){return null;}})()==='1')return;const _t=()=>{try{p16Tidy();}catch(e){}};_t();setTimeout(_t,0);setTimeout(_t,220);}
 
 // ================= Update 8.0 "Solid Ground", package B: a living mid-game and a fair finale =================
 // Shared by Terrastate, Romaterra and Ironfront (theme words from GAME_CFG). Single-player only: p18On() is false on the
@@ -7934,7 +7948,7 @@ function renderLanding(){
     <div style="margin:6px 0 10px">${landingBannerSVG()}</div>
     <section style="text-align:center;padding:26px 0 26px;max-width:680px;margin:0 auto">
       <h2 style="font-size:clamp(28px,6.4vw,44px);margin:0 auto .32em;line-height:1.08">Command a Nation.<br>Rome against the World.</h2>
-      <p style="max-width:600px;margin:0 auto;font-size:clamp(15px,3.6vw,17px);color:var(--text)">A grand-strategy <b>solo</b> season against AI nations. The world moves in turns (ticks): give your orders, end the turn, see what happened. Same rules the live world will use.</p>
+      <p style="max-width:600px;margin:0 auto;font-size:clamp(15px,3.6vw,17px);color:var(--text)">A grand-strategy <b>solo</b> season against AI nations. The world moves in turns: give your orders, end the turn, see what happened. Same rules the live world will use.</p>
       <div class="row" style="gap:12px;justify-content:center;margin-top:30px;flex-wrap:wrap">${hasSave?'<button class="btn sec" id="lc2" style="font-size:16px;padding:15px 24px">▶ Resume your nation</button>':''}<button class="btn" id="lp2" style="font-size:16px;padding:15px 30px">🦅 Start, create your nation →</button><button class="btn sec" id="lcamp" style="font-size:16px;padding:15px 24px">🎯 Campaign, 6 scenarios</button>${anySlot()?'<button class="btn ghost" id="lslots" style="font-size:16px;padding:15px 20px">🏺 Saved games</button>':''}</div>
       <div class="row" style="gap:8px;justify-content:center;margin-top:14px;flex-wrap:wrap"><button class="btn ghost sm" id="lpSee">👁 See it in action</button><button class="btn ghost sm" id="lpNews">📄 What's new</button><button class="btn ghost sm" id="lmCombat">⚔ Combat &amp; formulae</button></div>
       <div class="muted small mt">Free · browser only · you vs AI · Season 0: the live world opens at 100 commanders</div><div class="small mt" style="border:1px solid var(--border2);border-radius:10px;padding:8px 12px;display:inline-block;max-width:560px"><b>How you win a season:</b> capture <b>Roma</b>, build the <b>Imperial Palace</b> there and hold it for ${NEXUS_HOLD} ticks. If nobody does, the Last Battle decides: whoever has the most hold points at the end of the season wins (a point for every turn holding Roma, two in the Last Battle), together with their alliance. Then the world resets. <b>Campaign</b> is practice. <b>Start</b> asks you to pick Quick (200 turns), Standard (400) or Epic (840).</div>
@@ -8578,7 +8592,7 @@ function renderSetup(scenarioKey){const SC=scenarioKey?scenarioOf(scenarioKey):n
         const code=(st.ally||'').trim().toUpperCase();
         if(code.length>=3){const tag=(code.split('-')[0]||'ALY').slice(0,4);G._pendingAlliance={name:'Coalition '+code,tag,code,joined:true};}
         G.solo=SC?{diff:(window._vetRound?'warlord':SC.diff),len:SC.len,mode:'turn',speed:1,scenario:SC.k,vet:window._vetRound?1:0}:{diff:st.diff,len:st.len,mode:'turn',speed:1};applySoloSettings();
-        startGame((st.name||'').trim()||'Northland',((st.tag||'').trim()||'TCN').toUpperCase(),'#d9a441',st.gov,st.doc,st.sel,regions);
+        startGame((st.name||'').replace(/[<>]/g,'').trim()||'Northland',(((st.tag||'').trim().toUpperCase().replace(/[^A-Z0-9]/g,'').slice(0,5))||'TCN'),'#d9a441',st.gov,st.doc,st.sel,regions);
         if(SC){try{const me=you();G.solo.scStart=G.tick;G.solo.scHome=(regionsOf(me)[0]||{}).id;G._scResult=null;G._scShown=false;if(SC.setup)SC.setup(me);G._scBrief=true;save();drawTop();maybeModal();}catch(e){console.error('scenario setup',e);}}};
     }
   };
@@ -8599,8 +8613,10 @@ function _rebaseSoloClock(){
   G.news=[];G.battles=[];G.chronicle=[];G.powerHist=[];G.orders={};G.candles={};
   G.tick=0;
 }
+function p241Fresh(){try{const KEEP={tick:1,regions:1,countries:1,prices:1,news:1,nextAt:1,you:1,seasonName:1,_fid:1,orders:1,season:1,playerAch:1,playerDir:1,hall:1,chronicle:1,battles:1,powerHist:1,nexusId:1,_winner:1,_nextEvent:1,_pendingEvent:1,_id:1,_p217:1,_p202names:1,_usedNames:1,_setupRegions:1,solo:1,clientBuild:1};
+  Object.keys(G).forEach(k=>{if(KEEP[k]||/^_pending/.test(k))return;try{delete G[k];}catch(e){}});}catch(e){}try{window._p13open={};}catch(e){}/*p242ui*/try{prodRegion=null;}catch(e){}try{prodCat=null;}catch(e){}try{selRegion=null;}catch(e){}try{selTarget=null;}catch(e){}try{selDefend=null;}catch(e){}try{selJoinOp=null;}catch(e){}try{mapView={level:0,cluster:null,sector:null,mode:'political',filter:'all'};}catch(e){}try{mapFocus=null;}catch(e){}try{window._openBat=null;window._sitShow=8;}catch(e){}try{for(const k in _detMem)delete _detMem[k];}catch(e){}try{_defCache=null;}catch(e){}}
 function startGame(name,tag,col,gov,doc,region,regions){
-  G.regions=regions;G.countries=[];G.news=[];G.tick=0;G.you=0;G._fid=1;G._id={name,tag,col,gov,doc};
+  p241Fresh();G.regions=regions;G.countries=[];G.news=[];G.tick=0;G.you=0;G._fid=1;G._id={name,tag,col,gov,doc};
   G.playerAch=[];G.playerDir=[];G.chronicle=[];G.battles=[];G.powerHist=[];G._pendingEvent=null;G._seasonEnd=false;G._overtime=null;G._finale=null;
   MARKET.forEach(r=>G.prices[r]=BASEP[r]);
   {const nx=regions.reduce((a,b)=>b.sv>a.sv?b:a);nx.nexus=true;nx.commandCenter=false;nx.ccHeld=0;nx.ccHolder=null;G.nexusId=nx.id;G._winner=null;}
@@ -12521,7 +12537,7 @@ function homeRegionOf(c){const rs=regionsOf(c);if(!rs.length)return null;return 
 // Focus the map on an alliance's strongest member's theater
 window.GOTO_CLAN=(clanId)=>{const cl=(G.clans||[]).find(x=>x.id===clanId);if(!cl)return;const mem=clanMembers(cl).map(m=>({m,s:scores(m).overall})).sort((a,b)=>b.s-a.s)[0];if(mem){const r=regionsOf(mem.m)[0];if(r){GOTO_SECTOR(r.cluster,r.sector);return;}}toast('That alliance holds no territory to show.','warn');};
 // Render helpers, a clickable coordinate chip and a clickable nation name
-function coordChip(coord){return coord?`<span class="tag lk" style="white-space:nowrap;display:inline-block" onclick="(function(e){e.stopPropagation();coordMenu('${coord}',e.clientX,e.clientY);})(event)" title="${coord}, click for actions">📍 ${coord}</span>`:'';}
+function coordChip(coord){if(coord!=null&&coord!==''&&!/^\d{1,4}:\d{1,4}:\d{1,4}$/.test(String(coord)))return '<span class="tag">'+esc(String(coord))+'</span>';return coord?`<span class="tag lk" style="white-space:nowrap;display:inline-block" onclick="(function(e){e.stopPropagation();coordMenu('${coord}',e.clientX,e.clientY);})(event)" title="${coord}, click for actions">📍 ${coord}</span>`:'';}
 // ===== Command-console render helpers (reusable across every screen) =====
 function ccStat(label,value,sub,status,tip){return `<div class="console"${tip?` title="${esc(tip)}"`:''}><div class="clabel">${status?`<span class="sdot ${status}"></span>`:''}<span${tip?' class="gloss"':''}>${esc(label)}</span></div><div class="cval">${value}</div>${sub?`<div class="csub">${sub}</div>`:''}</div>`;}
 function sigBar(pct,tone){pct=Math.max(0,Math.min(100,Math.round(pct||0)));return `<div class="sigbar ${tone||''}"><span style="width:${pct}%"></span></div>`;}
@@ -12609,7 +12625,7 @@ function showSettings(){const bg=h(`<div class="modal-bg"><div class="modal"><di
   bg.querySelectorAll('[data-slen]').forEach(b=>b.onclick=()=>{G.solo.len=b.dataset.slen;applySoloSettings();save(true);bg.querySelectorAll('[data-slen]').forEach(x=>x.classList.toggle('ghost',x!==b));toast('Game length: '+SOLO_LENGTHS[G.solo.len].n+', '+SEASON_TICKS+' turns per season','info');try{drawTop();}catch(e){}});
   {const ex=bg.querySelector('#setExport');if(ex)ex.onclick=()=>{try{try{save();}catch(e){}const data=JSON.stringify(G);const blob=new Blob([data],{type:'application/json'});const url=URL.createObjectURL(blob);const a=document.createElement('a');const d=new Date();const stamp=d.getFullYear()+String(d.getMonth()+1).padStart(2,'0')+String(d.getDate()).padStart(2,'0');a.href=url;a.download='romaterra-backup-s'+((G.season&&G.season.num)||1)+'-t'+G.tick+'-'+stamp+'.json';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),2000);toast('🏺 Back-up downloaded, keep it safe','good');}catch(e){toast('Could not create the back-up file','bad');}};}
    const imp=bg.querySelector('#setImport'),impF=bg.querySelector('#setImportFile');
-   if(imp&&impF){imp.onclick=()=>impF.click();impF.onchange=()=>{const f=impF.files&&impF.files[0];if(!f)return;const rd=new FileReader();rd.onload=()=>{try{const obj=JSON.parse(rd.result);if(obj&&typeof obj==='object')obj._imported=1;if(!obj||!Array.isArray(obj.countries)||obj.you==null||!obj.countries[obj.you])throw new Error('not a valid save');if(!confirm('Load this back-up? It replaces your current game in this browser (Season '+((obj.season&&obj.season.num)||'?')+', tick '+(obj.tick!=null?obj.tick:'?')+').'))return;localStorage.setItem('romaterra',JSON.stringify(obj));toast('✅ Back-up loaded, restarting…','good');setTimeout(()=>p6Reload(),400);}catch(e){toast('That file is not a valid Romaterra back-up','bad');}};rd.onerror=()=>toast('Could not read that file','bad');rd.readAsText(f);};}
+   if(imp&&impF){imp.onclick=()=>impF.click();impF.onchange=()=>{const f=impF.files&&impF.files[0];if(!f)return;const rd=new FileReader();rd.onload=()=>{try{if(String(rd.result).length>40e6)throw new Error('That back-up file is too big to be a save.');const obj=saveSanitize(JSON.parse(rd.result,saveReviver));if(obj&&typeof obj==='object')obj._imported=1;if(obj&&obj.clientBuild&&window.TT_CLIENT&&String(obj.clientBuild).split('-')[0]!==String(window.TT_CLIENT).split('-')[0]){const e2=new Error('That back-up belongs to another game ('+String(obj.clientBuild).split('-')[0]+').');e2.p240=1;throw e2;}if(!obj||!Array.isArray(obj.countries)||obj.you==null||!obj.countries[obj.you])throw new Error('not a valid save');if(!confirm('Load this back-up? It replaces your current game in this browser (Season '+((obj.season&&obj.season.num)||'?')+', tick '+(obj.tick!=null?obj.tick:'?')+').'))return;{const js=JSON.stringify(obj);let v=js;try{if(typeof _LZ!=='undefined'){const z='LZ1'+_LZ.c(js);if(z.length<js.length)v=z;}}catch(_){}try{localStorage.setItem('romaterra',v);}catch(q){const e3=new Error('Your browser storage is full. Free some space (or remove old saved games) and try again.');e3.p240=1;throw e3;}}toast('✅ Back-up loaded, restarting…','good');setTimeout(()=>p6Reload(),400);}catch(e){toast(e&&(e.p240||/too big/.test(e.message||''))?e.message:'That file is not a valid Romaterra back-up','bad');}};rd.onerror=()=>toast('Could not read that file','bad');rd.readAsText(f);};}
   bg.querySelectorAll('.toggle[data-t]').forEach(tg=>tg.onclick=()=>{const k=tg.dataset.t;if(k==='density')SETTINGS.density=SETTINGS.density==='compact'?'normal':'compact';else SETTINGS[k]=!SETTINGS[k];tg.classList.toggle('on');saveSettings();applySettings();if(k==='sound'){updateMuteBtn();if(SETTINGS.sound){audioInit();sfx('ok');}}if(k==='focused'){try{window._worldShow=null;go(view);}catch(e){}}});
   const vol=bg.querySelector('[data-vol]');if(vol)vol.oninput=()=>{SETTINGS.vol=vol.value/100;if(_master)_master.gain.value=SETTINGS.vol;saveSettings();};
   {const a=bg.querySelector('#setTipReset');if(a)a.onclick=()=>{try{localStorage.removeItem('tt_dismissed');}catch(e){}toast('Tips are back','info');bg.remove();if(typeof go==='function')go(view);};
@@ -13482,7 +13498,7 @@ function p158Idle(c){if(!c||c._p17ord==null)return false;return G.tick-(c._p17la
 // ---- the tick: heroes, roles, campaigns, council (same order as the packs ran in solo) ----
 {const _rt=runTick;runTick=function(){const r=_rt.apply(this,arguments);
   try{p158Humans().forEach(storyRoleTickE);}catch(e){}try{storyScanE();}catch(e){}try{campScanCapturesE();}catch(e){}try{ensureCouncilTick();}catch(e){}
-  try{if(mpServer()&&G.tick%6===0&&G._campaigns){for(const k in G._campaigns){const x=G._campaigns[k];const q=G.tick-(x&&(x.lastAct||x.tick)||0);if(!x||q>200)delete G._campaigns[k];else if(q>30){const A=G.countries[x.a],B=G.countries[x.b];if(!(A&&A.isAI===false)&&!(B&&B.isAI===false))delete G._campaigns[k];}}}}catch(e){} // live world: forget fronts quiet for 200 ticks
+  try{if(G.tick%6===0&&G._campaigns){for(const k in G._campaigns){const x=G._campaigns[k];const q=G.tick-(x&&(x.lastAct||x.tick)||0);if(!x||q>200)delete G._campaigns[k];else if(q>30){const A=G.countries[x.a],B=G.countries[x.b];if(!(A&&A.isAI===false)&&!(B&&B.isAI===false))delete G._campaigns[k];}}}}catch(e){} // live world: forget fronts quiet for 200 ticks
   return r;};}
 /*p162*/
 // ===== p162: Update 9.2 "Allies that fight with you", shared by solo, the live-world server and the MP client =====
@@ -20707,7 +20723,7 @@ function homeTidy(){try{if(typeof view==='undefined'||view!=='dashboard'||!SOLO(
 
 // ---------- 5. training ends by itself ----------
 function trainEnd(){try{const c=ME();if(!c||!c._train||c._train.end)return;if(G.tick-(c._train.t0||0)<20)return;
-  c._train.end='auto';c._train.unlockAt=G.tick;G._tutorialDone=true;try{localStorage.setItem('earth2026_welcomed','1');}catch(e){}try{if(typeof trainMenus==='function')trainMenus();}catch(e){}}catch(e){}}
+  c._train.end='auto';c._train.unlockAt=G.tick;G._tutorialDone=true;try{localStorage.setItem('romaterra_welcomed','1');}catch(e){}try{if(typeof trainMenus==='function')trainMenus();}catch(e){}}catch(e){}}
 
 // ---------- 4. Sprint season ----------
 try{if(typeof SOLO_LENGTHS!=='undefined'&&!SOLO_LENGTHS.sprint){const old=Object.entries(SOLO_LENGTHS);old.forEach(([k])=>delete SOLO_LENGTHS[k]);
@@ -23496,6 +23512,35 @@ if(typeof module!=='undefined'&&module.exports)module.exports=BANNER;
   new MutationObserver(recs=>{recs.forEach(r=>r.addedNodes&&r.addedNodes.forEach(n=>{if(n.nodeType!==1||!n.classList||!n.classList.contains('modal-bg'))return;setTimeout(()=>{try{if(!n.isConnected||n.contains(document.activeElement))return;const f=n.querySelector('button:not([disabled]),[href],input,select,textarea,[tabindex]:not([tabindex="-1"])');if(f)f.focus({preventScroll:true});}catch(e){}},60);}));}).observe(document.body,{childList:true});
 })();
 
+</script>
+<script>/*p240*/
+// ===== p240 · 18.7 audit fixes (solo engine part) =====
+// Scout reports that went stale long ago are dropped, so the save does not grow without end in a long season.
+// The newest 12 reports per nation always stay (tasks and screens that count "have you ever scouted" keep working).
+(function(){
+if(typeof window==='undefined'||window.__MP__)return;
+function pruneIntel(){try{const ttl=(typeof SCOUT_TTL==='number'?SCOUT_TTL:12)*3;(G.countries||[]).forEach(c=>{const I=c&&c._regionIntel;if(!I)return;const ks=Object.keys(I);if(ks.length<=40)return;
+  ks.sort((a,b)=>((I[b]&&I[b].tick)||0)-((I[a]&&I[a].tick)||0));ks.slice(12).forEach(k=>{const it=I[k];if(!it||G.tick-(it.tick||0)>ttl)delete I[k];});});}catch(e){}}
+if(typeof runTick==='function'){const _rt=runTick;runTick=function(){const r=_rt.apply(this,arguments);try{if(G.tick%10===0)pruneIntel();}catch(e){}return r;};}
+window.p240PruneIntel=pruneIntel;
+})();
+
+</script>
+<script>/*p242*/
+// A new season is a new world. The engine clears its own fields, but the fields that later patches added
+// (fronts, Around you, world log, council and law, champion title, scouting, setup regions) stayed and pointed at the old world.
+(function(){try{
+  if(typeof startNextSeason!=='function')return;
+  const KEEP={tick:1,regions:1,countries:1,prices:1,news:1,nextAt:1,you:1,seasonName:1,_fid:1,orders:1,season:1,playerAch:1,playerDir:1,
+    chronicle:1,battles:1,powerHist:1,nexusId:1,_winner:1,_nextEvent:1,_id:1,_p202names:1,_usedNames:1,solo:1,clientBuild:1,
+    _trk:1,_tutorialDone:1,_ccUnlockNoted:1,crisisHistory:1,_nextRule:1,_lobby:1,_pendingAlliance:1,hall:1,legacy:1};
+  function p242Season(){try{Object.keys(G).forEach(k=>{if(KEEP[k])return;try{delete G[k];}catch(e){}});}catch(e){}
+    try{window._p13open={};}catch(e){}}
+  window.p242Season=p242Season;
+  const o=startNextSeason;
+  startNextSeason=function(){p242Season();return o.apply(this,arguments);};
+  try{window.startNextSeason=startNextSeason;}catch(e){}
+}catch(e){}})();
 </script>
 </body>
 </html>
