@@ -24182,6 +24182,28 @@ function tabify(v,page){try{const boxes=[...v.querySelectorAll(':scope>.p250box:
   boxes[0].parentNode.insertBefore(bar,boxes[0]);boxes.forEach((b,j)=>{b.style.display=j===i?'':'none';const h=b.querySelector('.p250h');if(h&&!h.querySelector('a'))h.style.display='none';else if(h&&h.childNodes[0])h.childNodes[0].textContent='';});}catch(e){}}
 PAGES.concat(XP).forEach(([k])=>{const f=VIEWS[k];if(typeof f!=='function')return;VIEWS[k]=v=>{const r=f(v);tabify(v,k);return r;};});
 
+/* ---------- Staff, Field manual, Story and Map: the same clean look around the original content ---------- */
+function sectionize(v,title,sub,headSel){try{
+  [...v.querySelectorAll(':scope>.ptitle,:scope>.p195hub')].forEach(e=>e.remove());
+  const kids=[...v.children];const out=document.createElement('div');out.style.display='contents';
+  let cur=null;const boxes=[];
+  kids.forEach(e=>{if(e.matches(headSel)){const t=(e.querySelector('summary span')||e).textContent.replace(/\s+\d+\s*\/\s*\d+.*$|\s+\d+\s*of\s*\d+$/,'').replace(/[▸▾]/g,'').trim();
+      cur=document.createElement('section');cur.className='p250box';cur.innerHTML='<div class="p250h">'+E(t.split(',')[0].slice(0,30))+'</div>';boxes.push(cur);
+      if(e.tagName==='DETAILS'){const d=document.createElement('div');d.style.cssText='padding:12px 16px';[...e.childNodes].forEach(n=>{if(!(n.tagName==='SUMMARY'))d.appendChild(n);});cur.appendChild(d);e.remove();}else if(e.tagName!=='H3'){cur.querySelector('.p250h').textContent=((e.innerText||'').split('\n')[0]||'').replace(/^[^A-Za-z]+/,'').slice(0,28);e.classList.remove('card','mb');e.style.cssText='padding:12px 16px;margin:0';cur.appendChild(e);}else e.remove();return;}
+    if(cur){e.style.margin='0';const w=document.createElement('div');w.style.padding='12px 16px';w.appendChild(e);cur.appendChild(w);}else e.remove();});
+  v.insertAdjacentHTML('afterbegin',head(title,sub||''));boxes.forEach(b=>v.appendChild(b));
+}catch(e){}}
+function wrapView(k,fn){const f=VIEWS[k];if(typeof f!=='function')return;VIEWS[k]=v=>{const r=f(v);try{fn(v);}catch(e){}try{v.classList.add('p250v');}catch(e){}return r;};}
+wrapView('staff',v=>{const c=ME();let sub='';try{sub=(c.commanders||[]).length+' of '+staffSlots(c)+' places used';}catch(e){}
+  [...v.querySelectorAll(':scope>.p211chips')].forEach(e=>e.remove());
+  [...v.querySelectorAll(':scope>.card')].forEach(e=>{if(!e.querySelector('button')&&/give their bonus/i.test(e.textContent))e.remove();});
+  sectionize(v,typeof staffLabel==='function'?staffLabel():'Staff',sub,'h3');tabify(v,'staff');});
+wrapView('codex',v=>{sectionize(v,'Field manual','the rules in one place','details, .card.mb:not(details)');
+  const strip=()=>{[...v.querySelectorAll(':scope>:not(.p250top):not(.p250box):not(.p250tabs)')].forEach(e=>e.remove());};strip();tabify(v,'codex');setTimeout(strip,0);setTimeout(strip,300);});
+wrapView('story',v=>{[...v.querySelectorAll(':scope>.ptitle')].forEach(e=>e.remove());v.insertAdjacentHTML('afterbegin',head('Story mode','ten short chapters, they open one by one'));
+  v.querySelectorAll('p.muted.small').forEach(p=>{if(/Ten chapters/.test(p.textContent))p.remove();});});
+wrapView('map',v=>{const q=()=>{try{[...v.children].forEach(e=>{const t=(e.innerText||'').slice(0,40);if(/^(Recent activity|Theater \d+ chat|THEATER \d+ CHAT|RECENT ACTIVITY)/i.test(t))e.style.display='none';});}catch(e){}};q();setTimeout(q,0);setTimeout(q,300);});
+
 /* ---------- actions ---------- */
 async function act(b){try{const sh=document.getElementById('p250sheet');if(sh)sh.remove();}catch(e){}const a=b.dataset.p250,id=b.dataset.id;const c=ME();if(!c)return;let r=null,msg='';
   const num=x=>isNaN(+x)?x:+x;
