@@ -23232,7 +23232,7 @@ VIEWS.p250o=v=>{const c=ME();if(!c)return;seen();const A0=armies(c);let html=hea
   let nx=null;try{nx=typeof p186Next==='function'?p186Next(c):null;}catch(e){}
   if(nx&&nx.r){let atk=0;try{atk=power(c,'atk');}catch(e){}const known=nx.def!=null;
     todo.push(row('Next land: '+RN(nx.r)+(nx.own?' · '+E(nx.own.name):''),(known?'defence '+F(nx.def)+' · your attack '+F(atk):'not scouted yet')+(nx.t!=null?' · '+T(nx.t)+' march':''),B('take',nx.r.id,known?'Take it':'Scout it')));}
-  html+=box('Do now',todo.length?todo.join(''):'<div class="p250e">All quiet. End the turn.</div>');
+  html+=box('Do now',todo.length?todo.join(''):row('All quiet','nothing needs you right now',B('until','x','Play until something happens')));
   const bt=(G.battles||[]).filter(b=>b&&(b.atkId===c.id||b.defId===c.id)).slice(0,3);
   html+=box('Last battles',bt.map(b=>{const mine=b.atkId===c.id;const won=mine?(b.outcome==='captured'||b.outcome==='partial'):(b.outcome!=='captured');
     return row((won?'<b class="good">Won</b>':'<b class="bad">Lost</b>')+' '+(mine?'attack on ':'defence of ')+E(b.region),'turn '+b.tick+(b.outcome==='captured'?' · land changed hands':''),'');}).join(''),'<a data-p250="go" data-id="battles">all</a>');
@@ -23250,7 +23250,7 @@ VIEWS.p250a=v=>{const c=ME();if(!c)return;let atk0=0;try{atk0=power(c,'atk');}ca
   let atk=0;try{atk=power(c,'atk');}catch(e){}
   html+=box('Targets',T0.slice(0,8).map(r=>{const o=r.owner!=null?G.countries[r.owner]:null;const known=!o||(typeof regionIntel==='function'&&regionIntel(c,r.id));
     return row(RN(r)+(o?' · '+E(o.name):' · empty'),(known?'defence '+F(def(r))+(def(r)*1.3<=atk?' · <b class="good">you can take it</b>':''):'not scouted'),known?B('take',r.id,'Take it'):B('scout',r.id,'Scout'));}).join(''),'<a data-p250="go" data-id="map">map</a>');
-  html+=box('Defend a land',regionsOf(c).slice(0,12).map(r=>row(RN(r)+(isNew(r)?' <span class="p250new">NEW</span>':''),'defence '+F(def(r))+' · '+F(onLand(c,r.id))+' '+W.troops+' stationed',B('st25',r.id,'Station 25%')+B('st50',r.id,'50%'))).join(''));
+  html+=box('Defend a land',regionsOf(c).slice(0,12).map(r=>row(RN(r)+(isNew(r)?' <span class="p250new">NEW</span>':''),'defence '+F(def(r))+' · '+F(onLand(c,r.id))+' '+W.troops+' stationed',B('st25',r.id,'Station 25%')+B('st50',r.id,'50%')+B('st100',r.id,'All'))).join(''));
   v.innerHTML=html;};
 
 VIEWS.p250l=v=>{const c=ME();if(!c)return;seen();const I={};inc(c).forEach(g=>{I[g.r.id]=g;});
@@ -23258,7 +23258,7 @@ VIEWS.p250l=v=>{const c=ME();if(!c)return;seen();const I={};inc(c).forEach(g=>{I
   let html=head('Lands',L.length+' lands');
   const lr=r=>{const g=I[r.id];const nb=(c.buildings||[]).filter(b=>b.rid===r.id).length;
     return row((isNew(r)?'<span class="p250new">NEW</span> ':'')+RN(r)+(g?' <b class="bad">attack in '+T(g.eta)+'</b>':''),'defence '+F(def(r))+(g?' vs attack '+F(g.atk):'')+' · '+F(onLand(c,r.id))+' '+W.troops+' stationed · '+nb+' buildings',
-      B('st25',r.id,'Station 25%')+B('st50',r.id,'50%')+B('build',r.id,'Build'),g?'alert':'');};
+      B('st25',r.id,'Station 25%')+B('st50',r.id,'50%')+B('st100',r.id,'All')+B('build',r.id,'Build'),g?'alert':'');};
   const nw=L.filter(isNew),ua=L.filter(r=>I[r.id]);
   html+=box('All lands',L.map(lr).join(''),L.length)+box('New',nw.map(lr).join(''),nw.length||'')+box('Under attack',ua.map(lr).join(''),ua.length||'');
   v.innerHTML=html;};
@@ -23272,8 +23272,12 @@ VIEWS.p250b=v=>{const c=ME();if(!c)return;const L=regionsOf(c);let rid=window._p
   html+=box('Buildings',BUILD.filter(d=>{try{return buildUnlocked(c,d);}catch(e){return true;}}).map(d=>{let lv=0;try{lv=blevel(c,rid,d.k);}catch(e){}
     const qd=(c.queue||[]).some(x=>x.rid===rid&&x.k===d.k);let co='';try{co=cost(bcost(d.k,lv));}catch(e){}
     return row(E(d.n)+' <span class="p250c">L'+lv+'</span>',(d.d?'<span class="p250desc">'+E(d.d)+' · </span>':'')+co,qd?'<span class="p250s">building</span>':B('bld',d.k,lv?'Upgrade':'Build'));}).join(''));
-  html+=box(W.troops[0].toUpperCase()+W.troops.slice(1),UNIT.filter(u=>{try{return unitUnlocked(c,u);}catch(e){return !u.req;}}).map(u=>row(E(u.n)+' <span class="p250c">'+F((c.units||{})[u.k]||0)+' at home</span>','attack '+u.atk+' · defence '+u.def+' · '+cost(u.cost)+' each',
-    '<input class="p250n" type="number" min="1" value="50" data-u="'+E(u.k)+'">'+B('rec',u.k,'Train'))).join(''));
+  const quick=[];const mo=(c.res||{}).money||0;
+  try{const plan=starterDefencePlan(c);const armyN=N(c.units);if(armyN<150&&plan&&plan.count>0)quick.push(row('<b>Starter defence</b>',F(plan.count)+' '+W.troops+' to hold your home · '+cost(plan.cost),B('starter','x','Train')));}catch(e){}
+  if(typeof p14RecOrder==='function')quick.push(row('Mixed army','the best mix of attack and defence for part of your money',B('mix','0.25','25% of money')+B('mix','0.5','50%')));
+  try{if(c._p7last&&Object.keys(c._p7last).length)quick.push(row('Repeat last order',E(p7OrderText(c._p7last)),B('repeat','x','Repeat')));}catch(e){}
+  html+=box(W.troops[0].toUpperCase()+W.troops.slice(1),quick.join('')+UNIT.filter(u=>{try{return unitUnlocked(c,u);}catch(e){return !u.req;}}).map(u=>row(E(u.n)+' <span class="p250c">'+F((c.units||{})[u.k]||0)+' at home</span>','attack '+u.atk+' · defence '+u.def+' · '+cost(u.cost)+' each',
+    '<input class="p250n" type="number" min="1" value="50" data-u="'+E(u.k)+'">'+B('qadd',u.k+'|10','+10','alt')+B('qadd',u.k+'|100','+100','alt')+B('qadd',u.k+'|max','Max','alt')+B('rec',u.k,'Train','p250main'))).join(''));
   html+=box('In progress',q.concat(mq).map(x=>row(E(x),'','')).join(''),(q.length+mq.length)||'');
   v.innerHTML=html;const s=v.querySelector('#p250land');if(s)s.onchange=()=>{window._p250rid=+s.value;go('p250b');};};
 
@@ -23303,9 +23307,11 @@ VIEWS.p250al=v=>{const c=ME();if(!c)return;const cl=clanOf(c);
 /* ---------- the More pages, same style ---------- */
 VIEWS.p250m=v=>{const c=ME();if(!c)return;let pj=null;try{pj=projection(c);}catch(e){}
   let html=head('Market','buy what you run short of, sell what piles up');
-  html+=box('Prices',(typeof MARKET!=='undefined'?MARKET:[]).map(r=>{const net=pj?(pj.net[r]||0):0;const have=(c.res||{})[r]||0;const pr=Math.max(1,(G.prices||{})[r]||1);let q=net<0?-net*5:1000;q=Math.min(q,((c.res||{}).money||0)*0.25/(pr*1.3));q=Math.max(10,Math.round(q/10)*10);
+  const short=(typeof MARKET!=='undefined'?MARKET:[]).filter(r=>pj&&(pj.net[r]||0)<0&&((c.res||{})[r]||0)/(-(pj.net[r]))<12);
+  const top=short.length?row('<b class="warn">Running short: '+short.map(r=>E(rl(r))).join(', ')+'</b>','buys 10 turns of what you use',B('buyshort','x','Buy all')):'';
+  html+=box('Prices',top+(typeof MARKET!=='undefined'?MARKET:[]).map(r=>{const net=pj?(pj.net[r]||0):0;const have=(c.res||{})[r]||0;const pr=Math.max(1,(G.prices||{})[r]||1);let q=net<0?-net*5:1000;q=Math.min(q,((c.res||{}).money||0)*0.25/(pr*1.3));q=Math.max(10,Math.round(q/10)*10);
     return row(E(rl(r))+' <span class="p250c">'+F((G.prices||{})[r]||0)+' each</span>','you have '+F(have)+' · '+(net>=0?'+':'')+F(net)+' per turn'+(net<0&&have/(-net)<12?' · <b class="warn">runs out in '+T(Math.floor(have/(-net)))+'</b>':''),
-      '<input class="p250n" type="number" min="1" value="'+q+'" data-q="'+E(r)+'">'+B('buy',r,'Buy')+B('sell',r,'Sell'));}).join(''));
+      '<input class="p250n" type="number" min="1" value="'+q+'" data-q="'+E(r)+'">'+B('qmax',r+'|buy','Max','alt')+B('qmax',r+'|sell','All','alt')+B('buy',r,'Buy','p250main')+B('sell',r,'Sell'));}).join(''));
   html+=box('Automatic',row('Auto-buy shortages',c._p18auto?'on: the game buys food, energy and fuel before they run out':'off',B('autobuy','x',c._p18auto?'Turn off':'Turn on')));
   v.innerHTML=html;};
 VIEWS.p250e=v=>{const c=ME();if(!c)return;let pj=null;try{pj=projection(c);}catch(e){}const net=pj?(pj.net.money||0):0;
@@ -23401,7 +23407,17 @@ async function act(b){try{const sh=document.getElementById('p250sheet');if(sh)sh
     else if(a==='press'){r=await cmdBattleOrder(c,num(id),'press');msg='Your '+W.troops+' press on.';}
     else if(a==='calloff'){r=await cmdCancelACS(c,num(id));msg='Joint attack called off.';}
     else if(a==='leave'){r=await cmdLeaveACS(c,num(id));msg='You left the joint attack.';}
-    else if(a==='st25'||a==='st50'||a==='def50'||a==='defall'){const p=a==='st25'?0.25:a==='defall'?1:0.5;const com=share(c,p);
+    else if(a==='qadd'){const [k,q]=String(id).split('|');const inp=b.parentElement.querySelector('input[data-u]');if(!inp)return;
+      if(q==='max'){const u=UNIT.find(x=>x.k===k);let mx=Infinity;for(const rk in (u.cost||{}))if(u.cost[rk]>0)mx=Math.min(mx,Math.floor(((c.res||{})[rk]||0)/u.cost[rk]));inp.value=Math.max(0,isFinite(mx)?mx:0);}else inp.value=(Math.floor(+inp.value)||0)+(+q);return;}
+    else if(a==='qmax'){const [rr,side]=String(id).split('|');const inp=b.parentElement.querySelector('input[data-q]');if(!inp)return;
+      if(side==='sell')inp.value=Math.floor((c.res||{})[rr]||0);else{const pr=Math.max(1,(G.prices||{})[rr]||1);inp.value=Math.max(0,Math.floor(((c.res||{}).money||0)*0.9/(pr*1.5)));}return;}
+    else if(a==='starter'){const plan=starterDefencePlan(c);r=await cmdRecruitBatch(c,plan.units);msg='Training '+F(plan.count)+' '+W.troops+'.';}
+    else if(a==='mix'){const o=p14RecOrder(c,((c.res||{}).money||0)*(+id));if(!o){toast('Nothing to train right now.','warn');return;}r=await cmdRecruitBatch(c,o);msg='Training: '+p7OrderText(o)+'.';}
+    else if(a==='repeat'){r=await cmdRecruitBatch(c,c._p7last||{});msg='Order repeated.';}
+    else if(a==='until'){try{runUntil();}catch(e){}return;}
+    else if(a==='buyshort'){const pj=projection(c);let n=0,bad='';for(const rr of MARKET){const net=pj.net[rr]||0;if(net<0&&((c.res||{})[rr]||0)/(-net)<12){const x=await cmdMarket(c,rr,'buy',Math.ceil(-net*10));if(x&&x.ok)n++;else bad=(x&&x.error)||bad;}}
+      r=n?{ok:true}:{ok:false,error:bad||'Nothing bought.'};msg='Bought 10 turns of '+n+' resource'+(n===1?'':'s')+'.';}
+    else if(a==='st25'||a==='st50'||a==='st100'||a==='def50'||a==='defall'){const p=a==='st25'?0.25:(a==='defall'||a==='st100')?1:0.5;const com=share(c,p);
       if(!N(com)){toast('No '+W.troops+' at home. Train some first.','warn');go('p250b');return;}r=await cmdStation(c,num(id),com);msg=F(N(com))+' '+W.troops+' on their way.';}
     else if(a==='bld'){r=await cmdBuild(c,window._p250rid,id);msg='Building started.';}
     else if(a==='rec'){const inp=b.parentElement.querySelector('input[data-u]');const n=Math.max(1,Math.floor(+((inp||{}).value)||0));r=await cmdRecruit(c,id,n);msg='Training '+F(n)+'.';}
@@ -23481,9 +23497,10 @@ const st=document.createElement('style');st.id='p250css';st.textContent=`
 .p250b{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end;align-items:center}
 .p250e{padding:10px 14px;color:var(--muted)}
 .p250btn{white-space:nowrap}
-html body .p250b .btn.p250btn:not(:first-child){background:transparent!important;background-image:none!important;color:var(--text)!important;border:1px solid var(--border2)!important;box-shadow:none!important}
+.p250btn.alt{padding-left:9px!important;padding-right:9px!important}
+html body .p250b .btn.p250btn:not(:first-of-type):not(.p250main),html body .p250b .btn.p250btn.alt{background:transparent!important;background-image:none!important;color:var(--text)!important;border:1px solid var(--border2)!important;box-shadow:none!important}
 html body #view .p250b .btn.p250btn.warn.warn,html body .p250b .btn.p250btn.warn.warn{background:var(--danger)!important;background-image:none!important;color:#fff!important;border-color:var(--danger)!important}
-html body .p250b .btn.p250btn.warn:not(:first-child){background:transparent!important;color:var(--danger)!important;border-color:var(--danger)!important}
+html body .p250b .btn.p250btn.warn:not(:first-of-type){background:transparent!important;color:var(--danger)!important;border-color:var(--danger)!important}
 .p250end{font-family:var(--display);text-transform:uppercase}
 
 .p250c{color:var(--muted);font:500 12px var(--mono,monospace)}
@@ -23499,7 +23516,7 @@ b.bad{color:var(--danger,#ef4444)}b.warn{color:var(--warn,#f59e0b)}b.good{color:
 .p250end{flex:1.4;margin:6px;border:0;border-radius:8px;background:var(--accent2,var(--hi));color:#111;font:800 13px/1 inherit;letter-spacing:.06em;cursor:pointer}
 #p250sheet{position:fixed;inset:0;z-index:9000;background:rgba(0,0,0,.5);display:flex;align-items:flex-end}
 .p250sh{width:100%;max-height:75vh;overflow:auto;background:var(--panel);border-radius:14px 14px 0 0;padding:12px 6px calc(12px + env(safe-area-inset-bottom))}
-@media (max-width:700px){.p250row{flex-wrap:wrap}.p250b{margin-left:auto}.p250desc{display:none}.p250top h2{font-size:19px}.p250pick select{flex:1}}
+@media (max-width:700px){.p250row{flex-wrap:wrap}.p250m{flex:1 1 55%}.p250b{margin-left:auto;align-items:center}.p250b:has(input),.p250b:has(select){width:100%;justify-content:flex-start;margin-left:0}.p250b:has(input) .p250main{margin-left:auto}.p250desc{display:none}.p250top h2{font-size:19px}.p250pick select{flex:1}}
 `;document.head.appendChild(st);
 }catch(e){try{console.error('p250',e);}catch(_){}}})();
 </script>
