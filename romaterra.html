@@ -16,7 +16,7 @@
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="https://playterrastate.nl/img/v4/romaterra-share.jpg">
 <meta name="author" content="Wim Kamphorst">
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"VideoGame","@id":"https://playterrastate.nl/romaterra.html#game","name":"Romaterra","url":"https://playterrastate.nl/romaterra.html","description":"Free Roman grand strategy in your browser. Rule a people of the ancient world against hundreds of AI rivals, take Roma, raise the Imperial Palace and hold it. No account, no download.","image":"https://playterrastate.nl/img/v4/romaterra-share.jpg","genre":["Strategy","Grand strategy","Turn-based strategy","4X","Browser game"],"gamePlatform":["Web browser","Windows","macOS","Linux","Android","iOS"],"applicationCategory":"Game","operatingSystem":"Any (web browser)","playMode":"SinglePlayer","inLanguage":"en","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"EUR","availability":"https://schema.org/InStock"},"author":{"@type":"Person","@id":"https://playterrastate.nl/#wim","name":"Wim Kamphorst","url":"https://wimkamphorst.nl"},"publisher":{"@type":"Person","@id":"https://playterrastate.nl/#wim","name":"Wim Kamphorst","url":"https://wimkamphorst.nl"},"softwareVersion":"20.4.1","sameAs":["https://wimkamphorstcoaching.itch.io/romaterra"]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"VideoGame","@id":"https://playterrastate.nl/romaterra.html#game","name":"Romaterra","url":"https://playterrastate.nl/romaterra.html","description":"Free Roman grand strategy in your browser. Rule a people of the ancient world against hundreds of AI rivals, take Roma, raise the Imperial Palace and hold it. No account, no download.","image":"https://playterrastate.nl/img/v4/romaterra-share.jpg","genre":["Strategy","Grand strategy","Turn-based strategy","4X","Browser game"],"gamePlatform":["Web browser","Windows","macOS","Linux","Android","iOS"],"applicationCategory":"Game","operatingSystem":"Any (web browser)","playMode":"SinglePlayer","inLanguage":"en","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"EUR","availability":"https://schema.org/InStock"},"author":{"@type":"Person","@id":"https://playterrastate.nl/#wim","name":"Wim Kamphorst","url":"https://wimkamphorst.nl"},"publisher":{"@type":"Person","@id":"https://playterrastate.nl/#wim","name":"Wim Kamphorst","url":"https://wimkamphorst.nl"},"softwareVersion":"20.5","sameAs":["https://wimkamphorstcoaching.itch.io/romaterra"]}</script>
 <link rel="manifest" href="romaterra.webmanifest"><meta name="theme-color" content="#1a1410"><link rel="icon" href="icons/romaterra-64.png"><link rel="apple-touch-icon" href="icons/romaterra-180.png">
 <script>window.__MP_URL__=''; /* '' = live multiplayer not open yet */ if('serviceWorker' in navigator)addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));</script>
 <script data-goatcounter="https://playterrastatenl.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
@@ -1920,7 +1920,7 @@ function aiCounterScout(ai,attacker){
   if(Math.random()>0.40)return;
   if(!attacker||!ai.leader)return;
   const myRegs=regionsOf(attacker);if(!myRegs.length)return;
-  const target=myRegs[Math.floor(Math.random()*Math.min(3,myRegs.length))];
+  const _h0=regionsOf(ai)[0];const target=_h0?myRegs.slice().sort((a,b)=>Math.hypot(a.x-_h0.x,a.y-_h0.y)-Math.hypot(b.x-_h0.x,b.y-_h0.y))[Math.floor(Math.random()*Math.min(2,myRegs.length))]:myRegs[Math.floor(Math.random()*Math.min(3,myRegs.length))];
   const atkStr=ai.mil||1,defStr=target.def||1;
   const vulnNote=atkStr/defStr>1.2?'Our analysts rate it vulnerable.':'Their defences hold for now, but we are watching.';
   const flavour=[
@@ -21666,15 +21666,15 @@ setInterval(()=>{try{ladder();champCard();}catch(e){}},500);
     const ops=(G.acs||[]).filter(o=>o&&o.clan===cl.id&&o.landTick>G.tick).sort((a,b)=>a.landTick-b.landTick);
     const officer=['leader','officer','commander'].includes(role(me.id));
     const sig=[cl.id,mem.length,hits.map(h=>h.r.id+':'+h.eta+':'+Math.round(h.atk/100)).join(','),ops.map(o=>o.id+':'+(o.fleets||[]).length+':'+(o.landTick-G.tick)).join(','),mem.map(m=>m.id+role(m.id)+Math.round(pw(m,'atk')/1000)).join(','),G.tick].join('|');
-    if(box&&box.dataset.sig===sig){const mo_=v.querySelector(':scope > details.p198more');const t_=v.querySelector(':scope > .ptitle');if(mo_){const inn=mo_.querySelector(':scope > .in');[...v.children].forEach(ch=>{if(ch!==t_&&ch!==box&&ch!==mo_&&!ch.classList.contains('alerts')&&!(t=>t.indexOf('\uD83C\uDD98')===0||/^(SOS|WAR ALERT)/.test(t))((ch.textContent||'').trim()))inn.appendChild(ch);});}return;}
+    if(box&&box.dataset.sig===sig){const mo_=v.querySelector(':scope > details.p198more');const t_=v.querySelector(':scope > .ptitle');if(mo_){const inn=mo_.querySelector(':scope > .in');[...v.children].forEach(ch=>{if(ch!==t_&&ch!==box&&ch!==mo_&&!ch.classList.contains('alerts')&&!(t=>t.indexOf('\uD83C\uDD98')===0||/^(SOS|WAR ALERT)/.test(t))((ch.textContent||'').trim()))void inn;});}return;}
     // the rest of the page folds under Alliance details (kept in the page, it still does the work)
     let more=v.querySelector(':scope > details.p198more');
     if(!more){more=document.createElement('details');more.className='p198more';more.innerHTML='<summary>Alliance details · chat, treasury, roles, plans</summary><div class="in"></div>';more.open=!!window.__p198open;more.addEventListener('toggle',()=>{window.__p198open=more.open;});}
     const t=v.querySelector(':scope > .ptitle');
     if(!box){box=document.createElement('div');box.className='p198';}
     if(t){if(t.nextElementSibling!==box)t.insertAdjacentElement('afterend',box);}else if(v.firstElementChild!==box)v.prepend(box);
-    if(box.nextElementSibling!==more)box.insertAdjacentElement('afterend',more);
-    const inner=more.querySelector(':scope > .in');[...v.children].forEach(ch=>{if(ch!==t&&ch!==box&&ch!==more&&!ch.classList.contains('alerts')&&!(t=>t.indexOf('\uD83C\uDD98')===0||/^(SOS|WAR ALERT)/.test(t))((ch.textContent||'').trim()))inner.appendChild(ch);});
+    if(more.parentNode)more.remove();
+    const inner=more.querySelector(':scope > .in');[...v.children].forEach(ch=>{if(ch!==t&&ch!==box&&ch!==more&&!ch.classList.contains('alerts')&&!(t=>t.indexOf('\uD83C\uDD98')===0||/^(SOS|WAR ALERT)/.test(t))((ch.textContent||'').trim()))void inner;});
     const tot=mem.reduce((s,m)=>s+pw(m,'atk')+pw(m,'def'),0);let rank='';try{rank=cl._rankNow?('#'+cl._rankNow):'';}catch(e){}
     const maxA=Math.max(1,...mem.map(m=>pw(m,'atk'))),maxD=Math.max(1,...mem.map(m=>pw(m,'def')));
     const hitIds=new Set(hits.map(h=>h.m.id));
@@ -24254,59 +24254,69 @@ const st=document.createElement('style');st.textContent=`
 }catch(e){try{console.error('p264',e);}catch(_){}}})();
 </script>
 <script>/*p265*/
-// 19.5 "One look": the full screens (opened with All options or from More) wear the same style as the six pages:
-// a page head, every block as a box, and the boxes as tabs side by side. Content and buttons are the same ones,
-// only moved into the new boxes, so every option keeps working.
+// 20.5 "One look", second version: the full screens (opened with All options or from More) get the house style
+// without moving anything. The page keeps its own blocks where they are; a page head goes on top, every block gets
+// the box look, and the blocks are grouped into tabs side by side. Because nothing is moved, the other layers of the
+// game can keep updating their blocks: no blocks inside blocks, no copies piling up, no lag.
 (function(){try{
 if(window.__MP__||typeof VIEWS==='undefined'||typeof go!=='function')return;
 const E=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const KEYS=['calc','around','self','dashboard','production','military','research','clans','roles','market','economy','diplomacy','rankings','reports','battles','covert','mail'];
+const KEYS=['calc','around','self','dashboard','production','military','research','clans','roles','market','economy','diplomacy','rankings','reports','battles','covert','mail','fleets','map'];
 const SUB={calc:'work out a battle before you fight it',around:'targets, war planner and combat simulator',self:'defence, shield and sleep-safe orders',dashboard:'advice, plans and quick actions',
   production:'build plan, what you built, capture doctrine',military:'readiness, standing orders, own mix, doctrine',research:'tech tree, research plan, national paths',
   clans:'war room, plans, treasury, chat and settings',roles:'every title and what it does',market:'quick buy and sell, limit orders',economy:'tax, charters and government',
-  diplomacy:'pacts, wars and the world',rankings:'by category, theaters and alliances',reports:'log, filters and world news',battles:'every battle you fought',covert:'scouting and spy missions',mail:'messages and the world forum'};
+  diplomacy:'pacts, wars and the world',rankings:'by category, theaters and alliances',reports:'log, filters and world news',battles:'every battle you fought',covert:'scouting and spy missions',mail:'messages and the world forum',fleets:'your armies and what is coming',map:'the whole world'};
+const NOTAB={calc:1,map:1,research:1};
 const clean=t=>String(t||'').replace(/\s+/g,' ').replace(/^[^A-Za-z0-9]+/,'').replace(/[▸▾›»→]+/g,'').replace(/\s*\?\s*$/,'').trim();
-const shortT=t=>{t=clean(t).split(/ · | — | - |\. |, /)[0];return t.length>26?t.slice(0,25).replace(/\s+\S*$/,'')+'…':t;};
-function titleOf(e){if(e.tagName==='DETAILS'){const s=e.querySelector(':scope>summary');return s?(s.querySelector('b,strong,span')||s).textContent:'';}
-  const h=e.querySelector('h1,h2,h3,h4,.clabel,.mono.small,b,strong');return h?h.textContent:(e.textContent||'').slice(0,40);}
-function isVisible(e){try{return getComputedStyle(e).display!=='none'&&e.offsetParent!==null||e.tagName==='DETAILS';}catch(x){return true;}}
-const SKIP=e=>e.matches('.p250top,.p250tabs,.p250box,.p264all,script,style')||!!(e.dataset&&e.dataset.p265free);
-function boxOf(v,title){const b=document.createElement('section');b.className='p250box p265box';b.dataset.t=title;b.innerHTML='<div class="p250h">'+E(title)+'</div><div class="p265body"></div>';return b;}
-function adopt(v,k){try{let made=0;if(k==='calc'){const kids=[...v.children].filter(e=>!SKIP(e)&&!e.matches('.ptitle'));if(!kids.length)return 0;let b=v.querySelector(':scope>.p265box');if(!b){b=boxOf(v,'');b.querySelector('.p250h').remove();v.insertBefore(b,kids[0]);}kids.forEach(e=>b.querySelector('.p265body').appendChild(e));return 1;}const kids=[...v.children];let last=v.querySelector(':scope>.p265box:last-of-type');
-    kids.forEach(e=>{if(SKIP(e))return;if(e.matches('.ptitle'))return;if(e.dataset.p265free)return;if(e.dataset.p265seen){e.dataset.p265free='1';return;}e.dataset.p265seen='1';if(!isVisible(e)){if(last)last.querySelector('.p265body').appendChild(e);return;}
-      let hgt=1;try{hgt=e.getBoundingClientRect().height;}catch(x){}if(hgt<4&&e.tagName!=='DETAILS'){if(last)last.querySelector('.p265body').appendChild(e);return;}
-      const txt=(e.textContent||'').trim();if(!txt&&!e.querySelector('button,select,input,textarea,table,svg,canvas,img')){e.remove();return;}const small=txt.length<90&&!e.querySelector('button,select,input,textarea,table,svg,canvas');
-      if(small&&last){last.querySelector('.p265body').appendChild(e);return;}
-      let t=e.tagName==='DETAILS'?shortT(titleOf(e)):'';if(!/[a-z]/i.test(t)||t.length<3)t='';if(e.tagName==='DETAILS'){e.open=true;e.classList.add('p265open');}
-      const b=boxOf(v,t);if(!t)b.querySelector('.p250h').remove();v.insertBefore(b,e);b.querySelector('.p265body').appendChild(e);last=b;made++;});
-    return made;}catch(e){return 0;}}
-function tabs(v,k){try{const old=v.querySelector(':scope>.p250tabs.p265tabs');if(old)old.remove();const boxes=[...v.querySelectorAll(':scope>.p265box')];if(boxes.length<2){boxes.forEach(b=>b.style.display='');return;}
-  const st=window._p250tab||(window._p250tab={});const key='full:'+k;const names=boxes.map(b=>b.dataset.t);let i=names.indexOf(st[key]);if(i<0)i=0;
-  const bar=document.createElement('div');bar.className='p250tabs p265tabs';bar.setAttribute('role','tablist');
-  bar.innerHTML=names.map((n,j)=>'<button role="tab" type="button" class="p250tab'+(j===i?' on':'')+'" data-p265t="'+j+'">'+E(n)+'</button>').join('');
-  boxes[0].parentNode.insertBefore(bar,boxes[0]);boxes.forEach((b,j)=>{b.style.display=j===i?'':'none';const h=b.querySelector(':scope>.p250h');if(h)h.style.display='none';});
-  bar.querySelectorAll('[data-p265t]').forEach(btn=>btn.onclick=e=>{e.preventDefault();e.stopPropagation();const j=+btn.dataset.p265t;st[key]=names[j];
-    bar.querySelectorAll('.p250tab').forEach((x,m)=>x.classList.toggle('on',m===j));boxes.forEach((b,m)=>b.style.display=m===j?'':'none');});}catch(e){}}
-function restyle(v,k){try{if(!v)return;const pt=v.querySelector(':scope>.ptitle');let title='',sub='';if(pt){const h=pt.querySelector('h1,h2,h3');title=clean(h?h.textContent:(pt.firstChild&&pt.firstChild.textContent)||pt.textContent);sub=clean((pt.textContent||'').replace(h?h.textContent:'',''));pt.remove();v.dataset.p265t=title;v.dataset.p265s=sub;}
-  if(!title)title=v.dataset.p265t||k;if(!sub)sub=v.dataset.p265s||'';if(!v.querySelector(':scope>.p250top'))v.insertAdjacentHTML('afterbegin','<div class="p250top"><h2>'+E(title)+'</h2><div class="p250sub">'+E(SUB[k]||'')+'</div></div>');
-  adopt(v,k);v.querySelectorAll(':scope>.p265box').forEach(b=>{const bd=b.querySelector('.p265body');if(!bd||!bd.children.length)b.remove();else{let hh=1;try{hh=bd.getBoundingClientRect().height;}catch(x){}b.classList.toggle('p265thin',hh<30&&!(bd.textContent||'').trim());}});const hd=v.querySelector(':scope>.p250top');if(hd&&v.firstElementChild!==hd)v.prepend(hd);v.classList.add('p250v','p265');}catch(e){}}
-function later(k){[0,350].forEach(ms=>setTimeout(()=>{try{if(typeof view==='undefined'||view!==k)return;const v=document.getElementById('view');if(!v||!v.classList.contains('p265'))return;
-  restyle(v,k);}catch(e){}},ms));}
-KEYS.forEach(k=>{const f=VIEWS[k];if(typeof f!=='function')return;VIEWS[k]=function(v){const r=f.apply(this,arguments);try{restyle(v,k);later(k);}catch(e){}return r;};});
-// later layers sometimes add a block on top after the page is drawn: tidy it into the page again
-let _busy=false,_q=0,_n=0,_t0=0;new MutationObserver(()=>{if(_busy||_q)return;try{const v0=document.getElementById('view');if(v0&&!v0.querySelector(':scope>.p250top'))window.__p265n=0;}catch(x){}if((window.__p265n=(window.__p265n||0)+1)>6)return;_q=requestAnimationFrame(()=>{_q=0;try{const v=document.getElementById('view');if(!v||!v.classList.contains('p265')||KEYS.indexOf(view)<0)return;
-  const loose=[...v.children].some(e=>!SKIP(e));const hd=v.querySelector(':scope>.p250top');if(!loose&&hd&&v.firstElementChild===hd)return;_busy=true;try{restyle(v,view);}finally{_busy=false;}}catch(e){_busy=false;}});}).observe(document.getElementById('view')||document.body,{childList:true});
-// leaving a full screen: the next page draws without the full-screen class
-const _go=go;go=function(){window.__p265n=0;try{const v=document.getElementById('view');if(v)v.classList.remove('p265');}catch(e){}return _go.apply(this,arguments);};try{window.go=go;}catch(e){}
-
+const cap=t=>t?t.charAt(0).toUpperCase()+t.slice(1):t;
+const STOP=/^(every|who|tap|the|a|an|your|in|with|to|up|do|ranked|which|solo|these|this|of|for|and|on|by|at|what|how|all|across)$/i;
+const RENAME={'Top alliances':'Alliances','Top nations':'Nations','World ranking':'Hall of fame','Who can still win':'Who can win','Theater rankings':'Theaters','Front rankings':'Fronts','The world':'Blocs','World at war':'Wars','Theater control':'Control','Front control':'Control','Power breakdown':'Your power','Threat assessment':'Threats','Paths to victory':'Victory paths','World status':'World','Your regions under attack':'Under attack','Your regions under':'Under attack','Your next actions':'Next actions','Fleet timeline':'Timeline','Battle reports':'Battles','More on this attack':'This attack','Shield & sleep-safe':'Shield','Advanced intelligence':'Intel','National Charter':'Charter','The letter table':'Letters','Your alliance\'s wars':'Wars','Pacts with':'Pacts','Petition':'Petitions','Operations Board':'Operations','Alliance defence':'Defence','Joint operations':'Joint ops','Your task in':'Your task','Front board':'Front','Build your own mix':'Own mix','Reinforce your home':'Home defence','Standing orders off':'Standing orders','Standing orders on':'Standing orders','Capture doctrine':'Doctrine','What you\'ve built':'Built','Prestige projects':'Prestige','Production ledger':'Ledger','Your position':'Position','Quick buy':'Quick buy','Recent activity':'Activity','Active rules':'Rules','Your scouting reports':'Reports','Intel desk':'Intel desk','You cannot run':'Covert','Launch operation':'Launch','Nearest targets':'Targets','Fleet movements':'Movements','Active operations':'Operations','National status':'Status','National paths':'Paths'};
+const shortT=t=>{t=clean(t);if(/^more on this screen/i.test(t))return 'More';if(/^how does this screen/i.test(t))return 'Help';
+  t=t.split(/ · | — | - |: |\. |, | \(/)[0].replace(/\s+\d.*$/,'');if(t===t.toUpperCase())t=t.toLowerCase();t=cap(t);
+  for(const k in RENAME){if(t===k||t.indexOf(k+' ')===0)return RENAME[k];}
+  const w=t.split(' ');let o=[];for(const x of w){if(o.length>=3||(o.join(' ')+' '+x).trim().length>20)break;if(o.length>=1&&STOP.test(x)&&!/^(your|the)$/i.test(o[0]))break;o.push(x);}
+  while(o.length>1&&STOP.test(o[o.length-1]))o.pop();let r=o.join(' ')||t.slice(0,20);for(const k in RENAME){if(r===k)return RENAME[k];}return cap(r);};
+function titleOf(e){if(e.tagName==='DETAILS'){const s=e.querySelector(':scope>summary');return s?s.textContent:'';}
+  const h=e.querySelector(':scope>h2,:scope>h3,:scope>h4,:scope>.clabel,:scope>div:first-child>h2,:scope>div:first-child>h3,:scope>div:first-child>.clabel,:scope>.row:first-child h3,:scope>.mono.small:first-child');return h?h.textContent:'';}
+const SKIP=e=>!e||e.nodeType!==1||e.matches('.p250top,.p265tabs,script,style,template,.modal-bg,.ptitle')||e.classList.contains('p266sel');
+function visible(e){try{if(e.classList.contains('p194old')||e.classList.contains('p9hide')||e.classList.contains('p202hide')||e.classList.contains('p219hide'))return false;if(e.tagName==='DETAILS')return e.style.display!=='none';const had=e.classList.contains('p265off');if(had)e.classList.remove('p265off');e.classList.remove('p265empty');const cs=getComputedStyle(e);let ok=cs.display!=='none'&&cs.visibility!=='hidden'&&e.getBoundingClientRect().height>=4;if(ok&&!(e.innerText||'').trim()&&!e.querySelector('input,button,select,textarea,canvas,svg,table,img,video'))ok=false;e.classList.toggle('p265empty',!ok&&cs.display!=='none');if(had)e.classList.add('p265off');return ok;}catch(x){return true;}}
+function head(v,k){let top=v.querySelector(':scope>.p250top');const pt=v.querySelector(':scope>.ptitle');let title=v.dataset.p265t||'',sub=SUB[k]||'';
+  if(pt){const h=pt.querySelector('h1,h2,h3');title=(clean(h?h.textContent:pt.textContent).split(/\s+\?|\s*\?\s|\s+·\s+|\s+update\s+\d/i)[0]||'').trim()||title;if(k==='map')title='Map';pt.classList.add('p265hide');v.dataset.p265t=title;}
+  if(!title)title=cap(k);if(!top){top=document.createElement('div');top.className='p250top p265top';v.prepend(top);}
+  const html='<h2>'+E(title)+'</h2><div class="p250sub">'+E(sub)+'</div>';if(top.innerHTML!==html)top.innerHTML=html;if(v.firstElementChild!==top)v.prepend(top);return title;}
+function groups(v,title){const kids=[...v.children].filter(e=>!SKIP(e)&&visible(e));const G=[];let cur=null;
+  kids.forEach(e=>{if(e.matches('.alertbar,.alerts')||e.querySelector(':scope>.alertbar,:scope>.alertrow')){e.classList.remove('p265off');e.dataset.p265g='';e.classList.add('p265pin');return;}
+    let t=shortT(titleOf(e));if(!/[a-z]/i.test(t)||t.length<3)t='';
+    if(t&&cur&&G.some(g=>g.name===t)){const g=G.find(g=>g.name===t);g.els.push(e);return;}
+    if(t){cur={name:t,els:[e]};G.push(cur);}else{if(!cur){cur={name:'Main',els:[]};G.push(cur);}cur.els.push(e);}});
+  return G;}
+function restyle(v,k){try{if(!v||v.id!=='view')return;v.classList.add('p250v','p265');v.dataset.p265k=k;const title=head(v,k);
+  v.querySelectorAll(':scope>details').forEach(d=>{const sm=d.querySelector(':scope>summary');if(sm&&/^\s*\W*\s*more on this screen/i.test(sm.textContent)&&!d.open&&!d.dataset.p265o){d.dataset.p265o='1';d.open=true;}});
+  const G=NOTAB[k]?[]:groups(v,title);let bar=v.querySelector(':scope>.p265tabs');
+  if(G.length<2){if(bar)bar.remove();v.querySelectorAll(':scope>.p265off').forEach(e=>e.classList.remove('p265off'));return;}
+  const st=window._p250tab||(window._p250tab={});const key='full:'+k;const names=G.map(g=>g.name);let i=names.indexOf(st[key]);if(i<0)i=0;
+  if(!bar){bar=document.createElement('div');bar.className='p250tabs p265tabs';bar.setAttribute('role','tablist');}
+  const html=names.map((n,j)=>'<button role="tab" type="button" class="p250tab'+(j===i?' on':'')+'" data-p265t="'+j+'">'+E(n)+'</button>').join('');if(bar.innerHTML!==html)bar.innerHTML=html;
+  const top=v.querySelector(':scope>.p250top');if(top&&top.nextElementSibling!==bar)top.insertAdjacentElement('afterend',bar);
+  G.forEach((g,j)=>g.els.forEach(e=>{e.dataset.p265g=g.name;e.classList.toggle('p265off',j!==i);if(j===i&&g.els.length===1&&e.tagName==='DETAILS'&&!e.open&&!e.dataset.p265o){e.open=true;e.dataset.p265o='1';}}));v._p265names=names;}catch(e){}}
+document.addEventListener('click',e=>{const b=e.target&&e.target.closest&&e.target.closest('.p265tabs [data-p265t]');if(!b)return;e.preventDefault();e.stopPropagation();const v=document.getElementById('view');if(!v)return;
+  const k=v.dataset.p265k;const names=v._p265names||[];const n=names[+b.dataset.p265t];if(!n)return;(window._p250tab||(window._p250tab={}))['full:'+k]=n;restyle(v,k);try{v.scrollIntoView({block:'start'});}catch(x){}},true);
+KEYS.forEach(k=>{const f=VIEWS[k];if(typeof f!=='function')return;VIEWS[k]=function(v){const r=f.apply(this,arguments);try{if(v&&v.id==='view'){restyle(v,k);[0,350].forEach(ms=>setTimeout(()=>{try{if(typeof view!=='undefined'&&view===k)restyle(document.getElementById('view'),k);}catch(e){}},ms));}}catch(e){}return r;};});
+// a block that another layer adds later joins the open tab; nothing is moved, so this cannot loop
+let _q=0;const vv=document.getElementById('view');if(vv)new MutationObserver(()=>{if(_q)return;_q=requestAnimationFrame(()=>{_q=0;try{const v=document.getElementById('view');if(!v||!v.classList.contains('p265'))return;
+  const k=v.dataset.p265k;if(!k||(typeof view!=='undefined'&&view!==k&&KEYS.indexOf(view)<0))return;const loose=[...v.children].some(e=>!SKIP(e)&&!e.dataset.p265g&&!e.classList.contains('p265pin')&&visible(e));if(loose||!v.querySelector(':scope>.p250top'))restyle(v,k);}catch(e){}});}).observe(vv,{childList:true});
+// leaving a full screen: the next page draws without the full-screen look
+const _go=go;go=function(){try{const v=document.getElementById('view');if(v){v.classList.remove('p265');delete v.dataset.p265k;}}catch(e){}return _go.apply(this,arguments);};try{window.go=go;}catch(e){}
 const st=document.createElement('style');st.textContent=`
-#view.p265 .p265body{padding:12px 16px;overflow-x:auto}
-#view.p265 .p265box.p265thin{border:0;background:transparent;margin:0}
-#view.p265 .p265box.p265thin .p265body{padding:0}
-#view.p265 .p265body>.card,#view.p265 .p265body>details.card,#view.p265 .p265body>.threatpanel{border:0!important;background:transparent!important;box-shadow:none!important;margin:0 0 6px!important;padding:0!important}
-#view.p265 .p265body>details.p265open>summary{display:none}
-#view.p265 .p265body .card .card{border-color:var(--border)}
-#view.p265 .p265tabs+.p265box{border-top-left-radius:0}
+#view.p265 .p265hide{display:none!important}
+#view.p265>.p265off,#view.p265>.p265empty{display:none!important}
+#view.p265:not([data-p265k=map])>*:not(.p250top):not(.p250tabs):not(.p266sel):not(script):not(style),#view.p265[data-p265k=map]>*:not(.p250top):not(.wmap):not(.maptools):not(.mapsearch):not(script):not(style):not(.ptitle){background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:12px 16px;margin:0 0 10px;box-shadow:none;overflow-x:auto;max-width:100%;box-sizing:border-box}
+#view.p265>details>summary{font-weight:700;cursor:pointer}
+#view.p265>.alerts,#view.p265>.alertbar{padding:0;border:0;background:transparent}
+#view.p265>.p250tabs{margin-bottom:10px}
+#view.p265[data-p265k=map]>.wmap{border:1px solid var(--border);border-radius:12px;overflow:hidden}
+#view.p265[data-p265k=map] .maptools button,#view.p265[data-p265k=map] .maptools .btn{border-radius:999px}
+#view.p265[data-p265k=map]>.maptools,#view.p265[data-p265k=map]>.mapsearch{margin:0 0 10px}
 `;document.head.appendChild(st);
 }catch(e){try{console.error('p265',e);}catch(_){}}})();
 </script>
@@ -24932,6 +24942,170 @@ const st=document.createElement('style');st.textContent=`.p268svg .p275lab{displ
 document.addEventListener('click',e=>{const g=e.target&&e.target.closest&&e.target.closest('.p268r');if(!g)return;setTimeout(()=>{try{if(g.classList.contains('sel'))g.parentNode.appendChild(g);}catch(x){}},0);},true);
 scan();window.__p275={fix};
 }catch(e){try{console.error('p275',e);}catch(_){}}})();
+</script>
+<script>/*p276*/
+// 20.5 "Logic first" (solo, browser).
+// 1. Defence plan: an attack on one of your lands shows numbered steps with what each step adds, a running total and
+//    whether the land holds: bring armies back, send from home, S.O.S. to your alliance, hold the line, train, or pull
+//    your troops out when it cannot be held. Replaces the bare "Send half / Send all / Train" rows.
+// 2. Allies under attack: Alliance › Joint attacks lists allies who are hit, with Help (send troops) when you can be there in time.
+// 3. Last battles on Overview open their battle report (and the replay where there is one).
+// 4. Targets say how much attack you miss; Defend a land says what each share adds.
+// 5. The top bar marks a full storage with a small FULL badge instead of text over the numbers.
+(function(){try{
+if(typeof window==='undefined'||window.__MP__||typeof VIEWS==='undefined')return;
+const ME=()=>{try{return G.countries[G.you];}catch(e){return null;}};
+const E=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const F=n=>{try{return fmt(Math.round(n||0));}catch(e){return String(Math.round(n||0));}};
+const T=n=>n+' turn'+(n===1?'':'s');
+const pw=(c,com)=>{try{return power(c,'def',com)||0;}catch(e){return 0;}};
+const size=com=>{try{return fleetSize(com);}catch(e){let s=0;for(const k in com)s+=com[k]||0;return s;}};
+function far(c,r){try{return typeof p17Far!=='function'||p17Far(c,r);}catch(e){return true;}}
+
+/* ---------- the plan ---------- */
+function plan(c,rid){const r=_rgId(rid);if(!c||!r||r.owner!==c.id)return null;let inc=[];try{inc=(incomingTo(c.id)||[]).filter(x=>x&&x.region&&x.region.id===r.id);}catch(e){}
+  if(!inc.length)return null;const A=inc.reduce((s,x)=>s+(x.atkP||0),0);const eta=Math.max(0,Math.min.apply(null,inc.map(x=>x.eta||0)));let D=0;try{D=regionDef(r);}catch(e){}
+  const from=[...new Set(inc.map(x=>x.from&&x.from.name).filter(Boolean))];const steps=[];let tot=D;const home=(function(){try{return homeFor(c,r)||regionsOf(c)[0];}catch(e){return regionsOf(c)[0];}})();
+  const add=(s)=>{tot+=s.p||0;s.after=tot;steps.push(s);};
+  // 1. armies on the move that can be back and sent in time (only for a land your home army does not cover)
+  const isFar=far(c,r);
+  if(isFar){const back=[];(c.fleets||[]).forEach(f=>{if(!f||!f.units)return;if(f.target===r.id&&(f.intent==='garrison'||f.intent==='reinforce'))return;let t=null;
+      if(f.status==='staged')t=0;else if(f.status==='outbound'&&f.intent!=='garrison'&&f.intent!=='reinforce'&&(f.eta-G.tick)>1)t=Math.max(1,(f.travel||2)-(f.eta-G.tick));else if(f.status==='returning')t=Math.max(0,(f.rEta||G.tick)-G.tick);
+      if(t==null)return;let go=2;try{go=reinforceTravel(c,home,r,f.units);}catch(e){}if(t+go<=eta)back.push({f,t:t+go});});
+    if(back.length){const com={};back.forEach(b=>{for(const k in b.f.units)com[k]=(com[k]||0)+b.f.units[k];});const recall=back.filter(b=>b.f.status!=='returning');
+      add({k:'recall',t:'Bring your armies back',d:F(size(com))+' troops on the move can be home and sent here in time ('+T(Math.max.apply(null,back.map(b=>b.t)))+').'+(recall.length?'':' They are already on their way home: send them when they arrive.'),p:pw(c,com),btn:recall.length?'<button class="btn sm p250btn p250main" data-p276="recall" data-v="'+r.id+'">Recall '+recall.length+'</button>':''});}}
+  // 2. send from home
+  const hcom={};for(const k in (c.units||{})){const n=Math.floor(c.units[k]||0);if(n>0)hcom[k]=n;}const hp=pw(c,hcom);
+  if(isFar&&size(hcom)>0){let go=2;try{go=reinforceTravel(c,home,r,hcom);}catch(e){}if(go<=eta)add({k:'send',t:'Send from home',d:F(size(hcom))+' troops at home, there in '+T(go)+'.',p:hp,btn:'<button class="btn sm p250btn" data-p250="st50" data-id="'+r.id+'">Half</button><button class="btn sm p250btn'+(steps.length?'':' p250main')+'" data-p250="defall" data-id="'+r.id+'">All</button>'});}
+  else if(!isFar&&hp>0)steps.push({k:'home',t:'Your home army defends this land',d:'It is in your home sector, so your '+F(size(hcom))+' troops at home already count.',p:0,after:tot,btn:''});
+  // 3. S.O.S.
+  if(c.clan!=null){const asked=c._p276sos&&c._p276sos[r.id]&&G.tick-c._p276sos[r.id]<4;add({k:'sos',t:'Ask your alliance for help',d:asked?'Sent. Allies who can be there in time send troops.':'An S.O.S. in the alliance chat. Allies who can be there in time send troops.',p:0,btn:asked?'':'<button class="btn sm p250btn" data-p276="sos" data-v="'+r.id+'">S.O.S.</button>'});}
+  else steps.push({k:'join',t:'No alliance to call',d:'In an alliance, allies send help when you are attacked.',p:0,after:tot,btn:'<button class="btn sm p250btn" data-p250="go" data-id="p250al">Alliance</button>'});
+  // 4. hold the line
+  try{const bl=bunkerLevel(r);if(bl>0&&window.cmdHoldLine){const on=(r._p270hold||0)>=G.tick,cd=(r._p270cd||0)>G.tick;if(!on&&!cd)add({k:'hold',t:'Hold the line',d:'Your bunkers here count double for 3 turns, for 100 influence.',p:bl*BUNKER_DEF,btn:'<button class="btn sm p250btn" data-p270="hold" data-v="'+r.id+'">Hold</button>'});}}catch(e){}
+  // 5. train
+  if(eta>=2)add({k:'train',t:'Train troops',d:'Train at home this turn, then send them'+(isFar?'':' (they defend at once)')+'.',p:0,btn:'<button class="btn sm p250btn" data-p250="go" data-id="p250b" data-p276t="Troops">Train</button>'});
+  // where it ends
+  const holds=steps.some(s=>s.after>=A)||D>=A;let firstHold=steps.findIndex(s=>s.p>0&&s.after>=A);
+  let pull=null;const gar=(c.fleets||[]).filter(f=>f&&f.target===r.id&&f.status==='garrison');if(!holds&&gar.length)pull={n:gar.reduce((s,f)=>s+size(f.units),0)};
+  return {r,A,D,eta,from,steps,holds,firstHold,pull,short:Math.max(0,A-D)};}
+window.__p276={plan};
+
+function planHTML(p,open){const r=p.r;const head='<div class="p276h"><b class="bad">Attack on '+E(r.name)+'</b>'+(r.coord?' <span class="p276c">'+E(r.coord)+'</span>':'')+' in '+T(p.eta)+(p.from.length?' <span class="p276f">from '+E(p.from.slice(0,2).join(', '))+'</span>':'')+'</div>'+
+  '<div class="p276n">their attack <b>'+F(p.A)+'</b> · your defence <b>'+F(p.D)+'</b> · '+(p.D>=p.A?'<b class="good">it holds</b>':'<b class="bad">short '+F(p.short)+'</b>')+'</div>';
+  if(!open)return '<div class="p276 p276x" data-p276open="'+r.id+'">'+head+'<button class="btn sm p250btn p276more" data-p276="open" data-v="'+r.id+'">Plan</button></div>';
+  if(p.D>=p.A)return '<div class="p276">'+head+'<div class="p276ok">Nothing to do: your defence is stronger. Keep your troops there until the attack has landed.</div></div>';
+  const li=p.steps.map((s,i)=>'<li class="p276s'+(s.after>=p.A&&s.p>0?' ok':'')+'"><div class="p276m"><b>'+E(s.t)+'</b>'+(s.p?' <span class="good">+'+F(s.p)+'</span>':'')+'<div class="p250s">'+s.d+(s.p?' After this: <b>'+F(s.after)+'</b>'+(s.after>=p.A?' <span class="good">holds</span>':''):'')+'</div></div><div class="p250b">'+(s.btn||'')+'</div></li>').join('');
+  const end=p.holds?'<div class="p276ok">✓ Do step '+(p.firstHold+1)+(p.firstHold>0?' (and the ones before)':'')+' and this land holds.</div>':
+    '<div class="p276bad">With every step it is still short. You will likely lose this land'+(p.pull?'. Pull your '+F(p.pull.n)+' troops out so you keep them.':'.')+(p.pull?' <button class="btn sm p250btn" data-p276="pull" data-v="'+r.id+'">Pull out</button>':'')+'</div>';
+  return '<div class="p276">'+head+'<ol class="p276l">'+li+'</ol>'+end+'</div>';}
+
+/* replace the bare incoming rows with the plan */
+const OPEN={};
+function upgrade(v){try{const c=ME();if(!c)return;const rows=[...v.querySelectorAll('.p250row')].filter(x=>x.querySelector('[data-p250="defall"]'));if(!rows.length)return;
+  const P=rows.map(x=>plan(c,+x.querySelector('[data-p250="defall"]').dataset.id)).filter(Boolean).sort((a,b)=>a.eta-b.eta);
+  const first=P.length?P[0].r.id:null;rows.forEach(x=>{const rid=+x.querySelector('[data-p250="defall"]').dataset.id;const p=P.find(q=>q.r.id===rid);if(!p)return;
+    const open=OPEN[rid]!=null?OPEN[rid]:rid===first;const d=document.createElement('div');d.className='p276wrap';d.innerHTML=planHTML(p,open);x.replaceWith(d);});}catch(e){}}
+['p250o','p250a'].forEach(k=>{const f=VIEWS[k];if(typeof f!=='function')return;VIEWS[k]=function(v){const r=f.apply(this,arguments);try{upgrade(v);}catch(e){}return r;};});
+
+/* Lands: the station buttons say what they add */
+const _l=VIEWS.p250l;if(_l)VIEWS.p250l=function(v){const r=_l.apply(this,arguments);try{const c=ME();if(!c)return r;const half={},all={},q={};for(const k in (c.units||{})){const n=c.units[k]||0;if(n>0){q[k]=Math.floor(n*0.25);half[k]=Math.floor(n*0.5);all[k]=Math.floor(n);}}
+    const a=pw(c,q),b=pw(c,half),d=pw(c,all);v.querySelectorAll('.p250row').forEach(x=>{const bt=x.querySelector('[data-p250="st25"]');const s=x.querySelector('.p250s');if(!bt||!s||s.querySelector('.p276add'))return;
+      s.insertAdjacentHTML('beforeend','<span class="p276add"> · from home: 25% = +'+F(a)+', 50% = +'+F(b)+', all = +'+F(d)+'</span>');});
+    upgrade(v);}catch(e){}return r;};
+
+/* Army › Targets: how much attack you miss */
+const _a=VIEWS.p250a;VIEWS.p250a=function(v){const r=_a.apply(this,arguments);try{const c=ME();if(!c)return r;let atk=0;try{atk=power(c,'atk');}catch(e){}
+  v.querySelectorAll('.p250row').forEach(x=>{const b=x.querySelector('button');if(!b||!/train first/i.test(b.textContent))return;const s=x.querySelector('.p250s');if(!s||s.querySelector('.p276add'))return;const m=(s.textContent||'').match(/defence\s+([\d.,]+)\s*([KMB]?)/i);if(!m)return;
+    let dv=parseFloat(m[1].replace(/,/g,''));dv*=({K:1e3,M:1e6,B:1e9}[(m[2]||'').toUpperCase()]||1);const need=Math.max(0,dv*1.3-atk);s.insertAdjacentHTML('beforeend','<span class="p276add"> · your attack '+F(atk)+' · you need '+F(need)+' more</span>');});}catch(e){}return r;};
+
+/* Alliance › Joint attacks: allies under attack, with Help */
+function mates(c){const out=[];try{const cl=c.clan;if(cl==null)return out;G.countries.forEach(o=>{if(!o||o.retired||o.id===c.id||o.clan!==cl)return;let inc=[];try{inc=incomingTo(o.id)||[];}catch(e){}const by={};
+    inc.forEach(x=>{if(!x||!x.region)return;const b=by[x.region.id]||(by[x.region.id]={o,r:x.region,A:0,eta:99});b.A+=x.atkP||0;b.eta=Math.min(b.eta,x.eta||99);});
+    Object.values(by).forEach(b=>{try{b.D=regionDef(b.r);}catch(e){b.D=0;}let go=99;try{if(canDefend(c,b.r))go=reinforceTravel(c,homeFor(c,b.r)||regionsOf(c)[0],b.r,c.units);}catch(e){}b.go=go;out.push(b);});});}catch(e){}
+  return out.sort((a,b)=>a.eta-b.eta).slice(0,8);}
+const _al=VIEWS.p250al;if(_al)VIEWS.p250al=function(v){const r=_al.apply(this,arguments);try{const c=ME();if(!c||c.clan==null)return r;const M=mates(c);if(!M.length)return r;
+  const half={};for(const k in (c.units||{})){const n=Math.floor((c.units[k]||0)*0.5);if(n>0)half[k]=n;}const hp=pw(c,half);
+  const rows=M.map(b=>{const short=Math.max(0,b.A-b.D);const can=b.go<=b.eta&&size(half)>0;return '<div class="p250row"><div class="p250m"><div class="p250t">'+E(b.o.name)+': '+E(b.r.name)+' <span class="'+(short>0?'bad':'good')+'">'+(short>0?'short '+F(short):'holds')+'</span></div><div class="p250s">attack '+F(b.A)+' vs defence '+F(b.D)+' · lands in '+T(b.eta)+(can?' · half your home army (+'+F(hp)+') is there in '+T(b.go):b.go>=99?' · out of your reach':' · you cannot be there in time')+'</div></div><div class="p250b">'+(can?'<button class="btn sm p250btn'+(short>0?' p250main':'')+'" data-p276="help" data-v="'+b.r.id+'">Help with half</button>':'')+'</div></div>';}).join('');
+  const html='<section class="p250box p276al"><div class="p250h">Allies under attack <span>'+M.length+'</span></div>'+rows+'</section>';
+  const anchor=v.querySelector(':scope>.p250box:not(.pin)');if(anchor&&!anchor.querySelector('.p276al'))anchor.insertAdjacentHTML('afterbegin',html.replace('<section class="p250box p276al">','<div class="p276al">').replace(/<\/section>$/,'</div>'));}catch(e){}return r;};
+
+/* Overview › Last battles: open the report */
+function reportFor(row){try{const c=ME();const t=row.querySelector('.p250t');const s=row.querySelector('.p250s');if(!t||!s)return null;const tick=+((s.textContent||'').match(/turn\s+(\d+)/i)||[])[1];const name=(t.textContent||'').replace(/^(Won|Lost)\s+(attack on|defence of)\s+/i,'').trim();
+  return (G.battles||[]).find(b=>b&&b.tick===tick&&b.region===name&&(b.atkId===c.id||b.defId===c.id))||null;}catch(e){return null;}}
+const _o=VIEWS.p250o;VIEWS.p250o=function(v){const r=_o.apply(this,arguments);try{v.querySelectorAll('.p250row').forEach(x=>{const t=x.querySelector('.p250t');if(!t||!/^(Won|Lost)\s+(attack on|defence of)/i.test((t.textContent||'').trim()))return;const b=reportFor(x);if(!b)return;
+    const i=(G.battles||[]).indexOf(b);const bb=x.querySelector('.p250b');if(!bb||bb.querySelector('[data-p276]'))return;let rp='';try{if(b.detail&&!b.protected&&typeof p218Replay==='function')rp='<button class="btn sm p250btn" data-p218rp="'+i+'">Watch</button>';}catch(e){}
+    bb.innerHTML='<button class="btn sm p250btn" data-p276="report" data-v="'+i+'">Report</button>'+rp;x.classList.add('p276click');x.dataset.p276b=i;});}catch(e){}return r;};
+function showReport(i){const b=(G.battles||[])[i];if(!b)return;let body='';try{body=battleReportHTML(b);}catch(e){body='<p>No report for this battle.</p>';}
+  const m=document.createElement('div');m.className='modal-bg';m.style.zIndex=190;m.innerHTML='<div class="modal" style="max-width:640px"><div class="row between" style="align-items:center"><h2 style="margin:0">Battle report</h2><button class="btn ghost sm" data-x>✕</button></div><div class="p276rep">'+body+'</div></div>';
+  m.addEventListener('click',e=>{if(e.target===m||e.target.closest('[data-x]'))m.remove();});document.body.appendChild(m);}
+
+/* clicks */
+document.addEventListener('click',e=>{const row=e.target&&e.target.closest&&e.target.closest('.p276click');if(row&&!e.target.closest('button')){e.preventDefault();showReport(+row.dataset.p276b);return;}
+  const b=e.target&&e.target.closest&&e.target.closest('[data-p276]');if(!b)return;e.preventDefault();e.stopPropagation();const c=ME();if(!c)return;const a=b.dataset.p276,rid=+b.dataset.v;let r=null,msg='';
+  try{if(a==='open'){OPEN[rid]=true;go(view);return;}
+    if(a==='report'){showReport(rid);return;}
+    if(a==='recall'){const p=plan(c,rid);let n=0;(c.fleets||[]).slice().forEach(f=>{if(!f||(f.status!=='outbound'&&f.status!=='staged')||f.intent==='garrison'||f.intent==='reinforce')return;const x=recallFleet(c,f.id);if(x&&x.ok)n++;});r=n?{ok:true}:{ok:false,error:'Nothing could be recalled'};msg=n+' army'+(n===1?'':'s')+' coming home. Send them on when they arrive.';}
+    else if(a==='sos'){r=cmdCallHelp(c,rid);if(r&&r.ok){c._p276sos=c._p276sos||{};c._p276sos[rid]=G.tick;msg='S.O.S. sent to your alliance.';}}
+    else if(a==='pull'){let n=0;(c.fleets||[]).slice().forEach(f=>{if(f&&f.target===rid&&f.status==='garrison'){const x=recallFleet(c,f.id);if(x&&x.ok)n++;}});r=n?{ok:true}:{ok:false,error:'No troops to pull out'};msg='Your troops are coming home.';}
+    else if(a==='help'){const half={};for(const k in (c.units||{})){const n=Math.floor((c.units[k]||0)*0.5);if(n>0)half[k]=n;}r=cmdStation(c,rid,half);msg='Troops on their way to help.';}}catch(x){r={ok:false,error:'Not possible right now.'};}
+  if(r&&r.ok===false)toast(r.error||'Not possible right now.','bad');else if(msg)toast(msg,'good');try{save();drawTop();}catch(x){}go(view);},true);
+// Train goes straight to the Troops tab of Build
+document.addEventListener('click',e=>{const b=e.target&&e.target.closest&&e.target.closest('[data-p276t]');if(!b)return;try{const st=window._p250tab||(window._p250tab={});st.p250b='Troops';}catch(x){}},true);
+
+const st=document.createElement('style');st.textContent=`
+.p276wrap{border-bottom:1px solid var(--border)}
+.p276{padding:12px 16px;border-left:3px solid var(--danger,#ef4444);background:color-mix(in srgb,var(--danger,#ef4444) 7%,transparent)}
+.p276.p276x{display:flex;align-items:center;gap:10px;flex-wrap:wrap}.p276.p276x .p276n{flex:1 1 100%;margin:0}
+.p276h{font-size:15px}.p276c{font:600 12px var(--mono,monospace);color:var(--muted)}.p276f{color:var(--muted);font-size:13px}
+.p276n{margin:4px 0 8px;color:var(--muted);font-size:13.5px}
+.p276l{margin:0;padding:0;list-style:none;counter-reset:p276}
+.p276s{counter-increment:p276;display:grid;grid-template-columns:28px 1fr auto;gap:4px 10px;align-items:center;padding:8px 0;border-top:1px solid var(--border)}
+.p276s:before{content:counter(p276);width:24px;height:24px;border-radius:50%;display:grid;place-items:center;background:var(--panel2,#1e293b);border:1px solid var(--border);font-weight:800;font-size:12px}
+.p276s.ok:before{background:var(--good,#22c55e);color:#04120d;border-color:transparent}
+.p276s .p250b{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+.p276ok{margin-top:8px;color:var(--good,#22c55e);font-weight:700}.p276bad{margin-top:8px;color:var(--danger,#ef4444);font-weight:700}
+.p276add{color:var(--muted)}
+.p276click{cursor:pointer}.p276click:hover{background:color-mix(in srgb,var(--accent) 6%,transparent)}
+.p276al{border-bottom:1px solid var(--border);margin-bottom:4px}.p276al .p250row{border-left:3px solid var(--danger,#ef4444)}
+#strip .p219full{position:relative}#strip .p219full::after{content:'FULL'!important;position:absolute;top:1px;left:2px;font:700 9px/1 var(--mono,monospace)!important;letter-spacing:.08em;padding:2px 4px;border-radius:4px;background:color-mix(in srgb,var(--warn,#f6b62b) 22%,transparent);color:var(--warn,#f6b62b)}
+@media(max-width:600px){.p276s{grid-template-columns:24px 1fr}.p276s .p250b{grid-column:2;justify-content:flex-start}}
+`;document.head.appendChild(st);
+}catch(e){try{console.error('p276',e);}catch(_){}}})();
+</script>
+<script>/*p277*/
+// 20.5 fixes from the technical review (solo, browser).
+// 1. Charter: repealing an edict is always possible and starts no wait. Only adding one starts the 6-turn settling
+//    time. Before, swapping one edict for another meant 6 turns with an empty slot.
+// 2. A Stock button in the top bar shows every resource (fuel, electronics, research, influence too), on computer and phone.
+// 3. A save that holds a broken number (not a number, or endless) no longer spreads it: such a value is set to 0.
+(function(){try{
+if(typeof window==='undefined'||window.__MP__)return;
+if(typeof cmdSetEdict==='function'){const _se=cmdSetEdict;cmdSetEdict=function(c,key){try{if(c&&Array.isArray(c.edicts)&&c.edicts.includes(key)){c.edicts=c.edicts.filter(k=>k!==key);return ok({edicts:c.edicts.slice()});}}catch(e){}return _se.apply(this,arguments);};try{window.cmdSetEdict=cmdSetEdict;}catch(e){}}
+function clean(c){try{if(!c)return 0;let n=0;['res','units'].forEach(k=>{const o=c[k];if(!o||typeof o!=='object')return;for(const q in o){const v=o[q];if(typeof v==='number'&&!isFinite(v)){o[q]=0;n++;}}});return n;}catch(e){return 0;}}
+function sweep(all){try{if(typeof G==='undefined'||!G||!G.countries)return 0;let n=0;if(all)G.countries.forEach(c=>{n+=clean(c);});else n+=clean(G.countries[G.you]);return n;}catch(e){return 0;}}
+window.__p277={clean,sweep};
+try{sweep(true);}catch(e){}
+try{const _rt=runTick;runTick=function(){const r=_rt.apply(this,arguments);try{sweep(G.tick%20===0);}catch(e){}return r;};window.runTick=runTick;}catch(e){}
+/* every resource one tap away: a Stock button in the top bar (computer and phone) */
+const RL=k=>{try{return (RMETA[k]&&RMETA[k].l)||k;}catch(e){return k;}};
+function stockHTML(){const c=G.countries[G.you];if(!c)return '';let pj=null;try{pj=c._pj||projection(c);}catch(e){}
+  return (typeof RES!=='undefined'?RES:Object.keys(c.res)).map(k=>{const v=c.res[k]||0;const n=pj&&pj.net?pj.net[k]||0:0;let cap=0;try{cap=capOf(c,k);}catch(e){}
+    return '<div class="p277r"><span>'+RL(k)+'</span><b>'+fmt(v,k==='money')+'</b><i class="'+(n<0?'bad':'good')+'">'+(n>=0?'+':'')+fmt(n,k==='money')+'/t</i>'+(cap>0&&v>=cap*0.95?'<em>full</em>':'')+'</div>';}).join('');}
+function addBtn(){try{const s=document.getElementById('strip');if(!s||s.querySelector('.p277b'))return;const b=document.createElement('button');b.type='button';b.className='p277b';b.setAttribute('aria-label','All resources');b.textContent='Stock ▾';s.appendChild(b);}catch(e){}}
+if(typeof drawTop==='function'){const _dt=drawTop;drawTop=function(){const r=_dt.apply(this,arguments);try{addBtn();const p=document.querySelector('.p277pop');if(p)p.innerHTML=stockHTML();}catch(e){}return r;};try{window.drawTop=drawTop;}catch(e){}}
+addBtn();
+document.addEventListener('click',e=>{const b=e.target&&e.target.closest&&e.target.closest('.p277b');const pop=document.querySelector('.p277pop');
+  if(!b){if(pop&&!e.target.closest('.p277pop'))pop.remove();return;}e.preventDefault();e.stopPropagation();if(pop){pop.remove();return;}
+  const d=document.createElement('div');d.className='p277pop';d.innerHTML=stockHTML();document.body.appendChild(d);const r=b.getBoundingClientRect();d.style.top=Math.round(r.bottom+6)+'px';d.style.right=Math.max(8,Math.round(window.innerWidth-r.right))+'px';},true);
+const st=document.createElement('style');st.textContent=`
+#strip .p277b{align-self:center;flex:0 0 auto;margin-left:6px;padding:6px 10px;border:1px solid var(--border);border-radius:999px;background:transparent;color:var(--muted);font:700 11px/1 var(--mono,monospace);letter-spacing:.06em;cursor:pointer;white-space:nowrap}
+#strip .p277b:hover{color:var(--text);border-color:var(--accent)}
+.p277pop{position:fixed;z-index:95;min-width:250px;max-width:calc(100vw - 16px);background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:8px 12px;box-shadow:0 12px 40px rgba(0,0,0,.5)}
+.p277r{display:grid;grid-template-columns:1fr auto auto auto;gap:10px;align-items:baseline;padding:6px 0;border-top:1px solid var(--border);font-size:13.5px}.p277r:first-child{border-top:0}
+.p277r b{font-family:var(--mono,monospace)}.p277r i{font-style:normal;font-size:12px;font-family:var(--mono,monospace)}.p277r em{font-style:normal;font-size:10px;color:var(--warn,#f6b62b);font-weight:700;text-transform:uppercase}
+`;document.head.appendChild(st);
+}catch(e){try{console.error('p277',e);}catch(_){}}})();
 </script>
 </body>
 </html>
