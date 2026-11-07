@@ -16,7 +16,7 @@
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="https://playterrastate.nl/img/v4/terrastate-share.jpg">
 <meta name="author" content="Wim Kamphorst">
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"VideoGame","@id":"https://playterrastate.nl/play.html#game","name":"Terrastate","url":"https://playterrastate.nl/play.html","description":"Free Planetarion-style grand strategy in your browser. Lead one nation against 500 AI nations on a world map, form alliances and fight for the Nexus. No account, no download, no pay-to-win.","image":"https://playterrastate.nl/img/v4/terrastate-share.jpg","genre":["Strategy","Grand strategy","Turn-based strategy","4X","Browser game"],"gamePlatform":["Web browser","Windows","macOS","Linux","Android","iOS"],"applicationCategory":"Game","operatingSystem":"Any (web browser)","playMode":"SinglePlayer","inLanguage":"en","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"EUR","availability":"https://schema.org/InStock"},"author":{"@type":"Person","@id":"https://playterrastate.nl/#wim","name":"Wim Kamphorst","url":"https://wimkamphorst.nl"},"publisher":{"@type":"Person","@id":"https://playterrastate.nl/#wim","name":"Wim Kamphorst","url":"https://wimkamphorst.nl"},"softwareVersion":"19.4","sameAs":["https://wimkamphorstcoaching.itch.io/terrastate"]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"VideoGame","@id":"https://playterrastate.nl/play.html#game","name":"Terrastate","url":"https://playterrastate.nl/play.html","description":"Free Planetarion-style grand strategy in your browser. Lead one nation against 500 AI nations on a world map, form alliances and fight for the Nexus. No account, no download, no pay-to-win.","image":"https://playterrastate.nl/img/v4/terrastate-share.jpg","genre":["Strategy","Grand strategy","Turn-based strategy","4X","Browser game"],"gamePlatform":["Web browser","Windows","macOS","Linux","Android","iOS"],"applicationCategory":"Game","operatingSystem":"Any (web browser)","playMode":"SinglePlayer","inLanguage":"en","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"EUR","availability":"https://schema.org/InStock"},"author":{"@type":"Person","@id":"https://playterrastate.nl/#wim","name":"Wim Kamphorst","url":"https://wimkamphorst.nl"},"publisher":{"@type":"Person","@id":"https://playterrastate.nl/#wim","name":"Wim Kamphorst","url":"https://wimkamphorst.nl"},"softwareVersion":"20.4","sameAs":["https://wimkamphorstcoaching.itch.io/terrastate"]}</script>
 <link rel="manifest" href="terrastate.webmanifest"><meta name="theme-color" content="#0d1420"><link rel="icon" href="icons/terrastate-64.png"><link rel="apple-touch-icon" href="icons/terrastate-180.png">
 <script>window.__MP_URL__=''; /* '' = live multiplayer not open yet */ if('serviceWorker' in navigator)addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));</script>
 <script data-goatcounter="https://playterrastatenl.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
@@ -23376,7 +23376,7 @@ VIEWS.p250al=v=>{const c=ME();if(!c)return;const cl=clanOf(c);
     return row(RN(r)+' · led by '+(me?'you':E(ld?ld.name:'?')),F((op.fleets||[]).reduce((s,f)=>s+N(f.units),0))+' '+W.troops+' · lands in '+T(left)+(inn?' · you are in':''),btn);}).join(''),ops.length||'');
   let ms=[];try{ms=clanMembers(cl);}catch(e){}
   html+=box('Members',ms.map(m=>{const ia=inc(m);const role=(cl.roles||{})[m.id]||'member';
-    const sel=lead&&m.id!==c.id?'<select class="p250sel" data-role="'+m.id+'">'+['member','officer'].map(x=>'<option'+(x===role?' selected':'')+'>'+x+'</option>').join('')+'</select>'+B('role',m.id,'Set','alt'):'';
+    const sel=lead&&m.id!==c.id?'<select class="p250sel" data-role="'+m.id+'">'+Object.keys(typeof ROLE!=='undefined'?ROLE:{member:1,officer:1}).filter(x=>x!=='leader').map(x=>'<option value="'+x+'"'+(x===role?' selected':'')+'>'+((typeof ROLE!=='undefined'&&ROLE[x])||x)+'</option>').join('')+'</select>'+B('role',m.id,'Set','alt'):'';
     return row(E(m.name)+(m.id===c.id?' (you)':''),E(role)+' · '+regionsOf(m).length+' lands'+(ia.length?' · <b class="bad">under attack</b>':''),(ia.length&&m.id!==c.id?B('def50',ia[0].r.id,'Help defend'):'')+sel);}).join(''),ms.length);
   const fo=(cl.forum||[]).slice(0,15);
   html+=box('Chat',row('Write to your alliance','<textarea class="p250ta" maxlength="240" placeholder="Message"></textarea>',B('post','x','Send'))+fo.map(p=>{const a=G.countries[p.by];return row(E(a?a.name:'?'),E(p.text),'');}).join(''));
@@ -23820,6 +23820,715 @@ const _o=VIEWS.p250o;VIEWS.p250o=v=>{const r=_o(v);try{const c=ME();const h=c?bo
 document.addEventListener('click',e=>{const b=e.target&&e.target.closest&&e.target.closest('[data-p263]');if(!b)return;e.preventDefault();e.stopPropagation();const a=b.dataset.p263;const st=window._p250tab||(window._p250tab={});
   try{if(a==='troops'){st.p250b='Troops';go('p250b');}else if(a==='build'||a==='silo'){st.p250b='Buildings';go('p250b');}else if(a==='sell'){st.p250m='Prices';go('p250m');}}catch(x){}},true);
 }catch(e){try{console.error('p263',e);}catch(_){}}})();
+</script>
+<script>/*p264*/
+// 19.5 "Nothing out of reach" (solo, browser): since 19.0 the full screens could no longer be opened, so the options that
+// only live there (battle calculator, war planner, shield, readiness, standing orders, alliance roles and settings,
+// limit orders, charters, declare war, the forum and more) were out of reach. Every page now has an "All options" line
+// that opens its full screen, More lists the calculator and every full screen, and the alliance roles are all back.
+(function(){try{
+if(window.__MP__||typeof VIEWS==='undefined'||typeof go!=='function')return;
+const E=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const NL=(k,d)=>{try{const n=navLabel(k);return n&&n!==k?n:d;}catch(e){return d;}};
+const L=(k,d)=>[k,NL(k,d)];
+// the full screens, with what each holds
+const FULL=[['calc','Battle calculator','work out a battle before you fight it'],['around',NL('around','War'),'targets, war planner, combat simulator'],['self',NL('self','Homeland'),'defence, shield and sleep-safe orders'],
+  ['dashboard',NL('dashboard','Home'),'advice, plans, quick sells'],['production',NL('production','Build'),'build plan, capture doctrine, demolish'],
+  ['military',NL('military','Armed forces'),'readiness, standing orders, own mix, doctrine'],['research',NL('research','R&D'),'tech tree, research plan, national paths'],
+  ['clans',NL('clans','Alliance'),'war room, plans, treasury, settings, merge'],['roles','Alliance roles','every title and what it does'],['market',NL('market','Market'),'limit orders, quick sell, price history'],
+  ['economy',NL('economy','Economy'),'tax, government, national charters'],['diplomacy',NL('diplomacy','Diplomacy'),'pacts, declare war, the world'],['rankings',NL('rankings','Rankings'),'by category, theaters, alliances'],
+  ['reports',NL('reports','Intel reports'),'log, filters, world news, new game'],['battles','Battle reports','attacks, defence, marches'],['covert',NL('covert','Covert ops'),'spy missions by coordinate'],['mail',NL('mail','Comms'),'write any nation, the world forum']];
+const BYK={};FULL.forEach(x=>BYK[x[0]]=x);
+const PAGE={p250o:['dashboard'],p250a:['calc','around','self'],p250l:['self'],p250b:['production','military'],p250r:['research'],p250al:['clans','roles'],
+  p250m:['market'],p250e:['economy'],p250k:['rankings'],p250d:['diplomacy'],p250rep:['reports','battles'],p250s:['covert','around'],p250c:['mail']};
+const link=k=>{const x=BYK[k];return x?'<a class="p264l" data-p250="classic" data-id="'+E(k)+'" title="'+E(x[2])+'">'+E(x[1])+'</a>':'';};
+
+/* ---------- 1. every clean page: an "All options" line under it ---------- */
+Object.keys(PAGE).forEach(k=>{const f=VIEWS[k];if(typeof f!=='function')return;VIEWS[k]=v=>{const r=f(v);try{if(!v.querySelector('.p264all'))v.insertAdjacentHTML('beforeend','<div class="p264all"><span>All options:</span> '+PAGE[k].map(link).join('')+'</div>');}catch(e){}return r;};});
+
+/* ---------- 2. Army: the battle calculator as a row ---------- */
+const _a=VIEWS.p250a;VIEWS.p250a=v=>{const r=_a(v);try{const top=v.querySelector('.p261bar')||v.querySelector('.p250top');const h='<div class="p264calc"><div><b>Battle calculator</b><span>work out any battle before you fight it: what you need to take a land, or to hold it</span></div><button class="btn sm p250btn" data-p250="classic" data-id="calc">Open</button></div>';
+  if(top&&!v.querySelector('.p264calc'))top.insertAdjacentHTML('afterend',h);}catch(e){}return r;};
+
+/* ---------- 3. More (side menu and phone sheet): calculator, roles and every full screen ---------- */
+function moreHTML(){return '<div class="p264more"><a data-p250="classic" data-id="calc">Battle calculator</a><a data-p250="classic" data-id="roles">Alliance roles</a>'+
+  '<details class="p264full"><summary>All full screens</summary>'+FULL.filter(x=>x[0]!=='calc'&&x[0]!=='roles').map(x=>'<a data-p250="classic" data-id="'+E(x[0])+'">'+E(x[1])+'<small>'+E(x[2])+'</small></a>').join('')+'</details></div>';}
+function addMore(){try{document.querySelectorAll('.p250more,.p250sh').forEach(m=>{if(!m.querySelector('.p264more'))m.insertAdjacentHTML('beforeend',moreHTML());});}catch(e){}}
+new MutationObserver(()=>addMore()).observe(document.body,{childList:true,subtree:false});
+['side','bottomnav'].forEach(id=>{const el=document.getElementById(id);if(el)new MutationObserver(()=>addMore()).observe(el,{childList:true,subtree:true});});
+addMore();
+
+const st=document.createElement('style');st.textContent=`
+.p264all{margin:6px 2px 14px;font-size:12.5px;color:var(--muted);display:flex;flex-wrap:wrap;gap:4px 10px;align-items:center}
+.p264all span{font:600 11px var(--mono,monospace);letter-spacing:.08em;text-transform:uppercase}
+.p264l{color:var(--accent);cursor:pointer;text-decoration:underline;text-underline-offset:2px}
+.p264calc{display:flex;gap:10px;align-items:center;justify-content:space-between;margin:0 0 10px;padding:8px 14px;border:1px solid var(--border);border-radius:10px;background:var(--panel)}
+.p264calc b{display:block;font-size:14px}.p264calc span{color:var(--muted);font-size:12.5px}
+.p264more a{display:block;padding:8px 14px;color:var(--text);text-decoration:none;font-size:14px;cursor:pointer;border-radius:6px}
+.p264more a:hover{background:color-mix(in srgb,var(--hi,#F59E0B) 10%,transparent)}
+.p264full summary{cursor:pointer;color:var(--muted);font:600 12px/1 inherit;letter-spacing:.08em;text-transform:uppercase;padding:10px 14px;list-style:none}
+.p264full small{display:block;color:var(--muted);font-size:11.5px}
+`;document.head.appendChild(st);
+}catch(e){try{console.error('p264',e);}catch(_){}}})();
+</script>
+<script>/*p265*/
+// 19.5 "One look": the full screens (opened with All options or from More) wear the same style as the six pages:
+// a page head, every block as a box, and the boxes as tabs side by side. Content and buttons are the same ones,
+// only moved into the new boxes, so every option keeps working.
+(function(){try{
+if(window.__MP__||typeof VIEWS==='undefined'||typeof go!=='function')return;
+const E=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const KEYS=['calc','around','self','dashboard','production','military','research','clans','roles','market','economy','diplomacy','rankings','reports','battles','covert','mail'];
+const SUB={calc:'work out a battle before you fight it',around:'targets, war planner and combat simulator',self:'defence, shield and sleep-safe orders',dashboard:'advice, plans and quick actions',
+  production:'build plan, what you built, capture doctrine',military:'readiness, standing orders, own mix, doctrine',research:'tech tree, research plan, national paths',
+  clans:'war room, plans, treasury, chat and settings',roles:'every title and what it does',market:'quick buy and sell, limit orders',economy:'tax, charters and government',
+  diplomacy:'pacts, wars and the world',rankings:'by category, theaters and alliances',reports:'log, filters and world news',battles:'every battle you fought',covert:'scouting and spy missions',mail:'messages and the world forum'};
+const clean=t=>String(t||'').replace(/\s+/g,' ').replace(/^[^A-Za-z0-9]+/,'').replace(/[▸▾›»→]+/g,'').replace(/\s*\?\s*$/,'').trim();
+const shortT=t=>{t=clean(t).split(/ · | — | - |\. |, /)[0];return t.length>26?t.slice(0,25).replace(/\s+\S*$/,'')+'…':t;};
+function titleOf(e){if(e.tagName==='DETAILS'){const s=e.querySelector(':scope>summary');return s?(s.querySelector('b,strong,span')||s).textContent:'';}
+  const h=e.querySelector('h1,h2,h3,h4,.clabel,.mono.small,b,strong');return h?h.textContent:(e.textContent||'').slice(0,40);}
+function isVisible(e){try{return getComputedStyle(e).display!=='none'&&e.offsetParent!==null||e.tagName==='DETAILS';}catch(x){return true;}}
+const SKIP=e=>e.matches('.p250top,.p250tabs,.p250box,.p264all,script,style')||!!(e.dataset&&e.dataset.p265free);
+function boxOf(v,title){const b=document.createElement('section');b.className='p250box p265box';b.dataset.t=title;b.innerHTML='<div class="p250h">'+E(title)+'</div><div class="p265body"></div>';return b;}
+function adopt(v,k){try{let made=0;if(k==='calc'){const kids=[...v.children].filter(e=>!SKIP(e)&&!e.matches('.ptitle'));if(!kids.length)return 0;let b=v.querySelector(':scope>.p265box');if(!b){b=boxOf(v,'');b.querySelector('.p250h').remove();v.insertBefore(b,kids[0]);}kids.forEach(e=>b.querySelector('.p265body').appendChild(e));return 1;}const kids=[...v.children];let last=v.querySelector(':scope>.p265box:last-of-type');
+    kids.forEach(e=>{if(SKIP(e))return;if(e.matches('.ptitle'))return;if(e.dataset.p265free)return;if(e.dataset.p265seen){e.dataset.p265free='1';return;}e.dataset.p265seen='1';if(!isVisible(e)){if(last)last.querySelector('.p265body').appendChild(e);return;}
+      let hgt=1;try{hgt=e.getBoundingClientRect().height;}catch(x){}if(hgt<4&&e.tagName!=='DETAILS'){if(last)last.querySelector('.p265body').appendChild(e);return;}
+      const txt=(e.textContent||'').trim();if(!txt&&!e.querySelector('button,select,input,textarea,table,svg,canvas,img')){e.remove();return;}const small=txt.length<90&&!e.querySelector('button,select,input,textarea,table,svg,canvas');
+      if(small&&last){last.querySelector('.p265body').appendChild(e);return;}
+      let t=e.tagName==='DETAILS'?shortT(titleOf(e)):'';if(!/[a-z]/i.test(t)||t.length<3)t='';if(e.tagName==='DETAILS'){e.open=true;e.classList.add('p265open');}
+      const b=boxOf(v,t);if(!t)b.querySelector('.p250h').remove();v.insertBefore(b,e);b.querySelector('.p265body').appendChild(e);last=b;made++;});
+    return made;}catch(e){return 0;}}
+function tabs(v,k){try{const old=v.querySelector(':scope>.p250tabs.p265tabs');if(old)old.remove();const boxes=[...v.querySelectorAll(':scope>.p265box')];if(boxes.length<2){boxes.forEach(b=>b.style.display='');return;}
+  const st=window._p250tab||(window._p250tab={});const key='full:'+k;const names=boxes.map(b=>b.dataset.t);let i=names.indexOf(st[key]);if(i<0)i=0;
+  const bar=document.createElement('div');bar.className='p250tabs p265tabs';bar.setAttribute('role','tablist');
+  bar.innerHTML=names.map((n,j)=>'<button role="tab" type="button" class="p250tab'+(j===i?' on':'')+'" data-p265t="'+j+'">'+E(n)+'</button>').join('');
+  boxes[0].parentNode.insertBefore(bar,boxes[0]);boxes.forEach((b,j)=>{b.style.display=j===i?'':'none';const h=b.querySelector(':scope>.p250h');if(h)h.style.display='none';});
+  bar.querySelectorAll('[data-p265t]').forEach(btn=>btn.onclick=e=>{e.preventDefault();e.stopPropagation();const j=+btn.dataset.p265t;st[key]=names[j];
+    bar.querySelectorAll('.p250tab').forEach((x,m)=>x.classList.toggle('on',m===j));boxes.forEach((b,m)=>b.style.display=m===j?'':'none');});}catch(e){}}
+function restyle(v,k){try{if(!v)return;const pt=v.querySelector(':scope>.ptitle');let title='',sub='';if(pt){const h=pt.querySelector('h1,h2,h3');title=clean(h?h.textContent:(pt.firstChild&&pt.firstChild.textContent)||pt.textContent);sub=clean((pt.textContent||'').replace(h?h.textContent:'',''));pt.remove();v.dataset.p265t=title;v.dataset.p265s=sub;}
+  if(!title)title=v.dataset.p265t||k;if(!sub)sub=v.dataset.p265s||'';if(!v.querySelector(':scope>.p250top'))v.insertAdjacentHTML('afterbegin','<div class="p250top"><h2>'+E(title)+'</h2><div class="p250sub">'+E(SUB[k]||'')+'</div></div>');
+  adopt(v,k);v.querySelectorAll(':scope>.p265box').forEach(b=>{const bd=b.querySelector('.p265body');if(!bd||!bd.children.length)b.remove();else{let hh=1;try{hh=bd.getBoundingClientRect().height;}catch(x){}b.classList.toggle('p265thin',hh<30&&!(bd.textContent||'').trim());}});const hd=v.querySelector(':scope>.p250top');if(hd&&v.firstElementChild!==hd)v.prepend(hd);v.classList.add('p250v','p265');}catch(e){}}
+function later(k){[0,350].forEach(ms=>setTimeout(()=>{try{if(typeof view==='undefined'||view!==k)return;const v=document.getElementById('view');if(!v||!v.classList.contains('p265'))return;
+  restyle(v,k);}catch(e){}},ms));}
+KEYS.forEach(k=>{const f=VIEWS[k];if(typeof f!=='function')return;VIEWS[k]=function(v){const r=f.apply(this,arguments);try{restyle(v,k);later(k);}catch(e){}return r;};});
+// later layers sometimes add a block on top after the page is drawn: tidy it into the page again
+let _busy=false,_q=0,_n=0,_t0=0;new MutationObserver(()=>{if(_busy||_q)return;try{const v0=document.getElementById('view');if(v0&&!v0.querySelector(':scope>.p250top'))window.__p265n=0;}catch(x){}if((window.__p265n=(window.__p265n||0)+1)>6)return;_q=requestAnimationFrame(()=>{_q=0;try{const v=document.getElementById('view');if(!v||!v.classList.contains('p265')||KEYS.indexOf(view)<0)return;
+  const loose=[...v.children].some(e=>!SKIP(e));const hd=v.querySelector(':scope>.p250top');if(!loose&&hd&&v.firstElementChild===hd)return;_busy=true;try{restyle(v,view);}finally{_busy=false;}}catch(e){_busy=false;}});}).observe(document.getElementById('view')||document.body,{childList:true});
+// leaving a full screen: the next page draws without the full-screen class
+const _go=go;go=function(){window.__p265n=0;try{const v=document.getElementById('view');if(v)v.classList.remove('p265');}catch(e){}return _go.apply(this,arguments);};try{window.go=go;}catch(e){}
+
+const st=document.createElement('style');st.textContent=`
+#view.p265 .p265body{padding:12px 16px;overflow-x:auto}
+#view.p265 .p265box.p265thin{border:0;background:transparent;margin:0}
+#view.p265 .p265box.p265thin .p265body{padding:0}
+#view.p265 .p265body>.card,#view.p265 .p265body>details.card,#view.p265 .p265body>.threatpanel{border:0!important;background:transparent!important;box-shadow:none!important;margin:0 0 6px!important;padding:0!important}
+#view.p265 .p265body>details.p265open>summary{display:none}
+#view.p265 .p265body .card .card{border-color:var(--border)}
+#view.p265 .p265tabs+.p265box{border-top-left-radius:0}
+`;document.head.appendChild(st);
+}catch(e){try{console.error('p265',e);}catch(_){}}})();
+</script>
+<script>/*p266*/
+// 19.5: tab rows are always readable. A row that does not fit wraps to a second line (computer and phone);
+// a long row (more than 5 tabs) is a drop-down on a phone, so every topic name can be read in full.
+(function(){try{
+if(window.__MP__||typeof go!=='function')return;
+function fix(){try{document.querySelectorAll('#view .p250tabs').forEach(bar=>{const btns=[...bar.querySelectorAll(':scope>button')];bar.classList.remove('p260more');bar.classList.add('p266');
+    bar.classList.toggle('p266long',btns.length>5);
+    let sel=bar.nextElementSibling&&bar.nextElementSibling.classList&&bar.nextElementSibling.classList.contains('p266sel')?bar.nextElementSibling:null;
+    if(btns.length>5){if(!sel){sel=document.createElement('select');sel.className='p266sel';sel.setAttribute('aria-label','Topic');bar.insertAdjacentElement('afterend',sel);
+        sel.addEventListener('change',()=>{const b=[...bar.querySelectorAll(':scope>button')][+sel.value];if(b)b.click();});}
+      const html=btns.map((b,i)=>'<option value="'+i+'"'+(b.classList.contains('on')?' selected':'')+'>'+(b.textContent||'').trim().replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')+'</option>').join('');if(sel.innerHTML!==html)sel.innerHTML=html;}
+    else if(sel)sel.remove();});}catch(e){}}
+const _go=go;go=function(){const r=_go.apply(this,arguments);try{fix();}catch(e){}return r;};try{window.go=go;}catch(e){}
+document.addEventListener('click',e=>{if(e.target&&e.target.closest&&e.target.closest('.p250tabs'))setTimeout(fix,0);},true);
+const v=document.getElementById('view');if(v)new MutationObserver(()=>{if(!fix._q){fix._q=requestAnimationFrame(()=>{fix._q=0;fix();});}}).observe(v,{childList:true});
+const st=document.createElement('style');st.textContent=`
+#view .p250tabs.p266{flex-wrap:wrap;overflow:visible;row-gap:4px;-webkit-mask-image:none!important;mask-image:none!important}
+#view .p250tabs.p266 .p250tab{border-bottom:1px solid var(--border);border-radius:10px}
+#view .p250tabs.p266 .p250tab.on{border-color:var(--accent)}
+#view .p250tabs.p266{margin-bottom:8px}
+#view .p250tabs.p266~.p250box{border-top-left-radius:10px}
+.p266sel{display:none}
+@media (max-width:700px){
+  #view .p250tabs.p266long{display:none}
+  .p266sel{display:block;width:100%;margin:0 0 8px;padding:10px 12px;border:1px solid var(--accent);border-radius:10px;background:var(--panel);color:var(--text);font:700 14px inherit}
+}
+`;document.head.appendChild(st);
+fix();
+}catch(e){try{console.error('p266',e);}catch(_){}}})();
+</script>
+<script>/*p267*/
+// 19.5 Auto-sell (solo, browser, off by default): at the end of a turn the game sells only what is above 90% of your
+// storage, never what you need for the next 10 turns, once per resource per turn, without command points.
+// What sits above the cap would be lost anyway; now it becomes money. A resource you run short of (you use more than
+// you make) keeps 10 turns of that shortfall.
+(function(){try{
+if(window.__MP__||typeof VIEWS==='undefined'||typeof go!=='function')return;
+const ME=()=>{try{return G.countries[G.you];}catch(e){return null;}};
+function sellPlan(c){const out=[];try{const pj=c._pj||projection(c);(typeof MARKET!=='undefined'?MARKET:[]).forEach(k=>{const cap=capOf(c,k);const have=c.res[k]||0;if(!(cap>0)||have<cap*0.95)return;
+    const short=Math.max(0,-((pj.net&&pj.net[k])||0));const keep=Math.max(cap*0.9,short*10);const q=Math.floor(have-keep);if(q>0)out.push({k,q});});}catch(e){}return out;}
+function autoSell(){try{const c=ME();if(!c||!c._p267sell||c.isAI!==false||c.retired)return;if(c._p267t===G.tick)return;c._p267t=G.tick;
+  const done=[];sellPlan(c).forEach(({k,q})=>{const cp0=c.cp;c.cp=Math.max(c.cp||0,1);let r=null;try{r=cmdMarket(c,k,'sell',q);}catch(e){}c.cp=cp0;
+    if(r&&r.ok){done.push(((RMETA[k]&&RMETA[k].l)||k)+' '+fmt(q));c._p267money=(c._p267money||0)+((r.data&&r.data.paid)||0);}});
+  if(done.length){try{sitrep(c,'trade','Auto-sell: sold the surplus above your storage: '+done.join(', ')+'.',{go:'p250m'});}catch(e){}}}catch(e){}}
+window.__p267={sellPlan,autoSell};
+window.cmdSetAutoSell=function(c,on){if(!c)return err('No nation');c._p267sell=!!on;return ok({on:c._p267sell});};
+try{const _rt=runTick;runTick=function(){const r=_rt.apply(this,arguments);try{autoSell();}catch(e){}return r;};window.runTick=runTick;}catch(e){}
+
+/* Market › Automatic: the switch next to Auto-buy */
+const _m=VIEWS.p250m;VIEWS.p250m=v=>{const r=_m(v);try{const c=ME();if(!c)return r;const btn=v.querySelector('[data-p250="autobuy"]');const row=btn&&btn.closest('.p250row');
+  if(row&&!v.querySelector('[data-p267]')){row.insertAdjacentHTML('afterend','<div class="p250row"><div class="p250m"><div class="p250t">Auto-sell surplus</div><div class="p250s">'+(c._p267sell?'on: each turn the game sells what is above 90% of your storage, never what you need for the next 10 turns':'off')+'</div></div><div class="p250b"><button class="btn sm p250btn" data-p267="toggle">'+(c._p267sell?'Turn off':'Turn on')+'</button></div></div>');}}catch(e){}return r;};
+/* Overview: the Storage full warning offers Auto-sell */
+const _o=VIEWS.p250o;VIEWS.p250o=v=>{const r=_o(v);try{const c=ME();if(c&&!c._p267sell){const row=[...v.querySelectorAll('.p263box .p250row')].find(x=>/Storage full/i.test(x.textContent));const bb=row&&row.querySelector('.p250b');
+    if(bb&&!bb.querySelector('[data-p267]'))bb.insertAdjacentHTML('beforeend','<button class="btn sm p250btn" data-p267="on">Auto-sell</button>');}}catch(e){}return r;};
+document.addEventListener('click',e=>{const b=e.target&&e.target.closest&&e.target.closest('[data-p267]');if(!b)return;e.preventDefault();e.stopPropagation();const c=ME();if(!c)return;
+  const on=b.dataset.p267==='on'?true:!c._p267sell;cmdSetAutoSell(c,on);try{toast(on?'Auto-sell is on: the surplus above your storage is sold each turn.':'Auto-sell is off.','good');}catch(x){}
+  if(on)autoSell.call(null,(c._p267t=null));try{save();drawTop();}catch(x){}go(view);},true);
+}catch(e){try{console.error('p267',e);}catch(_){}}})();
+</script>
+<script>/*p268*/
+// 19.6 "Everything where you expect it": fewer menus, every function on the page it belongs to.
+// Army: + Scout, Calculator, Battle reports, Staff. Lands: + Map. Economy (new in the menu): Market, Automatic, Tax & government.
+// Alliance: + Diplomacy, Roles, Messages. Overview: + Events. More keeps the big map, Rankings, Story mode, Field manual
+// and the full screens. Old links (market, scouting, comms, reports, diplomacy) open the new place.
+(function(){try{
+if(window.__MP__||typeof VIEWS==='undefined'||typeof go!=='function')return;
+const ME=()=>{try{return G.countries[G.you];}catch(e){return null;}};
+const E=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const F=n=>{try{return fmt(n);}catch(e){return String(Math.round(n||0));}};
+const NL=(k,d)=>{try{const n=navLabel(k);return n&&n!==k?n:d;}catch(e){return d;}};
+
+/* ---------- helpers: take the boxes of a page, and build tabs over groups of boxes ---------- */
+let host=null;function H(){if(!host||!document.body.contains(host)){host=document.createElement('div');host.id='p268host';host.style.display='none';document.body.appendChild(host);}host.innerHTML='';return host;}
+function groups(v){const boxes=[...v.querySelectorAll(':scope>.p250box:not(.pin)')];const bar=v.querySelector(':scope>.p250tabs');
+  const names=bar?[...bar.querySelectorAll(':scope>button')].map(b=>(b.childNodes[0]&&b.childNodes[0].textContent||b.textContent||'').trim()):[];
+  return boxes.map((b,i)=>{const h=b.querySelector(':scope>.p250h');const n=names[i]||(h?(h.childNodes[0]&&h.childNodes[0].textContent||h.textContent||'').trim():'')||'More';return {name:n,box:b};});}
+function fromPage(k,keep){const v=H();try{VIEWS[k](v);}catch(e){return [];}const g=groups(v).filter(x=>!keep||keep.indexOf(x.name)>=0);g.forEach(x=>{x.box.style.display='';x.box.remove();});return g;}
+function customBox(html){const b=document.createElement('section');b.className='p250box';b.innerHTML=html;return b;}
+function build(v,page,tabs){try{// tabs: [{name, boxes:[...]}]
+  v.querySelectorAll(':scope>.p250tabs,:scope>.p266sel').forEach(x=>x.remove());const all=[];tabs.forEach(t=>t.boxes.forEach(b=>{all.push(b);}));
+  const anchor=v.querySelector(':scope>.p264all');all.forEach(b=>{if(b.parentNode!==v||true)v.insertBefore(b,anchor||null);});
+  tabs.forEach(t=>t.boxes.forEach((b,j)=>{const h=b.querySelector(':scope>.p250h');if(h){if(t.boxes.length>1){h.style.display='';if(b.dataset.p268t&&h.childNodes[0])h.childNodes[0].textContent=b.dataset.p268t;}else h.style.display='none';}}));
+  if(tabs.length<2){all.forEach(b=>b.style.display='');return;}
+  const st=window._p250tab||(window._p250tab={});let i=tabs.findIndex(t=>t.name===st[page]);if(i<0){i=tabs.findIndex(t=>t.boxes.some(b=>b.querySelector('.p250row')));if(i<0)i=0;}
+  const bar=document.createElement('div');bar.className='p250tabs p268tabs';bar.setAttribute('role','tablist');
+  bar.innerHTML=tabs.map((t,j)=>'<button role="tab" type="button" class="p250tab'+(j===i?' on':'')+'" data-p268t="'+j+'">'+E(t.name)+(t.count?' <b>'+t.count+'</b>':'')+'</button>').join('');
+  const first=tabs[0].boxes[0];v.insertBefore(bar,first);
+  const show=j=>{tabs.forEach((t,m)=>t.boxes.forEach(b=>b.style.display=m===j?'':'none'));bar.querySelectorAll('.p250tab').forEach((x,m)=>x.classList.toggle('on',m===j));};show(i);
+  bar.querySelectorAll('[data-p268t]').forEach(btn=>btn.onclick=e=>{e.preventDefault();e.stopPropagation();const j=+btn.dataset.p268t;st[page]=tabs[j].name;show(j);try{if(typeof window.__p266fix==='function')window.__p266fix();}catch(x){}});}catch(e){}}
+function base(v){return groups(v).map(x=>{x.box.dataset.p268t=x.name;return {name:x.name,boxes:[x.box],count:((x.box.querySelector('.p250h>span')||{}).textContent||'').trim().match(/^\d+$/)?x.box.querySelector('.p250h>span').textContent.trim():''};});}
+function grp(name,list){list.forEach(x=>{x.box.dataset.p268t=x.name;});return list.length?{name,boxes:list.map(x=>x.box)}:null;}
+const LAB={dashboard:NL('dashboard','Home'),reports:NL('reports','Intel reports'),calc:'Battle calculator',around:NL('around','War'),self:NL('self','Homeland'),covert:NL('covert','Covert ops'),battles:'Battle reports',staff:NL('staff','Staff'),
+  market:NL('market','Market'),economy:NL('economy','Economy'),clans:NL('clans','Alliance'),roles:'Alliance roles',diplomacy:NL('diplomacy','Diplomacy'),mail:NL('mail','Comms')};
+function links(v,keys){try{v.querySelectorAll(':scope>.p264all').forEach(x=>x.remove());v.insertAdjacentHTML('beforeend','<div class="p264all"><span>All options:</span> '+keys.map(k=>'<a class="p264l" data-p250="classic" data-id="'+k+'">'+E(LAB[k]||k)+'</a>').join('')+'</div>');}catch(e){}}
+
+/* ---------- Army: + Scout, Calculator, Battle reports, Staff ---------- */
+const _a=VIEWS.p250a;VIEWS.p250a=v=>{const r=_a(v);try{const c=ME();if(!c)return r;v.querySelectorAll(':scope>.p264calc').forEach(x=>x.remove());
+  const T=base(v);const sc=grp('Scout',fromPage('p250s'));if(sc)T.splice(Math.min(2,T.length),0,sc);
+  T.push({name:'Calculator',boxes:[customBox('<div class="p250row"><div class="p250m"><div class="p250t">Battle calculator</div><div class="p250s">the exact battle, the same calculation as the real fight: what you need to take a land, or to hold it</div></div><div class="p250b"><button class="btn sm p250btn p250main" data-p250="classic" data-id="calc">Open calculator</button></div></div>')]});
+  const br=grp('Battle reports',fromPage('p250rep',['Battles']));if(br)T.push(br);
+  let staff='';try{const n=(c.commanders||[]).length;staff=n+' commander'+(n===1?'':'s')+' in your staff'+(typeof staffSlots==='function'?' of '+staffSlots(c)+' places':'');}catch(e){}
+  T.push({name:NL('staff','Staff'),boxes:[customBox('<div class="p250row"><div class="p250m"><div class="p250t">Your commanders</div><div class="p250s">'+E(staff)+'. Who leads your army, their traits and their orders.</div></div><div class="p250b"><button class="btn sm p250btn p250main" data-p250="classic" data-id="staff">Open staff</button></div></div>')]});
+  build(v,'p250a',T);links(v,['calc','around','self','covert','battles','staff']);}catch(e){}return r;};
+
+/* ---------- Lands: + Map ---------- */
+function mapBox(c){let I={};try{(incomingTo(c.id)||[]).forEach(x=>{if(x&&x.region)I[x.region.id]=1;});}catch(e){}
+  const mine=regionsOf(c);if(!mine.length)return customBox('<div class="p250e">No lands yet.</div>');
+  const cx=mine.reduce((a,r)=>a+r.x,0)/mine.length,cy=mine.reduce((a,r)=>a+r.y,0)/mine.length;const N=Math.min(400,Math.max(36,mine.length*8));
+  const pool=G.regions.filter(r=>r&&r.x!=null).map(r=>({r,d:Math.hypot(r.x-cx,r.y-cy)})).sort((a,b)=>a.d-b.d).slice(0,N).map(x=>x.r);mine.forEach(r=>{if(pool.indexOf(r)<0)pool.push(r);});
+  let x0=1e9,x1=-1e9,y0=1e9,y1=-1e9;pool.forEach(r=>{x0=Math.min(x0,r.x);x1=Math.max(x1,r.x);y0=Math.min(y0,r.y);y1=Math.max(y1,r.y);});
+  const pad=Math.max(6,(x1-x0+y1-y0)*0.06);x0-=pad;x1+=pad;y0-=pad*2.2;y1+=pad;const W=Math.max(1,x1-x0),Hh=Math.max(1,y1-y0);const near=pool;const seen=G._p250seen||{};const rad=Math.max(W,Hh)/45;
+  const dot=r=>{const own=r.owner===c.id,isNew=own&&seen[r.id]!=null&&seen[r.id]>-999&&G.tick-seen[r.id]<=10,att=own&&I[r.id];
+    const cls=own?(att?'att':isNew?'new':'own'):r.owner!=null?(G.countries[r.owner]&&G.countries[r.owner].clan!=null&&G.countries[r.owner].clan===c.clan?'ally':'foe'):'empty';
+    return '<g class="p268r '+cls+'" data-rid="'+r.id+'"><circle cx="'+(r.x-x0).toFixed(1)+'" cy="'+(r.y-y0).toFixed(1)+'" r="'+(own?rad*1.35:r.nexus?rad*1.5:rad).toFixed(1)+'"/>'+(own?'<text x="'+(r.x-x0).toFixed(1)+'" y="'+(r.y-y0-rad*2).toFixed(1)+'" font-size="'+(rad*1.6).toFixed(1)+'">'+E(r.name)+'</text>':'')+'</g>';};
+  const svg='<svg class="p268svg" viewBox="0 0 '+W.toFixed(0)+' '+Hh.toFixed(0)+'" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Map of your lands">'+near.map(dot).join('')+'</svg>';
+  const leg='<div class="p268leg"><span class="own">yours</span><span class="new">new</span><span class="att">under attack</span><span class="ally">ally</span><span class="foe">other nation</span><span class="empty">empty</span></div>';
+  const b=customBox('<div class="p268map">'+svg+leg+'<div class="p268pick p250s">Tap a land to see what you can do there.</div></div>');return b;}
+function pickHTML(c,r){const own=r.owner===c.id;let d=0;try{d=regionDef(r);}catch(e){}
+  if(own){let n=0;(c.fleets||[]).forEach(f=>{if(f&&f.target===r.id&&(f.status==='garrison'||(f.status==='outbound'&&f.intent==='garrison')))n+=fleetSize(f.units||{});});
+    return '<div class="p250row"><div class="p250m"><div class="p250t">'+E(r.name)+' <span class="p250c">'+E(r.coord||'')+'</span></div><div class="p250s">defence '+F(d)+' · '+F(n)+' troops stationed</div></div><div class="p250b"><button class="btn sm p250btn" data-p250="st25" data-id="'+r.id+'">Station 25%</button><button class="btn sm p250btn" data-p250="st50" data-id="'+r.id+'">50%</button><button class="btn sm p250btn" data-p250="st100" data-id="'+r.id+'">All</button><button class="btn sm p250btn" data-p250="build" data-id="'+r.id+'">Build</button></div></div>';}
+  const o=r.owner!=null?G.countries[r.owner]:null;const known=!o||(typeof regionIntel==='function'&&regionIntel(c,r.id));let atk=0;try{atk=power(c,'atk');}catch(e){}
+  return '<div class="p250row"><div class="p250m"><div class="p250t">'+E(r.name)+' <span class="p250c">'+E(r.coord||'')+'</span>'+(o?' · '+E(o.name):' · empty')+'</div><div class="p250s">'+(known?'defence '+F(d):'not scouted')+'</div></div><div class="p250b">'+
+    (known?'<button class="btn sm p250btn" data-p250="take" data-id="'+r.id+'">'+(d*1.3<=atk?'Take it':'Train first')+'</button>':'<button class="btn sm p250btn" data-p250="scout" data-id="'+r.id+'">Scout</button>')+'</div></div>';}
+document.addEventListener('click',e=>{const g=e.target&&e.target.closest&&e.target.closest('.p268r');if(!g)return;const c=ME();const r=_rgId(+g.dataset.rid);const box=g.closest('.p268map');if(!c||!r||!box)return;
+  box.querySelectorAll('.p268r.sel').forEach(x=>x.classList.remove('sel'));g.classList.add('sel');const p=box.querySelector('.p268pick');p.className='p268pick';p.innerHTML=pickHTML(c,r);},true);
+const _l=VIEWS.p250l;VIEWS.p250l=v=>{const r=_l(v);try{const c=ME();if(!c)return r;const T=base(v);T.push({name:'Map',boxes:[mapBox(c)]});build(v,'p250l',T);}catch(e){}return r;};
+
+/* ---------- Economy: Market, Automatic, Tax & government ---------- */
+const _e=VIEWS.p250e;const _m=VIEWS.p250m;
+VIEWS.p250e=v=>{const r=_e(v);try{const c=ME();if(!c)return r;const tg=groups(v);const mk=fromPage('p250m');const T=[];
+  const pr=mk.filter(x=>x.name==='Prices'),au=mk.filter(x=>x.name==='Automatic');if(pr.length)T.push(grp('Market',pr));if(au.length)T.push(grp('Automatic',au));
+  tg.forEach(x=>x.box.dataset.p268t=x.name);if(tg.length)T.push({name:'Tax & government',boxes:tg.map(x=>x.box)});
+  const h=v.querySelector(':scope>.p250top h2');if(h)h.textContent='Economy';build(v,'p250e',T.filter(Boolean));links(v,['market','economy']);}catch(e){}return r;};
+
+/* ---------- Alliance: + Diplomacy, Roles, Messages ---------- */
+const _al=VIEWS.p250al;VIEWS.p250al=v=>{const r=_al(v);try{const c=ME();if(!c)return r;const T=base(v);
+  if(clanOf(c)){const dp=grp('Diplomacy',fromPage('p250d'));if(dp)T.push(dp);
+    T.push({name:'Roles',boxes:[customBox('<div class="p250row"><div class="p250m"><div class="p250t">Alliance roles</div><div class="p250s">what every title does, who holds it, and the buttons for your own</div></div><div class="p250b"><button class="btn sm p250btn p250main" data-p250="classic" data-id="roles">Open roles</button></div></div>')]});}
+  const ms=grp('Messages',fromPage('p250c'));if(ms)T.push(ms);build(v,'p250al',T);links(v,['clans','roles','diplomacy','mail']);}catch(e){}return r;};
+
+/* ---------- Overview: + Events ---------- */
+const _o=VIEWS.p250o;VIEWS.p250o=v=>{const r=_o(v);try{const T=base(v);const ev=grp('Events',fromPage('p250rep',['Events']));if(ev)T.push(ev);build(v,'p250o',T);links(v,['dashboard','reports']);}catch(e){}return r;};
+
+/* ---------- old routes open the new place ---------- */
+const REDIR={p250m:['p250e','Market'],market:['p250e','Market'],p250s:['p250a','Scout'],covert:['p250a','Scout'],p250rep:['p250a','Battle reports'],battles:['p250a','Battle reports'],
+  reports:['p250o','Events'],p250c:['p250al','Messages'],mail:['p250al','Messages'],p250d:['p250al','Diplomacy'],diplomacy:['p250al','Diplomacy'],economy:['p250e','Tax & government']};
+const _go=go;go=function(k){try{if(k&&REDIR[k]&&window.__p250classic!==k){const t=REDIR[k];(window._p250tab||(window._p250tab={}))[t[0]]=t[1];k=t[0];window.__p250classic=null;}}catch(e){}
+  const r=_go.apply(this,[k].concat([].slice.call(arguments,1)));try{nav();}catch(e){}return r;};try{window.go=go;}catch(e){}
+
+/* ---------- menus: Economy in the main menu, a short More ---------- */
+const HIDE=['p250m','p250e','p250rep','p250s','p250c','p250d','staff','calc','roles'];
+function nav(){try{const ec='<a class="p250n2 p268ec" data-p250="go" data-id="p250e" data-k="p250e"><svg class="ic" aria-hidden="true"><use href="#i-coin"></use></svg><span>Economy</span><b class="p250badge"></b></a>';
+  document.querySelectorAll('.p250nav').forEach(n=>{if(!n.querySelector('.p268ec')){const b=n.querySelector('[data-k="p250b"]');if(b)b.insertAdjacentHTML('afterend',ec);}});
+  document.querySelectorAll('.p250more a[data-id]:not(.p268ec2),.p250sh a[data-id]:not(.p268ec2)').forEach(a=>{if(HIDE.indexOf(a.dataset.id)>=0&&!a.closest('.p264full'))a.style.display='none';});
+  document.querySelectorAll('.p250sh').forEach(s=>{if(!s.querySelector('.p268ec2'))s.insertAdjacentHTML('afterbegin','<a class="p268ec2" data-p250="go" data-id="p250e">Economy</a>');});
+  const k=window.__p250classic||view;document.querySelectorAll('.p268ec').forEach(a=>a.classList.toggle('on',k==='p250e'));}catch(e){}}
+new MutationObserver(()=>nav()).observe(document.body,{childList:true});['side','bottomnav'].forEach(id=>{const el=document.getElementById(id);if(el)new MutationObserver(()=>nav()).observe(el,{childList:true,subtree:true});});
+nav();
+document.addEventListener('click',e=>{if(e.target&&e.target.closest&&e.target.closest('[data-p250="sheet"]')){setTimeout(nav,0);setTimeout(nav,60);}},false);
+
+const st=document.createElement('style');st.textContent=`
+.p268map{padding:10px 12px}
+.p268svg{width:100%;height:auto;max-height:62vh;display:block;background:color-mix(in srgb,var(--bg2,#000) 70%,transparent);border-radius:8px}
+.p268r{cursor:pointer}.p268r circle{stroke-width:1.5;vector-effect:non-scaling-stroke}
+.p268r text{fill:var(--text);text-anchor:middle;font-family:var(--mono,monospace);paint-order:stroke;stroke:var(--bg,#000);stroke-width:3px;vector-effect:non-scaling-stroke;pointer-events:none}
+.p268r.own circle{fill:var(--accent);stroke:var(--text)}.p268r.new circle{fill:var(--good,#22c55e);stroke:var(--text)}.p268r.att circle{fill:var(--danger,#ef4444);stroke:#fff}
+.p268r.ally circle{fill:color-mix(in srgb,var(--accent) 45%,transparent);stroke:var(--accent)}.p268r.foe circle{fill:var(--muted,#64748b);stroke:transparent;opacity:.75}.p268r.empty circle{fill:transparent;stroke:var(--muted,#64748b)}
+.p268r.sel circle{stroke:var(--hi,#F59E0B);stroke-width:3}
+.p268leg{display:flex;flex-wrap:wrap;gap:4px 12px;margin:8px 2px;font-size:12px;color:var(--muted)}
+.p268leg span:before{content:"";display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:5px;vertical-align:-1px;border:1px solid var(--muted)}
+.p268leg .own:before{background:var(--accent)}.p268leg .new:before{background:var(--good,#22c55e)}.p268leg .att:before{background:var(--danger,#ef4444)}.p268leg .ally:before{background:color-mix(in srgb,var(--accent) 45%,transparent)}.p268leg .foe:before{background:var(--muted)}
+.p268pick{margin-top:4px}.p268pick .p250row{border-top:1px solid var(--border);padding-left:0;padding-right:0}
+.p250sh .p268ec2{display:block;padding:8px 14px;color:var(--text);text-decoration:none;font-size:14px;cursor:pointer;border-radius:6px}
+`;document.head.appendChild(st);
+}catch(e){try{console.error('p268',e);}catch(_){}}})();
+</script>
+<script>/*p270*/
+// 20.0 "Buildings with a verb" (solo, engine + browser).
+// Fix: the Bunker Network counted in every forecast and in the computer's decision to attack, but not in the battle
+//      itself. It now adds its defence in the battle too (the same 3,000 per level the forecasts always showed).
+// Production line (Factory Complex, after Industrial Automation): Electronics | Steel | Munitions. Switching stops the
+//      factories for 1 turn. Steel turns the factories' electronics into steel; Munitions halves it and makes troops 20% cheaper.
+// Readiness (Military Base): Normal | Training (troops 15% cheaper) | Ready (an attacked land outside your home sector gets 20% of
+//      your home army sent at once, one time per attack).
+// Harvest (Agro Complex): every 24 turns a harvest of 6 turns of food: Store it, Sell it, or Give it to a hungry neighbour.
+// Power priority (Power Plant): Production | Peace (when energy is about to run out, factories pause and stability holds).
+// Hold the line (Bunker Network): for 100 influence the bunkers of a land under attack count double for 3 turns.
+(function(){try{
+if(typeof window==='undefined'||window.__MP__)return;
+const BK={};try{BUILD.forEach(d=>BK[d.k]=d);}catch(e){}
+const BN=k=>{try{return (BK[k]&&BK[k].n)||k;}catch(e){return k;}};const TN=k=>{try{const t=TECH.find(x=>x.k===k);return (t&&t.n)||k;}catch(e){return k;}};
+const SOLO=()=>{try{return typeof isSoloGame!=='function'||isSoloGame();}catch(e){return true;}};
+const ME=()=>{try{return G.countries[G.you];}catch(e){return null;}};
+const E=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const FOOD=()=>{try{return ((RMETA.food&&RMETA.food.l)||'food').toLowerCase();}catch(e){return 'food';}};
+const F=n=>{try{return fmt(n);}catch(e){return String(Math.round(n||0));}};
+
+/* ---------- 0. bunkers count in the battle ----------
+   A forecast that guesses the defence from regionDef() already has the bunkers in it, so it is left alone;
+   a battle, the defence calculator or a forecast from an exact scout report works with real troops and gets the bunkers added. */
+let EST=null,ESTq=0,REAL=0;
+if(typeof regionDef==='function'){const _rg=regionDef;regionDef=function(r){const d=_rg.apply(this,arguments);try{if(r&&!REAL){if(EST===null&&!ESTq){ESTq=1;Promise.resolve().then(()=>{EST=null;ESTq=0;});}EST=r.id;}}catch(e){}return d;};try{window.regionDef=regionDef;}catch(e){}}
+if(typeof incomingTo==='function'){const _it=incomingTo;incomingTo=function(){const keep=EST;try{return _it.apply(this,arguments);}finally{EST=keep;}};try{window.incomingTo=incomingTo;}catch(e){}}
+if(typeof advanceBattle==='function'){const _ab=advanceBattle;advanceBattle=function(){REAL++;try{return _ab.apply(this,arguments);}finally{REAL--;}};try{window.advanceBattle=advanceBattle;}catch(e){}}
+function bunkerAdd(atkC,r){try{if(!r||r.owner==null||(atkC&&atkC.id===r.owner))return 0;const bl=bunkerLevel(r);if(bl<1)return 0;return bl*BUNKER_DEF*((r._p270hold||0)>=G.tick?2:1);}catch(e){return 0;}}
+if(typeof resolveBattle==='function'){const _rb=resolveBattle;resolveBattle=function(atkC,atkU,r){const R=_rb.apply(this,arguments);try{if(!R||!(R.defP>0)||!r)return R;if(!REAL&&EST===r.id)return R;const add=bunkerAdd(atkC,r);if(!add)return R;
+    const k=R.defP/(R.defP+add);R.ratio=R.ratio*k;R.defP=R.defP+add;R._p270bunker=add;const am=(R.detail&&R.detail.atkM)!=null?R.detail.atkM:1;R.success=R.ratio>=1;R.captured=R.ratio>=1.25&&am>.3;
+    if(R.detail){R.detail.ratio=+R.ratio.toFixed(3);R.detail.dRaw=R.defP;R.detail.needSuccess=R.defP;R.detail.needCapture=Math.round(R.defP*1.25);}
+    try{(R.phases||[]).push({p:'Bunkers',t:BN('bunker')+' +'+F(add)+' defence'+(add>bunkerLevel(r)*BUNKER_DEF?' (holding the line)':''),win:false});}catch(e){}}catch(e){}return R;};try{window.resolveBattle=resolveBattle;}catch(e){}}
+if(typeof _regionDef==='function'){const _rd=_regionDef;_regionDef=function(r){const d=_rd.apply(this,arguments);try{if(r&&(r._p270hold||0)>=G.tick)return d+bunkerLevel(r)*BUNKER_DEF;}catch(e){}return d;};}
+
+/* ---------- 1. production line ---------- */
+const LINES={electronics:'Electronics',steel:'Steel',munitions:'Munitions'};
+const RL=k=>{try{const l=(RMETA[k]&&RMETA[k].l)||k;return l.charAt(0).toUpperCase()+l.slice(1);}catch(e){return k;}};const LL=l=>l==='munitions'?'Munitions':RL(l);
+function lineOn(c){return c&&c._p270line&&c._p270line!=='electronics'&&(c.tech||[]).includes('automation')&&bTotal(c,'factory')>0?c._p270line:'electronics';}
+function factoryShare(c){let f=0,t=0;try{(c.buildings||[]).forEach(b=>{if(!b||!b.lv)return;const d=BK[b.k];const e=d&&d.eff&&d.eff.prod&&d.eff.prod.electronics;if(e){t+=e*b.lv;if(b.k==='factory')f+=e*b.lv;}});}catch(e){}return t>0?f/t:0;}
+if(typeof projection==='function'){const _pj=projection;projection=function(c){const p=_pj.apply(this,arguments);try{if(!c||c._fog||!p||!p.prod)return p;
+    const stop=(c._p270sw||0)>G.tick;const ln=lineOn(c);if(!stop&&ln==='electronics')return p;const e=(p.prod.electronics||0)*factoryShare(c);if(!(e>0))return p;
+    let de=0,ds=0;if(stop)de=e;else if(ln==='steel'){de=e;ds=e*2.6;}else if(ln==='munitions')de=e*0.5;
+    p.prod.electronics=(p.prod.electronics||0)-de;if(p.net)p.net.electronics=(p.net.electronics||0)-de;if(ds){p.prod.steel=(p.prod.steel||0)+ds;if(p.net)p.net.steel=(p.net.steel||0)+ds;}}catch(e){}return p;};try{window.projection=projection;}catch(e){}}
+window.cmdSetLine=function(c,line){if(!c)return err('No nation');if(!LINES[line])return err('Unknown line');if(!(c.tech||[]).includes('automation'))return err('Research '+TN('automation')+' first');
+  if(bTotal(c,'factory')<1)return err('Build a '+BN('factory')+' first');if((c._p270line||'electronics')===line)return ok();c._p270line=line;c._p270sw=G.tick+1;return ok({line});};
+
+/* ---------- 1b. power priority (Power Plant) ----------
+   When your energy is about to run out: Production (as before: industry keeps running, stability drops) or
+   Peace (factories and heavy industry pause, so the lights stay on and stability holds). */
+const HEAVY=['factory','heavy_complex'];
+function heavyUse(c){const o={energy:0,base:{}};try{(c.buildings||[]).forEach(b=>{if(!b||!b.lv||HEAVY.indexOf(b.k)<0)return;const d=BK[b.k];if(!d)return;
+  o.energy+=(((d.maint&&d.maint.energy)||0)+((d.eff&&d.eff.cons&&d.eff.cons.energy)||0))*b.lv;const pr=(d.eff&&d.eff.prod)||{};for(const k in pr)o.base[k]=(o.base[k]||0)+pr[k]*b.lv;});}catch(e){}return o;}
+function baseShare(c,res,list){let f=0,t=0;try{(c.buildings||[]).forEach(b=>{if(!b||!b.lv)return;const d=BK[b.k];const e=d&&d.eff&&d.eff.prod&&d.eff.prod[res];if(e){t+=e*b.lv;if(list.indexOf(b.k)>=0)f+=e*b.lv;}});}catch(e){}return t>0?f/t:0;}
+function powerCut(c,p){try{if(c._p270pw!=='peace'||bTotal(c,'power')<1||!p.net||!(p.net.energy<0))return false;if((c.res.energy||0)>-p.net.energy*3)return false;const h=heavyUse(c);if(!(h.energy>0))return false;
+  ['electronics','steel'].forEach(k=>{const sh=baseShare(c,k,HEAVY);const cut=(p.prod[k]||0)*sh;if(cut>0){p.prod[k]-=cut;p.net[k]=(p.net[k]||0)-cut;}});
+  const save=Math.min(h.energy,(p.cons&&p.cons.energy)||h.energy);if(p.cons)p.cons.energy=(p.cons.energy||0)-save;p.net.energy+=save;
+  if(p.net.energy>=-0.05*Math.max(1,(p.cons&&p.cons.energy)||0)){if(!(c._grace&&G.tick<c._grace))p.stabDelta=(p.stabDelta||0)+1.5;if(p.warn)p.warn=p.warn.filter(w=>!/^Energy deficit/.test(w));if(p.warn)p.warn.push('Power priority: factories paused to keep the lights on.');}
+  p._p270cut=true;return true;}catch(e){return false;}}
+if(typeof projection==='function'){const _pj2=projection;projection=function(c){const p=_pj2.apply(this,arguments);try{if(c&&!c._fog&&p&&p.prod)powerCut(c,p);}catch(e){}return p;};try{window.projection=projection;}catch(e){}}
+const PMODE={production:'Production',peace:'Peace'};
+window.cmdSetPower=function(c,m){if(!c)return err('No nation');if(!PMODE[m])return err('Unknown choice');if(bTotal(c,'power')<1)return err('Build a '+BN('power')+' first');c._p270pw=m;return ok({mode:m});};
+
+/* ---------- 2. readiness ---------- */
+const STANCE={normal:'Normal',training:'Training',ready:'Ready'};
+window.cmdSetReadiness=function(c,s){if(!c)return err('No nation');if(!STANCE[s])return err('Unknown stance');if(bTotal(c,'base')<1)return err('Build a '+BN('base')+' first');c._p270st=s;return ok({stance:s});};
+function discount(c){let d=0;try{if(c._p270st==='training'&&bTotal(c,'base')>0)d+=0.15;if(lineOn(c)==='munitions')d+=0.20;}catch(e){}return Math.min(0.30,d);}
+window.__p270discount=discount;
+['cmdRecruit','cmdRecruitBatch'].forEach(n=>{try{const f=window[n];if(typeof f!=='function')return;const g=function(c){const d=c?discount(c):0;const m0=c&&c.res?c.res.money:0;const r=f.apply(this,arguments);
+    try{if(d>0&&r&&r.ok&&c&&c.res){const spent=m0-c.res.money;if(spent>0)c.res.money=Math.min(CAP.money,c.res.money+spent*d);}}catch(e){}return r;};window[n]=g;
+  if(n==='cmdRecruit')cmdRecruit=g;else cmdRecruitBatch=g;}catch(e){}});
+function readyTick(c){try{if(c._p270st!=='ready'||bTotal(c,'base')<1)return;const I=(incomingTo(c.id)||[]).filter(x=>x&&x.region&&x.eta<=2);const done=c._p270rd||(c._p270rd={});
+  I.forEach(x=>{const r=x.region;const key=r.id+':'+(x.fid||x.id||x.eta);if(done[key])return;const has=(c.fleets||[]).some(f=>f&&f.target===r.id&&(f.status==='garrison'||(f.status==='outbound'&&f.intent==='garrison')));if(has)return;
+    const com={};for(const k in (c.units||{})){const n=Math.floor((c.units[k]||0)*0.2);if(n>0)com[k]=n;}if(!Object.keys(com).length)return;const cp0=c.cp;c.cp=Math.max(c.cp||0,1);let res=null;try{res=cmdStation(c,r.id,com);}catch(e){}c.cp=cp0;done[key]=G.tick;
+    if(res&&res.ok&&c.isAI===false){try{sitrep(c,'fleet','Ready: '+F(fleetSize(com))+' troops left at once to defend '+r.name+'.',{go:'p250a'});}catch(e){}}});
+  for(const k in done)if(G.tick-done[k]>30)delete done[k];}catch(e){}}
+
+/* ---------- 3. harvest ---------- */
+const EVERY=24;
+function harvestTick(c){try{if(bTotal(c,'farm')<1)return;if(c._p270h&&c._p270h.ready){if(G.tick-c._p270h.at>=6)harvestDo(c,'store',true);return;}
+  if(c._p270hn==null)c._p270hn=G.tick+EVERY;if(G.tick<c._p270hn)return;const pj=c._pj||projection(c);const amt=Math.round(Math.max(0,(pj.prod&&pj.prod.food)||0)*6);if(amt<=0){c._p270hn=G.tick+EVERY;return;}
+  c._p270h={ready:true,amt,at:G.tick};c._p270hn=G.tick+EVERY;if(c.isAI===false){try{sitrep(c,'eco','Harvest is in: '+F(amt)+' '+FOOD()+'. Store it, sell it or give it away on Overview.',{go:'p250o'});}catch(e){}}else harvestDo(c,'store',true);}catch(e){}}
+function hungry(c){let best=null,bs=1e18;try{const home=regionsOf(c)[0];G.countries.forEach(o=>{if(!o||!o.isAI||o.retired||o.id===c.id)return;const r=regionsOf(o)[0];if(!r||!home)return;const d=Math.hypot(r.x-home.x,r.y-home.y);if(d>260)return;const s=(o.res.food||0)+d*500;if(s<bs){bs=s;best=o;}});}catch(e){}return best;}
+function harvestDo(c,how,quiet){const h=c&&c._p270h;if(!h||!h.ready)return err('No harvest waiting');let msg='';
+  if(how==='sell'){const pr=(G.prices&&G.prices.food)||BASEP.food||60;const m=Math.round(h.amt*pr*0.95);c.res.money=Math.min(CAP.money,(c.res.money||0)+m);msg='Harvest sold for '+F(m)+'.';}
+  else if(how==='give'){const o=hungry(c);if(!o)return err('No neighbour nearby to give it to');o.res.food=Math.min(capOf(o,'food'),(o.res.food||0)+h.amt);c.res.influence=Math.min(CAP.influence,(c.res.influence||0)+150);
+    try{if(typeof relRemember==='function')relRemember(o,c.id,'gift',2);}catch(e){}try{o.vsYou=o.vsYou||{};o.vsYou.gifts=(o.vsYou.gifts||0)+1;}catch(e){}msg='Harvest given to '+o.name+'. They will remember it. +150 influence.';}
+  else{const room=Math.max(0,capOf(c,'food')-(c.res.food||0));c.res.food=(c.res.food||0)+Math.min(room,h.amt);msg='Harvest stored'+(room<h.amt?' (storage full, the rest is lost)':'')+'.';}
+  c._p270h=null;if(!quiet&&c.isAI===false){try{toast(msg,'good');}catch(e){}}return ok({msg});}
+window.cmdHarvest=harvestDo;
+
+/* ---------- 4. hold the line ---------- */
+window.cmdHoldLine=function(c,rid){const r=_rgId(rid);if(!c||!r||r.owner!==c.id)return err('Not your land');if(bunkerLevel(r)<1)return err('Build a '+BN('bunker')+' here first');
+  if((c.res.influence||0)<100)return err('You need 100 influence');if((r._p270cd||0)>G.tick)return err('The bunkers need rest: again in '+(r._p270cd-G.tick)+' turns');
+  c.res.influence-=100;r._p270hold=G.tick+3;r._p270cd=G.tick+12;try{if(_defCache&&_defCache.clear)_defCache.clear();}catch(e){}return ok();};
+
+/* ---------- computer nations use the verbs too ---------- */
+function aiVerbs(c){try{const a=c.pers&&c.pers.arch;if(!a||G.tick%20!==(c.id%20))return;
+  if((c.tech||[]).includes('automation')&&bTotal(c,'factory')>0){let want='electronics';const pe=(G.prices&&G.prices.electronics)||1,ps=(G.prices&&G.prices.steel)||1;
+    if((a==='aggressive'||a==='expansionist')&&(c._threat||0)>0)want='munitions';else if(ps*2.6>pe*1.1&&(a==='industrial'||a==='economic'||a==='trader'))want='steel';
+    if((c._p270line||'electronics')!==want){c._p270line=want;c._p270sw=G.tick+1;}}
+  if(bTotal(c,'power')>0&&!c._p270pw)c._p270pw=(a==='aggressive'||a==='industrial')?'production':'peace';
+  if(bTotal(c,'base')>0&&!c._p270st)c._p270st=(a==='aggressive'||a==='expansionist')?'training':(a==='defensive'?'ready':'normal');}catch(e){}}
+
+try{const _rt=runTick;runTick=function(){const r=_rt.apply(this,arguments);try{if(SOLO())G.countries.forEach(c=>{if(!c||c.retired||!regionsOf(c).length)return;if(c.isAI)aiVerbs(c);readyTick(c);if(c.isAI===false)harvestTick(c);});}catch(e){}return r;};window.runTick=runTick;}catch(e){}
+window.__p270={powerCut,heavyUse,bunkerAdd,est:()=>EST,factoryShare,lineOn,discount,readyTick,harvestTick,hungry};
+
+/* ---------- the buttons: on the building rows, on Overview, on Lands ---------- */
+if(typeof VIEWS==='undefined')return;
+function ctl(c,k){if(k==='factory'){if(!(c.tech||[]).includes('automation'))return '<div class="p270c">Production line: research '+TN('automation')+' to choose the line.</div>';
+    const cur=c._p270line||'electronics';const sw=(c._p270sw||0)>G.tick;return '<div class="p270c">Production line'+(sw?' <b class="warn">switching, factories stand still this turn</b>':'')+': '+Object.keys(LINES).map(l=>'<button class="p270b'+(l===cur?' on':'')+'" data-p270="line" data-v="'+l+'">'+LL(l)+'</button>').join('')+'</div>';}
+  if(k==='base'){const cur=c._p270st||'normal';return '<div class="p270c">Readiness: '+Object.keys(STANCE).map(s=>'<button class="p270b'+(s===cur?' on':'')+'" data-p270="stance" data-v="'+s+'">'+STANCE[s]+'</button>').join('')+'<span class="p270h">'+(cur==='training'?'troops 15% cheaper':cur==='ready'?'a far land under attack gets 20% of your home army at once':'')+'</span></div>';}
+  if(k==='farm'){const h=c._p270h;return '<div class="p270c">Harvest: '+(h&&h.ready?'<b class="good">'+F(h.amt)+' '+FOOD()+' is in</b> (see Overview)':'next harvest in '+Math.max(0,(c._p270hn||G.tick+EVERY)-G.tick)+' turns')+'</div>';}
+  if(k==='power'){const cur=c._p270pw||'production';return '<div class="p270c">When power runs short: '+Object.keys(PMODE).map(m=>'<button class="p270b'+(m===cur?' on':'')+'" data-p270="power" data-v="'+m+'">'+PMODE[m]+'</button>').join('')+'<span class="p270h">'+(cur==='peace'?'factories pause, stability holds':'industry keeps running, stability drops')+'</span></div>';}
+  if(k==='bunker')return '<div class="p270c">Hold the line: when a land with bunkers is attacked, make its bunkers count double for 3 turns (100 influence). The button shows on Lands.</div>';return '';}
+const _b=VIEWS.p250b;VIEWS.p250b=v=>{const r=_b(v);try{const c=ME();if(!c)return r;['factory','power','base','farm','bunker'].forEach(k=>{if(k!=='bunker'&&bTotal(c,k)<1)return;
+    const btn=v.querySelector('[data-p250="bld"][data-id="'+k+'"]');const row=btn?btn.closest('.p250row'):null;if(!row)return;const m=row.querySelector('.p250m');if(m&&!m.querySelector('.p270c'))m.insertAdjacentHTML('beforeend',ctl(c,k));});}catch(e){}return r;};
+const _o=VIEWS.p250o;VIEWS.p250o=v=>{const r=_o(v);try{const c=ME();const h=c&&c._p270h;if(h&&h.ready){const o=hungry(c);const html='<section class="p250box pin p270box"><div class="p250row"><div class="p250m"><div class="p250t"><b class="good">Harvest is in: '+F(h.amt)+' '+FOOD()+'</b></div><div class="p250s">store it, sell it'+(o?', or give it to '+E(o.name)+' (they remember it, +150 influence)':'')+'. Not chosen in 6 turns: stored.</div></div><div class="p250b"><button class="btn sm p250btn p250main" data-p270="harvest" data-v="store">Store</button><button class="btn sm p250btn" data-p270="harvest" data-v="sell">Sell</button>'+(o?'<button class="btn sm p250btn" data-p270="harvest" data-v="give">Give</button>':'')+'</div></div></section>';
+    const a=[...v.querySelectorAll('.p261bar,.p260train,.p263box')].pop()||v.querySelector('.p250top');if(a)a.insertAdjacentHTML('afterend',html);}}catch(e){}return r;};
+const _l=VIEWS.p250l;VIEWS.p250l=v=>{const r=_l(v);try{const c=ME();if(!c)return r;const I={};(incomingTo(c.id)||[]).forEach(x=>{if(x&&x.region)I[x.region.id]=1;});
+  v.querySelectorAll('[data-p250="build"][data-id]').forEach(b=>{const rg=_rgId(+b.dataset.id);if(!rg||!I[rg.id]||bunkerLevel(rg)<1)return;const bb=b.parentElement;if(bb.querySelector('[data-p270="hold"]'))return;
+    const on=(rg._p270hold||0)>=G.tick;bb.insertAdjacentHTML('afterbegin','<button class="btn sm p250btn warn" data-p270="hold" data-v="'+rg.id+'"'+(on?' disabled':'')+'>'+(on?'Holding the line':'Hold the line')+'</button>');});}catch(e){}return r;};
+/* END TURN: a second tap within 0.6 s is the same tap (the turn guard only covered a turn still running) */
+{let last=-1e9,doneAt=0;try{const _sa=soloAdvance;soloAdvance=function(){try{return _sa.apply(this,arguments);}finally{doneAt=performance.now();}};window.soloAdvance=soloAdvance;}catch(e){}
+  window.addEventListener('click',e=>{const b=e.target&&e.target.closest&&e.target.closest('.p250end,#mEnd,header.top .tick');if(!b)return;const ts=e.timeStamp||performance.now();
+    // a tap made within 0.6 s of the last one, or made while that turn was still running, is the same tap
+    if(ts-last<600||(ts>last&&ts<doneAt&&doneAt>last)){e.preventDefault();e.stopImmediatePropagation();return;}last=ts;},true);}
+document.addEventListener('click',e=>{const b=e.target&&e.target.closest&&e.target.closest('[data-p270]');if(!b)return;e.preventDefault();e.stopPropagation();const c=ME();if(!c)return;const a=b.dataset.p270,val=b.dataset.v;let r=null;
+  try{if(a==='line')r=cmdSetLine(c,val);else if(a==='stance')r=cmdSetReadiness(c,val);else if(a==='harvest')r=harvestDo(c,val);else if(a==='hold')r=cmdHoldLine(c,+val);else if(a==='power')r=cmdSetPower(c,val);}catch(x){r={ok:false,error:'Not possible right now.'};}
+  if(r&&r.ok===false)toast(r.error||'Not possible right now.','bad');else if(a!=='harvest'){toast(a==='line'?'Production line set. Factories stand still for one turn.':a==='stance'?'Readiness set.':a==='power'?'Power priority set.':'Your bunkers hold the line for 3 turns.','good');}
+  try{save();drawTop();}catch(x){}go(view);},true);
+const st=document.createElement('style');st.textContent=`
+.p270c{margin-top:6px;font-size:12.5px;color:var(--muted);display:flex;flex-wrap:wrap;gap:4px 6px;align-items:center}
+.p270b{padding:3px 9px;border:1px solid var(--border2,#475569);border-radius:999px;background:transparent;color:var(--text);font:600 12px inherit;cursor:pointer}
+.p270b.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.p270h{color:var(--muted)}
+`;document.head.appendChild(st);
+}catch(e){try{console.error('p270',e);}catch(_){}}})();
+</script>
+<script>/*p271*/
+// 20.1 "Path orders" (solo, engine + browser). Each national path building gets one order, on its row under Build.
+// War economy (Heavy Industrial Complex): 6 turns troops 25% cheaper, steel and electronics 30% lower. Rest 24 turns.
+// Grid overdrive (Renewable Grid): 6 turns the grids give double energy, then 6 turns nothing. Rest 24 turns.
+// Experiment (Advanced Research Campus): put in 3 turns of research; 2 in 3 times you get 8 turns back, else nothing. Rest 12.
+// Close the border (Fortress Network): 150 influence; for 6 turns armies marching to your lands arrive 1 turn later. Rest 24.
+// Trade fair (Trade Hub): 6 turns you buy 10% cheaper and sell 10% dearer on the market. Rest 24.
+// Sell intel (Data Haven): sell what you know about a rival to a neighbour: influence and money. Rest 12.
+// The flat bonuses of four techs are halved (automation, renewables, supply chain, modern armor): the orders are the moment now.
+(function(){try{
+if(typeof window==='undefined'||window.__MP__)return;
+const SOLO=()=>{try{return typeof isSoloGame!=='function'||isSoloGame();}catch(e){return true;}};
+const ME=()=>{try{return G.countries[G.you];}catch(e){return null;}};
+const RL=k=>{try{return ((RMETA[k]&&RMETA[k].l)||k).toLowerCase();}catch(e){return k;}};
+const TXT=t=>String(t).replace(/\b(steel|electronics|energy|research)\b/g,m=>RL(m));
+const F=n=>{try{return fmt(n);}catch(e){return String(Math.round(n||0));}};
+const ORD={
+  war:{b:'heavy_complex',n:'War economy',len:6,rest:24,d:'troops 25% cheaper, steel and electronics 30% lower'},
+  grid:{b:'renewable_grid',n:'Grid overdrive',len:6,rest:24,d:'grids give double energy, then rest 6 turns'},
+  exp:{b:'research_campus',n:'Experiment',len:0,rest:12,d:'put in 3 turns of research, 2 in 3 times 8 turns come back'},
+  wall:{b:'fortress_network',n:'Close the border',len:6,rest:24,d:'150 influence: armies marching to your lands arrive 1 turn later'},
+  fair:{b:'trade_hub',n:'Trade fair',len:6,rest:24,d:'buy 10% cheaper and sell 10% dearer'},
+  intel:{b:'data_haven',n:'Sell intel',len:0,rest:12,d:'influence and money for what you know about a rival'}};
+const st=c=>c._p271||(c._p271={});
+const on=(c,k)=>{const s=c&&c._p271;return !!(s&&s[k]&&s[k].until>G.tick);};
+const restLeft=(c,k)=>{const s=c&&c._p271;return s&&s[k]?Math.max(0,s[k].next-G.tick):0;};
+function share(c,res,keys){let f=0,t=0;try{(c.buildings||[]).forEach(b=>{if(!b||!b.lv)return;const d=BUILD.find(x=>x.k===b.k);const e=d&&d.eff&&d.eff.prod&&d.eff.prod[res];if(e){t+=e*b.lv;if(keys.indexOf(b.k)>=0)f+=e*b.lv;}});}catch(e){}return t>0?f/t:0;}
+
+/* the old flat bonuses are halved: the orders and the production line are the moment now */
+try{const H={automation:['mult',['steel','electronics']],renewables:['mult',['energy']],supply:['logi'],armor:['atk','def']};
+  if(!window.__p271half&&typeof TECH!=='undefined'){window.__p271half=1;TECH.forEach(t=>{const h=H[t.k];if(!h||!t.bonus)return;
+    if(h[0]==='mult'){h[1].forEach(k=>{if(t.bonus.mult&&t.bonus.mult[k])t.bonus.mult[k]=t.bonus.mult[k]/2;});}else h.forEach(k=>{if(t.bonus[k])t.bonus[k]=t.bonus[k]/2;});
+    if(t.d)t.d=t.d.replace(/\+(\d+)%/g,(m,n)=>'+'+Math.round(n/2)+'%')+(t.k==='automation'?' Unlocks the production line.':'');});}}catch(e){}
+
+/* production effects */
+if(typeof projection==='function'){const _pj=projection;projection=function(c){const p=_pj.apply(this,arguments);try{if(!c||c._fog||!p||!p.prod||!c._p271)return p;
+    if(on(c,'war'))['steel','electronics'].forEach(k=>{const d=(p.prod[k]||0)*0.30;p.prod[k]-=d;if(p.net)p.net[k]=(p.net[k]||0)-d;});
+    const g=c._p271.grid;if(g&&g.until>G.tick-6&&bTotal(c,'renewable_grid')>0){const e=(p.prod.energy||0)*share(c,'energy',['renewable_grid']);const d=g.until>G.tick?e:-e;p.prod.energy=(p.prod.energy||0)+d;if(p.net)p.net.energy=(p.net.energy||0)+d;}
+  }catch(e){}return p;};try{window.projection=projection;}catch(e){}}
+/* troop discount: added on top of 20.0, total never above 40% */
+['cmdRecruit','cmdRecruitBatch'].forEach(n=>{try{const f=window[n];if(typeof f!=='function')return;const g=function(c){if(!c||!on(c,'war'))return f.apply(this,arguments);
+    const base=(window.__p270discount?window.__p270discount(c):0);const extra=Math.max(0,Math.min(0.40,base+0.25)-base);const m0=c.res.money;const r=f.apply(this,arguments);
+    try{if(r&&r.ok){const spent=m0-c.res.money;if(spent>0){const full=spent/(1-base);c.res.money=Math.min(CAP.money,c.res.money+full*extra);}}}catch(e){}return r;};window[n]=g;
+  if(n==='cmdRecruit')cmdRecruit=g;else cmdRecruitBatch=g;}catch(e){}});
+/* trade fair */
+if(typeof cmdMarket==='function'){const _m=cmdMarket;cmdMarket=function(c,resr,side,qty){if(!c||!on(c,'fair'))return _m.apply(this,arguments);const m0=c.res.money;const r=_m.apply(this,arguments);
+    try{if(r&&r.ok){const d=c.res.money-m0;if(d<0)c.res.money=Math.min(CAP.money,c.res.money+(-d)*0.10);else if(d>0)c.res.money=Math.min(CAP.money,c.res.money+d*0.10);}}catch(e){}return r;};try{window.cmdMarket=cmdMarket;}catch(e){}}
+/* close the border: one turn later, once per army */
+function wallTick(c){try{if(!on(c,'wall'))return;(incomingTo(c.id)||[]).forEach(x=>{const f=x&&x.fleet;if(!f||f._p271w||f.status!=='outbound'||!(f.eta>G.tick))return;f.eta+=1;f._p271w=1;});}catch(e){}}
+
+window.cmdPathOrder=function(c,k){const o=ORD[k];if(!c)return err('No nation');if(!o)return err('Unknown order');if(bTotal(c,o.b)<1)return err('Build a '+((BUILD.find(x=>x.k===o.b)||{}).n||o.b)+' first');
+  if(restLeft(c,k)>0)return err(o.n+' again in '+restLeft(c,k)+' turns');const s=st(c);let msg=o.n+' for '+o.len+' turns.';
+  if(k==='wall'){if((c.res.influence||0)<150)return err('You need 150 influence');c.res.influence-=150;}
+  if(k==='exp'){const pj=c._pj||projection(c);const per=Math.max(0,(pj.net&&pj.net.research)||0);const stake=Math.round(per*3);if(stake<1)return err('No research to put in');if((c.res.research||0)<stake)return err('You need '+F(stake)+' research');
+    c.res.research-=stake;const win=Math.random()<2/3;if(win){c.res.research=Math.min(capOf(c,'research'),c.res.research+Math.round(per*8));msg='The experiment worked: +'+F(Math.round(per*8))+' research.';}else msg='The experiment failed. The research is lost.';}
+  if(k==='intel'){const rv=rivalFor(c);const buyer=buyerFor(c,rv);if(!rv||!buyer)return err('Nobody nearby to sell to');const pj=c._pj||projection(c);const money=Math.round(Math.max(2e6,((pj.net&&pj.net.money)||0)*2));
+    c.res.influence=Math.min(CAP.influence,(c.res.influence||0)+120);c.res.money=Math.min(CAP.money,(c.res.money||0)+money);try{if(typeof relRemember==='function')relRemember(buyer,c.id,'gift',1);}catch(e){}
+    msg='Sold what you know about '+rv.name+' to '+buyer.name+': +'+F(money)+' money, +120 influence.';}
+  s[k]={until:G.tick+o.len,next:G.tick+o.len+o.rest};return ok({msg});};
+function near(c,max){const out=[];try{const h=regionsOf(c)[0];if(!h)return out;G.countries.forEach(o=>{if(!o||o.retired||o.id===c.id)return;const r=regionsOf(o)[0];if(!r)return;const d=Math.hypot(r.x-h.x,r.y-h.y);if(d<=max)out.push({o,d});});}catch(e){}return out.sort((a,b)=>a.d-b.d).map(x=>x.o);}
+function rivalFor(c){return near(c,320).find(o=>o.isAI===false||(c.vsYou&&false))||near(c,320)[0]||null;}
+function buyerFor(c,rv){return near(c,320).find(o=>o.isAI&&rv&&o.id!==rv.id)||null;}
+
+/* computer nations */
+function aiOrders(c){try{if(!c.isAI||G.tick%12!==(c.id%12))return;const a=(c.pers&&c.pers.arch)||'';const s=c._p271||{};const free=k=>bTotal(c,ORD[k].b)>0&&!(s[k]&&s[k].next>G.tick);
+  const pj=c._pj||{net:{}};
+  if(free('war')&&(c._threat||0)>0&&(a==='aggressive'||a==='expansionist'))cmdPathOrder(c,'war');
+  else if(free('grid')&&((pj.net&&pj.net.energy)||0)<0)cmdPathOrder(c,'grid');
+  else if(free('exp')&&Math.random()<0.5)cmdPathOrder(c,'exp');
+  else if(free('wall')&&(incomingTo(c.id)||[]).length&&(c.res.influence||0)>400)cmdPathOrder(c,'wall');
+  else if(free('fair')&&(a==='trader'||a==='economic'))cmdPathOrder(c,'fair');}catch(e){}}
+try{const _rt=runTick;runTick=function(){try{if(SOLO())G.countries.forEach(c=>{if(c&&!c.retired)wallTick(c);});}catch(e){}const r=_rt.apply(this,arguments);try{if(SOLO())G.countries.forEach(c=>{if(c&&!c.retired&&c.isAI&&regionsOf(c).length)aiOrders(c);});}catch(e){}return r;};window.runTick=runTick;}catch(e){}
+window.__p271={ORD,on,restLeft,wallTick,aiOrders,rivalFor,buyerFor};
+
+/* the button on the building row */
+if(typeof VIEWS==='undefined')return;
+const KEY={};Object.keys(ORD).forEach(k=>KEY[ORD[k].b]=k);
+const _b=VIEWS.p250b;VIEWS.p250b=v=>{const r=_b(v);try{const c=ME();if(!c)return r;Object.keys(KEY).forEach(b=>{if(bTotal(c,b)<1)return;const k=KEY[b],o=ORD[k];
+    const btn=v.querySelector('[data-p250="bld"][data-id="'+b+'"]');const row=btn?btn.closest('.p250row'):null;const m=row&&row.querySelector('.p250m');if(!m||m.querySelector('.p271c'))return;
+    const act=on(c,k),rest=restLeft(c,k);const state=act?'<b class="good">on, '+(c._p271[k].until-G.tick)+' turns left</b>':rest>0?'again in '+rest+' turns':'';
+    m.insertAdjacentHTML('beforeend','<div class="p270c p271c">'+o.n+': <span class="p270h">'+TXT(o.d)+'</span> <button class="p270b" data-p271="'+k+'"'+(act||rest>0?' disabled':'')+'>'+(act?'Running':'Start')+'</button> '+state+'</div>');});}catch(e){}return r;};
+document.addEventListener('click',e=>{const b=e.target&&e.target.closest&&e.target.closest('[data-p271]');if(!b)return;e.preventDefault();e.stopPropagation();const c=ME();if(!c)return;let r=null;
+  try{r=cmdPathOrder(c,b.dataset.p271);}catch(x){r={ok:false,error:'Not possible right now.'};}
+  if(r&&r.ok===false)toast(r.error||'Not possible right now.','bad');else toast((r&&r.data&&r.data.msg)||'Done.','good');try{save();drawTop();}catch(x){}go(view);},true);
+const css=document.createElement('style');css.textContent=`.p270b[disabled]{opacity:.55;cursor:default}`;document.head.appendChild(css);
+}catch(e){try{console.error('p271',e);}catch(_){}}})();
+</script>
+<script>/*p272*/
+// 20.2 Export contracts (solo, engine + browser). Computer nations order goods from you (only from bot to player).
+// About every 20 turns a nearby nation offers a contract: deliver an amount of something you make, within 10 turns,
+// for 30% above the market price plus influence. Accept or decline on Overview (the offer stays 4 turns).
+// Deliver with one button once you have it. Too late: you pay a fine of a fifth of the price and they remember it.
+(function(){try{
+if(typeof window==='undefined'||window.__MP__)return;
+const SOLO=()=>{try{return typeof isSoloGame!=='function'||isSoloGame();}catch(e){return true;}};
+const ME=()=>{try{return G.countries[G.you];}catch(e){return null;}};
+const E=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const F=n=>{try{return fmt(n);}catch(e){return String(Math.round(n||0));}};
+const RL=k=>{try{return ((RMETA[k]&&RMETA[k].l)||k).toLowerCase();}catch(e){return k;}};
+const EVERY=20,OFFER=4,TIME=10,MAXOPEN=2;
+const list=c=>c._p272||(c._p272=[]);
+let NEXTID=1;
+function buyerNear(c){try{const h=regionsOf(c)[0];if(!h)return null;const cand=[];G.countries.forEach(o=>{if(!o||!o.isAI||o.retired||o.id===c.id||!regionsOf(o).length)return;const r=regionsOf(o)[0];const d=Math.hypot(r.x-h.x,r.y-h.y);if(d<300)cand.push({o,d});});
+  if(!cand.length)return null;cand.sort((a,b)=>a.d-b.d);const pick=cand[Math.floor(Math.random()*Math.min(6,cand.length))];
+  try{const o=pick.o;if(o.clan!=null&&c.clan!=null&&(typeof clanAtWar==='function'&&clanAtWar(o.clan,c.clan)))return null;if(o.vsYou&&(o.vsYou.threat||0)>40)return null;}catch(e){}return pick.o;}catch(e){return null;}}
+function makeOffer(c){try{const pj=c._pj||projection(c);const goods=(typeof MARKET!=='undefined'?MARKET:[]).filter(k=>k!=='money'&&((pj.net&&pj.net[k])||0)>0);if(!goods.length)return null;
+  const k=goods[Math.floor(Math.random()*goods.length)];const per=(pj.net[k]||0);const qty=Math.max(1000,Math.round(per*(5+Math.random()*3)/100)*100);
+  if(qty>capOf(c,k)*0.8)return null;const o=buyerNear(c);if(!o)return null;const pr=(G.prices&&G.prices[k])||BASEP[k]||1;const pay=Math.round(qty*pr*1.3);
+  return {id:G.tick*100+(NEXTID++%100),from:o.id,k,qty,pay,inf:60,offered:G.tick,state:'offer'};}catch(e){return null;}}
+function tick(c){try{if(c.isAI!==false||c.retired||!regionsOf(c).length)return;const L=list(c);
+  // offers expire, contracts run out
+  L.forEach(x=>{if(x.state==='offer'&&G.tick-x.offered>=OFFER){x.state='gone';}
+    if(x.state==='open'&&G.tick>x.due){x.state='late';const fine=Math.round(x.pay*0.2);const o=G.countries[x.from];c.res.money=Math.max(0,(c.res.money||0)-fine);
+      try{if(o&&typeof relRemember==='function')relRemember(o,c.id,'broken deal',2);}catch(e){}
+      try{sitrep(c,'trade','Export contract missed: '+(o?o.name:'the buyer')+' wanted '+F(x.qty)+' '+RL(x.k)+'. Fine: '+F(fine)+'.',{go:'p250o',sev:2});}catch(e){}}
+    if(x.state==='open'&&x.due-G.tick===2){try{sitrep(c,'trade','Export contract: 2 turns left to deliver '+F(x.qty)+' '+RL(x.k)+'.',{go:'p250o'});}catch(e){}}});
+  for(let i=L.length-1;i>=0;i--)if(['gone','late','done','no'].includes(L[i].state)&&G.tick-(L[i].end||L[i].offered)>30)L.splice(i,1);
+  if(c._p272n==null)c._p272n=G.tick+Math.min(EVERY,10);if(G.tick<c._p272n)return;c._p272n=G.tick+EVERY;
+  if(L.filter(x=>x.state==='offer'||x.state==='open').length>=MAXOPEN)return;const of=makeOffer(c);if(!of)return;L.push(of);
+  const o=G.countries[of.from];try{sitrep(c,'trade','Export offer from '+(o?o.name:'a neighbour')+': '+F(of.qty)+' '+RL(of.k)+' in '+TIME+' turns for '+F(of.pay)+'. See Overview.',{go:'p250o'});}catch(e){}}catch(e){}}
+function find(c,id){return list(c).find(x=>String(x.id)===String(id));}
+window.cmdContract=function(c,id,act){const x=c&&find(c,id);if(!x)return err('No such contract');
+  if(act==='accept'){if(x.state!=='offer')return err('This offer is gone');x.state='open';x.due=G.tick+TIME;return ok({msg:'Contract accepted: deliver within '+TIME+' turns.'});}
+  if(act==='decline'){if(x.state!=='offer')return err('This offer is gone');x.state='no';x.end=G.tick;return ok({msg:'Offer declined.'});}
+  if(act==='deliver'){if(x.state!=='open')return err('Nothing to deliver');if((c.res[x.k]||0)<x.qty)return err('You have '+F(c.res[x.k]||0)+' of '+F(x.qty)+' '+RL(x.k));
+    c.res[x.k]-=x.qty;c.res.money=Math.min(CAP.money,(c.res.money||0)+x.pay);c.res.influence=Math.min(CAP.influence,(c.res.influence||0)+x.inf);x.state='done';x.end=G.tick;
+    const o=G.countries[x.from];try{if(o){o.res[x.k]=Math.min(capOf(o,x.k),(o.res[x.k]||0)+x.qty);o.res.money=Math.max(0,(o.res.money||0)-x.pay*0.5);if(typeof relRemember==='function')relRemember(o,c.id,'gift',1);}}catch(e){}
+    c._p272done=(c._p272done||0)+1;return ok({msg:'Delivered. +'+F(x.pay)+' money, +'+x.inf+' influence.'});}
+  return err('Unknown');};
+try{const _rt=runTick;runTick=function(){const r=_rt.apply(this,arguments);try{if(SOLO())tick(ME());}catch(e){}return r;};window.runTick=runTick;}catch(e){}
+window.__p272={tick,makeOffer,list,find};
+
+/* Overview */
+if(typeof VIEWS==='undefined')return;
+const _o=VIEWS.p250o;VIEWS.p250o=v=>{const r=_o(v);try{const c=ME();if(!c||!c._p272)return r;const L=c._p272.filter(x=>x.state==='offer'||x.state==='open');if(!L.length)return r;
+  const rows=L.map(x=>{const o=G.countries[x.from];const nm=o?E(o.name):'a neighbour';const have=c.res[x.k]||0;
+    if(x.state==='offer')return '<div class="p250row"><div class="p250m"><div class="p250t">Export offer from '+nm+'</div><div class="p250s">'+F(x.qty)+' '+RL(x.k)+' within '+TIME+' turns, for '+F(x.pay)+' money and '+x.inf+' influence. Too late costs '+F(Math.round(x.pay*0.2))+'. Offer open '+Math.max(0,OFFER-(G.tick-x.offered))+' more turns.</div></div><div class="p250b"><button class="btn sm p250btn p250main" data-p272="accept" data-id="'+x.id+'">Accept</button><button class="btn sm p250btn" data-p272="decline" data-id="'+x.id+'">Decline</button></div></div>';
+    const can=have>=x.qty;return '<div class="p250row"><div class="p250m"><div class="p250t">Contract for '+nm+': '+F(x.qty)+' '+RL(x.k)+'</div><div class="p250s">'+(x.due-G.tick)+' turns left · you have '+F(have)+' · pays '+F(x.pay)+'</div></div><div class="p250b"><button class="btn sm p250btn'+(can?' p250main':'')+'" data-p272="deliver" data-id="'+x.id+'"'+(can?'':' disabled')+'>Deliver</button></div></div>';}).join('');
+  const html='<section class="p250box p272box"><div class="p250h">Export contracts</div>'+rows+'</section>';const a=[...v.querySelectorAll('.p261bar,.p260train,.p263box,.p270box')].pop()||v.querySelector('.p250top');if(a)a.insertAdjacentHTML('afterend',html);}catch(e){}return r;};
+document.addEventListener('click',e=>{const b=e.target&&e.target.closest&&e.target.closest('[data-p272]');if(!b)return;e.preventDefault();e.stopPropagation();const c=ME();if(!c)return;let r=null;
+  try{r=cmdContract(c,b.dataset.id,b.dataset.p272);}catch(x){r={ok:false,error:'Not possible right now.'};}
+  if(r&&r.ok===false)toast(r.error||'Not possible right now.','bad');else toast((r&&r.data&&r.data.msg)||'Done.','good');try{save();drawTop();}catch(x){}go(view);},true);
+}catch(e){try{console.error('p272',e);}catch(_){}}})();
+</script>
+<script>/*p273*/
+// 20.3 Trade routes and worn-out mines (solo, engine + browser).
+// Worn-out mines: a Deep Mine gives full output for 40 turns, then less, down to half at 120 turns.
+//   Survey (on its row under Build) finds a fresh vein: money, the mine stands still 2 turns, then full output again.
+//   Now and then a rich vein turns up in one of your lands: a Deep Mine there gives 50% more for 20 turns.
+// Trade routes: every Shipyard level opens one route to a nation nearby that is not at war with your alliance.
+//   A route brings money and influence each turn, more the further it goes. A war or a lost partner ends it.
+(function(){try{
+if(typeof window==='undefined'||window.__MP__)return;
+const SOLO=()=>{try{return typeof isSoloGame!=='function'||isSoloGame();}catch(e){return true;}};
+const ME=()=>{try{return G.countries[G.you];}catch(e){return null;}};
+const E=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const F=n=>{try{return fmt(n);}catch(e){return String(Math.round(n||0));}};
+const BK={};try{BUILD.forEach(d=>BK[d.k]=d);}catch(e){}
+const BN=k=>(BK[k]&&BK[k].n)||k;
+const FULL=40,HALF=120,SURVEY_T=2,RICH_T=20;
+/* ---------- mines ---------- */
+function mineFactor(b){if(!b)return 1;if((b._p273s||0)>G.tick)return 0;const age=G.tick-(b._p273t!=null?b._p273t:G.tick);let f=age<=FULL?1:Math.max(0.5,1-0.5*(age-FULL)/(HALF-FULL));if((b._p273rich||0)>G.tick)f*=1.5;return f;}
+function mineStamp(c){try{(c.buildings||[]).forEach(b=>{if(b&&b.k==='deep_mine'&&b._p273t==null)b._p273t=G.tick;});}catch(e){}}
+function mineAdj(c,p){try{const D=BK.deep_mine;if(!D||!D.eff||!D.eff.prod)return;const mines=(c.buildings||[]).filter(b=>b&&b.k==='deep_mine'&&b.lv);if(!mines.length)return;
+  Object.keys(D.eff.prod).forEach(k=>{let tot=0;(c.buildings||[]).forEach(b=>{const d=b&&b.lv&&BK[b.k];const e=d&&d.eff&&d.eff.prod&&d.eff.prod[k];if(e)tot+=e*b.lv;});if(!(tot>0))return;
+    let delta=0;mines.forEach(b=>{const share=D.eff.prod[k]*b.lv/tot;delta+=(p.prod[k]||0)*share*(mineFactor(b)-1);});if(delta){p.prod[k]=(p.prod[k]||0)+delta;if(p.net)p.net[k]=(p.net[k]||0)+delta;}});}catch(e){}}
+window.cmdSurvey=function(c,rid){if(!c)return err('No nation');const b=(c.buildings||[]).find(x=>x&&x.k==='deep_mine'&&(rid==null||x.rid===rid));if(!b)return err('Build a '+BN('deep_mine')+' first');
+  if((b._p273s||0)>G.tick)return err('Survey already running');const age=G.tick-(b._p273t||G.tick);if(age<FULL)return err('This vein is still fresh: '+(FULL-age)+' turns of full output left');
+  const cost=Math.round(2e6*b.lv);if((c.res.money||0)<cost)return err('A survey costs '+F(cost));c.res.money-=cost;b._p273s=G.tick+SURVEY_T;b._p273t=G.tick+SURVEY_T;return ok({msg:'Surveyors found a fresh vein. The mine restarts in '+SURVEY_T+' turns.'});};
+function richTick(c){try{if(G.tick%30!==(c.id%30))return;const mines=(c.buildings||[]).filter(b=>b&&b.k==='deep_mine');const lands=regionsOf(c);if(!lands.length)return;if(Math.random()>0.5)return;
+  const b=mines.length?mines[Math.floor(Math.random()*mines.length)]:null;if(b){b._p273rich=G.tick+RICH_T;if(c.isAI===false){const r=_rgId(b.rid);try{sitrep(c,'eco','Rich vein at '+(r?r.name:'your mine')+': the '+BN('deep_mine')+' there gives 50% more for '+RICH_T+' turns.',{go:'p250b'});}catch(e){}}}}catch(e){}}
+/* ---------- trade routes ---------- */
+function slotsOf(c){const n=bTotal(c,'shipyard');try{if(n>0&&window.__p274&&__p274.owns(c,'harbour'))return n+1;}catch(e){}return n;}
+const routes=c=>c._p273r||(c._p273r=[]);
+function homeOf(c){try{return regionsOf(c)[0];}catch(e){return null;}}
+function hostile(a,b){try{if(a.clan!=null&&b.clan!=null&&typeof clanAtWar==='function'&&clanAtWar(a.clan,b.clan))return true;if(b.vsYou&&a.isAI===false&&(b.vsYou.threat||0)>40)return true;}catch(e){}return false;}
+function partners(c){const h=homeOf(c);if(!h)return [];const used=new Set(routes(c).map(x=>x.to));const out=[];
+  G.countries.forEach(o=>{if(!o||o.retired||o.id===c.id||!regionsOf(o).length||used.has(o.id)||hostile(c,o))return;const r=homeOf(o);const d=Math.hypot(r.x-h.x,r.y-h.y);if(d<80||d>420)return;out.push({o,d});});
+  return out.sort((a,b)=>b.d-a.d);}
+function routeValue(c,x){const lv=Math.max(1,bTotal(c,'shipyard'));return {money:Math.round(3e5*(1+x.d/200)*(1+0.1*(lv-1))),inf:Math.round(5+x.d/60)};}
+window.cmdRoute=function(c,act,to){if(!c)return err('No nation');const R=routes(c);const slots=slotsOf(c);if(slots<1)return err('Build a '+BN('shipyard')+' first');
+  if(act==='open'){if(R.length>=slots)return err('Every '+BN('shipyard')+' level runs one route: upgrade it for another');const P=partners(c);const x=to!=null?P.find(p=>p.o.id===+to):P[0];if(!x)return err('No partner in reach');
+    R.push({to:x.o.id,d:Math.round(x.d),since:G.tick});return ok({msg:'Trade route opened to '+x.o.name+'.'});}
+  if(act==='close'){const i=R.findIndex(r=>r.to===+to);if(i<0)return err('No such route');R.splice(i,1);return ok({msg:'Route closed.'});}
+  return err('Unknown');};
+function routeTick(c){try{const R=c._p273r;if(!R||!R.length)return;const slots=slotsOf(c);
+  for(let i=R.length-1;i>=0;i--){const o=G.countries[R[i].to];const why=!o||o.retired||!regionsOf(o).length?'your partner is gone':hostile(c,o)?'war':i>=slots?'not enough '+BN('shipyard')+' levels':'';
+    if(why){const nm=o?o.name:'a partner';R.splice(i,1);if(c.isAI===false){try{sitrep(c,'trade','Trade route to '+nm+' ended: '+why+'.',{go:'p250b',sev:2});}catch(e){}}}}}catch(e){}}
+function routeAdj(c,p){try{const R=c._p273r;if(!R||!R.length)return;R.forEach(x=>{const v=routeValue(c,x);p.prod.money=(p.prod.money||0)+v.money;p.prod.influence=(p.prod.influence||0)+v.inf;if(p.net){p.net.money=(p.net.money||0)+v.money;p.net.influence=(p.net.influence||0)+v.inf;}});}catch(e){}}
+/* computer nations: open routes when they have a shipyard, survey worn mines */
+function aiTick(c){try{if(G.tick%15!==(c.id%15))return;if(slotsOf(c)>routes(c).length)cmdRoute(c,'open');
+  (c.buildings||[]).forEach(b=>{if(b&&b.k==='deep_mine'&&mineFactor(b)<0.7&&(c.res.money||0)>2e6*b.lv*3)cmdSurvey(c,b.rid);});}catch(e){}}
+
+if(typeof projection==='function'){const _pj=projection;projection=function(c){const p=_pj.apply(this,arguments);try{if(c&&!c._fog&&p&&p.prod){mineAdj(c,p);routeAdj(c,p);}}catch(e){}return p;};try{window.projection=projection;}catch(e){}}
+try{const _rt=runTick;runTick=function(){const r=_rt.apply(this,arguments);try{if(SOLO())G.countries.forEach(c=>{if(!c||c.retired||!regionsOf(c).length)return;mineStamp(c);routeTick(c);richTick(c);if(c.isAI)aiTick(c);});}catch(e){}return r;};window.runTick=runTick;}catch(e){}
+window.__p273={mineFactor,mineStamp,partners,routeValue,routeTick,richTick};
+
+/* rows under Build */
+if(typeof VIEWS==='undefined')return;
+const _b=VIEWS.p250b;VIEWS.p250b=v=>{const r=_b(v);try{const c=ME();if(!c)return r;
+  const row=k=>{const btn=v.querySelector('[data-p250="bld"][data-id="'+k+'"]');const rw=btn?btn.closest('.p250row'):null;return rw&&rw.querySelector('.p250m');};
+  const m=row('deep_mine');const mines=(c.buildings||[]).filter(b=>b&&b.k==='deep_mine');if(m&&mines.length&&!m.querySelector('.p273m')){mineStamp(c);
+    m.insertAdjacentHTML('beforeend',mines.map(b=>{const f=mineFactor(b);const rg=_rgId(b.rid);const age=G.tick-(b._p273t||G.tick);const s=(b._p273s||0)>G.tick?'surveying, back in '+(b._p273s-G.tick)+' turns':(b._p273rich||0)>G.tick?'<b class="good">rich vein</b>, '+Math.round(f*100)+'% output':age<FULL?'fresh vein, full output for '+(FULL-age)+' more turns':'vein wearing out: '+Math.round(f*100)+'% output';
+      return '<div class="p270c p273m">'+(rg?E(rg.name)+': ':'')+s+(age>=FULL&&!((b._p273s||0)>G.tick)?' <button class="p270b" data-p273="survey" data-v="'+b.rid+'">Survey ('+F(2e6*b.lv)+')</button>':'')+'</div>';}).join(''));}
+  const s=row('shipyard');if(s&&bTotal(c,'shipyard')>0&&!s.querySelector('.p273r')){const R=routes(c);const slots=slotsOf(c);
+    const lines=R.map(x=>{const o=G.countries[x.to];const val=routeValue(c,x);return '<div class="p270c p273r">Route to '+(o?E(o.name):'?')+': +'+F(val.money)+' money, +'+val.inf+' influence a turn <button class="p270b" data-p273="close" data-v="'+x.to+'">Close</button></div>';}).join('');
+    const P=R.length<slots?partners(c).slice(0,3):[];const open=P.length?'<div class="p270c p273r">Open a route ('+(slots-R.length)+' free): '+P.map(x=>'<button class="p270b" data-p273="open" data-v="'+x.o.id+'">'+E(x.o.name)+' +'+F(routeValue(c,x).money)+'</button>').join('')+'</div>':(R.length<slots?'<div class="p270c p273r">No partner in reach right now.</div>':'');
+    s.insertAdjacentHTML('beforeend',lines+open);}}catch(e){}return r;};
+document.addEventListener('click',e=>{const b=e.target&&e.target.closest&&e.target.closest('[data-p273]');if(!b)return;e.preventDefault();e.stopPropagation();const c=ME();if(!c)return;const a=b.dataset.p273,val=b.dataset.v;let r=null;
+  try{r=a==='survey'?cmdSurvey(c,+val):cmdRoute(c,a,val);}catch(x){r={ok:false,error:'Not possible right now.'};}
+  if(r&&r.ok===false)toast(r.error||'Not possible right now.','bad');else toast((r&&r.data&&r.data.msg)||'Done.','good');try{save();drawTop();}catch(x){}go(view);},true);
+}catch(e){try{console.error('p273',e);}catch(_){}}})();
+</script>
+<script>/*p274*/
+// 20.4 World wonders and veterans (solo, engine + browser).
+// World wonders: five per season, each can stand only once in the world. Build one on a land of yours (Build page,
+//   bottom box). It takes 12 turns; who loses the land loses the wonder. A new season starts with all five free again.
+// Veterans: your army earns a rank from battles: Seasoned, Veteran, Elite. Won battles give experience, lost ones cost it.
+//   Elite is the top rank, one army per nation. The rank adds attack (and a little defence) in every battle.
+(function(){try{
+if(typeof window==='undefined'||window.__MP__)return;
+const SOLO=()=>{try{return typeof isSoloGame!=='function'||isSoloGame();}catch(e){return true;}};
+const ME=()=>{try{return G.countries[G.you];}catch(e){return null;}};
+const E=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const F=n=>{try{return fmt(n);}catch(e){return String(Math.round(n||0));}};
+const RL=k=>{try{return ((RMETA[k]&&RMETA[k].l)||k).toLowerCase();}catch(e){return k;}};
+/* ---------- wonders ---------- */
+const WON={
+  library:{n:'Great Library',d:'+10% research',mult:{research:0.10}},
+  colossus:{n:'Colossus',d:'+8% money',mult:{money:0.08}},
+  granary:{n:'Great Granary',d:'+15% food',mult:{food:0.15}},
+  harbour:{n:'Great Harbour',d:'one extra trade route, routes pay 20% more'},
+  citadel:{n:'Iron Citadel',d:'its land defends with 50% more'}};
+const COST={money:1.2e8,steel:6e4,electronics:3e4};const BUILD_T=12;
+function seasonKey(){try{return ((G.season&&G.season.num)||0)+':'+((G.season&&G.season.startTick)||0);}catch(e){return '0';}}
+function W(){if(!G._p274w||G._p274w.key!==seasonKey())G._p274w={key:seasonKey(),w:{}};return G._p274w.w;}
+function holder(k){const x=W()[k];if(!x||!x.done)return null;const r=_rgId(x.rid);if(!r||r.owner==null)return null;return {c:G.countries[r.owner],r};}
+function owns(c,k){const h=holder(k);return !!(h&&h.c&&c&&h.c.id===c.id);}
+function costOk(c){return Object.keys(COST).every(k=>(c.res[k]||0)>=COST[k]);}
+const costTxt=()=>Object.keys(COST).map(k=>F(COST[k])+' '+RL(k)).join(', ');
+window.cmdWonder=function(c,k,rid){const o=WON[k];if(!c)return err('No nation');if(!o)return err('Unknown wonder');const x=W()[k];
+  if(x&&x.done)return err(o.n+' already stands this season');if(x&&x.by!=null&&x.by!==c.id&&x.until>G.tick)return err('Someone else is building it');if(x&&x.by===c.id)return err('You are building it already');
+  if(Object.values(W()).some(y=>y&&!y.done&&y.by===c.id))return err('Finish your other wonder first');
+  const r=_rgId(rid!=null?rid:(regionsOf(c)[0]||{}).id);if(!r||r.owner!==c.id)return err('Choose one of your lands');if(Object.values(W()).some(y=>y&&y.rid===r.id))return err('This land has a wonder already');
+  if(!costOk(c))return err('A wonder costs '+costTxt());Object.keys(COST).forEach(q=>c.res[q]-=COST[q]);W()[k]={by:c.id,rid:r.id,until:G.tick+BUILD_T,done:false};return ok({msg:o.n+' started at '+r.name+': ready in '+BUILD_T+' turns.'});};
+function wonderTick(){try{const w=W();Object.keys(w).forEach(k=>{const x=w[k];if(!x||x.done)return;const r=_rgId(x.rid);const c=G.countries[x.by];
+    if(!r||!c||r.owner!==c.id){delete w[k];if(c&&c.isAI===false){try{sitrep(c,'build','The works on the '+WON[k].n+' stopped: you lost the land.',{go:'p250b',sev:2});}catch(e){}}return;}
+    if(G.tick>=x.until){x.done=true;x.at=G.tick;try{news('territory',c.name+' finished the '+WON[k].n+' at '+r.name+'.');}catch(e){}if(c.isAI===false){try{sitrep(c,'build','The '+WON[k].n+' stands: '+WON[k].d+'.',{go:'p250b'});}catch(e){}}}});}catch(e){}}
+function aiWonder(c){try{if(G.tick%25!==(c.id%25)||!costOk(c)||(c.res.money||0)<COST.money*2)return;const free=Object.keys(WON).filter(k=>!W()[k]);if(!free.length)return;const L=regionsOf(c);if(L.length<6)return;
+  cmdWonder(c,free[Math.floor(Math.random()*free.length)],L[0].id);}catch(e){}}
+/* ---------- veterans ---------- */
+const RANK=[{n:'Recruits',xp:0,a:0,d:0},{n:'Seasoned',xp:5,a:0.04,d:0.02},{n:'Veteran',xp:15,a:0.08,d:0.04},{n:'Elite',xp:30,a:0.12,d:0.06}];
+function rank(c){const x=(c&&c._p274xp)||0;let i=0;RANK.forEach((r,j)=>{if(x>=r.xp)i=j;});return i;}
+function addXp(c,n,why){try{if(!c)return;const r0=rank(c);c._p274xp=Math.max(0,Math.min(60,(c._p274xp||0)+n));const r1=rank(c);if(r1!==r0&&c.isAI===false){try{sitrep(c,'battle',(r1>r0?'Your army is now ':'Your army fell back to ')+RANK[r1].n+(RANK[r1].a?' (+'+Math.round(RANK[r1].a*100)+'% attack)':'')+'.',{go:'p250a'});}catch(e){}}}catch(e){}}
+if(typeof finalizeBattle==='function'){const _fb=finalizeBattle;finalizeBattle=function(c,f,r,defC,R,retreated){const res=_fb.apply(this,arguments);try{if(SOLO()&&R){if(R.captured)addXp(c,2);else if(R.success)addXp(c,1);else addXp(c,-2);
+      if(defC&&defC!==c){if(R.captured)addXp(defC,-3);else if(!R.success)addXp(defC,1);}}}catch(e){}return res;};try{window.finalizeBattle=finalizeBattle;}catch(e){}}
+/* ---------- the effects ---------- */
+if(typeof resolveBattle==='function'){const _rb=resolveBattle;resolveBattle=function(atkC,atkU,r,defC){const R=_rb.apply(this,arguments);try{if(!R||!(R.ratio>0))return R;
+    const ra=atkC?RANK[rank(atkC)].a:0;const def=r&&r.owner!=null?G.countries[r.owner]:defC;const rd=def&&def!==atkC?RANK[rank(def)].d:0;const cit=(def&&holder('citadel')&&holder('citadel').r.id===(r&&r.id))?0.5:0;
+    const m=(1+ra)/((1+rd)*(1+cit));if(m!==1){R.ratio*=m;const am=(R.detail&&R.detail.atkM)!=null?R.detail.atkM:1;R.success=R.ratio>=1;R.captured=R.ratio>=1.25&&am>.3;if(R.detail)R.detail.ratio=+R.ratio.toFixed(3);
+      try{if(ra)R.phases.push({p:'Rank',t:'Your army is '+RANK[rank(atkC)].n+': +'+Math.round(ra*100)+'% attack',win:true});if(cit)R.phases.push({p:'Wonder',t:'The Iron Citadel: +50% defence',win:false});}catch(e){}}}catch(e){}return R;};try{window.resolveBattle=resolveBattle;}catch(e){}}
+if(typeof projection==='function'){const _pj=projection;projection=function(c){const p=_pj.apply(this,arguments);try{if(!c||c._fog||!p||!p.prod)return p;Object.keys(WON).forEach(k=>{const m=WON[k].mult;if(!m||!owns(c,k))return;
+    for(const q in m){const d=(p.prod[q]||0)*m[q];p.prod[q]=(p.prod[q]||0)+d;if(p.net)p.net[q]=(p.net[q]||0)+d;}});
+    if(owns(c,'harbour')&&c._p273r&&c._p273r.length&&window.__p273){c._p273r.forEach(x=>{const v=__p273.routeValue(c,x);const d=v.money*0.2;p.prod.money+=d;if(p.net)p.net.money+=d;});}}catch(e){}return p;};try{window.projection=projection;}catch(e){}}
+// the extra route: p273 counts the Great Harbour as one more Shipyard level for routes (slotsOf)
+
+try{const _rt=runTick;runTick=function(){const r=_rt.apply(this,arguments);try{if(SOLO()){wonderTick();G.countries.forEach(c=>{if(c&&c.isAI&&!c.retired&&regionsOf(c).length)aiWonder(c);});}}catch(e){}return r;};window.runTick=runTick;}catch(e){}
+window.__p274={WON,W,holder,owns,rank,addXp,RANK,wonderTick,COST};
+
+/* ---------- pages ---------- */
+if(typeof VIEWS==='undefined')return;
+const _b=VIEWS.p250b;VIEWS.p250b=v=>{const r=_b(v);try{const c=ME();if(!c||v.querySelector('.p274box'))return r;const rid=window._p250rid;const rg=_rgId(rid);
+  const rows=Object.keys(WON).map(k=>{const o=WON[k];const x=W()[k];const h=holder(k);let st='',btn='';
+    if(h)st=(h.c&&h.c.id===c.id?'<b class="good">yours</b>':'stands in '+E(h.c?h.c.name:'?'))+' at '+E(h.r.name);
+    else if(x&&!x.done){const by=G.countries[x.by];st=(x.by===c.id?'<b class="good">you build it</b>':E(by?by.name:'someone')+' builds it')+', ready in '+Math.max(0,x.until-G.tick)+' turns';}
+    else{st='free';btn='<button class="btn sm p250btn" data-p274="'+k+'">Build here</button>';}
+    return '<div class="p250row"><div class="p250m"><div class="p250t">'+o.n+'</div><div class="p250s">'+o.d+' · '+st+'</div></div><div class="p250b">'+btn+'</div></div>';}).join('');
+  v.insertAdjacentHTML('beforeend','<section class="p250box p274box"><div class="p250h">World wonders · one of each in the world this season</div><div class="p250row"><div class="p250m"><div class="p250s">Cost: '+costTxt()+' · '+BUILD_T+' turns · built on '+(rg?E(rg.name):'your first land')+'. Lose the land, lose the wonder.</div></div></div>'+rows+'</section>');
+  const all=v.querySelector('.p264all');if(all)v.appendChild(all);}catch(e){}return r;};
+const _a=VIEWS.p250a;VIEWS.p250a=v=>{const r=_a(v);try{const c=ME();if(!c||v.querySelector('.p274rank'))return r;const i=rank(c),R0=RANK[i],nx=RANK[i+1];
+  const html='<div class="p250row p274rank"><div class="p250m"><div class="p250t">Army rank: '+R0.n+(R0.a?' (+'+Math.round(R0.a*100)+'% attack, +'+Math.round(R0.d*100)+'% defence)':'')+'</div><div class="p250s">'+(nx?((c._p274xp||0)+' of '+nx.xp+' experience to '+nx.n+'. Won battles add experience, lost ones cost it.'):'The top rank: one Elite army per nation. Lost battles can cost it.')+'</div></div></div>';
+  const top=v.querySelector('.p250top');if(top)top.insertAdjacentHTML('afterend',html);}catch(e){}return r;};
+document.addEventListener('click',e=>{const b=e.target&&e.target.closest&&e.target.closest('[data-p274]');if(!b)return;e.preventDefault();e.stopPropagation();const c=ME();if(!c)return;let r=null;
+  try{r=cmdWonder(c,b.dataset.p274,window._p250rid);}catch(x){r={ok:false,error:'Not possible right now.'};}
+  if(r&&r.ok===false)toast(r.error||'Not possible right now.','bad');else toast((r&&r.data&&r.data.msg)||'Done.','good');try{save();drawTop();}catch(x){}go(view);},true);
+}catch(e){try{console.error('p274',e);}catch(_){}}})();
 </script>
 </body>
 </html>
