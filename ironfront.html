@@ -16,7 +16,7 @@
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="https://playterrastate.nl/img/ironfront-share.jpg">
 <meta name="author" content="Wim Kamphorst">
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"VideoGame","@id":"https://playterrastate.nl/ironfront.html#game","name":"Ironfront","url":"https://playterrastate.nl/ironfront.html","description":"Free WW2-style grand strategy in your browser. Lead one invented nation in a 1940s world at war, hold 2 of the 3 Capital Sectors, and make every tick a decision: battle orders, field works, radio intel and feints. No account, no download.","image":"https://playterrastate.nl/img/ironfront-share.jpg","genre":["Strategy","Grand strategy","Turn-based strategy","War game","Browser game"],"gamePlatform":["Web browser","Windows","macOS","Linux","Android","iOS"],"applicationCategory":"Game","operatingSystem":"Any (web browser)","playMode":"SinglePlayer","inLanguage":"en","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"EUR","availability":"https://schema.org/InStock"},"author":{"@type":"Person","@id":"https://playterrastate.nl/#wim","name":"Wim Kamphorst","url":"https://wimkamphorst.nl"},"publisher":{"@type":"Person","@id":"https://playterrastate.nl/#wim","name":"Wim Kamphorst","url":"https://wimkamphorst.nl"},"softwareVersion":"19.3","dateModified":"2026-11-05","sameAs":["https://wimkamphorstcoaching.itch.io/ironfront"]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"VideoGame","@id":"https://playterrastate.nl/ironfront.html#game","name":"Ironfront","url":"https://playterrastate.nl/ironfront.html","description":"Free WW2-style grand strategy in your browser. Lead one invented nation in a 1940s world at war, hold 2 of the 3 Capital Sectors, and make every tick a decision: battle orders, field works, radio intel and feints. No account, no download.","image":"https://playterrastate.nl/img/ironfront-share.jpg","genre":["Strategy","Grand strategy","Turn-based strategy","War game","Browser game"],"gamePlatform":["Web browser","Windows","macOS","Linux","Android","iOS"],"applicationCategory":"Game","operatingSystem":"Any (web browser)","playMode":"SinglePlayer","inLanguage":"en","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"EUR","availability":"https://schema.org/InStock"},"author":{"@type":"Person","@id":"https://playterrastate.nl/#wim","name":"Wim Kamphorst","url":"https://wimkamphorst.nl"},"publisher":{"@type":"Person","@id":"https://playterrastate.nl/#wim","name":"Wim Kamphorst","url":"https://wimkamphorst.nl"},"softwareVersion":"19.4","dateModified":"2026-11-05","sameAs":["https://wimkamphorstcoaching.itch.io/ironfront"]}</script>
 <link rel="manifest" href="ironfront.webmanifest"><meta name="theme-color" content="#14160c"><link rel="icon" href="icons/ironfront-64.png"><link rel="apple-touch-icon" href="icons/ironfront-180.png">
 <script>window.__MP_URL__=''; /* '' = live multiplayer not open yet */ if('serviceWorker' in navigator)addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));</script>
 <script data-goatcounter="https://playterrastatenl.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
@@ -24616,6 +24616,28 @@ function trimAll(){try{if(!G||!G.countries||G._p262trim)return;G._p262trim=1;G.c
 window.__p262={buildOne,expandOne,trimAll,room};
 try{const _rt=runTick;runTick=function(){trimAll();return _rt.apply(this,arguments);};window.runTick=runTick;}catch(e){}
 }catch(e){try{console.error('p262',e);}catch(_){}}})();
+</script>
+<script>/*p263*/
+// 19.4 "Nothing lost without a warning" (solo, browser): when the treasury or the storage is (almost) full,
+// Overview says so on top, with a button to spend it. What is made above the cap is lost, and now you see it.
+(function(){try{
+if(window.__MP__||typeof VIEWS==='undefined'||typeof go!=='function')return;
+const ME=()=>{try{return G.countries[G.you];}catch(e){return null;}};
+const E=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const B=(a,label,main)=>'<button class="btn sm p250btn'+(main?' p250main':'')+'" data-p263="'+a+'">'+label+'</button>';
+const row=(main,sub,btns)=>'<div class="p250row alert"><div class="p250m"><div class="p250t">'+main+'</div><div class="p250s">'+sub+'</div></div><div class="p250b">'+btns+'</div></div>';
+function full(c){const out={money:false,res:[]};try{out.money=(c.res.money||0)>=CAP.money*0.95;let pj=null;try{pj=projection(c);}catch(e){}
+  Object.keys(CAP).forEach(k=>{if(k==='money'||k==='research'||k==='influence')return;const cap=capOf(c,k);const net=pj&&pj.net?(pj.net[k]||0):0;if(cap>0&&(c.res[k]||0)>=cap*0.98&&net>0)out.res.push(k);});}catch(e){}return out;}
+window.__p263full=full;
+function box(c){const f=full(c);let h='';
+  if(f.money)h+=row('<b class="warn">Treasury almost full</b>','above '+E(fmt(CAP.money,true))+' your income is lost. Spend it on troops or buildings.',B('troops','Train troops',true)+B('build','Build'));
+  if(f.res.length){let silo=false;try{silo=buildUnlocked(c,BUILD.find(d=>d.k==='silo'));}catch(e){}
+    h+=row('<b class="warn">Storage full: '+f.res.map(k=>E((RMETA[k]&&RMETA[k].l)||k)).join(', ')+'</b>','what you make above the cap is lost. Sell it, or build more storage.',B('sell','Sell',true)+(silo?B('silo','Build silos'):''));}
+  return h?'<section class="p250box pin p263box">'+h+'</section>':'';}
+const _o=VIEWS.p250o;VIEWS.p250o=v=>{const r=_o(v);try{const c=ME();const h=c?box(c):'';if(h){const a=v.querySelector('.p261bar')||v.querySelector('.p250top');if(a)a.insertAdjacentHTML('afterend',h);else v.insertAdjacentHTML('afterbegin',h);}}catch(e){}return r;};
+document.addEventListener('click',e=>{const b=e.target&&e.target.closest&&e.target.closest('[data-p263]');if(!b)return;e.preventDefault();e.stopPropagation();const a=b.dataset.p263;const st=window._p250tab||(window._p250tab={});
+  try{if(a==='troops'){st.p250b='Troops';go('p250b');}else if(a==='build'||a==='silo'){st.p250b='Buildings';go('p250b');}else if(a==='sell'){st.p250m='Prices';go('p250m');}}catch(x){}},true);
+}catch(e){try{console.error('p263',e);}catch(_){}}})();
 </script>
 </body>
 </html>
