@@ -16,7 +16,7 @@
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="https://playterrastate.nl/img/v4/romaterra-share.jpg">
 <meta name="author" content="Wim Kamphorst">
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"VideoGame","@id":"https://playterrastate.nl/romaterra.html#game","name":"Romaterra","url":"https://playterrastate.nl/romaterra.html","description":"Free Roman grand strategy in your browser. Rule a people of the ancient world against hundreds of AI rivals, take Roma, raise the Imperial Palace and hold it. No account, no download.","image":"https://playterrastate.nl/img/v4/romaterra-share.jpg","genre":["Strategy","Grand strategy","Turn-based strategy","4X","Browser game"],"gamePlatform":["Web browser","Windows","macOS","Linux","Android","iOS"],"applicationCategory":"Game","operatingSystem":"Any (web browser)","playMode":"SinglePlayer","inLanguage":"en","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"EUR","availability":"https://schema.org/InStock"},"author":{"@type":"Person","@id":"https://playterrastate.nl/#wim","name":"Wim Kamphorst","url":"https://wimkamphorst.nl"},"publisher":{"@type":"Person","@id":"https://playterrastate.nl/#wim","name":"Wim Kamphorst","url":"https://wimkamphorst.nl"},"softwareVersion":"20.4","sameAs":["https://wimkamphorstcoaching.itch.io/romaterra"]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"VideoGame","@id":"https://playterrastate.nl/romaterra.html#game","name":"Romaterra","url":"https://playterrastate.nl/romaterra.html","description":"Free Roman grand strategy in your browser. Rule a people of the ancient world against hundreds of AI rivals, take Roma, raise the Imperial Palace and hold it. No account, no download.","image":"https://playterrastate.nl/img/v4/romaterra-share.jpg","genre":["Strategy","Grand strategy","Turn-based strategy","4X","Browser game"],"gamePlatform":["Web browser","Windows","macOS","Linux","Android","iOS"],"applicationCategory":"Game","operatingSystem":"Any (web browser)","playMode":"SinglePlayer","inLanguage":"en","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"EUR","availability":"https://schema.org/InStock"},"author":{"@type":"Person","@id":"https://playterrastate.nl/#wim","name":"Wim Kamphorst","url":"https://wimkamphorst.nl"},"publisher":{"@type":"Person","@id":"https://playterrastate.nl/#wim","name":"Wim Kamphorst","url":"https://wimkamphorst.nl"},"softwareVersion":"20.4.1","sameAs":["https://wimkamphorstcoaching.itch.io/romaterra"]}</script>
 <link rel="manifest" href="romaterra.webmanifest"><meta name="theme-color" content="#1a1410"><link rel="icon" href="icons/romaterra-64.png"><link rel="apple-touch-icon" href="icons/romaterra-180.png">
 <script>window.__MP_URL__=''; /* '' = live multiplayer not open yet */ if('serviceWorker' in navigator)addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));</script>
 <script data-goatcounter="https://playterrastatenl.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
@@ -24911,6 +24911,25 @@ document.addEventListener('click',e=>{const b=e.target&&e.target.closest&&e.targ
   try{r=cmdWonder(c,b.dataset.p274,window._p250rid);}catch(x){r={ok:false,error:'Not possible right now.'};}
   if(r&&r.ok===false)toast(r.error||'Not possible right now.','bad');else toast((r&&r.data&&r.data.msg)||'Done.','good');try{save();drawTop();}catch(x){}go(view);},true);
 }catch(e){try{console.error('p274',e);}catch(_){}}})();
+</script>
+<script>/*p275*/
+// 20.4.1 Lands › Map: the land names no longer pile on top of each other and on top of the dots. The map shows the
+// dots only; the land you tap gets its name above it, and the row below the map shows its full name and buttons, as before.
+// Hovering a dot with a mouse shows its name too.
+(function(){try{
+if(typeof window==='undefined'||window.__MP__)return;
+function fix(svg){try{if(!svg||svg.dataset.p275)return;svg.dataset.p275='1';svg.querySelectorAll('.p268r').forEach(g=>{const t=g.querySelector('text');const c=g.querySelector('circle');
+    const full=t?t.textContent:'';let nm=full;if(!nm){try{const r=_rgId(+g.dataset.rid);nm=r?r.name:'';}catch(e){}}
+    if(t)t.classList.add('p275lab');else if(nm&&c){const n=document.createElementNS('http://www.w3.org/2000/svg','text');const rr=parseFloat(c.getAttribute('r'))||2;
+      n.setAttribute('x',c.getAttribute('cx'));n.setAttribute('y',(parseFloat(c.getAttribute('cy'))-rr*1.6).toFixed(1));n.setAttribute('font-size',(rr*1.25).toFixed(1));n.textContent=nm;n.classList.add('p275lab');g.appendChild(n);}
+    if(nm&&!g.querySelector('title')){const ti=document.createElementNS('http://www.w3.org/2000/svg','title');ti.textContent=nm;g.appendChild(ti);}});}catch(e){}}
+function scan(){try{document.querySelectorAll('svg.p268svg:not([data-p275])').forEach(fix);}catch(e){}}
+const v=document.getElementById('view')||document.body;new MutationObserver(()=>{if(!scan._q)scan._q=requestAnimationFrame(()=>{scan._q=0;scan();});}).observe(v,{childList:true,subtree:true});
+const st=document.createElement('style');st.textContent=`.p268svg .p275lab{display:none}.p268svg .p268r.sel .p275lab{display:inline}.p268svg .p268r.sel{position:relative}.p268svg .p268r.sel text{fill:var(--hi,#F59E0B)}`;document.head.appendChild(st);
+// the tapped land is drawn last, so its name sits on top of the other dots
+document.addEventListener('click',e=>{const g=e.target&&e.target.closest&&e.target.closest('.p268r');if(!g)return;setTimeout(()=>{try{if(g.classList.contains('sel'))g.parentNode.appendChild(g);}catch(x){}},0);},true);
+scan();window.__p275={fix};
+}catch(e){try{console.error('p275',e);}catch(_){}}})();
 </script>
 </body>
 </html>
