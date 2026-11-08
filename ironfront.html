@@ -16,7 +16,7 @@
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="https://playterrastate.nl/img/ironfront-share.jpg">
 <meta name="author" content="Wim Kamphorst">
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"VideoGame","@id":"https://playterrastate.nl/ironfront.html#game","name":"Ironfront","url":"https://playterrastate.nl/ironfront.html","description":"Free WW2-style grand strategy in your browser. Lead one invented nation in a 1940s world at war, hold 2 of the 3 Capital Sectors, and make every tick a decision: battle orders, field works, radio intel and feints. No account, no download.","image":"https://playterrastate.nl/img/ironfront-share.jpg","genre":["Strategy","Grand strategy","Turn-based strategy","War game","Browser game"],"gamePlatform":["Web browser","Windows","macOS","Linux","Android","iOS"],"applicationCategory":"Game","operatingSystem":"Any (web browser)","playMode":"SinglePlayer","inLanguage":"en","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"EUR","availability":"https://schema.org/InStock"},"author":{"@type":"Person","@id":"https://playterrastate.nl/#wim","name":"Wim Kamphorst","url":"https://wimkamphorst.nl"},"publisher":{"@type":"Person","@id":"https://playterrastate.nl/#wim","name":"Wim Kamphorst","url":"https://wimkamphorst.nl"},"softwareVersion":"20.8","dateModified":"2026-11-05","sameAs":["https://wimkamphorstcoaching.itch.io/ironfront"]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"VideoGame","@id":"https://playterrastate.nl/ironfront.html#game","name":"Ironfront","url":"https://playterrastate.nl/ironfront.html","description":"Free WW2-style grand strategy in your browser. Lead one invented nation in a 1940s world at war, hold 2 of the 3 Capital Sectors, and make every tick a decision: battle orders, field works, radio intel and feints. No account, no download.","image":"https://playterrastate.nl/img/ironfront-share.jpg","genre":["Strategy","Grand strategy","Turn-based strategy","War game","Browser game"],"gamePlatform":["Web browser","Windows","macOS","Linux","Android","iOS"],"applicationCategory":"Game","operatingSystem":"Any (web browser)","playMode":"SinglePlayer","inLanguage":"en","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"EUR","availability":"https://schema.org/InStock"},"author":{"@type":"Person","@id":"https://playterrastate.nl/#wim","name":"Wim Kamphorst","url":"https://wimkamphorst.nl"},"publisher":{"@type":"Person","@id":"https://playterrastate.nl/#wim","name":"Wim Kamphorst","url":"https://wimkamphorst.nl"},"softwareVersion":"20.9","dateModified":"2026-11-05","sameAs":["https://wimkamphorstcoaching.itch.io/ironfront"]}</script>
 <link rel="manifest" href="ironfront.webmanifest"><meta name="theme-color" content="#14160c"><link rel="icon" href="icons/ironfront-64.png"><link rel="apple-touch-icon" href="icons/ironfront-180.png">
 <script>window.__MP_URL__=''; /* '' = live multiplayer not open yet */ if('serviceWorker' in navigator)addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));</script>
 <script data-goatcounter="https://playterrastatenl.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
@@ -25786,7 +25786,7 @@ P13.forEach(k=>{const f=VIEWS&&VIEWS[k];if(typeof f!=='function')return;VIEWS[k]
 function learn(k){if(MEM[k])return MEM[k];try{const h=document.createElement('div');h.style.display='none';document.body.appendChild(h);const sv=window._p250tab?Object.assign({},window._p250tab):null;VIEWS[k](h);h.remove();if(sv)window._p250tab=sv;}catch(e){}return MEM[k];}
 function classicBar(){try{const k=window.__p250classic;if(!k||typeof view==='undefined'||view!==k){const vv=document.getElementById('view');if(vv)vv.classList.remove('p279c');return;}const pg=ORIG[k];if(!pg)return;const m=learn(pg);if(!m)return;
     const hl=()=>document.querySelectorAll('.p250nav [data-k],.p250bn [data-k]').forEach(a=>a.classList.toggle('on',a.dataset.k===pg));hl();setTimeout(hl,0);
-    const v=document.getElementById('view');if(!v)return;v.classList.add('p279c');
+    const v=document.getElementById('view');if(!v)return;v.classList.add('p279c');v.classList.add('p250v');
     const place=b=>{const top=v.querySelector(':scope>.p250top');const want=top?top.nextElementSibling:v.firstElementChild;if(want!==b){if(top)top.insertAdjacentElement('afterend',b);else v.insertBefore(b,v.firstChild);}};
     const had=v.querySelector(':scope>.p279bar');if(had){place(had);return;}
     const bar=document.createElement('div');bar.className='p250tabs p266 p279bar';bar.setAttribute('role','tablist');
@@ -25844,7 +25844,8 @@ function goalRow(c){try{if(typeof nexus!=='function')return '';const nx=nexus();
   const who=o?E(o.tag||o.name):'nobody';
   let warn='';if(o&&nx.ccBuild)warn=who+' builds the Command Center: ready in '+T(left);else if(o&&nx.commandCenter&&nx.ccHolder===o.id)warn=who+' wins the season in '+T(H-held);
   const btn=!intel?'<button type="button" class="btn sm p250btn p250main" data-p250="scout" data-id="'+nx.id+'">Scout it</button>':atk>def*1.1?'<button type="button" class="btn sm p250btn p250main" data-p250="take" data-id="'+nx.id+'">Take it</button>':'<button type="button" class="btn sm p250btn'+(warn?' p250main':'')+'" data-p278calc="a|'+nx.id+'">Plan it</button>';
-  return row(warn?'bad':'', (warn?'<b class="bad">'+warn+'</b> · ':'')+'Take the Nexus '+xy, 'held by '+who+' · defence '+(intel?F(def):'unknown, scout it first')+' · your army '+F(atk)+(intel&&atk<=def*1.1?' · you need '+F(def*1.1-atk)+' more':''),btn);}catch(e){return '';}}
+  const ally=c.clan!=null?'<button type="button" class="btn sm p250btn'+(warn||atk<=def*1.1?' p250main':'')+'" data-p278acs="'+nx.id+'">Attack with alliance</button>':'';
+  return row(warn?'bad':'', (warn?'<b class="bad">'+warn+'</b> · ':'')+'Take the Nexus '+xy, 'held by '+who+' · defence '+(intel?F(def):'unknown, scout it first')+' · your army '+F(atk)+(intel&&atk<=def*1.1?' · you need '+F(def*1.1-atk)+' more':''),ally+btn);}catch(e){return '';}}
 if(VIEWS&&VIEWS.p250o){const _o15=VIEWS.p250o;VIEWS.p250o=function(v){const r=_o15.apply(this,arguments);try{const c=ME();if(!c)return r;const h=goalRow(c);if(!h)return r;
   const box=[...v.querySelectorAll(':scope>.p250box:not(.pin)')].find(b=>b.dataset.p268t==='Do now')||v.querySelector(':scope>.p250box:not(.pin)');if(!box)return r;
   const hd=box.querySelector(':scope>.p250h');if(hd)hd.insertAdjacentHTML('afterend',h);else box.insertAdjacentHTML('afterbegin',h);}catch(e){}return r;};}
@@ -25970,7 +25971,65 @@ document.addEventListener('click',e=>{const b=e.target&&e.target.closest&&e.targ
 /* ---------- 22. 20.8 Side menu: compact. More in two columns, "All full screens" folded (they are tabs on the pages now),
    one line per screen. Nothing removed. ---------- */
 function sideFix(){try{document.querySelectorAll('#side details.p264full,.p250nav details.p264full').forEach(d=>{if(d.dataset.p284)return;d.dataset.p284=1;let o=null;try{o=localStorage.getItem('p284full');}catch(e){}d.open=o==='1';d.addEventListener('toggle',()=>{try{localStorage.setItem('p284full',d.open?'1':'0');}catch(e){}});});}catch(e){}}
+
+// phone: the More sheet shows the same menu as the computer (pages first, then More), not the old menu
+if(typeof openMore==='function'){const _om22=openMore;openMore=function(){const r=_om22.apply(this,arguments);try{const sh=document.querySelector('#moresheet .sheet');const nav=document.querySelector('.p250nav');if(sh&&nav&&!sh.querySelector('.p284m')){
+    const bottom=['p250o','p250a','p250l','p250b'];const items=[];
+    nav.querySelectorAll(':scope>a.p250n2').forEach(a=>{if(bottom.indexOf(a.dataset.id)<0)items.push([a.dataset.id,(a.querySelector('span')||a).textContent.trim()]);});
+    nav.querySelectorAll('details.p250more>a').forEach(a=>{if(a.style.display==='none')return;if(items.some(x=>x[0]===a.dataset.id))return;items.push([a.dataset.id,a.textContent.trim()]);});
+    sh.querySelectorAll(':scope>h4,:scope>.mrow[data-mk]').forEach(x=>x.remove());
+    const box=document.createElement('div');box.className='p284m';box.innerHTML=items.map(([id,n])=>'<div class="mrow" data-p250="go" data-id="'+E(id)+'"><span>'+E(n)+'</span></div>').join('');
+    const anchor=sh.querySelector('.p19chat');if(anchor)anchor.after(box);else{const h=sh.firstElementChild;if(h)h.after(box);else sh.appendChild(box);}
+    box.addEventListener('click',()=>{setTimeout(()=>{try{closeMore();}catch(e){}},0);});}}catch(e){}return r;};try{window.openMore=openMore;}catch(e){}}
 setInterval(sideFix,1000);sideFix();
+
+
+/* ---------- 23. 20.9 Attack with your alliance, from where you look for it: the Nexus row, Alliance › Joint attacks,
+   the coordinate menu and Targets. You lead when you are an officer; otherwise an officer of your alliance leads
+   and your army joins. ---------- */
+function acsCom(c,f){const o={};try{UNIT.forEach(u=>{const n=Math.floor((c.units[u.k]||0)*f);if(n>0&&u.cls!=='sam')o[u.k]=n;});}catch(e){}return o;}
+function acsTravel(c,r){try{const h=homeFor(c,r);return h?travelFor(c,h,r):99;}catch(e){return 99;}}
+function acsLaunch(rid){const c=ME();if(!c)return;const r=_rgId(rid);if(!r)return;const cl=clanOf(c);if(!cl){toast('Join an alliance first: Alliance › Join.','warn');return;}
+  const MAXW=typeof ACS_MAX_WINDOW!=='undefined'?ACS_MAX_WINDOW:12;const com=acsCom(c,0.6);let res=null,lead=null;
+  {const ex=(G.acs||[]).find(x=>x.target===r.id&&G.countries[x.leader]&&G.countries[x.leader].clan===c.clan&&x.landTick>G.tick);if(ex){if(ex.fleets.some(f=>f.owner===c.id)){toast('You are already in the joint attack on '+r.name+'.','');openTab('p250al','Joint attacks');return;}const rj=cmdJoinACS(c,ex.id,com);if(rj&&rj.ok){toast('You joined the joint attack on '+r.name+': lands in '+(ex.landTick-G.tick)+' turns.','good');try{save();}catch(e){}openTab('p250al','Joint attacks');return;}if(!isClanOfficer(c)){toast('The joint attack on '+r.name+' is full (5 armies). It lands in '+(ex.landTick-G.tick)+' turns; ask an officer to start a second one.','warn');openTab('p250al','Joint attacks');return;}}}
+  if(isClanOfficer(c)){const tv=acsTravel(c,r);if(tv>MAXW){toast('Too far: your army needs '+tv+' turns, a joint attack lands within '+MAXW+'.','warn');return;}res=cmdLaunchACS(c,r.id,com,Math.min(MAXW,tv+2));lead=c;}
+  else{const offs=clanMembers(cl).filter(m=>m.id!==c.id&&isClanOfficer(m)).sort((a,b)=>pw(b,'atk')-pw(a,'atk'));
+    for(const o of offs){const tv=Math.max(acsTravel(o,r),acsTravel(c,r));if(tv>MAXW)continue;let oc=null;try{oc=typeof p153AiCom==='function'?p153AiCom(o):acsCom(o,0.6);}catch(e){oc=acsCom(o,0.6);}
+      const r0=cmdLaunchACS(o,r.id,oc,Math.min(MAXW,tv+2));if(r0&&r0.ok){lead=o;const op=(G.acs||[]).find(x=>x.target===r.id&&x.leader===o.id);res=op?cmdJoinACS(c,op.id,com):r0;break;}else res=r0;}
+    if(!lead&&!res)res={ok:false,error:'No officer in your alliance can reach it in time.'};}
+  if(res&&res.ok){const op=(G.acs||[]).find(x=>x.target===r.id);const n=op?op.fleets.length:1;const land=op?op.landTick-G.tick:'?';
+    toast('Joint attack on '+r.name+': '+n+' armies, lands in '+land+' turns'+(lead&&lead.id!==c.id?', led by '+lead.name:'')+'.','good');try{sfx('ok');}catch(e){}try{save();}catch(e){}openTab('p250al','Joint attacks');}
+  else{try{toast((res&&res.error)||'The joint attack could not start.','warn');}catch(e){}}}
+document.addEventListener('click',e=>{const b=e.target&&e.target.closest&&e.target.closest('[data-p278acs]');if(!b)return;e.preventDefault();e.stopPropagation();try{const p=document.getElementById('_coordpop');if(p)p.remove();}catch(_){}acsLaunch(+b.dataset.p278acs);},true);
+function acsTargets(c){const out=[];try{const nx=typeof nexus==='function'?nexus():null;if(nx&&nx.owner!==c.id&&!(nx.owner!=null&&sameAllianceMember(c,nx)))out.push(nx);
+  const cand=G.regions.filter(r=>r.owner!=null&&r.owner!==c.id&&!r.nexus&&!sameAllianceMember(c,r)&&!sameTheaterAlly(c,r)&&(!G.countries[r.owner]||G.countries[r.owner].isAI!==false)).map(r=>({r,tv:acsTravel(c,r)})).filter(x=>x.tv<=10).sort((a,b)=>(b.r.sv||0)/Math.max(1,regionDef(b.r))-(a.r.sv||0)/Math.max(1,regionDef(a.r))).slice(0,4).map(x=>x.r);
+  cand.forEach(r=>out.push(r));}catch(e){}return out;}
+function acsBox(c){const L=acsTargets(c);if(!L.length)return '';const off=isClanOfficer(c);
+  return '<div class="p285"><div class="p278wh">Start a joint attack · '+(off?'you lead, your allies join':'an officer of your alliance leads, your army joins')+'</div>'+L.map(r=>{const o=r.owner!=null?G.countries[r.owner]:null;const it=typeof regionIntel==='function'?regionIntel(c,r.id):null;const tv=acsTravel(c,r);
+    return '<div class="p278wr"><div>'+xyBtn(r.coord)+' <b>'+E(r.name)+'</b>'+(r.nexus?' <span class="p250c">Nexus</span>':'')+'<div class="p250s">'+(o?E(o.tag||o.name):'unclaimed')+' · defence '+(it?F(regionDef(r)):'unknown, scout first')+' · your army there in '+T(tv)+'</div></div><div class="p278wb2"><button type="button" class="btn sm p250btn'+(r.nexus?' p250main':'')+'" data-p278acs="'+r.id+'">Attack with alliance</button><button type="button" class="btn sm ghost p250btn" data-p278calc="a|'+r.id+'">Calculator</button></div></div>';}).join('')+'</div>';}
+// Alliance › Joint attacks: the start box on top
+if(VIEWS&&VIEWS.p250al){const _al23=VIEWS.p250al;VIEWS.p250al=function(v){const r=_al23.apply(this,arguments);try{const c=ME();if(!c||c.clan==null)return r;const box=[...v.querySelectorAll(':scope>.p250box:not(.pin)')].find(b=>b.dataset.p268t==='Joint attacks');const h=acsBox(c);
+  if(box&&h){const hd=box.querySelector(':scope>.p250h');if(hd)hd.insertAdjacentHTML('afterend',h);else box.insertAdjacentHTML('afterbegin',h);}}catch(e){}return r;};}
+// the old alliance screen (Joint ops) gets the same start box
+function acsClassic(){try{if(typeof view==='undefined'||view!=='clans')return;const c=ME();if(!c||c.clan==null)return;const v=document.getElementById('view');if(!v||v.querySelector('.p285'))return;
+  const card=[...v.querySelectorAll('.card,section,div')].find(x=>/joint operations \(acs\)/i.test((x.firstElementChild&&x.firstElementChild.textContent)||'')&&x.children.length>1);const h=acsBox(c);if(!h)return;
+  if(card)card.insertAdjacentHTML('afterbegin',h);}catch(e){}}
+if(typeof go==='function'){const _g23=go;go=function(){const r=_g23.apply(this,arguments);try{acsClassic();}catch(e){}return r;};try{window.go=go;}catch(e){}}
+document.addEventListener('click',()=>setTimeout(acsClassic,50),true);
+
+if(VIEWS&&VIEWS.p250a){const _a23=VIEWS.p250a;VIEWS.p250a=function(v){const r=_a23.apply(this,arguments);try{const c=ME();if(!c||c.clan==null)return r;v.querySelectorAll('[data-p250="take"]').forEach(b=>{const row=b.closest('.p250row');if(!row||row.querySelector('[data-p278acs]'))return;b.insertAdjacentHTML('afterend','<button type="button" class="btn sm ghost p250btn" data-p278acs="'+E(b.dataset.id)+'">With alliance</button>');});}catch(e){}return r;};}
+
+// "Plan a strike" in the old alliance screens opens the one place to start a joint attack
+window.addEventListener('click',e=>{const b=e.target&&e.target.closest&&e.target.closest('[data-p220plan]');if(!b)return;e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();openTab('p250al','Joint attacks');},true);
+// coordinate menu: Attack with alliance
+if(typeof coordMenu==='function'){const _cm23=coordMenu;coordMenu=function(coord){const r0=_cm23.apply(this,arguments);try{const c=ME();const pop=document.getElementById('_coordpop');const r=G.regions.find(x=>x.coord===coord);
+  if(c&&pop&&r&&c.clan!=null&&r.owner!==c.id&&!sameAllianceMember(c,r)){const at=[...pop.querySelectorAll('button')].find(b=>/attack/i.test(b.textContent));const html='<button class="btn sm" data-p278acs="'+r.id+'">🤝 Attack with alliance</button>';if(at)at.insertAdjacentHTML('afterend',html);else pop.insertAdjacentHTML('beforeend',html);}}catch(e){}return r0;};try{window.coordMenu=coordMenu;}catch(e){}}
+
+
+// full screens look like the pages: same width, no box around boxes
+function flat(){try{const v=document.getElementById('view');if(!v||!v.classList.contains('p279c'))return;[...v.children].forEach(ch=>{if(ch.classList.contains('p250tabs')||ch.classList.contains('p250top'))return;if(ch.classList.contains('p286flat')||ch.dataset.p286)return;ch.dataset.p286=1;const bgOf=e=>{const c=getComputedStyle(e).backgroundColor;return c&&c!=='transparent'&&!/rgba\(0, 0, 0, 0\)/.test(c);};if(!bgOf(ch))return;let boxed=0;[...ch.querySelectorAll(':scope>*,:scope>*>*')].forEach(x=>{if(boxed<2&&bgOf(x)&&parseFloat(getComputedStyle(x).borderTopWidth)>0)boxed++;});if(boxed>=1&&ch.children.length>=1)ch.classList.add('p286flat');});}catch(e){}}
+if(typeof go==='function'){const _g24=go;go=function(){const r=_g24.apply(this,arguments);try{flat();}catch(e){}return r;};try{window.go=go;}catch(e){}}
+{const vv=document.getElementById('view');if(vv)new MutationObserver(()=>{if(!flat._q)flat._q=requestAnimationFrame(()=>{flat._q=0;flat();});}).observe(vv,{childList:true});}
 
 const st=document.createElement('style');st.textContent=`
 #strip .p278b{align-self:center;flex:0 0 auto;margin-left:6px;padding:6px 10px;border:1px solid var(--border);border-radius:999px;background:transparent;color:var(--muted);font:700 11px/1 var(--mono,monospace);letter-spacing:.06em;cursor:pointer;white-space:nowrap}
@@ -26010,12 +26069,16 @@ const st=document.createElement('style');st.textContent=`
 .p280r.green{background:color-mix(in srgb,var(--good,#22c55e) 10%,transparent)}.p280r.green .p280e,.p280r.green .p280p{color:var(--good,#22c55e);font-weight:700}
 .p280e,.p280p{font-family:var(--mono,monospace)}.p280b{display:flex;gap:8px;justify-content:flex-end;align-items:center;margin-top:8px;flex-wrap:wrap}.p280nr{font-size:12px}
 @media(max-width:700px){.p280c,.p280r{grid-template-columns:30px 82px 62px 1fr;gap:6px;font-size:12px}.p280sum{margin-left:0;width:100%}}
-.p281{border-left:3px solid var(--accent)}.p281.bad{border-left-color:var(--danger,#ef4444)}.p281.good{border-left-color:var(--good,#22c55e)}
+.p281{border-left:3px solid var(--accent)}.p281 .p250b{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}.p285{margin:6px 0 10px;padding:8px 10px;border:1px solid var(--border);border-radius:8px}.p281.bad{border-left-color:var(--danger,#ef4444)}.p281.good{border-left-color:var(--good,#22c55e)}
 .p283{display:flex;justify-content:flex-end;margin-top:6px}
 #side details.p250more>a,.p250nav details.p250more>a{padding:6px 10px!important;font-size:13px!important;line-height:1.25!important;min-height:0!important;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 #side details.p264full>summary,.p250nav details.p264full>summary{display:block;white-space:nowrap;font-size:11px!important;letter-spacing:.08em}
 #side details.p264full>a,.p250nav details.p264full>a{padding:5px 10px!important;font-size:12px!important;line-height:1.25!important;min-height:0!important;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 #side details.p264full>a small,.p250nav details.p264full>a small{display:none!important}
+#side .p264more,.p250nav .p264more{display:none!important}
+#view.p279c{max-width:980px;--hi:var(--accent)}
+#view.p279c .p198b.gold{background:var(--accent)!important;color:#fff!important;border-color:var(--accent)!important}
+#view.p279c>.p286flat{background:transparent!important;border:0!important;box-shadow:none!important;padding:0!important}
 `;document.head.appendChild(st);
 }catch(e){try{console.error('p278',e);}catch(_){}}})();
 </script>
