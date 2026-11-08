@@ -24891,18 +24891,24 @@ document.addEventListener('click',e=>{const t=e.target;if(!t||!t.closest)return;
 function regByCoord(cd){cd=String(cd||'').trim();return (G.regions||[]).find(r=>r&&r.coord===cd)||null;}
 function attackers(v){try{const c=ME();if(!c)return;v.querySelectorAll('.p276').forEach(box=>{if(box.querySelector('.p278who')||box.closest('.p278inc'))return;const cd=(box.querySelector('.p276c')||{}).textContent;const r=regByCoord(cd);if(!r)return;
   let inc=[];try{inc=incomingTo(c.id).filter(x=>x&&x.region&&x.region.id===r.id);}catch(e){}if(!inc.length)return;
-  const by={};inc.forEach(x=>{const k=(x.from&&x.from.id!=null)?x.from.id:(x.from&&x.from.name)||'?';const g=by[k]=by[k]||{from:x.from,atk:0,size:0,eta:99,units:{},known:true,unk:[]};g.atk+=x.atkP||0;g.size+=x.size||0;g.eta=Math.min(g.eta,x.eta||0);const f=x.fleet||{};const seen=!!(f.seen||(f._seenBy&&f._seenBy[c.id]));if(seen){for(const u in (f.units||{}))g.units[u]=(g.units[u]||0)+(f.units[u]||0);}else{g.known=false;if(f.id!=null&&!f.acs)g.unk.push(f.id);}});
-  const rows=Object.values(by).sort((a,b)=>a.eta-b.eta).map(g=>{const o=g.from||{};const mix=g.known?fleetMixText(g.units,3):'';const nm=E(o.name||'Unknown')+(o.tag?' <span class="p250c">'+E(o.tag)+'</span>':'');
+  const by={};inc.forEach(x=>{const k=(x.from&&x.from.id!=null)?x.from.id:(x.from&&x.from.name)||'?';const g=by[k]=by[k]||{from:x.from,atk:0,size:0,eta:99,units:{},known:true,unk:[],home:null};if(!g.home&&x.fleet&&x.fleet.home!=null)g.home=_rgId(x.fleet.home);g.atk+=x.atkP||0;g.size+=x.size||0;g.eta=Math.min(g.eta,x.eta||0);const f=x.fleet||{};const seen=!!(f.seen||(f._seenBy&&f._seenBy[c.id]));if(seen){for(const u in (f.units||{}))g.units[u]=(g.units[u]||0)+(f.units[u]||0);}else{g.known=false;if(f.id!=null&&!f.acs)g.unk.push(f.id);}});
+  const list=Object.values(by).sort((a,b)=>(a.eta-b.eta)||(b.atk-a.atk));
+  const row=g=>{const o=g.from||{};const mix=g.known?fleetMixText(g.units,3):'';const hr=g.home;const xy=hr&&hr.coord?xyBtn(hr.coord):'';
     const what=g.known?(mix||'troops known'):'<span class="muted">troops unknown</span>';
-    const btn=(!g.known&&g.unk.length?'<button type="button" class="btn sm p250btn" data-p278scan="'+g.unk.join(',')+'">Scan</button>':'')+(o.id!=null?lnk('Map','data-p278nat="'+o.id+'"'):'');
-    return '<div class="p278wr"><div><b>'+nm+'</b><div class="p250s">attack '+F(g.atk)+' · '+F(g.size)+' troops · lands in '+T(g.eta)+' · '+what+'</div></div><div class="p278wb2">'+btn+'</div></div>';}).join('');
-  const d=document.createElement('div');d.className='p278who';d.innerHTML='<div class="p278wh">Who is coming</div>'+rows;const n=box.querySelector('.p276n');(n||box.firstElementChild).after(d);});}catch(e){}}
+    const intel=hr&&typeof regionIntel==='function'&&regionIntel(c,hr.id);
+    const btn=(!g.known&&g.unk.length?'<button type="button" class="btn sm p250btn" data-p278scan="'+g.unk.join(',')+'">Scan troops</button>':'')+(hr&&!intel?'<button type="button" class="btn sm ghost p250btn" data-p250="scout" data-id="'+hr.id+'">Scout home</button>':'');
+    return '<div class="p278wr"><div>'+xy+' <b>attack '+F(g.atk)+'</b> · lands in '+T(g.eta)+'<div class="p250s">'+F(g.size)+' troops · '+what+' · <span class="muted">'+E(o.name||'Unknown')+(o.tag?' '+E(o.tag):'')+'</span></div></div><div class="p278wb2">'+btn+'</div></div>';};
+  const TOP=6;const rows=list.slice(0,TOP).map(row).join('')+(list.length>TOP?'<details class="p278more"><summary>'+(list.length-TOP)+' more attackers</summary>'+list.slice(TOP).map(row).join('')+'</details>':'');
+  const d=document.createElement('div');d.className='p278who';d.innerHTML='<div class="p278wh">Who is coming · tap a coordinate to scout, attack or see it on the map</div>'+rows;const n=box.querySelector('.p276n');(n||box.firstElementChild).after(d);});}catch(e){}}
+function xyBtn(cd){return '<button type="button" class="p278xy" data-p278xy="'+E(cd)+'" title="Scout, attack or show on the map">'+E(cd)+'</button>';}
 function F(v){try{return fmt(v);}catch(e){return String(Math.round(v));}}
 function T(n){n=Math.max(0,+n||0);return n+(n===1?' turn':' turns');}
 ['p250a','p250o'].forEach(k=>{const f=VIEWS&&VIEWS[k];if(typeof f!=='function')return;VIEWS[k]=function(v){const r=f.apply(this,arguments);try{if(k==='p250a')attackers(v);}catch(e){}return r;};});
 document.addEventListener('click',e=>{const b=e.target&&e.target.closest&&e.target.closest('[data-p278scan]');if(!b)return;e.preventDefault();e.stopPropagation();const c=ME();if(!c)return;let ok=0,msg='';
   b.dataset.p278scan.split(',').forEach(id=>{try{const r=cmdScan(c,isNaN(+id)?id:+id);if(r&&r.ok)ok++;else if(r&&r.error)msg=r.error;}catch(_){}});
   try{toast(ok?'Scan sent. The troops show up when the scan lands.':(msg||'Scan failed.'),ok?'':'warn');}catch(_){}try{save();}catch(_){}try{go(view);}catch(_){}},true);
+
+document.addEventListener('click',e=>{const b=e.target&&e.target.closest&&e.target.closest('[data-p278xy]');if(!b)return;e.preventDefault();e.stopPropagation();try{coordMenu(b.dataset.p278xy,e.clientX,e.clientY);}catch(_){try{GOTO_COORD(b.dataset.p278xy);}catch(__){}}},true);
 
 /* ---------- 11. War room: everything stays, in the right order ---------- */
 function warroom(v){try{const c=ME();if(!c)return;
@@ -24914,7 +24920,9 @@ function warroom(v){try{const c=ME();if(!c)return;
 }catch(e){}}
 ['clans','p250al'].forEach(k=>{const f=VIEWS&&VIEWS[k];if(typeof f!=='function')return;VIEWS[k]=function(v){const r=f.apply(this,arguments);try{warroom(v);setTimeout(()=>warroom(v),0);}catch(e){}return r;};});
 // Overview attack line: every attacker by name, not just the first two
-if(VIEWS&&VIEWS.p250o){const _o3=VIEWS.p250o;VIEWS.p250o=function(v){const r=_o3.apply(this,arguments);try{const c=ME();v.querySelectorAll('.p278inc').forEach(row=>{const cd=(row.querySelector('.p276c')||{}).textContent;const rg=regByCoord(cd);if(!rg)return;let inc=[];try{inc=incomingTo(c.id).filter(x=>x&&x.region&&x.region.id===rg.id);}catch(e){}const names=[...new Set(inc.map(x=>x.from&&x.from.name).filter(Boolean))];const f=row.querySelector('.p276f');if(f&&names.length)f.textContent='from '+names.join(', ');});}catch(e){}return r;};}
+if(VIEWS&&VIEWS.p250o){const _o3=VIEWS.p250o;VIEWS.p250o=function(v){const r=_o3.apply(this,arguments);try{const c=ME();v.querySelectorAll('.p278inc').forEach(row=>{const cd=(row.querySelector('.p276c')||{}).textContent;const rg=regByCoord(cd);if(!rg)return;let inc=[];try{inc=incomingTo(c.id).filter(x=>x&&x.region&&x.region.id===rg.id);}catch(e){}const by={};inc.forEach(x=>{const k=x.from&&x.from.id!=null?x.from.id:'?';const g=by[k]=by[k]||{atk:0,home:null};g.atk+=x.atkP||0;if(!g.home&&x.fleet&&x.fleet.home!=null)g.home=_rgId(x.fleet.home);});
+    const L=Object.values(by).filter(g=>g.home&&g.home.coord).sort((a,b)=>b.atk-a.atk);const f=row.querySelector('.p276f');if(!f||!L.length)return;const N=Object.keys(by).length;
+    f.innerHTML=(N>1?'from '+N+' nations, strongest: ':'from ')+L.slice(0,4).map(g=>xyBtn(g.home.coord)+' <span class="p278xa">'+F(g.atk)+'</span>').join(' ')+(N>4?' <button type="button" class="p278go" data-p278def="">all '+N+' ›</button>':'');});}catch(e){}return r;};}
 
 /* ---------- 12. Attack banners on other pages point to the one plan; the shield joins the plan ---------- */
 function pins(v){try{v.querySelectorAll('.alertrow,.alertbar>div').forEach(row=>{if(row.dataset.p278p)return;const s=row.textContent||'';if(!/incoming attack|besieged|attacks? inbound|final stand|probes? inbound/i.test(s))return;row.dataset.p278p=1;
@@ -24996,6 +25004,8 @@ const st=document.createElement('style');st.textContent=`
 #view .p250tabs .p250tab.p279x{font-weight:600}
 .p264all.p279gone{display:none}
 #view.p279c>.p250tabs.p265tabs{margin-top:-2px}#view.p279c>.p250tabs.p265tabs .p250tab{font-size:12px;padding:5px 10px;opacity:.9}
+.p278xy{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border:1px dashed var(--accent);border-radius:6px;background:transparent;color:var(--accent);font:700 12px/1.4 var(--mono,monospace);cursor:pointer}.p278xy::before{content:'⌖';font-weight:400}.p278xy:hover{background:color-mix(in srgb,var(--accent) 15%,transparent)}
+.p278xa{font:12px var(--mono,monospace);color:var(--muted);margin-right:6px}.p278more summary{cursor:pointer;color:var(--accent);padding:6px 0;font-weight:600}
 `;document.head.appendChild(st);
 }catch(e){try{console.error('p278',e);}catch(_){}}})();
 </script>
