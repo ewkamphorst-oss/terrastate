@@ -16,7 +16,7 @@
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="https://playterrastate.nl/img/v4/romaterra-share.jpg">
 <meta name="author" content="Wim Kamphorst">
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"VideoGame","@id":"https://playterrastate.nl/romaterra.html#game","name":"Romaterra","url":"https://playterrastate.nl/romaterra.html","description":"Free Roman grand strategy in your browser. Rule a people of the ancient world against hundreds of AI rivals, take Roma, raise the Imperial Palace and hold it. No account, no download.","image":"https://playterrastate.nl/img/v4/romaterra-share.jpg","genre":["Strategy","Grand strategy","Turn-based strategy","4X","Browser game"],"gamePlatform":["Web browser","Windows","macOS","Linux","Android","iOS"],"applicationCategory":"Game","operatingSystem":"Any (web browser)","playMode":"SinglePlayer","inLanguage":"en","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"EUR","availability":"https://schema.org/InStock"},"author":{"@type":"Person","@id":"https://playterrastate.nl/#wim","name":"Wim Kamphorst","url":"https://wimkamphorst.nl"},"publisher":{"@type":"Person","@id":"https://playterrastate.nl/#wim","name":"Wim Kamphorst","url":"https://wimkamphorst.nl"},"softwareVersion":"21.4","sameAs":["https://wimkamphorstcoaching.itch.io/romaterra"]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"VideoGame","@id":"https://playterrastate.nl/romaterra.html#game","name":"Romaterra","url":"https://playterrastate.nl/romaterra.html","description":"Free Roman grand strategy in your browser. Rule a people of the ancient world against hundreds of AI rivals, take Roma, raise the Imperial Palace and hold it. No account, no download.","image":"https://playterrastate.nl/img/v4/romaterra-share.jpg","genre":["Strategy","Grand strategy","Turn-based strategy","4X","Browser game"],"gamePlatform":["Web browser","Windows","macOS","Linux","Android","iOS"],"applicationCategory":"Game","operatingSystem":"Any (web browser)","playMode":"SinglePlayer","inLanguage":"en","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"EUR","availability":"https://schema.org/InStock"},"author":{"@type":"Person","@id":"https://playterrastate.nl/#wim","name":"Wim Kamphorst","url":"https://wimkamphorst.nl"},"publisher":{"@type":"Person","@id":"https://playterrastate.nl/#wim","name":"Wim Kamphorst","url":"https://wimkamphorst.nl"},"softwareVersion":"21.6","sameAs":["https://wimkamphorstcoaching.itch.io/romaterra"]}</script>
 <link rel="manifest" href="romaterra.webmanifest"><meta name="theme-color" content="#1a1410"><link rel="icon" href="icons/romaterra-64.png"><link rel="apple-touch-icon" href="icons/romaterra-180.png">
 <script>window.__MP_URL__=''; /* '' = live multiplayer not open yet */ if('serviceWorker' in navigator)addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));</script>
 <script data-goatcounter="https://playterrastatenl.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
@@ -22817,7 +22817,7 @@ if(typeof module!=='undefined'&&module.exports)module.exports=BANNER;
     if(S.mode==='defend'){r=_rgId(S.rid);defC=c;atkC=G.countries[S.atkCid]||null;}
     else{r=S.rid!=null?_rgId(S.rid):null;defC=r&&r.owner!=null?G.countries[r.owner]:null;}
     if(!r){r={id:-1,name:'Open ground',infra:0,stab:0,sv:0,x:0,y:0,cluster:-1};}
-    if(!atkC)atkC=makeSimStub(-3,{},[], 'ready',[]);
+    if(!atkC)atkC=makeSimStub(-3,{},[], 'ready',[]);if(!defC)defC=makeSimStub(-4,{},[], 'ready',[]);
     return {r,atkC,defC};}
   VIEWS.calc=v=>{const c=you();if(!c)return;
     v.appendChild(h(`<div class="ptitle"><h2>Calc</h2><span class="h">The exact battle: the same calculation as the real fight, no dice.</span></div>`));
@@ -26215,6 +26215,9 @@ if(typeof wmInitialCam==='function'){const _ic46=wmInitialCam;wmInitialCam=funct
 /* 46. Map stays live: after each turn the map redraws, keeping zoom and position, so fleet ETAs and battles are current */
 if(typeof runTick==='function'){const _rt46=runTick;runTick=function(){const out=_rt46.apply(this,arguments);try{if(!window.__p46&&typeof view!=='undefined'&&view==='map'){window.__p46=1;setTimeout(()=>{window.__p46=0;try{if(view!=='map')return;const y=window.scrollY;window.__p46cam=(typeof WM!=='undefined'&&WM.cam)?Object.assign({},WM.cam):null;go('map');window.scrollTo(0,y);setTimeout(()=>{window.__p46cam=null;},800);}catch(e){}},150);}}catch(e){}return out;};try{window.runTick=runTick;}catch(e){}}
 
+
+/* 47. Calculator: all five columns fit on every screen */
+{const st=document.createElement('style');st.textContent='.p214t{width:100%;table-layout:auto}.p214t input{width:100%;max-width:88px;box-sizing:border-box}.p214t th,.p214t td{padding:5px 6px;white-space:nowrap}.p214t th{font-size:11px}#view .p214t{display:table}#view .card:has(>.p214t),#view div:has(>table.p214t){overflow-x:auto}';document.head.appendChild(st);}
 }catch(e){try{console.error('p278',e);}catch(_){}}})();
 </script>
 
