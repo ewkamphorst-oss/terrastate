@@ -5044,7 +5044,9 @@ function runTick(){
     f.status='outbound';f.eta=G.tick+f.travel;
     {const r=_rgId(f.target);if(c.isAI===false)sitrep(c,'fleet','🦅 Scheduled army departed → '+(r?r.name:'target')+', '+full(fleetSize(f.units))+' units, lands tick #'+f.eta,{coord:r?r.coord:null,go:'fleets'});if(c.id===G.you)toast('🦅 Scheduled army launched'+(r?' → '+r.name:'')+', lands in '+f.travel+'t.','warn');}}});});
   // fleets: outbound arrive & fight, survivors return home after travel time
-  try{p7Tick();}catch(e){}try{p11Tick();}catch(e){}try{p12Tick();}catch(e){}G.countries.forEach(c=>{if(c.retired)return;c.fleets=(c.fleets||[]).filter(f=>{
+  try{p7Tick();}catch(e){}try{p11Tick();}catch(e){}try{p12Tick();}catch(e){}{const _gBat=new Set();G.countries.forEach(oc=>{(oc.fleets||[]).forEach(x=>{if(x.status==='battle')_gBat.add(x.target);});});window.__gBat=_gBat;}G.countries.forEach(c=>{if(c.retired)return;const _gm=new Map();c.fleets=(c.fleets||[]).filter(f=>{
+    // 20.5.2: one garrison per land. Empty garrisons go; a second garrison on the same land joins the first when no battle is running there.
+    if(f.status==='garrison'){try{if(fleetSize(f.units||{})<1)return false;const g0=_gm.get(f.target);if(!g0){_gm.set(f.target,f);return true;}if(window.__gBat&&window.__gBat.has(f.target))return true;for(const k in (f.units||{})){const v=+f.units[k]||0;if(v>0)g0.units[k]=(g0.units[k]||0)+v;}return false;}catch(e){return true;}}
     // Defensive fleets (pre-stationed garrison or mid-battle reinforcement) take station on arrival.
     if(f.status==='outbound'&&(f.intent==='garrison'||f.intent==='reinforce')&&G.tick>=f.eta){
       const r=_rgId(f.target);
@@ -9102,7 +9104,7 @@ function showAchievements(){const c=(()=>{try{return you();}catch(e){return null
   bg.querySelector('[data-x]').onclick=()=>bg.remove();bg.onclick=e=>{if(e.target===bg)bg.remove();};document.body.appendChild(bg);}
 function setSoloTempo(t){const s=soloCfg();if(!s)return;if(t==='turn'){s.mode='turn';}else{s.mode='auto';s.speed=+t;}G.nextAt=Date.now()+soloTickMs();drawSoloTempo();try{save(true);}catch(e){}toast(s.mode==='turn'?'⏸ Turn-based: press END TURN (or Space) to advance':'▶ Auto-play: 1 turn every '+(s.speed===1?'minute':s.speed+' minutes')+'. END TURN still works any time.','info');}
 function drawSoloTempo(){const s=soloCfg();if(!s)return;const tb=document.querySelector('header .tick');if(!tb)return;const cur=s.mode==='turn'?'turn':String(s.speed);document.querySelectorAll('header .tspeed button').forEach(b=>{if(b.dataset.t==='cycle'){b.textContent=cur==='turn'?'⏸':cur+'m';b.classList.toggle('on',cur!=='turn');}else b.classList.toggle('on',b.dataset.t===cur);});tb.classList.toggle('turnmode',s.mode==='turn');}
-function maybeModal(){if(document.querySelector('.modal-bg'))return;if(isSoloGame()&&G._scResult&&!G._scShown){showScenarioEnd();return;}if(isSoloGame()&&G._mpSupportDue&&G._winner==null){const r=G._mpSupportDue;G._mpSupportDue=null;showMpSupport(null,r);return;}if(isSoloGame()&&G._scBrief){G._scBrief=false;showScenarioBrief();return;}if(G._winner!=null)showVictory();else if(G._seasonEnd)showSeasonEnd();else if(evPending()!=null)showEvent();}
+function maybeModal(){if(document.querySelector('.modal-bg'))return;if(isSoloGame()&&G._scResult&&!G._scShown){showScenarioEnd();return;}if(isSoloGame()&&G._mpSupportDue&&G._winner==null&&!(function(){try{return incomingTo(you().id).length>0;}catch(e){return false;}})()){const r=G._mpSupportDue;G._mpSupportDue=null;showMpSupport(null,r);return;}if(isSoloGame()&&G._scBrief){G._scBrief=false;showScenarioBrief();return;}if(G._winner!=null)showVictory();else if(G._seasonEnd)showSeasonEnd();else if(evPending()!=null)showEvent();}
 function showVictory(){sfx('victory');const w=G._winner;const c=G.countries[w];const wcl=c&&c.clan!=null?(G.clans||[]).find(x=>x.id===c.clan):null;
   const me=you();const youHeld=w===G.you;const youShared=!!(wcl&&me&&me.clan===wcl.id&&!youHeld);const youWin=youHeld||youShared;
   archiveSeason('command',w);
@@ -25068,7 +25070,7 @@ const st=document.createElement('style');st.textContent=`
 .p276add{color:var(--muted)}
 .p276click{cursor:pointer}.p276click:hover{background:color-mix(in srgb,var(--accent) 6%,transparent)}
 .p276al{border-bottom:1px solid var(--border);margin-bottom:4px}.p276al .p250row{border-left:3px solid var(--danger,#ef4444)}
-#strip .p219full{position:relative}#strip .p219full::after{content:'FULL'!important;position:absolute;top:1px;left:2px;font:700 9px/1 var(--mono,monospace)!important;letter-spacing:.08em;padding:2px 4px;border-radius:4px;background:color-mix(in srgb,var(--warn,#f6b62b) 22%,transparent);color:var(--warn,#f6b62b)}
+#strip .p219full{position:relative}#strip .p219full::after{content:'FULL'!important;position:static;display:block;width:max-content;margin:2px 0 0 auto;font:700 9px/1 var(--mono,monospace)!important;letter-spacing:.08em;padding:2px 4px;border-radius:4px;background:color-mix(in srgb,var(--warn,#f6b62b) 22%,transparent);color:var(--warn,#f6b62b)}
 @media(max-width:600px){.p276s{grid-template-columns:24px 1fr}.p276s .p250b{grid-column:2;justify-content:flex-start}}
 `;document.head.appendChild(st);
 }catch(e){try{console.error('p276',e);}catch(_){}}})();
