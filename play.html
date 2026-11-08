@@ -4072,7 +4072,7 @@ function clanTick(){(G.clans||[]).forEach(cl=>{
   (G.clans||[]).slice().forEach(A=>{if(A.integration&&A.integration.primary&&G.tick>=A.integration.end){const B=(G.clans||[]).find(x=>x.id===A.integration.partner);if(B)completeMerge(A,B);else A.integration=null;}});
   // AI clanmates auto-reinforce CRITICAL defence calls they can reach (the alliance actually defends its members)
   (G.clans||[]).forEach(cl=>{const calls=defenceCalls(cl).filter(k=>k.status!=='ASSIGNED'&&k.eta>=2);if(!calls.length)return;
-    clanMembers(cl).forEach(m=>{if(!m.isAI||m.cp<1)return;if(fleetSize(m.units)<100)return;
+    clanMembers(cl).forEach(m=>{if(!m.isAI||m.cp<1)return;if(fleetSize(m.units)<100)return;if(!regionsOf(m).length)return;
       // don't strip a member who is themselves under major attack
       if(incomingTo(m.id).some(x=>x.threat>=0.5))return;
       // only help a clanmate whose region we can actually reach before impact (speed matters, per the combat design)
@@ -4600,7 +4600,7 @@ function finalizeBattle(c,f,r,defC,R,retreated){const prevOwner=f.prevOwner;
   // v3.30 NEXUS GLORY (renown only, NEVER combat power): fighting for the Nexus in the endgame pays extra INFLUENCE to
   // both sides that actually engaged, so the middle and the underdogs have a public reason to join instead of watching.
   // Capped, no same-alliance farming, real clashes only (both sides had units) — anti-snowball safe.
-  try{if(r.nexus&&aStart>=1&&dStart>=1&&endgameLeft()<=LATE_SEASON_TICKS){
+  try{if(r.nexus&&fleetSize(f.bStart||{})>=1&&fleetSize(f.bDefStart||{})>=1&&endgameLeft()<=LATE_SEASON_TICKS){
     const _sameCl=(a,bb)=>{const x=clanOf(a),y=bb?clanOf(bb):null;return !!(x&&y&&x.id===y.id);};
     const _glory=(w,foe,role)=>{if(!w||w.retired||(foe&&_sameCl(w,foe)))return;let infl=role==='atk'?18:14;
       if(foe){const wr=regionsOf(w).length,fr=regionsOf(foe).length;if(wr<fr)infl+=Math.min(20,(fr-wr)*3);} // David bonus: daring while outnumbered in territory
@@ -6993,7 +6993,7 @@ function p16Key(e){const c=(e.className&&typeof e.className==='string')?e.classN
 function p16Fixed(e){return (e.classList.contains('ptitle')&&!e.previousElementSibling?.classList?.contains('ptitle')&&e===e.parentElement.querySelector(':scope > .ptitle'))||e.classList.contains('alertbar')||e.classList.contains('p15more')||e.classList.contains('howfold');}
 function p16More(v){let d=v.querySelector(':scope > .p15more');if(!d){d=h('<details class="card mb p15more"><summary>More on this screen <span class="muted small p15ml" style="font-weight:400"></span></summary></details>');v.appendChild(d);}return d;}
 function p16Count(d){const ml=d.querySelector('.p15ml');if(ml){const n=[...d.children].filter(e=>e.tagName!=='SUMMARY').length;ml.textContent=n+' more block'+(n>1?'s':'');}}
-function p16Apply(v,R){const kids=[...v.children].filter(e=>!p16Fixed(e));const key=new Map(kids.map(e=>[e,p16Key(e)]));const m=(e,p)=>{const r=new RegExp(p,'i'),k=key.get(e);return r.test(k)||r.test(k.split(' | ').slice(1).join(' | '));};
+function p16Apply(v,R){if(!v||!v.children)return;const kids=[...v.children].filter(e=>!p16Fixed(e));const key=new Map(kids.map(e=>[e,p16Key(e)]));const m=(e,p)=>{const r=new RegExp(p,'i'),k=key.get(e);return r.test(k)||r.test(k.split(' | ').slice(1).join(' | '));};
   (R.hide||[]).forEach(p=>kids.forEach(e=>{if(m(e,p))e.style.display='none';}));
   (R.hideBare||[]).forEach(p=>kids.forEach(e=>{if(m(e,p))e.style.display=e.querySelector('input,select,button,#launch')?'':'none';}));
   (R.hideEmpty||[]).forEach(p=>kids.forEach(e=>{if(m(e,p)&&/no battle reports yet|nothing here yet|none yet/i.test(e.innerText||''))e.style.display='none';}));
