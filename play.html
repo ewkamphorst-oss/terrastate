@@ -16,7 +16,7 @@
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="https://playterrastate.nl/img/v4/terrastate-share.jpg">
 <meta name="author" content="Wim Kamphorst">
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"VideoGame","@id":"https://playterrastate.nl/play.html#game","name":"Terrastate","url":"https://playterrastate.nl/play.html","description":"Free Planetarion-style grand strategy in your browser. Lead one nation against 500 AI nations on a world map, form alliances and fight for the Nexus. No account, no download, no pay-to-win.","image":"https://playterrastate.nl/img/v4/terrastate-share.jpg","genre":["Strategy","Grand strategy","Turn-based strategy","4X","Browser game"],"gamePlatform":["Web browser","Windows","macOS","Linux","Android","iOS"],"applicationCategory":"Game","operatingSystem":"Any (web browser)","playMode":"SinglePlayer","inLanguage":"en","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"EUR","availability":"https://schema.org/InStock"},"author":{"@type":"Person","@id":"https://playterrastate.nl/#wim","name":"Wim Kamphorst","url":"https://wimkamphorst.nl"},"publisher":{"@type":"Person","@id":"https://playterrastate.nl/#wim","name":"Wim Kamphorst","url":"https://wimkamphorst.nl"},"softwareVersion":"21.6","sameAs":["https://wimkamphorstcoaching.itch.io/terrastate"]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"VideoGame","@id":"https://playterrastate.nl/play.html#game","name":"Terrastate","url":"https://playterrastate.nl/play.html","description":"Free Planetarion-style grand strategy in your browser. Lead one nation against 500 AI nations on a world map, form alliances and fight for the Nexus. No account, no download, no pay-to-win.","image":"https://playterrastate.nl/img/v4/terrastate-share.jpg","genre":["Strategy","Grand strategy","Turn-based strategy","4X","Browser game"],"gamePlatform":["Web browser","Windows","macOS","Linux","Android","iOS"],"applicationCategory":"Game","operatingSystem":"Any (web browser)","playMode":"SinglePlayer","inLanguage":"en","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"EUR","availability":"https://schema.org/InStock"},"author":{"@type":"Person","@id":"https://playterrastate.nl/#wim","name":"Wim Kamphorst","url":"https://wimkamphorst.nl"},"publisher":{"@type":"Person","@id":"https://playterrastate.nl/#wim","name":"Wim Kamphorst","url":"https://wimkamphorst.nl"},"softwareVersion":"21.7","sameAs":["https://wimkamphorstcoaching.itch.io/terrastate"]}</script>
 <link rel="manifest" href="terrastate.webmanifest"><meta name="theme-color" content="#0d1420"><link rel="icon" href="icons/terrastate-64.png"><link rel="apple-touch-icon" href="icons/terrastate-180.png">
 <script>window.__MP_URL__=''; /* '' = live multiplayer not open yet */ if('serviceWorker' in navigator)addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));</script>
 <script data-goatcounter="https://playterrastatenl.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
@@ -2778,7 +2778,7 @@ function cmdScoutRegion(c,rid){const r=_rgId(rid);if(!r)return err('Region not f
   const lo=Math.max(0,Math.round(truth*(1-spread))),hi=Math.round(truth*(1+spread));
   const comp={};{let pu={};try{pu=owner?defenderPool(r,owner).units:garrisonUnits(r);}catch(e){pu=owner?owner.units:{};}for(const k in pu)if((pu[k]||0)>=1)comp[k]=Math.round(pu[k]);}
   (c._regionIntel=c._regionIntel||{})[rid]={tick:G.tick,lo,hi,conf:Math.round(conf*100),comp,tag:owner?owner.tag:null,exact:true};
-  sitrep(c,'intel','🔍 Scouted '+r.name+(owner?' ('+owner.name+')':'')+': the exact defending army is known for '+SCOUT_TTL+' turns. Open War → Calc to work out the battle.',{coord:r.coord,go:'fleets'});
+  sitrep(c,'intel','🔍 Scouted '+r.name+(owner?' ('+owner.name+')':'')+': the exact defending army is known for '+SCOUT_TTL+' turns. Open Army → Calculator to work out the battle.',{coord:r.coord,go:'fleets'});
   if(c.id===G.you)toast('Scouting report in: the exact army at '+r.name+' is known.');
   if(owner){const rl=radarLevel(owner);if(rl>=1&&Math.random()<Math.min(0.9,0.35+rl*0.15))sitrep(owner,'intel','👁 Radar detected a scouting mission over '+r.name+(rl>=2?', origin: '+c.name+' ['+c.tag+']':', origin unknown (Radar L2+ identifies)'),{coord:r.coord,sev:1,go:'fleets'});}
   return ok({lo,hi,conf:Math.round(conf*100)});}
@@ -8141,7 +8141,7 @@ const MANUAL={
     <h3>The 5 phases</h3>
     <p>Every engagement is scored across five phases, winning the early ones shapes the rest:</p>
     <ul>
-      <li><b>Scouting</b>: a successful scouting report shows the exact defending army. It decides what you know, not how hard you hit.</li><li><b>No dice</b>: the same battle always ends the same way. War → Calc works it out, tick by tick.</li><li><b>Home ground</b>: a defender always fights at ×1.08 on its own soil, on top of the ground of the region.</li>
+      <li><b>Scouting</b>: a successful scouting report shows the exact defending army. It decides what you know, not how hard you hit.</li><li><b>No dice</b>: the same battle always ends the same way. Army → Calculator works it out, tick by tick.</li><li><b>Home ground</b>: a defender always fights at ×1.08 on its own soil, on top of the ground of the region.</li>
       <li><b>Cyber / EMP</b>, Cyber Cells &amp; Quantum Hackers suppress enemy systems.</li>
       <li><b>Air</b>, Strike Fighters &amp; Bombers vs Interceptors + SAM. Air superiority grants <b>Close Air Support (CAS)</b>; an enemy <b>Planetary Shield/SAM</b> cuts your air damage up to −60%.</li>
       <li><b>Ground</b>, Tanks, Infantry &amp; Artillery decide the Ratio.</li>
@@ -10799,11 +10799,11 @@ function wmFleetArcs(c,k,ctx){const out=[];const R=ctx.byId;const push=(from,to,
   {const byReg=new Map();ctx.incoming.forEach(i=>{if(!i.region)return;const g=byReg.get(i.region.id)||{region:i.region,items:[]};g.items.push(i);byReg.set(i.region.id,g);});
    const originOf=i=>i.fleet&&i.fleet.home!=null?R.get(i.fleet.home):(i.from&&i.from.id!=null?regionsOf(i.from)[0]:null);
    byReg.forEach(g=>{const items=g.items.slice().sort((a,b)=>a.eta-b.eta);const n=items.length;const big=n>5;const p=regionXY(g.region);
-     (big?items.slice(0,4):items).forEach(i=>{const from=originOf(i);const lab=big?null:((i.stealth?'👁 ':'⚠ ')+Math.max(0,i.eta)+'t');
+     (big?items.slice(0,4):items).forEach(i=>{const from=originOf(i);const lab=big?null:(i.fleet&&i.fleet._p18wait&&i.eta<=1?'⏳ waits':(i.stealth?'👁 ':'⚠ ')+Math.max(0,i.eta)+'t');
        if(from)push(from,g.region,RELCOL.enemy,lab,'wm-inc');
        else if(!big)out.push(`<g transform="translate(${p.x.toFixed(1)} ${p.y.toFixed(1)}) scale(${(1/k).toFixed(4)})"><text y="-14" text-anchor="middle" font-size="10" font-family="IBM Plex Mono,monospace" fill="${RELCOL.enemy}">${lab}</text></g>`);});
      if(big){const earliest=Math.max(0,items[0].eta);const anyStealth=items.some(x=>x.stealth);
-       out.push(`<g transform="translate(${p.x.toFixed(1)} ${p.y.toFixed(1)}) scale(${(1/k).toFixed(4)})"><rect x="-36" y="-42" width="72" height="16" rx="8" fill="#08121e" fill-opacity=".92" stroke="${RELCOL.enemy}" stroke-width="1.3"/><text y="-30.5" text-anchor="middle" font-size="10" font-weight="700" font-family="IBM Plex Mono,monospace" fill="${RELCOL.enemy}">${anyStealth?'👁 ':'⚠ '}${n} inbound ${earliest}t</text></g>`);}
+       out.push(`<g transform="translate(${p.x.toFixed(1)} ${p.y.toFixed(1)}) scale(${(1/k).toFixed(4)})"><rect x="-54" y="-62" width="108" height="16" rx="8" fill="#08121e" fill-opacity=".92" stroke="${RELCOL.enemy}" stroke-width="1.3"/><text y="-50.5" text-anchor="middle" font-size="10" font-weight="700" font-family="IBM Plex Mono,monospace" fill="${RELCOL.enemy}">${anyStealth?'👁 ':'⚠ '}${n} inbound ${earliest}t</text></g>`);}
    });}
   return out.join('');}
 // ---- War Table pins --------------------------------------------------------------------------------
@@ -13618,7 +13618,7 @@ function p175Expand(c){const A=p7A(c);if(!A.on||!A.exp)return null;if((c.cp||0)<
 // more than half of all units the AI lost, so AI armies bled away in hopeless fights against each other.
 const P177_MIN=1.0;let P177_SKIP=0; // small border probes (p7Probes) are meant to be small: they are never called off
 {const _op=cmdOp;cmdOp=function(c,rid,committed,opts){try{if(c&&c.isAI&&!P177_SKIP){const r=_rgId(rid);if(r&&r.owner!==c.id){const com=committed||{};
-  const est=power(c,'atk',com)/Math.max(1,regionDef(r));if(est<P177_MIN){c._p177off=(c._p177off||0)+1;return err('Called off: this force would not break the defence.');}}}}catch(e){}return _op.apply(this,arguments);};}
+  const est=power(c,'atk',com)/Math.max(1,(typeof window.p59seen==='function'?window.p59seen(c,r):regionDef(r)));if(est<P177_MIN){c._p177off=(c._p177off||0)+1;return err('Called off: this force would not break the defence.');}}}}catch(e){}return _op.apply(this,arguments);};}
 
 if(typeof p7Probes==='function'){const _pp=p7Probes;p7Probes=function(){P177_SKIP=1;try{return _pp.apply(this,arguments);}finally{P177_SKIP=0;}};}
 // coalition waves against a runaway leader are joint pressure: each army alone is small on purpose
@@ -14478,7 +14478,7 @@ function p219Out(c){let n=0;try{(c.fleets||[]).forEach(f=>{if(f&&f.acs&&f.member
     const tot=f.members.reduce((s,x)=>s+(x.share||0),0)||1;n+=Math.round(fleetSize(f.units||{})*(m.share||0)/tot);});});}catch(e){}return n;}
 // 6. a rival who joined your own alliance is no longer shown as your rival
 if(typeof rivalOf==='function'){const _ro219=rivalOf;rivalOf=function(){const r=_ro219.apply(this,arguments);try{const me=G.countries[G.you];if(r&&me&&me.clan!=null&&r.clan===me.clan)return null;}catch(e){}return r;};}
-// 7. every scouting order is kept, also the ones that bounced, so War → Scout can list them
+// 7. every scouting order is kept, also the ones that bounced, so Army → Scout can list them
 if(typeof cmdScoutRegion==='function'){const _sc219=cmdScoutRegion;cmdScoutRegion=function(c,rid){const out=_sc219.apply(this,arguments);
   try{if(c&&out&&out.ok){const r=_rgId(rid);const L=c._scoutLog=c._scoutLog||[];L.unshift({t:G.tick,rid:+rid,ok:!(out.data&&out.data.miss),tag:r&&r.owner!=null&&G.countries[r.owner]?G.countries[r.owner].tag:null,d:out.data&&out.data.lo!=null?out.data.lo:null});if(L.length>30)L.length=30;}}catch(e){}
   return out;};}
@@ -21439,7 +21439,7 @@ setInterval(()=>{try{ladder();champCard();}catch(e){}},500);
         fcHTML=`<div class="p199fc"><div class="p199verdict"><b style="color:${col}">${verdict}</b><span class="r">ratio ${Math.abs(rh-rl)<0.02?r.toFixed(2):rl.toFixed(2)+'–'+rh.toFixed(2)}</span></div>
           <div class="p199gauge"><i style="width:${pct}%;background:${col}"></i><span class="m" style="left:50%"></span><span class="ml" style="left:50%">1.00 ground</span><span class="m" style="left:62.5%"></span><span class="ml" style="left:62.5%;top:-16px">1.25 capture</span></div>
           <div class="p199loss"><div>You lose about<b style="color:#fca5a5">${F(aL)}</b></div><div>They lose about<b style="color:#93c5fd">${F(dL)}</b></div></div>
-          ${T.owner&&T.it?`<div class="p199note">Scout report ${age} turn${age===1?'':'s'} old. ${T.it.exact?(age>0?'The report was exact '+age+' turn'+(age===1?'':'s')+' ago. Armies may have moved since: scout again for a sure result.':'The report is exact, so this is the exact result if nothing moves. War → Calc shows every number.'):'At '+T.it.conf+'% confidence the forecast is a range; the verdict uses the worst end.'} Their allies can still send help.</div>`:''}
+          ${T.owner&&T.it?`<div class="p199note">Scout report ${age} turn${age===1?'':'s'} old. ${T.it.exact?(age>0?'The report was exact '+age+' turn'+(age===1?'':'s')+' ago. Armies may have moved since: scout again for a sure result.':'The report is exact, so this is the exact result if nothing moves. Army → Calculator shows every number.'):'At '+T.it.conf+'% confidence the forecast is a range; the verdict uses the worst end.'} Their allies can still send help.</div>`:''}
           ${homeWarn}<div class="p199go"><button type="button" class="p199btn${rh<1?' red':''}" data-p199="go">${rh<1?'Attack anyway with ':'Attack with '}${F(sent)}</button>${(c.clan!=null&&typeof isClanOfficer==='function'&&isClanOfficer(c))?'<button type="button" class="p199btn ghost" data-p199="acs">Joint strike with '+F(sent)+'</button>':''}</div></div>`;}
       else fcHTML='<div class="p199fc"><div class="p199note">No forecast available for this target.</div></div>';}
     box.innerHTML=pick+`<div class="p199grid">${tcard}<div>${force}${fcHTML}</div></div>`;wire(box,c,T);}
@@ -22407,7 +22407,7 @@ if(typeof module!=='undefined'&&module.exports)module.exports=BANNER;
 
 </script>
 <script>/*p214ui*/
-/* p214 Update 16.0: the battle calculator (War → Calc). The same exact calculation as the real battle: no dice.
+/* p214 Update 16.0: the battle calculator (Army → Calculator). The same exact calculation as the real battle: no dice.
    Fill the attacker from your army or from an incoming enemy army you have seen, the defender from a scouting report or from your own
    region, and read the result per tick, the losses per unit type, every factor, and what it takes to win or to hold. */
 (function(){
@@ -22443,7 +22443,7 @@ if(typeof module!=='undefined'&&module.exports)module.exports=BANNER;
     const scanOpts=sc.map(s=>`<option value="a:${s.r.id}"${S.mode==='attack'&&S.rid===s.r.id?' selected':''}>${E(s.r.name)} (report ${s.age} turn${s.age===1?'':'s'} old)</option>`).join('');
     const incOpts=inc.map((o,i)=>`<option value="d:${i}"${S.mode==='defend'&&S.rid===o.x.region.id&&S.atkCid===o.x.from.id?' selected':''}>${E(o.x.from.name)} on ${E(o.x.region.name)}, in ${Math.max(0,o.x.eta)} turns${o.v.mode==='full'?'':' (army not seen)'}</option>`).join('');
     v.appendChild(h(`<div class="card mb" style="margin-bottom:12px"><div class="p214row"><b>Battle</b><select id="p214pick" aria-label="Pick a battle"><option value="m">Enter both sides by hand</option>${scanOpts?'<optgroup label="Attack a region you scouted">'+scanOpts+'</optgroup>':''}${incOpts?'<optgroup label="Defend against an incoming army">'+incOpts+'</optgroup>':''}</select></div>
-      <div class="small muted">${sc.length?'':'No fresh scouting report yet: scout a region on War → Scout, then it shows up here. '}A scouting report shows the exact defending army for ${SCOUT_TTL} turns. Without one, the calculator only knows what you type.</div>
+      <div class="small muted">${sc.length?'':'No fresh scouting report yet: scout a region on Army → Scout, then it shows up here. '}A scouting report shows the exact defending army for ${SCOUT_TTL} turns. Without one, the calculator only knows what you type.</div>
       <div class="p214row">${IRON?`<label class="small">Battle orders <select id="p214ifr"><option value="even"${S.ifr==='even'?' selected':''}>no edge</option><option value="best"${S.ifr==='best'?' selected':''}>attacker guesses right every tick</option><option value="worst"${S.ifr==='worst'?' selected':''}>defender guesses right every tick</option></select></label>`:''}${ROME?`<label class="small">Attack formation <select id="p214form">${Object.keys(P168F).map(k=>`<option value="${k}"${S.form===k?' selected':''}>${E(P168F[k].n)}</option>`).join('')}</select></label>`:''}
       <button class="btn ghost sm" id="p214mine">My home army attacks</button><button class="btn ghost sm" id="p214clear">Clear</button></div></div>`));
     const {r,atkC,defC}=setup(c);
@@ -22747,7 +22747,7 @@ if(typeof module!=='undefined'&&module.exports)module.exports=BANNER;
   function dip(v){const cards=[...v.querySelectorAll(':scope > .card')];const rivals=cards.find(c=>/HOW RIVALS SEE YOU/i.test((c.querySelector('h3,h4,.h,b,div')||c).textContent||''));if(rivals)intoMore(v,rivals);
     cards.forEach(c=>{const rows=[...c.querySelectorAll('button')].filter(b=>/declare war/i.test(b.textContent)).map(b=>b.closest('.row,tr,li,.p15g')||b.parentElement);if(rows.length<=4||c.dataset.p219)return;c.dataset.p219='1';
       rows.slice(3).forEach(r=>r.classList.add('p219hide'));const s=document.createElement('button');s.className='btn ghost sm';s.textContent='Show all '+rows.length;s.onclick=()=>{rows.forEach(r=>r.classList.remove('p219hide'));s.remove();};rows[2].after(s);});}
-  // War → Scout: every scouting report you made, the ones that worked and the ones that bounced
+  // Army → Scout: every scouting report you made, the ones that worked and the ones that bounced
   function scoutList(v){try{const c=you();if(!c)return;const L=(c._scoutLog||[]).filter(x=>x&&_rgId(x.rid));let box=v.querySelector(':scope > .p219scout');
       const sig=L.length+'|'+(L[0]?L[0].t+':'+L[0].rid:'')+'|'+G.tick;if(box&&box.dataset.sig===sig)return;
       const E=x=>(typeof esc==='function'?esc(String(x)):String(x));const ttl=typeof SCOUT_TTL!=='undefined'?SCOUT_TTL:12;const st=(G.season&&G.season.startTick)||0;
@@ -22766,7 +22766,7 @@ if(typeof module!=='undefined'&&module.exports)module.exports=BANNER;
     if(a.hasAttribute('data-p219calc')){try{p214Open('attack',rid);}catch(_){}}else{try{if(typeof p186Scout==='function')p186Scout(rid);else{const r=cmdScoutRegion(you(),rid);toast(r&&r.ok?'Scouted.':(r&&r.error)||'Not possible',r&&r.ok?'good':'warn');go(view);}}catch(_){}}});
   // scouting answers at once: say what came back
   window.p186Scout=function(rid){const c=you();if(!c)return;const r=_rgId(rid);if(!r)return;let res=null;try{res=cmdScoutRegion(c,r.id);}catch(e){res={ok:false,error:String(e)};}
-    if(res&&res.ok)toast(res.data&&res.data.miss?'🔍 '+r.name+': the scouts bounced off their radar. Nothing learned. All reports: War → Scout.':'🔍 '+r.name+': exact army seen. All reports: War → Scout.',res.data&&res.data.miss?'warn':'good');
+    if(res&&res.ok)toast(res.data&&res.data.miss?'🔍 '+r.name+': the scouts bounced off their radar. Nothing learned. All reports: Army → Scout.':'🔍 '+r.name+': exact army seen. All reports: Army → Scout.',res.data&&res.data.miss?'warn':'good');
     else toast((res&&res.error)||'Scouting is not possible right now.','warn');try{save();go(view);}catch(e){}};
   function alliance(v){dismissable(v.querySelector('.p204res'),'p219res');}
   function apply(){try{if(typeof view==='undefined')return;const v=document.getElementById('view');if(!v)return;
@@ -22941,7 +22941,7 @@ if(typeof module!=='undefined'&&module.exports)module.exports=BANNER;
   if(typeof window.p218Replay==='function'){const _rp=window.p218Replay;window.p218Replay=function(i){const auto=!!window.__p221auto;window.__p221auto=0;const out=_rp.apply(this,arguments);
     try{const b=(G.battles||[])[i];const bg=[...document.querySelectorAll('.p218rp')].pop();if(!b||!bg)return out;const m=bg.querySelector('.modal');
       if(auto&&m){const me=ME();const r=G.regions.find(x=>x.coord===b.coord);const cap=me&&r&&me._cap===r.id;const tag=document.createElement('div');tag.className='p221imp';tag.textContent=cap?'This mattered: your capital':'This mattered: the prize of the season';m.prepend(tag);
-        const nt=document.createElement('div');nt.className='muted small';nt.style.cssText='text-align:center;margin-top:8px';nt.textContent='You can watch it again from the paper on Home or from War → Reports.';m.appendChild(nt);}
+        const nt=document.createElement('div');nt.className='muted small';nt.style.cssText='text-align:center;margin-top:8px';nt.textContent='You can watch it again from the paper on Home or from Army → Battle reports.';m.appendChild(nt);}
       const fac=factors(b);const why=bg.querySelector('#p218why');if(why&&fac.length){const f=document.createElement('div');f.className='p221fac';f.innerHTML='<div class="k">What decided it</div><ul>'+fac.map(x=>'<li>'+E(x)+'</li>').join('')+'</ul>';why.after(f);}
       const row=bg.querySelector('#p218again');if(row&&row.parentElement){const bt=document.createElement('button');bt.className='btn ghost sm';bt.textContent='Open in calculator';bt.onclick=()=>calcFrom(b);row.parentElement.appendChild(bt);}}catch(e){}
     return out;};}
@@ -24897,7 +24897,7 @@ function attackers(v){try{const c=ME();if(!c)return;v.querySelectorAll('.p276').
     const what=g.known?(mix||'troops known'):'<span class="muted">troops unknown</span>';
     const intel=hr&&typeof regionIntel==='function'&&regionIntel(c,hr.id);
     const btn=(!g.known&&g.unk.length?'<button type="button" class="btn sm p250btn" data-p278scan="'+g.unk.join(',')+'">Scan troops</button>':'')+(hr&&!intel?'<button type="button" class="btn sm ghost p250btn" data-p250="scout" data-id="'+hr.id+'">Scout home</button>':'');
-    return '<div class="p278wr"><div>'+xy+' <b>attack '+F(g.atk)+'</b> · lands in '+T(g.eta)+'<div class="p250s">'+F(g.size)+' troops · '+what+' · <span class="muted">'+E(o.name||'Unknown')+(o.tag?' '+E(o.tag):'')+'</span></div></div><div class="p278wb2">'+btn+'</div></div>';};
+    return '<div class="p278wr"><div>'+xy+' <b>attack '+F(g.atk)+'</b> · lands in '+T(g.eta)+'<div class="p250s">'+F(g.size)+' troops · '+what+' · <span class="muted">'+E(o.name||'Unknown')+(o.tag?' '+E(o.tag):'')+'</span></div></div><div class="p278wb2">'+btn+(window.p58btns?window.p58btns(o):'')+'</div></div>';};
   const TOP=6;const rows=list.slice(0,TOP).map(row).join('')+(list.length>TOP?'<details class="p278more"><summary>'+(list.length-TOP)+' more attackers</summary>'+list.slice(TOP).map(row).join('')+'</details>':'');
   const d=document.createElement('div');d.className='p278who';d.innerHTML='<div class="p278wh">Who is coming · tap a coordinate to scout, attack or see it on the map</div>'+rows;const n=box.querySelector('.p276n');(n||box.firstElementChild).after(d);});}catch(e){}}
 function xyBtn(cd){return '<button type="button" class="p278xy" data-p278xy="'+E(cd)+'" title="Scout, attack or show on the map">'+E(cd)+'</button>';}
@@ -25027,7 +25027,7 @@ function goalRow(c){try{if(typeof nexus!=='function')return '';const nx=nexus();
   let warn='';if(o&&nx.ccBuild)warn=who+' builds the Command Center: ready in '+T(left);else if(o&&nx.commandCenter&&nx.ccHolder===o.id)warn=who+' wins the season in '+T(H-held);
   const btn=!intel?'<button type="button" class="btn sm p250btn p250main" data-p250="scout" data-id="'+nx.id+'">Scout it</button>':atk>def*1.1?'<button type="button" class="btn sm p250btn p250main" data-p250="take" data-id="'+nx.id+'">Take it</button>':'<button type="button" class="btn sm p250btn'+(warn?' p250main':'')+'" data-p278calc="a|'+nx.id+'">Plan it</button>';
   const ally=c.clan!=null?'<button type="button" class="btn sm p250btn'+(warn||atk<=def*1.1?' p250main':'')+'" data-p278acs="'+nx.id+'">Attack with alliance</button>':'';
-  return row(warn?'bad':'', (warn?'<b class="bad">'+warn+'</b> · ':'')+'<span data-p287="1" class="p278lk">Take the Nexus</span> '+xy, 'held by '+who+' · defence '+(intel?F(def):'unknown, scout it first')+' · your army '+F(atk)+(intel&&atk<=def*1.1?' · you need '+F(def*1.1-atk)+' more':''),ally+btn);}catch(e){return '';}}
+  return row(warn?'bad':'', (warn?'<b class="bad">'+warn+'</b> · ':'')+'<span data-p287="1" class="p278lk">Take the Nexus</span> '+xy, 'held by '+who+' · defence '+(intel?F(def):'unknown, scout it first')+' · your attack '+F(atk)+(intel&&atk<=def*1.1?' · you need '+F(def*1.1-atk)+' more':''),ally+btn);}catch(e){return '';}}
 if(VIEWS&&VIEWS.p250o){const _o15=VIEWS.p250o;VIEWS.p250o=function(v){const r=_o15.apply(this,arguments);try{const c=ME();if(!c)return r;const h=goalRow(c);if(!h)return r;
   const box=[...v.querySelectorAll(':scope>.p250box:not(.pin)')].find(b=>b.dataset.p268t==='Do now')||v.querySelector(':scope>.p250box:not(.pin)');if(!box)return r;
   const hd=box.querySelector(':scope>.p250h');if(hd)hd.insertAdjacentHTML('afterend',h);else box.insertAdjacentHTML('afterbegin',h);}catch(e){}return r;};}
@@ -25237,13 +25237,15 @@ function atkPanel(rid){try{const c=ME();if(!c)return;const nx=_rgId(rid);if(!nx)
     if(c.clan!=null&&inf>=600)btns+='<button type="button" class="btn sm p250btn'+(intel&&atk<=def*1.1?' p250main':'')+'" data-p278acs="'+nx.id+'">Attack with alliance</button>';
     else if(c.clan!=null)infNote='<div class="p287s"><b class="bad">A joint attack costs 600 influence to join, 1.2K to lead.</b> You have '+F(inf)+(ir>0?', ready in '+T(Math.ceil((600-inf)/ir)):'')+'.</div>';
     else btns+='<button type="button" class="btn sm ghost p250btn" data-p278tab="p250al|Join">Join an alliance to attack together</button>';
+    if(atk<1||(intel&&atk<=def*1.1))btns+='<button type="button" class="btn sm p250btn'+(atk<1?' p250main':' ghost')+'" data-p278tab="p250b|Troops">'+(atk<1?'No troops: train some':'Train troops')+'</button>';
     btns+='<button type="button" class="btn sm ghost p250btn" data-p278calc="a|'+nx.id+'">Calculator</button>';}
   btns+='<button type="button" class="btn sm ghost p250btn" data-p278xy="'+E(nx.coord)+'">Map</button>';
-  const d=document.createElement('div');d.className='p287bg';d.innerHTML='<div class="p287" role="dialog" aria-label="Attack"><div class="p287h"><b>'+(isNx?'The Nexus':'Attack')+'</b> '+xyBtn(nx.coord)+' <span class="muted">'+E(nx.name)+'</span><button type="button" class="p287x" aria-label="Close">✕</button></div>'+
+  const d=document.createElement('div');d.className='p287bg';d.innerHTML='<div class="p287" role="dialog" aria-label="Attack"><div class="p287h"><b>'+(isNx?(/Romaterra/i.test(document.title)?'Roma':/Ironfront/i.test(document.title)?'Capital Sector':'The Nexus'):'Attack')+'</b> '+xyBtn(nx.coord)+' <span class="muted">'+E(nx.name)+'</span><button type="button" class="p287x" aria-label="Close">✕</button></div>'+
     '<div class="p287s">'+(mine?'Yours':o?'Held by <b>'+E(o.name)+'</b> '+E(o.tag||''):'Unclaimed')+(st?' · '+st:'')+'</div>'+
-    (mine?'':'<div class="p287n"><span>their defence <b>'+(intel?F(def):'unknown')+'</b></span><span>your army <b>'+F(atk)+'</b></span><span>there in <b>'+T(tv)+'</b></span>'+(intel&&atk<=def*1.1?'<span class="bad">alone you need '+F(def*1.1-atk)+' more</span>':'')+'</div>')+
-    infNote+'<div class="p287b">'+btns+'</div></div>';
-  document.body.appendChild(d);d.addEventListener('click',e=>{if(e.target===d||e.target.closest('.p287x')){closeNx();return;}if(e.target.closest('button[data-p250],button[data-p278acs],button[data-p278calc],button[data-p278tab],button[data-p278xy]'))setTimeout(closeNx,0);});}catch(e){}}
+    (mine?'':'<div class="p287n"><span>their defence <b>'+(intel?F(def):'unknown')+'</b></span><span>your attack <b>'+F(atk)+'</b></span><span>there in <b>'+T(tv)+'</b></span>'+(intel&&atk<=def*1.1?'<span class="bad">alone you need '+F(def*1.1-atk)+' more</span>':'')+'</div>')+
+    infNote+(function(){try{if(mine||!intel||!o||def<=Math.max(1,atk)*1.5)return '';const R=/Romaterra/i.test(document.title);
+      return '<div class="p287s"><b>Too strong to take head-on.</b> Ways round the wall: <a class="p278lk" data-p278tab="p250a|'+(R?'Spies':'Covert Ops')+'">'+(R?'sabotage their watchtowers':'sabotage their radar')+'</a> · <a class="p278lk" data-p278tab="p250r|">heavier troops in Research</a>'+(c.clan!=null?' · a joint attack with your alliance':'')+' · or break a pact for a surprise strike (+35%).</div>';}catch(e){return '';}})()+'<div class="p287b">'+btns+'</div></div>';
+  document.body.appendChild(d);d.addEventListener('click',e=>{if(e.target===d||e.target.closest('.p287x')){closeNx();return;}if(e.target.closest('button[data-p250],button[data-p278acs],button[data-p278calc],[data-p278tab],button[data-p278xy]'))setTimeout(closeNx,0);});}catch(e){}}
 function closeNx(){document.querySelectorAll('.p287bg').forEach(x=>x.remove());}
 window.addEventListener('click',e=>{const t=e.target;if(!t||!t.closest)return;const pill=t.closest('header .pill');if(pill&&/nexus/i.test(pill.textContent||'')){e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();nxPanel();return;}
   const nb=t.closest('[data-p287]');if(nb){e.preventDefault();e.stopPropagation();nxPanel();}},true);
@@ -25465,14 +25467,14 @@ function ccHTML(c){try{const pj=projection(c);const RES=['money','energy','food'
   const cl=clanOf(c);let alli='';
   if(cl){let help=0;try{help=defData(c).filter(t=>t.m.id!==c.id).length;}catch(e){}const ops=(G.acs||[]).filter(o=>{const l=G.countries[o.leader];return l&&l.clan===cl.id&&o.landTick>G.tick;}).length;const offers=(G.dipOffers||[]).filter(o=>o.to===cl.id&&o.expires>G.tick).length;const mk=marks(cl).length;const sc=(cl._scouts||[]).filter(x=>G.tick-x.tick<=3).length;
     alli='<div class="p294c"><div class="p278wh">Alliance · '+E(cl.tag)+'</div>'+ccLine('Defense requests',help,help?'bad':'','data-p278tab="p250al|Defence"')+ccLine('Sectors controlled',(typeof sideSectors==='function'?sideSectors(c):0),'','data-p278tab="map|"')+ccLine('Planned attacks',ops,ops?'good':'','data-p278tab="p250al|Joint attacks"')+ccLine('Marked targets',mk,'','data-p278tab="p250al|HQ"')+ccLine('New scout reports',sc,'','data-p278tab="p250al|HQ"')+ccLine('Diplomacy offers',offers,offers?'warn':'','data-p278tab="p250al|HQ"')+ccLine('Members',clanMembers(cl).length,'','data-p278tab="p250al|Members"')+'</div>';}
-  else alli='<div class="p294c"><div class="p278wh">Alliance</div><div class="p250s" style="padding:6px 0">Alone you defend alone. An alliance sends help, attacks with you and shares scout reports.</div>'+ccLine('Find an alliance','Join','good','data-p278tab="p250al|Join"')+'</div>';
+  else alli='<div class="p294c"><div class="p278wh">Alliance</div><div class="p250s" style="padding:6px 0">Alone you defend alone. An alliance sends help, attacks with you and shares scout reports.</div>'+ccLine('Your own alliance','Found','good','data-p278tab="p250al|Found your own"')+'</div>';
   const L=(G.clans||[]).filter(x=>clanMembers(x).length).map(x=>({x,s:clanScore(x)})).sort((a,b)=>b.s-a.s);const top=L[0];const w=(G.wars||[]).filter(x=>x.active)[0];const nx=typeof nexus==='function'?nexus():null;const no=nx&&nx.owner!=null?G.countries[nx.owner]:null;
   const wa=w?clanById(w.a):null,wb=w?clanById(w.b):null;const myR=cl?L.findIndex(y=>y.x.id===cl.id)+1:0;
   const world='<div class="p294c"><div class="p278wh">World</div>'+ccLine('Top alliance',top?E(top.x.tag):'?','','data-p278tab="p250k|Alliances"')+(cl?ccLine('Your alliance','#'+myR,'','data-p278tab="p250k|Alliances"'):'')+ccLine('Largest war',wa&&wb?E(wa.tag)+' vs '+E(wb.tag):'none',w?'warn':'','data-p278tab="p250al|All diplomacy"')+ccLine('Nexus',no?E(no.tag||no.name)+(nx.commandCenter?' · CC '+(nx.ccHeld||0)+'/'+(typeof NEXUS_HOLD!=='undefined'?NEXUS_HOLD:12):''):'unclaimed',nx&&nx.commandCenter&&nx.owner!==c.id?'bad':'','data-p287="1"')+ccLine('Season','turn '+G.tick,'','data-p278tab="p250o|World"')+'</div>';
   // feed
-  const F2=[];(c.sitrep||[]).slice(-12).filter(s=>!/END TURN|Directive complete|\uD83D\uDCA1|^\s*Tip/i.test(String(s.head||s.text||''))).forEach(s=>F2.push({t:s.tick||G.tick,txt:s.head||s.text||'',go:s.go||null,coord:s.coord||null}));
-  if(cl)(cl.forum||[]).filter(f=>f.ch==='war'||/\uD83C\uDFAF|\uD83D\uDC94|\uD83D\uDD4A|S\.O\.S|joint/i.test(f.text)).slice(0,8).forEach(f=>{const by=G.countries[f.by];F2.push({t:f.tick,txt:(by?by.tag+': ':'')+f.text,go:'p250al',coord:(String(f.text).match(/\d+:\d+:\d+/)||[])[0]});});
-  (G.news||[]).slice(0,8).forEach(n=>F2.push({t:n.tick,txt:n.head,go:null,coord:(String(n.head).match(/\d+:\d+:\d+/)||[])[0]}));
+  const F2=[];(c.sitrep||[]).slice(0,12).filter(s=>!/END TURN|Directive complete|\uD83D\uDCA1|^\s*Tip/i.test(String(s.head||s.text||''))).forEach(s=>F2.push({t:s.tick!=null?s.tick:G.tick,txt:s.head||s.text||'',go:s.go||null,coord:s.coord||null}));
+  if(cl)(cl.forum||[]).filter(f=>f.ch==='war'||/\uD83C\uDFAF|\uD83D\uDC94|\uD83D\uDD4A|S\.O\.S|joint/i.test(f.text)).slice(0,8).forEach(f=>{const by=G.countries[f.by];if(f.tick!=null)F2.push({t:f.tick,txt:(by?by.tag+': ':'')+f.text,go:'p250al',coord:(String(f.text).match(/\d+:\d+:\d+/)||[])[0]});});
+  (G.news||[]).slice(0,8).forEach(n=>{if(n.tick!=null)F2.push({t:n.tick,txt:n.head,go:null,coord:(String(n.head).match(/\d+:\d+:\d+/)||[])[0]});});
   F2.sort((a,b)=>b.t-a.t);const seen=new Set();const NOISE=/END TURN|Directive complete|\uD83D\uDCA1|^\s*\W*\s*Tip|Elsewhere this turn/i;const mineTag=cl?'['+cl.tag+']':'@@';const feed=F2.filter(x=>{x.txt=String(x.txt||'');if(NOISE.test(x.txt))return false;if(x.go===null&&!x.coord&&x.txt.indexOf(mineTag)<0&&!/nexus/i.test(x.txt))return false;const k=x.txt.slice(0,60);if(seen.has(k))return false;if(x.coord){if(seen.has('@'+x.coord)||(nx&&nx.coord===x.coord))return false;seen.add('@'+x.coord);}seen.add(k);return true;}).slice(0,6);
   const fh='<div class="p294f"><div class="p278wh">Commander feed</div>'+(feed.length?feed.map(x=>'<div class="p278wr"><div><span class="muted">'+(G.tick-x.t<=0?'now':(G.tick-x.t)+(G.tick-x.t===1?' turn ago':' turns ago'))+'</span> '+E(String(x.txt).slice(0,160))+'</div><div class="p278wb2">'+(x.coord?xyBtn(x.coord):'')+(x.go&&!x.coord?'<button type="button" class="p278go" data-p278go="'+E(x.go)+'">Open ›</button>':'')+'</div></div>').join(''):'<div class="p250s">quiet so far</div>')+'</div>';
   return '<div class="p294g">'+empire+alli+world+'</div>'+fh;}catch(e){return '';}}
@@ -25558,7 +25560,7 @@ const st=document.createElement('style');st.textContent=`
 .p294f{margin-top:12px}
 `;document.head.appendChild(st);
 /* 33. Research as strategy: 5 paths, alliance effects, alliance doctrines */
-const R33=(typeof ROME!=='undefined'&&ROME),I33=(typeof IRON!=='undefined'&&IRON);
+const R33=(/Romaterra/i.test(document.title)),I33=(/Ironfront/i.test(document.title));
 const NT=[
  ['op_plan',R33?'War Council':'Operational Planning','Military',['mil_combined'],5e3,8e6,3,{atk:.03},'+3% attack. Joint attacks cost 25% less influence (refunded when you lead or join).'],
  ['ally_coord',R33?'Allied Legions':'Alliance Coordination','Military',['op_plan'],9e3,13e6,4,{},'Your army fights +10% harder in alliance joint attacks.'],
@@ -25836,6 +25838,295 @@ if(typeof runTick==='function'){const _rt46=runTick;runTick=function(){const out
 
 /* 47. Calculator: all five columns fit on every screen */
 {const st=document.createElement('style');st.textContent='.p214t{width:100%;table-layout:auto}.p214t input{width:100%;max-width:88px;box-sizing:border-box}.p214t th,.p214t td{padding:5px 6px;white-space:nowrap}.p214t th{font-size:11px}#view .p214t{display:table}#view .card:has(>.p214t),#view div:has(>table.p214t){overflow-x:auto}';document.head.appendChild(st);}
+/* 48a. */
+/* 48b. Outside a turn, the forecast is for the coming turn: projection runs as if it is already the next turn number (season-age effects such as the comeback bonus switch on by turn) */
+if(typeof runTick==='function'){const _rt48b=runTick;runTick=function(){window.__inTick=(window.__inTick||0)+1;try{return _rt48b.apply(this,arguments);}finally{window.__inTick--;}};try{window.runTick=runTick;}catch(e){}}
+if(typeof projection==='function'){const _pj48=projection;projection=function(){if(window.__inTick||window.__MP__||typeof G==='undefined'||!G)return _pj48.apply(this,arguments);const t=G.tick;G.tick=t+1;try{return _pj48.apply(this,arguments);}finally{G.tick=t;}};try{window.projection=projection;}catch(e){}}
+
+/* 48. The money forecast in the top bar uses your score as it is now (the comeback bonus depends on it), so it matches the next turn */
+if(typeof runTick==='function'){const _rt48=runTick;runTick=function(){const out=_rt48.apply(this,arguments);try{const c=ME();if(c&&!c.retired&&typeof scores==='function'){c._lastScore=scores(c).overall;}}catch(e){}return out;};try{window.runTick=runTick;}catch(e){}}
+
+/* 49. Blind playtest fixes: Skip clears the training card, computer-led alliances are shown as closed, founding asks for a
+   name and tag and shows the cost, one click is one scout or one attack, a sensible treasury amount, and the browser
+   Back button goes to the previous page instead of out of the game */
+const fm49=(k,v)=>{try{return fmt(v,RMETA[k]&&RMETA[k].money)+(RMETA[k]&&RMETA[k].money?'':' '+(RMETA[k]?RMETA[k].l:k).toLowerCase());}catch(e){return F(v)+' '+k;}};
+function costLine49(cost){return Object.keys(cost||{}).filter(k=>cost[k]>0).map(k=>fm49(k,cost[k])).join(' + ');}
+if(typeof trainSkip==='function'){const _ts49=trainSkip;trainSkip=function(){const r=_ts49.apply(this,arguments);try{setTimeout(()=>{try{if(typeof view!=='undefined')go(view);}catch(e){}},0);}catch(e){}return r;};try{window.trainSkip=trainSkip;}catch(e){}}
+if(VIEWS&&VIEWS.p250al){const _al49=VIEWS.p250al;VIEWS.p250al=function(v){const r=_al49.apply(this,arguments);try{const c=ME();if(!c)return r;
+  let closed=0,open=0;v.querySelectorAll('[data-p250="askjoin"]').forEach(b=>{const cl=(G.clans||[]).find(x=>String(x.id)===String(b.dataset.id));if(cl&&cl.ai){closed++;const sp=document.createElement('span');sp.className='p250s';sp.textContent='computer-led, closed';b.replaceWith(sp);}else open++;});
+  const fb=v.querySelector('[data-p250="found"]');let cost=null;try{cost=allianceFoundCost();}catch(e){}
+  if(fb&&cost){fb.textContent='Found · '+costLine49(cost);fb.title='Founding costs '+costLine49(cost);}
+  if(closed&&!open&&fb){const jb=[...v.querySelectorAll('.p250box')].find(x=>x.querySelector('.p250h')&&/^Join/.test(x.querySelector('.p250h').textContent.trim()));
+    if(jb&&!jb.querySelector('.p49n')){const h=jb.querySelector('.p250h');h.insertAdjacentHTML('afterend','<div class="p250row p49n"><div class="p250m"><div class="p250s">Computer-led alliances do not take members. Found your own below: nearby nations join it.</div></div></div>');}}
+  v.querySelectorAll('input.p250n[data-q]').forEach(inp=>{if(inp.dataset.p49)return;inp.dataset.p49='1';const k=inp.dataset.q;const have=Math.floor((c.res||{})[k]||0);let d=Math.floor(have*0.1);if(d>=100){const m=Math.pow(10,Math.floor(Math.log10(d))-1);d=Math.floor(d/m)*m;}inp.value=String(Math.max(1,d));});
+}catch(e){}return r;};}
+// name and tag are needed before the money goes
+window.addEventListener('click',e=>{const b=e.target&&e.target.closest&&e.target.closest('[data-p250="found"]');if(!b)return;const rw=b.closest('.p250row');if(!rw)return;
+  const n=((rw.querySelector('[data-f="n"]')||{}).value||'').replace(/[<>]/g,'').trim();const t=((rw.querySelector('[data-f="t"]')||{}).value||'').toUpperCase().replace(/[^A-Z0-9]/g,'');
+  if(n.length<3||t.length<2){e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();try{toast(n.length<3?'Give your alliance a name first (3 letters or more).':'Give your alliance a tag first (2 to 4 letters).','warn');}catch(x){}const f=rw.querySelector(n.length<3?'[data-f="n"]':'[data-f="t"]');if(f)f.focus();}},true);
+// one click is one scout or one attack (a double click used to scout two lands or send twice)
+const last49={};window.addEventListener('click',e=>{const b=e.target&&e.target.closest&&e.target.closest('[data-p250="scout"],[data-p250="take"],[data-p250="found"],[data-p278acs],[data-p297tr]');if(!b)return;
+  const k=(b.dataset.p250||'')+'|'+(b.dataset.id||b.dataset.p278acs||b.dataset.p297tr||'');const now=Date.now();if(last49[k]&&now-last49[k]<900){e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();return;}last49[k]=now;},true);
+// what a scout costs, on the button
+function scoutTitles49(root){try{const sc=typeof SCOUT_COST!=='undefined'?SCOUT_COST:200;(root||document).querySelectorAll('[data-p250="scout"]:not([title])').forEach(b=>{b.title='Costs '+F(sc)+' influence and 1 command point';});}catch(e){}}
+if(typeof go==='function'){const _go49=go;go=function(){const r=_go49.apply(this,arguments);try{scoutTitles49();}catch(e){}return r;};try{window.go=go;}catch(e){}}
+// browser Back: the previous page of the game
+(function(){let pop=false;const cur=()=>{try{return typeof view!=='undefined'?view:null;}catch(e){return null;}};
+  try{history.replaceState(Object.assign({},history.state||{},{p49:cur()||'dashboard'}),'');}catch(e){}
+  const _g=go;go=function(k){const before=cur();const r=_g.apply(this,arguments);try{const after=cur();if(!pop&&after&&after!==before&&before){history.pushState({p49:after},'');}}catch(e){}return r;};try{window.go=go;}catch(e){}
+  window.addEventListener('popstate',e=>{const st=e.state;if(!st||!st.p49)return;const m=document.querySelector('.p287bg,.modal-bg');if(m){try{m.remove();}catch(x){}}
+    if(st.p49===cur())return;pop=true;try{go(st.p49);}catch(x){}finally{pop=false;}});})();
+
+/* 50. The rank is the same everywhere: the ranking is worked out again after every turn and for a new or loaded game
+   (before, a new game could show the ranking of the previous one until the next turn: "Unranked" one moment, a rank the next) */
+if(typeof activeRanked==='function'){const _ar50=activeRanked;activeRanked=function(){try{if(window.__rkG!==G){window.__rkG=G;_rankTick=-1;_rankCache=null;}}catch(e){}return _ar50.apply(this,arguments);};try{window.activeRanked=activeRanked;}catch(e){}}
+if(typeof runTick==='function'){const _rt50=runTick;runTick=function(){const out=_rt50.apply(this,arguments);try{_rankTick=-1;_rankCache=null;}catch(e){}return out;};try{window.runTick=runTick;}catch(e){}}
+
+/* 51. Research tree: no dead grey scrollbar (on Windows with display scaling the tree was 1 pixel taller than its box, so a
+   scrollbar showed that did nothing; the page itself scrolls) */
+{const st=document.createElement('style');st.textContent='.p194web,.p194rd{overflow-y:hidden!important}';document.head.appendChild(st);}
+
+/* 52. Two new spy missions in all three games: steal research (take part of their research points) and strike a commander
+   (their best commander is out of action for a while). Same agents, same chance, same risk as the other missions. */
+if(typeof COVERT_OPS!=='undefined'&&Array.isArray(COVERT_OPS)&&typeof cmdCovert==='function'&&!COVERT_OPS.some(o=>o.k==='tech_steal')){
+  const R52=(/Romaterra/i.test(document.title)),I52=(/Ironfront/i.test(document.title));
+  COVERT_OPS.push({k:'tech_steal',n:R52?'Steal Scholarship':I52?'Steal Blueprints':'Steal Research',d:"Take 10% of the target's research points (max 3,000); the target guards its labs for 12 turns afterwards.",min:12,infl:500});
+  COVERT_OPS.push({k:'strike_cmdr',n:R52?'Strike a Legate':'Strike a Commander',d:"The target's strongest commander is out of action for 6 turns; afterwards he is guarded for 16 turns.",min:15,infl:700});
+  try{if(typeof AGENT_SABOTEUR_OPS!=='undefined'){AGENT_SABOTEUR_OPS.push('tech_steal','strike_cmdr');}}catch(e){}
+  const cmdrPow=k=>{try{const cm=COMMANDERS.find(x=>x.k===k);if(!cm)return 0;return Object.values(cm.bonus||{}).reduce((a,b)=>a+Math.abs(b),0);}catch(e){return 0;}};
+  const out52=t=>{const o=t&&t._cmdrOut;return o&&o.until>G.tick?o.k:null;};
+  const _cv52=cmdCovert;cmdCovert=function(c,targetId,mk,agents){
+    if(mk!=='tech_steal'&&mk!=='strike_cmdr')return _cv52.apply(this,arguments);
+    const t=G.countries[targetId];if(!t||!c||t.id===c.id||t.retired)return _cv52.apply(this,arguments);
+    const im=(t._hackImmune||{})[mk]||0;if(im>G.tick)return err(t.name+(mk==='tech_steal'?' guards its labs':' guards its commanders')+' for '+(im-G.tick)+' more turn(s), covert ops need time between hits');
+    if(mk==='strike_cmdr'&&!(t.commanders||[]).filter(k=>k!==out52(t)).length)return err(t.name+' has no commander to strike');
+    if(mk==='tech_steal'&&(t.res.research||0)<200)return err(t.name+' has almost no research points to steal');
+    const r=_cv52.apply(this,arguments);if(!r||!r.ok)return r;
+    (t._hackImmune=t._hackImmune||{})[mk]=G.tick+(mk==='tech_steal'?12:16);
+    let detail='';if(r.data&&r.data.success){
+      if(mk==='tech_steal'){const tk=Math.min((t.res.research||0)*0.10,3000);t.res.research=Math.max(0,(t.res.research||0)-tk);let cap=Infinity;try{cap=capOf(c,'research');}catch(e){}c.res.research=Math.min(cap,(c.res.research||0)+tk);detail='took '+fmt(tk)+' research points';}
+      else{const ks=(t.commanders||[]).filter(k=>k!==out52(t)).sort((a,b)=>cmdrPow(b)-cmdrPow(a));const k=ks[0];const cm=COMMANDERS.find(x=>x.k===k);t._cmdrOut={k,until:G.tick+6};detail=(cm?cm.n:'their commander')+' is out of action for 6 turns';}
+      r.data.detail=detail;
+      try{const sr=(c.sitrep||[]).slice(0,6).find(x=>x&&x.tick===G.tick&&/SUCCESS: (·|$)/.test(String(x.head||''))&&String(x.head).indexOf(t.name)>0);if(sr)sr.head=String(sr.head).replace(/SUCCESS: /,'SUCCESS: '+detail+' ');}catch(e){}
+      try{const alert=alertLevel(t)||0;const id=alert>=6;sitrep(t,'intel','🕵 Enemy agents: '+detail.replace(/^took/,'they took')+(id?' · traced to '+c.name+' ['+c.tag+']':' · origin unknown (raise your alert level to trace agents)'),{sev:2,go:'covert'});}catch(e){}
+      try{if(t.isAI&&typeof vs==='function')vs(t).threat+=10;}catch(e){}}
+    return r;};
+  try{window.cmdCovert=cmdCovert;}catch(e){}
+  // a commander who is out of action gives no bonus
+  if(typeof commanderMods==='function'){const _cm52=commanderMods;commanderMods=function(c){const k=out52(c);if(!k)return _cm52.apply(this,arguments);const keep=c.commanders;try{c.commanders=(keep||[]).filter(x=>x!==k);return _cm52.apply(this,arguments);}finally{c.commanders=keep;}};try{window.commanderMods=commanderMods;}catch(e){}}
+}
+
+/* 53. Romaterra: client kingdoms. A beaten nation can be made a client kingdom: it pays you 15% of its income every turn,
+   it cannot attack you and you cannot attack it. When it grows strong again it may break free. At most 3. */
+if(/Romaterra/i.test(document.title)){
+  const MAXC=3;const isCl=(t,c)=>!!(t&&c&&t._clientOf===c.id);
+  const clientsOf=c=>c?G.countries.filter(t=>t&&!t.retired&&t._clientOf===c.id):[];
+  const sc=x=>{try{return scores(x).overall||0;}catch(e){return 0;}};
+  window.p53can=function(c,t){if(!c||!t||!t.isAI||t.retired||t.id===c.id)return 'no';if(t._clientOf!=null)return t._clientOf===c.id?'yours':'taken';
+    if(c.clan!=null&&t.clan===c.clan)return 'ally';const n=regionsOf(t).length;if(n<1)return 'no';if(n>4)return 'big';const bt=(t._p53beat||{})[c.id];if(bt==null||G.tick-bt>30)return 'unbeaten';if(sc(t)>sc(c)*0.5)return 'strong';if(clientsOf(c).length>=MAXC)return 'full';return 'ok';};
+  window.p53make=function(c,tid){const t=G.countries[tid];const q=p53can(c,t);
+    if(q!=='ok')return err(q==='big'?t.name+' still holds more than 4 lands. Take some first.':q==='unbeaten'?'Take one of '+t.name+"'s lands first (in the last 30 turns).":q==='strong'?t.name+' is still too strong: its score must be under half of yours.':q==='full'?'You already have '+MAXC+' client kingdoms.':q==='ally'?t.name+' is in your alliance.':'Not possible.');
+    if((c.res.influence||0)<300)return err(infNote(c,300));if((c.cp||0)<1)return err(cpNote(c,1));
+    c.res.influence-=300;c.cp--;t._clientOf=c.id;t._clientSince=G.tick;
+    try{news('diplomacy','🏛 '+t.name+' becomes a client kingdom of '+c.name+'.');}catch(e){}
+    try{sitrep(c,'diplomacy','🏛 '+t.name+' is now your client kingdom: it pays 15% of its income every turn and will not attack you.',{go:'p250a'});}catch(e){}
+    return ok();};
+  window.p53free=function(c,tid,why){const t=G.countries[tid];if(!t||t._clientOf==null)return err('Not a client kingdom');const o=G.countries[t._clientOf];t._clientOf=null;t._clientSince=null;
+    try{if(o&&why)sitrep(o,'diplomacy','⚠ '+t.name+' '+why,{sev:1,go:'p250a'});if(o&&why)news('diplomacy','🏛 '+t.name+' '+why.replace(/^broke/,'broke')+'');}catch(e){}return ok();};
+  // no attacks between a client kingdom and its patron
+  const blocked=(c,r)=>{try{const o=r&&r.owner!=null?G.countries[r.owner]:null;return !!(o&&c&&(o._clientOf===c.id||c._clientOf===o.id));}catch(e){return false;}};
+  const MSG='Client kingdom: you and this nation do not attack each other. Release it first.';
+  if(typeof cmdOp==='function'){const _o=cmdOp;cmdOp=function(c,rid){if(blocked(c,_rgId(rid)))return err(MSG);return _o.apply(this,arguments);};try{window.cmdOp=cmdOp;}catch(e){}}
+  if(typeof cmdLaunchACS==='function'){const _l=cmdLaunchACS;cmdLaunchACS=function(c,rid){if(blocked(c,_rgId(rid)))return err(MSG);return _l.apply(this,arguments);};try{window.cmdLaunchACS=cmdLaunchACS;}catch(e){}}
+  if(typeof cmdJoinACS==='function'){const _j=cmdJoinACS;cmdJoinACS=function(c,opId){try{const op=(G.acs||[]).find(x=>x.id===opId);if(op&&blocked(c,_rgId(op.target)))return err(MSG);}catch(e){}return _j.apply(this,arguments);};try{window.cmdJoinACS=cmdJoinACS;}catch(e){}}
+  // tribute and breaking free, after every turn
+  if(typeof runTick==='function'){const _rt=runTick;runTick=function(){const me=ME();const before=me?G.regions.map(r=>r.owner):null;const out=_rt.apply(this,arguments);try{
+    if(me&&before)G.regions.forEach((r,i)=>{const was=before[i];if(was!=null&&was!==me.id&&r.owner===me.id){const t=G.countries[was];if(t)(t._p53beat=t._p53beat||{})[me.id]=G.tick;}});
+    G.countries.forEach(t=>{if(!t||t._clientOf==null)return;const o=G.countries[t._clientOf];
+      if(!o||o.retired||!regionsOf(o).length||t.retired||!regionsOf(t).length){t._clientOf=null;return;}
+      let net=0;try{const pj=projection(t);net=(pj.net&&pj.net.money)||0;}catch(e){}const pay=Math.max(0,Math.min(net*0.15,(t.res.money||0)));
+      if(pay>0){t.res.money-=pay;o.res.money=Math.min(typeof CAP!=='undefined'&&CAP.money?CAP.money:Infinity,(o.res.money||0)+pay);t._p53paid=pay;}else t._p53paid=0;
+      if(G.tick-(t._clientSince||0)>=10&&sc(t)>sc(o)*0.6&&Math.random()<0.1)p53free(o,t.id,'broke free: it grew strong again and stopped paying tribute.');});
+  }catch(e){}return out;};try{window.runTick=runTick;}catch(e){}}
+  // Army > Targets: a button on beaten nations, and one line with your client kingdoms
+  if(VIEWS&&VIEWS.p250a){const _a=VIEWS.p250a;VIEWS.p250a=function(v){const r=_a.apply(this,arguments);try{const c=ME();if(!c)return r;
+    const boxes=[...v.querySelectorAll('.p250box')].filter(x=>{const h=x.querySelector('.p250h');return h&&/^(Targets|Not scouted|Scouted)/.test(h.textContent.trim());});const box=boxes[0];if(!box)return r;
+    const done={};boxes.forEach(bx=>bx.querySelectorAll('[data-p250="take"],[data-p250="scout"]').forEach(b=>{const rg=_rgId(+b.dataset.id);const t=rg&&rg.owner!=null?G.countries[rg.owner]:null;if(!t||done[t.id])return;done[t.id]=1;
+      if(p53can(c,t)==='ok')b.insertAdjacentHTML('beforebegin','<button type="button" class="btn sm p250btn" data-p53mk="'+t.id+'" title="Costs 300 influence and 1 command point. It pays you 15% of its income every turn.">Make client</button>');}));
+    const L=clientsOf(c);if(L.length){const tot=L.reduce((a,t)=>a+(t._p53paid||0),0);
+      const rows=L.map(t=>'<div class="p278wr"><div><b>'+E(t.name)+'</b> <span class="muted">'+regionsOf(t).length+' lands · pays '+fmt(t._p53paid||0,true)+' per turn</span></div><div class="p278wb2"><button type="button" class="btn sm ghost p250btn" data-p53fr="'+t.id+'">Release</button></div></div>').join('');
+      box.querySelector('.p250h').insertAdjacentHTML('afterend','<div class="p53c"><div class="p278wh">Client kingdoms '+L.length+'/'+MAXC+' · tribute '+fmt(tot,true)+' per turn</div>'+rows+'</div>');}
+  }catch(e){}return r;};}
+  document.addEventListener('click',e=>{const b=e.target&&e.target.closest&&e.target.closest('[data-p53mk],[data-p53fr]');if(!b)return;e.preventDefault();e.stopPropagation();const c=ME();if(!c)return;
+    const r=b.dataset.p53mk?p53make(c,+b.dataset.p53mk):p53free(c,+b.dataset.p53fr,null);
+    try{if(r.ok){toast(b.dataset.p53mk?'Client kingdom made.':'Released.','good');save();drawTop();}else toast(r.error,'bad');}catch(x){}try{go(view);}catch(x){}},true);
+}
+
+/* 54. Ironfront: convoys. Your trade routes sail as convoys: in wartime enemy U-boats can sink one (the route pays nothing
+   for 3 turns). An escort costs fuel and makes that much rarer. You can raid enemy convoys too, from your Shipyard. */
+if(/Ironfront/i.test(document.title)&&window.__p273&&typeof VIEWS!=='undefined'){
+  const P3=window.__p273;const ESC=1500,RAID_FUEL=3000;const FN=(()=>{try{return (RMETA.fuel&&RMETA.fuel.l||'fuel').toLowerCase();}catch(e){return 'fuel';}})();
+  const hostile=(a,b)=>{try{if(!a||!b||a.id===b.id)return false;if(a.clan!=null&&b.clan!=null&&typeof clanAtWar==='function'&&clanAtWar(a.clan,b.clan))return true;if(b.isAI&&a.isAI===false&&b.vsYou&&(b.vsYou.threat||0)>40)return true;if(a.isAI&&b.isAI===false&&a.vsYou&&(a.vsYou.threat||0)>40)return true;}catch(e){}return false;};
+  const R=c=>(c&&c._p273r)||[];const cut=x=>(x.cutUntil||0)>G.tick;
+  const foes=c=>G.countries.filter(o=>o&&!o.retired&&o.id!==c.id&&regionsOf(o).length&&hostile(c,o));
+  const val=(c,x)=>{try{return P3.routeValue(c,x);}catch(e){return {money:0,inf:0};}};
+  window.p54={hostile,foes,cut};
+  if(typeof projection==='function'){const _pj=projection;projection=function(c){const p=_pj.apply(this,arguments);try{if(c&&!c._fog&&p&&p.prod&&c._p273r&&c._p273r.length){c._p273r.forEach(x=>{
+      if(cut(x)){const v=val(c,x);p.prod.money=(p.prod.money||0)-v.money;p.prod.influence=(p.prod.influence||0)-v.inf;if(p.net){p.net.money=(p.net.money||0)-v.money;p.net.influence=(p.net.influence||0)-v.inf;}}
+      if(x.esc){if(p.net)p.net.fuel=(p.net.fuel||0)-ESC;}});}}catch(e){}return p;};try{window.projection=projection;}catch(e){}}
+  if(typeof runTick==='function'){const _rt=runTick;runTick=function(){const out=_rt.apply(this,arguments);try{const me=ME();if(me&&!me.retired&&R(me).length){
+      const F=foes(me);const subs=F.filter(o=>bTotal(o,'shipyard')>0||(o.units&&Object.keys(o.units).length));
+      R(me).forEach(x=>{if(x.esc){if((me.res.fuel||0)<ESC){x.esc=false;try{sitrep(me,'trade','Escort to '+((G.countries[x.to]||{}).name||'?')+' stopped: no '+FN+'.',{go:'p250b',sev:1});}catch(e){}}}
+        if(!subs.length||cut(x))return;const risk=x.esc?0.015:0.06;if(Math.random()<risk){x.cutUntil=G.tick+3;const by=subs[Math.floor(Math.random()*subs.length)];
+          try{sitrep(me,'trade','🚢 U-boats of '+by.name+' sank your convoy to '+((G.countries[x.to]||{}).name||'?')+': the route pays nothing for 3 turns.'+(x.esc?'':' An escort makes this much rarer.'),{go:'p250b',sev:2});}catch(e){}}});
+    }}catch(e){}return out;};try{window.runTick=runTick;}catch(e){}}
+  window.p54raid=function(c,tid){const o=G.countries[tid];if(!c||!o)return err('No target');if(bTotal(c,'shipyard')<1)return err('Build a '+(typeof BN==='function'?BN('shipyard'):'Shipyard')+' first');
+    if(!hostile(c,o))return err('You can only raid the convoys of a nation at war with you');const live=R(o).filter(x=>!cut(x));if(!live.length)return err(o.name+' has no convoy at sea right now');
+    if(((o._p54raid||{})[c.id]||0)>G.tick)return err(o.name+' sails in escorted convoys for '+(o._p54raid[c.id]-G.tick)+' more turn(s)');
+    if((c.res.fuel||0)<RAID_FUEL)return err('A raid needs '+F(RAID_FUEL)+' '+FN);if((c.cp||0)<1)return err(cpNote(c,1));
+    c.res.fuel-=RAID_FUEL;c.cp--;(o._p54raid=o._p54raid||{})[c.id]=G.tick+6;
+    const lv=bTotal(c,'shipyard');const ch=Math.min(0.85,0.5+0.1*lv)-(live.some(x=>x.esc)?0.25:0);
+    if(Math.random()<ch){const x=live.sort((a,b)=>val(o,b).money-val(o,a).money)[0];const v=val(o,x);x.cutUntil=G.tick+4;c.res.money=Math.min(typeof CAP!=='undefined'&&CAP.money?CAP.money:Infinity,(c.res.money||0)+v.money);
+      try{if(o.isAI&&typeof vs==='function')vs(o).threat+=8;}catch(e){}return ok({msg:'Convoy sunk: '+o.name+"'s route pays nothing for 4 turns. Cargo taken: "+fmt(v.money,true)+'.'});}
+    return ok({msg:'The raid missed: the convoy got away.'});};
+  // computer nations raid your convoys too: that is the sinking above. On Build > Shipyard: escort per route, enemy convoys to raid.
+  const _b=VIEWS.p250b;VIEWS.p250b=function(v){const r=_b.apply(this,arguments);try{const c=ME();if(!c)return r;const btn=v.querySelector('[data-p250="bld"][data-id="shipyard"]');const m=btn&&btn.closest('.p250row')&&btn.closest('.p250row').querySelector('.p250m');if(!m||m.querySelector('.p54'))return r;
+    m.querySelectorAll('.p273r').forEach(line=>{const cb=line.querySelector('[data-p273="close"]');if(!cb)return;const x=R(c).find(y=>String(y.to)===String(cb.dataset.v));if(!x)return;
+      if(cut(x))line.insertAdjacentHTML('afterbegin','<b class="bad">sunk, back in '+(x.cutUntil-G.tick)+' turns</b> · ');
+      cb.insertAdjacentHTML('beforebegin','<button class="p270b" data-p54esc="'+x.to+'" title="An escort costs '+F(ESC)+' '+FN+' a turn and makes a sinking 4 times rarer">'+(x.esc?'Escorted · stop':'Escort ('+F(ESC)+' '+FN+'/turn)')+'</button> ');});
+    if(bTotal(c,'shipyard')>0){const T=foes(c).filter(o=>R(o).some(x=>!cut(x))).slice(0,3);
+      m.insertAdjacentHTML('beforeend','<div class="p270c p54">'+(T.length?'Enemy convoys at sea: '+T.map(o=>'<button class="p270b" data-p54raid="'+o.id+'" title="Costs '+F(RAID_FUEL)+' fuel and 1 command point">Raid '+E(o.name)+'</button>').join(' '):(R(c).length&&foes(c).length?'<span class="muted">At war: your convoys can be sunk. Escort them.</span>':''))+'</div>');}
+  }catch(e){}return r;};
+  document.addEventListener('click',e=>{const b=e.target&&e.target.closest&&e.target.closest('[data-p54esc],[data-p54raid]');if(!b)return;e.preventDefault();e.stopPropagation();const c=ME();if(!c)return;let r;
+    if(b.dataset.p54esc!=null){const x=R(c).find(y=>String(y.to)===b.dataset.p54esc);if(x){x.esc=!x.esc;r=ok({msg:x.esc?'Escort on.':'Escort off.'});}else r=err('No such route');}
+    else r=p54raid(c,+b.dataset.p54raid);
+    try{if(r.ok)toast((r.data&&r.data.msg)||'Done.','good');else toast(r.error,'bad');save();drawTop();}catch(x){}try{go(view);}catch(x){}},true);
+}
+
+/* 55. Rally point: pick one of your lands on Army > Defend a land. Every 3 turns the troops that came home or were
+   trained since then march there by themselves; a quarter of your army always stays home. Free, like stationing. */
+(function(){
+  const EVERY=3,KEEP=0.25;
+  const units=c=>Object.assign({},c.units||{});
+  window.p55set=function(c,rid){const r=_rgId(rid);if(!c||!r||r.owner!==c.id)return err('Pick one of your own lands');c._p55={rid:r.id,base:units(c),at:G.tick};return ok();};
+  window.p55stop=function(c){if(c)c._p55=null;return ok();};
+  function step(c){const R=c&&c._p55;if(!R)return;const r=_rgId(R.rid);
+    if(!r||r.owner!==c.id){c._p55=null;try{sitrep(c,'military','🚩 Rally point stopped: '+(r?r.name:'that land')+' is no longer yours.',{go:'p250a',sev:1});}catch(e){}return;}
+    const now=units(c);const base=R.base||{};for(const k in base)if((now[k]||0)<base[k])base[k]=now[k]||0;
+    if(G.tick-(R.at||0)<EVERY){R.base=base;return;}
+    const tot=Object.values(now).reduce((a,b)=>a+(b||0),0);const com={};let n=0;
+    for(const k in now){const add=Math.max(0,(now[k]||0)-(base[k]||0));const max=Math.floor((now[k]||0)*(1-KEEP));const v=Math.min(add,max);if(v>0){com[k]=v;n+=v;}}
+    R.at=G.tick;
+    if(n<1||tot<1){R.base=now;return;}
+    let res=null;try{res=cmdStation(c,R.rid,com);}catch(e){res={ok:false,error:String(e)};}
+    if(res&&res.ok){R.base=units(c);R.sent=(R.sent||0)+n;R.last={t:G.tick,n};}
+    else{R.base=now;if(!R.warned||G.tick-R.warned>15){R.warned=G.tick;try{sitrep(c,'military','🚩 Rally to '+r.name+' paused: '+((res&&res.error)||'not possible right now'),{go:'p250a',sev:1});}catch(e){}}}}
+  if(typeof runTick==='function'){const _rt=runTick;runTick=function(){const out=_rt.apply(this,arguments);try{const c=ME();if(c&&!c.retired)step(c);}catch(e){}return out;};try{window.runTick=runTick;}catch(e){}}
+  if(VIEWS&&VIEWS.p250a){const _a=VIEWS.p250a;VIEWS.p250a=function(v){const r=_a.apply(this,arguments);try{const c=ME();if(!c)return r;
+    const box=[...v.querySelectorAll('.p250box')].find(b=>b.dataset.p268t==='Defend a land'||(b.querySelector('.p250h')&&/^Defend a land/.test(b.querySelector('.p250h').textContent.trim())));if(!box||box.querySelector('.p55'))return r;
+    const R=c._p55;const cur=R?_rgId(R.rid):null;
+    box.querySelectorAll('[data-p250="st25"]').forEach(b=>{const id=+b.dataset.id;const on=cur&&cur.id===id;b.insertAdjacentHTML('beforebegin','<button type="button" class="btn sm p250btn'+(on?' p250main':' ghost')+'" data-p55="'+(on?'stop':id)+'" title="New and returning troops march here every 3 turns">'+(on?'Rally point · stop':'Rally here')+'</button>');});
+    const d=document.createElement('div');d.className='p250row p55';
+    d.innerHTML='<div class="p250m"><div class="p250t">'+(cur?'🚩 Rally point: '+E(cur.name)+' '+xyBtn(cur.coord):'Rally point: none')+'</div><div class="p250s">'+(cur?'new and returning troops march there every 3 turns, a quarter stays home'+(R.sent?' · '+F(R.sent)+' sent so far':''):'pick a land below with Rally here: new troops then march there by themselves')+'</div></div>';
+    const fr=box.querySelector('.p298f');if(fr)fr.after(d);else{const hd=box.querySelector('.p250h');if(hd)hd.after(d);else box.prepend(d);}
+  }catch(e){}return r;};}
+  document.addEventListener('click',e=>{const b=e.target&&e.target.closest&&e.target.closest('[data-p55]');if(!b)return;e.preventDefault();e.stopPropagation();const c=ME();if(!c)return;
+    const r=b.dataset.p55==='stop'?p55stop(c):p55set(c,+b.dataset.p55);try{if(r.ok)toast(b.dataset.p55==='stop'?'Rally point removed.':'Rally point set: new troops march there every 3 turns.','good');else toast(r.error,'bad');save();}catch(x){}try{go(view);}catch(x){}},true);
+})();
+
+/* 56. Watch the battle opens on top: the replay always lies above the battle result window (it played behind it) */
+if(typeof window.p218Replay==='function'){const _rp56=window.p218Replay;window.p218Replay=function(){const out=_rp56.apply(this,arguments);try{const bg=[...document.querySelectorAll('.p218rp')].pop();if(bg){let z=80;document.querySelectorAll('.modal-bg').forEach(x=>{if(x!==bg){const v=+getComputedStyle(x).zIndex||0;if(v>=z)z=v+1;}});bg.style.zIndex=String(Math.max(z,200));document.body.appendChild(bg);}}catch(e){}return out;};}
+
+/* 57. Map: an army that waits outside the prize (only 3 fight there at once) says "waits" instead of an ETA of 1 turn that never changes */
+(function(){let mp=null,mt=-1;const fl=id=>{if(mt!==G.tick||!mp){mp=new Map();mt=G.tick;G.countries.forEach(o=>{(o&&o.fleets||[]).forEach(f=>{if(f&&f.id!=null)mp.set(f.id,f);});});}return mp.get(id);};
+  const wrap=()=>{if(typeof window.__p221lab!=='function'||window.__p221lab.__p57)return;const _l=window.__p221lab;const w=function(info){try{const d=JSON.parse(info||'{}');if(d.fid!=null&&d.eta!=null&&d.eta<=1){const f=fl(d.fid);if(f&&f._p18wait&&f.status==='outbound')return 'waits';}}catch(e){}return _l.apply(this,arguments);};w.__p57=1;window.__p221lab=w;};
+  wrap();setTimeout(wrap,0);})();
+
+/* 58. Deals with computer nations, on the attacker rows of Army > Defend a land:
+   - Buy peace: pay an attacker and it leaves your lands alone for 20 turns.
+   - Turn a neighbour on them: pay another nation to march on the attacker's lands (it scouts and goes when it can win;
+     if it cannot within 6 turns you get half back). */
+(function(){
+  const sc=x=>{try{return Math.max(1,scores(x).overall||1);}catch(e){return 1;}};
+  const net=x=>{try{const pj=projection(x);return Math.max(0,(pj.net&&pj.net.money)||0);}catch(e){return 0;}};
+  const homeU=x=>Object.values(x.units||{}).reduce((a,b)=>a+(b||0),0);
+  const cl=(v,a,b)=>Math.max(a,Math.min(b,v));
+  const base=(x,me)=>Math.round(Math.max(2e6,net(me)*3)*cl(sc(x)/sc(me),0.5,2.5)/1e5)*1e5;
+  const peaceOn=(o,me)=>!!(o&&me&&o._p58peace&&(o._p58peace[me.id]||0)>G.tick);
+  window.p58peaceOn=peaceOn;
+  function ally(me){try{const b=[];const A=arguments[1];G.countries.forEach(x=>{if(!x||!x.isAI||x.retired||x.id===A.id||x.id===me.id||!regionsOf(x).length)return;if(A.clan!=null&&x.clan===A.clan)return;if(me.clan!=null&&x.clan===me.clan)return;if(x.vsYou&&(x.vsYou.threat||0)>40)return;if(peaceOn(A,x))return;
+      let same=0;try{same=homeCluster(x)===homeCluster(A)?1:0;}catch(e){}b.push({x,same,p:homeU(x)});});b.sort((a,c)=>(c.same-a.same)||(c.p-a.p));return b[0]?b[0].x:null;}catch(e){return null;}}
+  window.p58btns=function(o){try{const me=ME();if(!me||!o||!o.isAI||o.retired)return '';let h='';
+    if(peaceOn(o,me))h+='<span class="p250s">peace bought, '+(o._p58peace[me.id]-G.tick)+' turns left</span>';
+    else{const pr=base(o,me);h+=' <button type="button" class="btn sm ghost p250btn" data-p58p="'+o.id+'" title="It will not attack your lands for 20 turns">Buy peace · '+fmt(pr,true)+'</button>';}
+    const b=ally(me,o);if(b&&!(me._p58job&&me._p58job.until>G.tick)){const pr=Math.round(base(b,me)*1.5/1e5)*1e5;h+=' <button type="button" class="btn sm ghost p250btn" data-p58t="'+o.id+'|'+b.id+'" title="'+E(b.name)+' marches on '+E(o.name)+' when it can win. If not within 6 turns, you get half back">Pay '+E(b.tag||b.name)+' to hit them · '+fmt(pr,true)+'</button>';}
+    return h;}catch(e){return '';}};
+  window.p58peace=function(me,oid){const o=G.countries[oid];if(!me||!o||!o.isAI)return err('No such nation');if(peaceOn(o,me))return err('Peace already bought');
+    if(((o._p58last||{})[me.id]||-99)>G.tick-40&&o._p58last)return err(o.name+' will not sell peace again so soon (wait '+(o._p58last[me.id]+40-G.tick)+' turns)');
+    const pr=base(o,me);if((me.res.money||0)<pr)return err('You need '+fmt(pr,true));me.res.money-=pr;o.res.money=(o.res.money||0)+pr;
+    (o._p58peace=o._p58peace||{})[me.id]=G.tick+20;(o._p58last=o._p58last||{})[me.id]=G.tick;try{if(o.vsYou)o.vsYou.threat=Math.max(0,(o.vsYou.threat||0)-30);}catch(e){}
+    let back=0;(o.fleets||[]).forEach(f=>{try{const r=_rgId(f.target);if(f.status==='outbound'&&r&&r.owner===me.id&&f.intent!=='garrison'&&f.intent!=='reinforce'){if(typeof recallFleet==='function'){const rr=recallFleet(o,f.id);if(rr&&rr.ok!==false)back++;}}}catch(e){}});
+    try{sitrep(me,'diplomacy','🤝 Peace bought from '+o.name+': no attacks on your lands for 20 turns'+(back?', '+back+' army turned back':'')+'.',{go:'p250a'});}catch(e){}
+    return ok({msg:'Peace bought: '+o.name+' leaves you alone for 20 turns.'+(back?' '+back+' army turned back.':'')});};
+  window.p58turn=function(me,aid,bid){const A=G.countries[aid],B=G.countries[bid];if(!me||!A||!B)return err('No such nation');if(me._p58job&&me._p58job.until>G.tick)return err('One deal like this at a time');
+    const pr=Math.round(base(B,me)*1.5/1e5)*1e5;if((me.res.money||0)<pr)return err('You need '+fmt(pr,true));me.res.money-=pr;B.res.money=(B.res.money||0)+pr;
+    me._p58job={a:A.id,b:B.id,paid:pr,until:G.tick+6,at:G.tick};return ok({msg:B.name+' takes the money and prepares to march on '+A.name+'.'});};
+  // AIs that sold peace do not attack you
+  const blocked=(c,r)=>{try{if(!c||!c.isAI||!r||r.owner==null)return false;const o=G.countries[r.owner];return !!(o&&o.isAI===false&&peaceOn(c,o));}catch(e){return false;}};
+  if(typeof cmdOp==='function'){const _o=cmdOp;cmdOp=function(c,rid){if(blocked(c,_rgId(rid)))return err('Peace was bought');return _o.apply(this,arguments);};try{window.cmdOp=cmdOp;}catch(e){}}
+  if(typeof cmdLaunchACS==='function'){const _l=cmdLaunchACS;cmdLaunchACS=function(c,rid){if(blocked(c,_rgId(rid)))return err('Peace was bought');return _l.apply(this,arguments);};try{window.cmdLaunchACS=cmdLaunchACS;}catch(e){}}
+  // the paid march
+  if(typeof runTick==='function'){const _rt=runTick;runTick=function(){const out=_rt.apply(this,arguments);try{const me=ME();const J=me&&me._p58job;if(J&&!J.done){const A=G.countries[J.a],B=G.countries[J.b];
+      if(!A||!B||A.retired||B.retired||!regionsOf(A).length){J.done=1;J.until=G.tick;}
+      else if(G.tick>J.at){const share={};for(const k in (B.units||{})){const v=Math.floor((B.units[k]||0)*0.6);if(v>0)share[k]=v;}let ap=0;try{ap=power(B,'atk',share);}catch(e){}
+        const T=regionsOf(A).map(r=>{let d=1e18;try{d=regionDef(r);}catch(e){}return {r,d};}).sort((x,y)=>x.d-y.d);let sent=null;
+        for(const t of T){if(ap<t.d*1.15)break;let r=null;try{r=cmdOp(B,t.r.id,share);}catch(e){}if(r&&r.ok){sent=t.r;break;}}
+        if(sent){J.done=1;J.until=G.tick;try{sitrep(me,'diplomacy','🤝 '+B.name+' kept its word: its army marches on '+A.name+' at '+sent.name+' ('+sent.coord+').',{coord:sent.coord,go:'p250a'});}catch(e){}}
+        else if(G.tick>=J.until){J.done=1;const back=Math.round(J.paid/2);me.res.money=(me.res.money||0)+back;B.res.money=Math.max(0,(B.res.money||0)-back);try{sitrep(me,'diplomacy','🤝 '+B.name+' did not dare to march on '+A.name+': its lands are too strong. You got '+fmt(back,true)+' back.',{go:'p250a'});}catch(e){}}}}
+  }catch(e){}return out;};try{window.runTick=runTick;}catch(e){}}
+  document.addEventListener('click',e=>{const b=e.target&&e.target.closest&&e.target.closest('[data-p58p],[data-p58t]');if(!b)return;e.preventDefault();e.stopPropagation();const me=ME();if(!me)return;
+    let r;if(b.dataset.p58p)r=p58peace(me,+b.dataset.p58p);else{const [a,c]=b.dataset.p58t.split('|');r=p58turn(me,+a,+c);}
+    try{if(r.ok)toast((r.data&&r.data.msg)||'Done.','good');else toast(r.error,'bad');save();drawTop();}catch(x){}try{go(view);}catch(x){}},true);
+})();
+
+/* 59a. A computer general judges a land by what he knows: a scouted land by his report, an unscouted one by a rough
+   guess (up to 15% off, a new guess every 10 turns). So he can be wrong, and you cannot count on the exact minimum. */
+window.p59seen=function(c,r){try{const k=aiKnownDef(c,r);if(k!=null)return k;const d=regionDef(r);let h=((c.id+1)*73856093)^((r.id+1)*19349663)^((Math.floor(G.tick/10)+1)*83492791);h=Math.abs(h)%1000/1000;return d*(0.85+0.3*h);}catch(e){return regionDef(r);}};
+/* 59. A computer nation with a plan: when it is set on you and has scouted a weak land of yours, it first sends a small
+   army at another land to pull your defence away, and two turns later strikes the weak one. */
+(function(){
+  const homeU=x=>Object.values(x.units||{}).reduce((a,b)=>a+(b||0),0);
+  const part=(x,f)=>{const o={};for(const k in (x.units||{})){const v=Math.floor((x.units[k]||0)*f);if(v>0)o[k]=v;}return o;};
+  const hostile=(o,me)=>{try{if(o.vsYou&&(o.vsYou.threat||0)>40)return true;if(o.clan!=null&&me.clan!=null&&typeof clanAtWar==='function'&&clanAtWar(o.clan,me.clan))return true;}catch(e){}return false;};
+  if(typeof runTick!=='function')return;const _rt=runTick;runTick=function(){const out=_rt.apply(this,arguments);try{const me=ME();if(!me||me.retired)return out;const mine=regionsOf(me);
+    // strikes that were planned
+    G.countries.forEach(o=>{const P=o&&o._p59;if(!P||P.at!==G.tick)return;o._p59=null;const r=_rgId(P.rid);if(!r||r.owner!==me.id||(window.p58peaceOn&&p58peaceOn(o,me)))return;
+      const sh=part(o,0.55);let ap=0,known=null;try{ap=power(o,'atk',sh);known=aiKnownDef(o,r);}catch(e){}if(known==null||ap<known*1.2)return;try{cmdOp(o,r.id,sh);}catch(e){}});
+    if(mine.length<2||G.tick-(G._p59last||-99)<8)return out;
+    const H=G.countries.filter(o=>o&&o.isAI&&!o.retired&&regionsOf(o).length&&!o._p59&&G.tick-(o._p59at||-99)>=25&&hostile(o,me)&&!(window.p58peaceOn&&p58peaceOn(o,me))).sort((a,b)=>homeU(b)-homeU(a));
+    for(const o of H.slice(0,6)){const sh=part(o,0.55);let ap=0;try{ap=power(o,'atk',sh);}catch(e){continue;}
+      const T=mine.map(r=>{let k=null;try{k=aiKnownDef(o,r);}catch(e){}return {r,k};}).filter(x=>x.k!=null&&ap>=x.k*1.2).sort((a,b)=>a.k-b.k);if(!T.length)continue;
+      const main=T[0].r;const decoys=mine.filter(r=>r.id!==main.id);if(!decoys.length)continue;const dec=decoys[Math.floor(Math.random()*decoys.length)];
+      let r=null;try{P177_SKIP++;r=cmdOp(o,dec.id,part(o,0.08));}catch(e){}finally{try{P177_SKIP--;}catch(e){}}if(!r||!r.ok)continue;
+      o._p59={rid:main.id,at:G.tick+2};o._p59at=G.tick;G._p59last=G.tick;G._p59n=(G._p59n||0)+1;break;}
+  }catch(e){}return out;};try{window.runTick=runTick;}catch(e){}
+})();
+
+/* 60. Computer allies arrive in time. They checked "can I get there before the attack?" with the travel time of a fast
+   army, but sent slow troops too, and any slow unit makes the march half as long again. Now, when the full army would
+   be late and its fast troops would be in time, a computer ally sends the fast troops (the rest stays home). */
+if(typeof cmdStation==='function'&&typeof reinforceTravel==='function'){const _st60=cmdStation;cmdStation=function(c,rid,committed){try{
+  if(c&&c.isAI&&committed){const r=_rgId(rid);if(r&&r.owner!=null&&r.owner!==c.id){const inc=(incomingTo(r.owner)||[]).filter(x=>x.region&&x.region.id===r.id);if(inc.length){
+    const E=Math.min.apply(null,inc.map(x=>x.eta));const home=(typeof homeFor==='function'&&homeFor(c,r))||regionsOf(c)[0];
+    if(home&&reinforceTravel(c,home,r,committed)>E&&travelFor(c,home,r)<=E){const fast={};let n=0;for(const k in committed){if((committed[k]||0)>0&&(UBYK[k]||{}).fast){fast[k]=committed[k];n+=committed[k];}}
+      if(n>=20){G._p60=(G._p60||0)+1;return _st60.call(this,c,rid,fast);}}}}}}catch(e){}return _st60.apply(this,arguments);};try{window.cmdStation=cmdStation;}catch(e){}}
+
+/* 61. Field manual: a link to the Veteran's Guide (how experienced players win), right under the title */
+(function(){const add=()=>{try{if(typeof view==='undefined'||view!=='codex')return;const v=document.getElementById('view');if(!v||v.querySelector('.p61'))return;const d=document.createElement('div');d.className='p250row p61';d.style.cssText='margin:6px 0 12px';
+  d.innerHTML='<div class="p250m"><div class="p250t">New here, or stuck after turn 100?</div><div class="p250s">The Veteran\'s Guide: run a big empire with few clicks, read the computer nations, break a stalemate, win the endgame.</div></div><div class="p250b"><a class="btn sm p250btn" href="https://playterrastate.nl/guide.html" target="_blank" rel="noopener">Veteran\'s Guide ›</a></div>';
+  const t=v.querySelector(':scope>.p250top');if(t){d.className='p61';d.style.cssText='margin-top:6px;font-size:14px';d.innerHTML='New here, or stuck after turn 100? <a class="p278lk" href="https://playterrastate.nl/guide.html" target="_blank" rel="noopener">Read the Veteran\'s Guide ›</a>';t.appendChild(d);}else v.prepend(d);}catch(e){}};
+  if(typeof go==='function'){const _g=go;go=function(){const r=_g.apply(this,arguments);try{add();setTimeout(add,0);}catch(e){}return r;};try{window.go=go;}catch(e){}}})();
+
 }catch(e){try{console.error('p278',e);}catch(_){}}})();
 </script>
 
