@@ -16,7 +16,7 @@
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="https://playterrastate.nl/img/v4/romaterra-share.jpg">
 <meta name="author" content="Wim Kamphorst">
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"VideoGame","@id":"https://playterrastate.nl/romaterra.html#game","name":"Romaterra","url":"https://playterrastate.nl/romaterra.html","description":"Free Roman grand strategy in your browser. Rule a people of the ancient world against hundreds of AI rivals, take Roma, raise the Imperial Palace and hold it. No account, no download.","image":"https://playterrastate.nl/img/v4/romaterra-share.jpg","genre":["Strategy","Grand strategy","Turn-based strategy","4X","Browser game"],"gamePlatform":["Web browser","Windows","macOS","Linux","Android","iOS"],"applicationCategory":"Game","operatingSystem":"Any (web browser)","playMode":"SinglePlayer","inLanguage":"en","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"EUR","availability":"https://schema.org/InStock"},"author":{"@type":"Person","@id":"https://playterrastate.nl/#wim","name":"Wim Kamphorst","url":"https://wimkamphorst.nl"},"publisher":{"@type":"Person","@id":"https://playterrastate.nl/#wim","name":"Wim Kamphorst","url":"https://wimkamphorst.nl"},"softwareVersion":"21.7","sameAs":["https://wimkamphorstcoaching.itch.io/romaterra"]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"VideoGame","@id":"https://playterrastate.nl/romaterra.html#game","name":"Romaterra","url":"https://playterrastate.nl/romaterra.html","description":"Free Roman grand strategy in your browser. Rule a people of the ancient world against hundreds of AI rivals, take Roma, raise the Imperial Palace and hold it. No account, no download.","image":"https://playterrastate.nl/img/v4/romaterra-share.jpg","genre":["Strategy","Grand strategy","Turn-based strategy","4X","Browser game"],"gamePlatform":["Web browser","Windows","macOS","Linux","Android","iOS"],"applicationCategory":"Game","operatingSystem":"Any (web browser)","playMode":"SinglePlayer","inLanguage":"en","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"EUR","availability":"https://schema.org/InStock"},"author":{"@type":"Person","@id":"https://playterrastate.nl/#wim","name":"Wim Kamphorst","url":"https://wimkamphorst.nl"},"publisher":{"@type":"Person","@id":"https://playterrastate.nl/#wim","name":"Wim Kamphorst","url":"https://wimkamphorst.nl"},"softwareVersion":"21.7.1","sameAs":["https://wimkamphorstcoaching.itch.io/romaterra"]}</script>
 <link rel="manifest" href="romaterra.webmanifest"><meta name="theme-color" content="#1a1410"><link rel="icon" href="icons/romaterra-64.png"><link rel="apple-touch-icon" href="icons/romaterra-180.png">
 <script>window.__MP_URL__=''; /* '' = live multiplayer not open yet */ if('serviceWorker' in navigator)addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));</script>
 <script data-goatcounter="https://playterrastatenl.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
@@ -5262,7 +5262,7 @@ return{c:function(a){return a==null?"":_c(a,15,function(a){return f(a+32);})+" "
 // formats, so a fast save is fully valid; it is just larger. The per-tick safety save uses fast; manual orders and the
 // periodic housekeeping tick use the compact compressed form.
 function save(fast){try{G.clientBuild=window.TT_CLIENT||'romaterra-1.0';}catch(e){}const _rnd=(k,v)=>(typeof v==='number'&&!Number.isInteger(v))?(Math.abs(v)>=1000?Math.round(v):Math.round(v*1000)/1000):v; /* A9: 3-decimal floats, the save was 30% long float tails */ if(G.you!=null&&G.countries[G.you])G.countries[G.you]._act=G.tick;
-  try{const _json=JSON.stringify(G,_rnd);let _out;if(fast||(typeof P6!=='undefined'&&P6.on)){_out=_json;}else{try{_out='LZ1'+_LZ.c(_json);if(_out.length>=_json.length+3)_out=_json;}catch(e){_out=_json;}}localStorage.setItem('romaterra',_out);window._saveFail=0;}catch(e){window._saveFail=(window._saveFail||0)+1;if(window._saveFail===1&&typeof toast==='function')toast('Save failed, browser storage is full. Download a back-up from Settings.','bad');}}
+  try{const _json=JSON.stringify(G,_rnd);let _out;if(fast||(typeof P6!=='undefined'&&P6.on)){_out=_json;}else{try{_out='LZ1'+_LZ.c(_json);if(_out.length>=_json.length+3)_out=_json;}catch(e){_out=_json;}}try{localStorage.setItem('romaterra',_out);}catch(e1){if(_out===_json){/* the unpacked save no longer fits: write it packed */_out='LZ1'+_LZ.c(_json);localStorage.setItem('romaterra',_out);}else throw e1;}window._saveFail=0;}catch(e){window._saveFail=(window._saveFail||0)+1;if(window._saveFail===1&&typeof toast==='function')toast('Save failed, browser storage is full. Download a back-up from Settings.','bad');}}
 // Activity indicator for an alliance member, green (active) / orange (idle) / red (dormant) / moon (away).
 function memberActivity(m){if(m._standin)return{ic:'🤖',color:'#7fb2ff',lbl:'stand-in ('+(m._standin.mode||'guard')+')'};if(m.away)return{ic:'🌙',color:'#b8a68f',lbl:'away'};
   if(m.id===G.you)return{ic:'🟢',color:'var(--good)',lbl:'active now'};
@@ -14378,14 +14378,16 @@ function staffPace(){return clamp(400/Math.max(100,SEASON_TICKS||400),0.45,2.2);
 const _staffXpA=1.72,_staffXpP=1.487; // rank r needs 1.72*(r-1)^1.487 xp: about rank 40 from time in the staff alone, 100 with a busy war
 function staffXpFor(r){return r<=1?0:_staffXpA*Math.pow(r-1,_staffXpP);}
 function staffRankOf(xp){let r=Math.floor(Math.pow(Math.max(0,xp)/_staffXpA,1/_staffXpP))+1;r=Math.max(1,Math.min(STAFF_MAXRANK,r));while(r<STAFF_MAXRANK&&staffXpFor(r+1)<=xp)r++;while(r>1&&staffXpFor(r)>xp)r--;return r;}
+function _stSame(a){const b=G.season;return a===b||!!(a&&b&&typeof a==='object'&&a.num===b.num&&a.startTick===b.startTick);}
 function staffInit(c){if(!c)return null;let S=c.staff;
-  if(!S||S.season!==G.season){const keep=S&&S.season===G.season;S=c.staff={v:1,season:G.season,own:{},unl:[],fx:[],cnt:{win:0,held:0,fought:0},tech0:(c.tech||[]).length,maxReg:0,newUnl:[],log:[]};
+  if(S&&S.season!==G.season&&_stSame(S.season))S.season=G.season;
+  if(!S||!_stSame(S.season)){const keep=S&&_stSame(S.season);S=c.staff={v:1,season:G.season,own:{},unl:[],fx:[],cnt:{win:0,held:0,fought:0},tech0:(c.tech||[]).length,maxReg:0,newUnl:[],log:[]};
     staffDB().forEach(d=>{if(d.starter)S.unl.push(d.k);});
     // an older save keeps the commanders it already had in service
     c.commanders=(c.commanders||[]).filter(k=>S.unl.includes(k));if(!c.commanders.length&&c.isAI===false)c.commanders=['general','minister'];}
   S.unl.forEach(k=>{if(!S.own[k])S.own[k]={xp:0,tr:[],cd:0,uses:0};});
   return S;}
-function staffOf(c){return c&&c.staff&&c.staff.season===G.season?c.staff:(c&&c.isAI===false?staffInit(c):null);}
+function staffOf(c){if(c&&c.staff&&c.staff.season!==G.season&&_stSame(c.staff.season))c.staff.season=G.season;return c&&c.staff&&c.staff.season===G.season?c.staff:(c&&c.isAI===false?staffInit(c):null);}
 function staffRank(c,k){const S=staffOf(c);const o=S&&S.own[k];return o?staffRankOf(o.xp):1;}
 function staffSlots(c){const S=staffOf(c);if(!S)return STAFF_SLOTS_BASE;let top=1;for(const k in S.own)top=Math.max(top,staffRankOf(S.own[k].xp));return Math.min(STAFF_SLOTS_MAX,STAFF_SLOTS_BASE+(top>=10?1:0)+(top>=25?1:0)+(top>=50?1:0));}
 function staffNextSlot(c){const S=staffOf(c);let top=1;if(S)for(const k in S.own)top=Math.max(top,staffRankOf(S.own[k].xp));return top<10?10:top<25?25:top<50?50:0;}
@@ -22497,7 +22499,7 @@ if(typeof module!=='undefined'&&module.exports)module.exports=BANNER;
     const pack=()=>{packT=0;if(window.__p209ro||p6on())return;if(P19.inTurn||P19.saveDue){packT=setTimeout(pack,800);return;}try{P19.realSave(false);}catch(e){}};
     const raw=()=>{if(window.__p209ro||p6on()||!P19.saveDue||P19.inTurn)return false;const f0=window._saveFail||0;window._saveFail=1; // keeps the "storage full" toast quiet for this try
       let ok=false;try{P19.realSave(true);ok=!window._saveFail;}catch(e){}
-      if(ok){P19.saveDue=false;clearTimeout(P19.saveT);P19.saveT=0;clearTimeout(packT);packT=setTimeout(pack,2500);}else window._saveFail=f0;return ok;};
+      if(ok){P19.saveDue=false;clearTimeout(P19.saveT);P19.saveT=0;clearTimeout(packT);packT=setTimeout(pack,2500);}else{window._saveFail=f0;/* the unpacked turn no longer fits: write it packed right away instead of waiting */try{P19.realSave(false);if(!window._saveFail){P19.saveDue=false;clearTimeout(P19.saveT);P19.saveT=0;ok=true;}}catch(e){}}return ok;};
     const _l=p19SaveLater;window.p19SaveLater=p19SaveLater=function(){const r=_l.apply(this,arguments);if(!p6on()){const w=()=>{if(P19.inTurn){setTimeout(w,40);return;}raw();};setTimeout(w,0);}return r;};
     const flush=()=>{if(!p6on()){if(!raw()&&packT&&!window.__p209ro){/* a fast save is on disk already; nothing to do */}}};
     window.addEventListener('pagehide',flush,true);
@@ -26508,6 +26510,18 @@ if(typeof cmdStation==='function'&&typeof reinforceTravel==='function'){const _s
   d.innerHTML='<div class="p250m"><div class="p250t">New here, or stuck after turn 100?</div><div class="p250s">The Veteran\'s Guide: run a big empire with few clicks, read the computer nations, break a stalemate, win the endgame.</div></div><div class="p250b"><a class="btn sm p250btn" href="https://playterrastate.nl/guide.html" target="_blank" rel="noopener">Veteran\'s Guide ›</a></div>';
   const t=v.querySelector(':scope>.p250top');if(t){d.className='p61';d.style.cssText='margin-top:6px;font-size:14px';d.innerHTML='New here, or stuck after turn 100? <a class="p278lk" href="https://playterrastate.nl/guide.html" target="_blank" rel="noopener">Read the Veteran\'s Guide ›</a>';t.appendChild(d);}else v.prepend(d);}catch(e){}};
   if(typeof go==='function'){const _g=go;go=function(){const r=_g.apply(this,arguments);try{add();setTimeout(add,0);}catch(e){}return r;};try{window.go=go;}catch(e){}}})();
+
+/* 62. Build > In progress: when training runs long, say why (your country trains a fixed number per turn) and what
+   raises it, with a Build button; a long list of training batches folds after the first 5 */
+if(typeof VIEWS!=='undefined'&&VIEWS.p250b){const _b62=VIEWS.p250b;VIEWS.p250b=function(v){const r=_b62.apply(this,arguments);try{const c=ME();if(!c)return r;
+  const box=[...v.querySelectorAll('.p250box')].find(b=>{const h=b.querySelector('.p250h');return h&&/^In progress/.test(h.textContent.trim());});if(!box||box.querySelector('.p62'))return r;
+  const mq=c.mq||[];const last=mq.reduce((a,q)=>Math.max(a,q.ticks||0),0);
+  if(mq.length&&last>=6&&typeof trainCap==='function'){const cap=trainCap(c);const nm=k=>{try{return typeof BN==='function'?BN(k):((BUILD.find(b=>b.k===k)||{}).n||k);}catch(e){return k;}};
+    const d=document.createElement('div');d.className='p250row p62';
+    d.innerHTML='<div class="p250m"><div class="p250t">Training runs '+last+' turns: your country trains '+F(cap)+' troops per turn</div><div class="p250s">Each level adds per turn: '+E(nm('base'))+' +500, '+E(nm('heavy_complex'))+' +300, '+E(nm('factory'))+' +100, on any land. Big orders wait for room.</div></div><div class="p250b"><button type="button" class="btn sm p250btn p250main" data-p250="bld" data-id="base">Build '+E(nm('base'))+'</button></div>';
+    const h=box.querySelector('.p250h');if(h)h.after(d);else box.prepend(d);}
+  const rows=[...box.querySelectorAll('.p250row:not(.p62)')];if(rows.length>8){const extra=rows.slice(5);const det=document.createElement('details');det.className='p278more';det.innerHTML='<summary>'+extra.length+' more in the queue</summary>';extra.forEach(x=>det.appendChild(x));box.appendChild(det);}
+}catch(e){}return r;};}
 
 }catch(e){try{console.error('p278',e);}catch(_){}}})();
 </script>
