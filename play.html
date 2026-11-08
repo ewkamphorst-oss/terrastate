@@ -24739,6 +24739,12 @@ const st=document.createElement('style');st.textContent=`
 // 6. Rankings: one line under Around you says where the nation above you leads.
 // 8. One place for everything: the full defence plan is on Army (Overview has one line with Defend), Lands has no second
 //    attack list, a log line that points somewhere has its button, old routes open the right tab.
+// 9. No information without an action: plan steps without an action become a note, a land that cannot be held
+//    offers Plan the retake, rank/research/path/nation lines get their link, finished directives leave the log.
+// 10. Who is attacking: the plan on Army lists every attacker (attack, troops, when, what if scanned) with Scan and Map.
+// 11. War room: the live-world reservation moves to the end, member tiles open the nation or Help;
+//     Overview names every attacker. Nothing is removed: finished directives fold away, Lands keeps Under attack.
+// 12. Attack banners on other pages keep their text and get one Defend button to the plan; the Planetary Shield is a step in the plan.
 // 7. Map: two more views, Alliances (one colour per alliance, so the big blocs stand out) and Intel (fresh scouting green, old grey).
 (function(){try{
 if(typeof window==='undefined'||window.__MP__)return;
@@ -24840,16 +24846,93 @@ if(VIEWS&&VIEWS.p250o){const _o2=VIEWS.p250o;VIEWS.p250o=function(v){const r=_o2
 }catch(e){}return r;};}
 // Lands: no separate "Under attack" list; the red label opens the plan
 if(VIEWS&&VIEWS.p250l){const _l2=VIEWS.p250l;VIEWS.p250l=function(v){const r=_l2.apply(this,arguments);try{
-  const tabs=[...v.querySelectorAll('.p250tabs .p250tab, .p266sel option')];tabs.forEach(t=>{if(/^under attack/i.test((t.textContent||'').trim())){if(t.classList.contains('on')){const first=v.querySelector('.p250tabs .p250tab');if(first&&first!==t)setTimeout(()=>first.click(),0);}t.remove();}});
   v.querySelectorAll('.p250row').forEach(row=>{const t=row.querySelector('.p250t');if(!t||t.querySelector('.p278lk'))return;[...t.querySelectorAll('span,b,em')].forEach(sp=>{if(/attack in \d+ turn/i.test(sp.textContent||'')&&!sp.querySelector('*')){sp.classList.add('p278lk');sp.setAttribute('data-p278def','');sp.setAttribute('role','button');sp.title='Open the defence plan';}});});
 }catch(e){}return r;};}
 document.addEventListener('click',e=>{const t=e.target;if(!t||!t.closest)return;const d=t.closest('[data-p278def]');if(d){e.preventDefault();e.stopPropagation();openTab('p250a','Defend a land');return;}
   const g2=t.closest('[data-p278go]');if(g2){e.preventDefault();e.stopPropagation();try{window.__p250classic=null;go(g2.dataset.p278go);}catch(_){}}},true);
 
+/* ---------- 9. No information without an action ---------- */
+function lnk(label,attr){return '<button type="button" class="p278go" '+attr+'>'+E(label)+' ›</button>';}
+function addLink(row,html){if(!row||row.querySelector('.p278go,.p278add'))return;let b=row.querySelector(':scope>.p250b');if(!b){b=document.createElement('div');b.className='p250b p278add';row.appendChild(b);}b.insertAdjacentHTML('beforeend',html);}
+function byName(nm){nm=String(nm||'').trim();return G.countries.find(o=>o&&!o.retired&&o.name===nm)||null;}
+const KW=[[/directive complete/i,null],[/weather|rain|snow|winter|autumn|spring|summer|mud|fog/i,['p250a','Calculator','Calculator']],[/attack|incoming|troops to hold|reinforc|defen[cd]|garrison|stationed/i,['p250a','Defend a land','Defend']],[/research|tech\b|studies/i,['p250r','','Research']],[/built|build|structure|upgrade/i,['p250b','','Build']],[/alliance|clan|ally|allies|joint/i,['p250al','','Alliance']],[/market|export|import|trade|sell|buy|price|harvest/i,['p250e','Market','Market']],[/scout|spy|intel|radar/i,['p250a','Scout','Scout']],[/captured|took|lost .* to|battle|assault/i,['p250a','Battle reports','Reports']]];
+function wire(v){try{const c=ME();if(!c)return;
+  // Army: rank line, plan steps without an action, a land that cannot be held
+  v.querySelectorAll('.p250row').forEach(row=>{const t=(row.querySelector('.p250t')||{}).textContent||'';if(/^army rank/i.test(t.trim()))addLink(row,lnk('Find a battle','data-p278tab="p250a|Targets"'));});
+  v.querySelectorAll('.p276').forEach(box=>{const ol=box.querySelector('.p276l');if(!ol)return;const items=[...ol.children];const gone=[];items.forEach((st,i)=>{if(!st.classList.contains('p276s')||st.querySelector('button'))return;const m=st.querySelector('.p276m');if(!m)return;gone.push(i);const note=document.createElement('div');note.className='p276note';note.innerHTML=m.innerHTML;const n=box.querySelector('.p276n');(n||ol).after(note);st.remove();});
+    if(gone.length){if(!ol.children.length)ol.remove();box.querySelectorAll('.p276ok').forEach(ok=>{ok.innerHTML=ok.innerHTML.replace(/step (\d+)/i,(m0,k)=>{const K=+k;const shift=gone.filter(i=>i<K-1).length;return 'step '+Math.max(1,K-shift);});});}});
+  v.querySelectorAll('.p276bad').forEach(b=>{if(b.querySelector('button'))return;b.insertAdjacentHTML('beforeend',' <button type="button" class="btn sm p250btn" data-p278tab="p250a|Calculator">Plan the retake</button>');});
+  // Research and wonders you cannot afford yet: say what is missing and where to get it
+  v.querySelectorAll('.p250row').forEach(row=>{if(row.querySelector('button'))return;const s=row.textContent||'';if(!/not enough yet|lose the land, lose the won/i.test(s))return;const needRP=/research/i.test(s);addLink(row,(needRP?lnk('More research','data-p278tab="p250b|Buildings"'):'')+lnk('Money','data-p278tab="p250e|Tax & government"'));});
+  // National path: locked until your first battle
+  v.querySelectorAll('.p250row').forEach(row=>{if(row.querySelector('button'))return;if(/fight one battle first/i.test(row.textContent||''))addLink(row,lnk('Find a battle','data-p278tab="p250a|Targets"'));});
+  // Nations in lists: tap to see them on the map
+  v.querySelectorAll('.p250row').forEach(row=>{if(row.querySelector('button'))return;const t=row.querySelector('.p250t');if(!t)return;let nm=(t.childNodes[0]&&t.childNodes[0].nodeType===3?t.childNodes[0].textContent:t.textContent).replace(/^#\d+\s+/,'').replace(/\s*\(you\)\s*$/,'').trim();const o=byName(nm);if(!o)return;
+    if(o.id===c.id){if(/under attack/i.test(row.textContent||''))addLink(row,lnk('Defend','data-p278def=""'));else if(/score/i.test(row.textContent||''))addLink(row,lnk('Your nation','data-p278tab="p250o|"'));return;}
+    if(/under attack/i.test(row.textContent||''))addLink(row,lnk('Help','data-p278tab="p250al|Joint attacks"'));else addLink(row,lnk('Map','data-p278nat="'+o.id+'"'));});
+  // Rankings: the gap to the next place sits in the Why line, the separate line goes
+  v.querySelectorAll('.p250row').forEach(row=>{if(row.querySelector('button'))return;const why=v.querySelector('.p278why .p250s');if(/points to #\d+/i.test(row.textContent||'')&&why&&!why.dataset.gap){why.dataset.gap=1;why.insertAdjacentHTML('afterbegin','<b>'+E((row.textContent||'').trim())+'.</b> ');row.remove();}});
+  // World news: see it on the map
+  v.querySelectorAll('.p250box').forEach(bx=>{if(bx.dataset.p268t!=='World')return;bx.querySelectorAll('.p250row').forEach(row=>{if(row.querySelector('button'))return;const m=(row.textContent||'').match(/\((\s*\d+:\d+:\d+)\)/);addLink(row,lnk('Map','data-p278tab="map|"'));});});
+  // National path still locked: the five choices fold away under one line
+  {const lock=[...v.querySelectorAll('.p250row')].find(r=>/fight one battle first/i.test(r.textContent||''));if(lock&&!v.querySelector('.p278paths')){const box=lock.closest('.p250box')||lock.parentElement;const rows=[...box.querySelectorAll('.p250row')].filter(r=>r!==lock&&!r.querySelector('button'));if(rows.length){const d=document.createElement('details');d.className='p278paths';d.innerHTML='<summary class="p278go">See the '+rows.length+' paths</summary>';rows.forEach(r=>d.appendChild(r));lock.after(d);}}}
+  // Why the nation above you leads: go where you trail most
+  v.querySelectorAll('.p278why').forEach(row=>{if(row.querySelector('button'))return;const s=row.textContent||'';const m=s.match(/lead you in (\w+)/i);const area=m?m[1].toLowerCase():'';const to={economy:['p250e','','Economy'],army:['p250b','Troops','Troops'],research:['p250r','','Research'],land:['p250a','Targets','Targets'],alliance:['p250al','','Alliance'],stability:['p250e','Tax & government','Stability']}[area];if(to)addLink(row,lnk(to[2],'data-p278tab="'+to[0]+'|'+to[1]+'"'));});
+  // Alliances in the rankings: yours opens Alliance, others show their land on the map
+  v.querySelectorAll('.p250row').forEach(row=>{if(row.querySelector('button'))return;const s=row.textContent||'';const tg=(s.match(/\[([A-Z0-9]{1,6})\]/)||[])[1];if(!tg||!/members/i.test(s))return;const cl=(G.clans||[]).find(x=>x&&x.tag===tg);if(!cl)return;if(c.clan===cl.id){addLink(row,lnk('Alliance','data-p278tab="p250al|"'));return;}const lead=(cl.members||[]).map(id=>G.countries[id]).find(o=>o&&!o.retired&&regionsOf(o).length);if(lead)addLink(row,lnk('Map','data-p278nat="'+lead.id+'"'));});
+  // Events: a line with no destination of its own gets one by its words; finished directives go
+  v.querySelectorAll('.p250box').forEach(bx=>{if(bx.dataset.p268t!=='Events')return;bx.querySelectorAll('.p250row').forEach(row=>{if(row.querySelector('button'))return;const s=row.textContent||'';for(const [re,to] of KW){if(re.test(s)){if(!to){let d=bx.querySelector('.p278done');if(!d){d=document.createElement('details');d.className='p278done p278paths';d.innerHTML='<summary class="p278go">Finished directives</summary>';bx.appendChild(d);}d.appendChild(row);}else addLink(row,lnk(to[2],'data-p278tab="'+to[0]+'|'+to[1]+'"'));break;}}});const d=bx.querySelector('.p278done');if(d){const s0=d.querySelector('summary');s0.textContent='Finished directives ('+(d.children.length-1)+')';}});
+}catch(e){}}
+['p250o','p250a','p250l','p250b','p250e','p250r','p250al','p250k'].forEach(k=>{const f=VIEWS&&VIEWS[k];if(typeof f!=='function')return;VIEWS[k]=function(v){const r=f.apply(this,arguments);try{wire(v);}catch(e){}return r;};});
+document.addEventListener('click',e=>{const t=e.target;if(!t||!t.closest)return;const a=t.closest('[data-p278tab]');if(a){e.preventDefault();e.stopPropagation();const [pg,tab]=a.dataset.p278tab.split('|');if(tab)openTab(pg,tab);else{try{window.__p250classic=null;go(pg);}catch(_){}}return;}
+  const n=t.closest('[data-p278nat]');if(n){e.preventDefault();e.stopPropagation();try{GOTO_NATION(+n.dataset.p278nat);}catch(_){}}},true);
+
+/* ---------- 10. Who is attacking: every attacker in the plan, with what, when, and a Scan button ---------- */
+function regByCoord(cd){cd=String(cd||'').trim();return (G.regions||[]).find(r=>r&&r.coord===cd)||null;}
+function attackers(v){try{const c=ME();if(!c)return;v.querySelectorAll('.p276').forEach(box=>{if(box.querySelector('.p278who')||box.closest('.p278inc'))return;const cd=(box.querySelector('.p276c')||{}).textContent;const r=regByCoord(cd);if(!r)return;
+  let inc=[];try{inc=incomingTo(c.id).filter(x=>x&&x.region&&x.region.id===r.id);}catch(e){}if(!inc.length)return;
+  const by={};inc.forEach(x=>{const k=(x.from&&x.from.id!=null)?x.from.id:(x.from&&x.from.name)||'?';const g=by[k]=by[k]||{from:x.from,atk:0,size:0,eta:99,units:{},known:true,unk:[]};g.atk+=x.atkP||0;g.size+=x.size||0;g.eta=Math.min(g.eta,x.eta||0);const f=x.fleet||{};const seen=!!(f.seen||(f._seenBy&&f._seenBy[c.id]));if(seen){for(const u in (f.units||{}))g.units[u]=(g.units[u]||0)+(f.units[u]||0);}else{g.known=false;if(f.id!=null&&!f.acs)g.unk.push(f.id);}});
+  const rows=Object.values(by).sort((a,b)=>a.eta-b.eta).map(g=>{const o=g.from||{};const mix=g.known?fleetMixText(g.units,3):'';const nm=E(o.name||'Unknown')+(o.tag?' <span class="p250c">'+E(o.tag)+'</span>':'');
+    const what=g.known?(mix||'troops known'):'<span class="muted">troops unknown</span>';
+    const btn=(!g.known&&g.unk.length?'<button type="button" class="btn sm p250btn" data-p278scan="'+g.unk.join(',')+'">Scan</button>':'')+(o.id!=null?lnk('Map','data-p278nat="'+o.id+'"'):'');
+    return '<div class="p278wr"><div><b>'+nm+'</b><div class="p250s">attack '+F(g.atk)+' · '+F(g.size)+' troops · lands in '+T(g.eta)+' · '+what+'</div></div><div class="p278wb2">'+btn+'</div></div>';}).join('');
+  const d=document.createElement('div');d.className='p278who';d.innerHTML='<div class="p278wh">Who is coming</div>'+rows;const n=box.querySelector('.p276n');(n||box.firstElementChild).after(d);});}catch(e){}}
+function F(v){try{return fmt(v);}catch(e){return String(Math.round(v));}}
+function T(n){n=Math.max(0,+n||0);return n+(n===1?' turn':' turns');}
+['p250a','p250o'].forEach(k=>{const f=VIEWS&&VIEWS[k];if(typeof f!=='function')return;VIEWS[k]=function(v){const r=f.apply(this,arguments);try{if(k==='p250a')attackers(v);}catch(e){}return r;};});
+document.addEventListener('click',e=>{const b=e.target&&e.target.closest&&e.target.closest('[data-p278scan]');if(!b)return;e.preventDefault();e.stopPropagation();const c=ME();if(!c)return;let ok=0,msg='';
+  b.dataset.p278scan.split(',').forEach(id=>{try{const r=cmdScan(c,isNaN(+id)?id:+id);if(r&&r.ok)ok++;else if(r&&r.error)msg=r.error;}catch(_){}});
+  try{toast(ok?'Scan sent. The troops show up when the scan lands.':(msg||'Scan failed.'),ok?'':'warn');}catch(_){}try{save();}catch(_){}try{go(view);}catch(_){}},true);
+
+/* ---------- 11. War room: everything stays, in the right order ---------- */
+function warroom(v){try{const c=ME();if(!c)return;
+  // the live-world reservation is not urgent: it moves to the end of the page
+  v.querySelectorAll('.p204res').forEach(el=>{if(el.parentElement!==v||v.lastElementChild!==el)v.appendChild(el);});
+  // member tiles: tap shows the nation; a member under attack opens Help (or your own plan)
+  v.querySelectorAll('.p198m').forEach(t=>{if(t.dataset.p278w)return;const nm=((t.querySelector('.nm')||{}).textContent||'').replace(/\s*\(you\)\s*$/,'').trim();const o=byName(nm);if(!o)return;t.dataset.p278w=1;t.style.cursor='pointer';
+    if(o.id===c.id){if(t.classList.contains('hit'))t.setAttribute('data-p278def','');}else if(t.classList.contains('hit'))t.setAttribute('data-p278tab','p250al|Joint attacks');else t.setAttribute('data-p278nat',String(o.id));});
+}catch(e){}}
+['clans','p250al'].forEach(k=>{const f=VIEWS&&VIEWS[k];if(typeof f!=='function')return;VIEWS[k]=function(v){const r=f.apply(this,arguments);try{warroom(v);setTimeout(()=>warroom(v),0);}catch(e){}return r;};});
+// Overview attack line: every attacker by name, not just the first two
+if(VIEWS&&VIEWS.p250o){const _o3=VIEWS.p250o;VIEWS.p250o=function(v){const r=_o3.apply(this,arguments);try{const c=ME();v.querySelectorAll('.p278inc').forEach(row=>{const cd=(row.querySelector('.p276c')||{}).textContent;const rg=regByCoord(cd);if(!rg)return;let inc=[];try{inc=incomingTo(c.id).filter(x=>x&&x.region&&x.region.id===rg.id);}catch(e){}const names=[...new Set(inc.map(x=>x.from&&x.from.name).filter(Boolean))];const f=row.querySelector('.p276f');if(f&&names.length)f.textContent='from '+names.join(', ');});}catch(e){}return r;};}
+
+/* ---------- 12. Attack banners on other pages point to the one plan; the shield joins the plan ---------- */
+function pins(v){try{v.querySelectorAll('.alertrow,.alertbar>div').forEach(row=>{if(row.dataset.p278p)return;const s=row.textContent||'';if(!/incoming attack|besieged|attacks? inbound|final stand|probes? inbound/i.test(s))return;row.dataset.p278p=1;
+    row.querySelectorAll('.arr,button,a,[onclick],.cta,.alertcta').forEach(b=>{if(!b.closest('.p278pinact'))b.classList.add('p278hid');});[...row.querySelectorAll('span,div')].forEach(x=>{if(!x.children.length&&/^\s*(defend|homeland|engage shield|reinforce nexus)\s*(→|›)?\s*$/i.test(x.textContent||''))x.classList.add('p278hid');});const tail=document.createElement('span');tail.className='p278pinact';tail.innerHTML='<button type="button" class="btn sm p250btn p250main" data-p278def="">Defend</button>';row.appendChild(tail);});}catch(e){}}
+function shieldStep(v){try{const c=ME();if(!c||typeof cmdShield!=='function'||c.shield)return;let home=true;try{home=fleetsAllHome(c);}catch(e){}
+  v.querySelectorAll('.p276').forEach(box=>{if(box.querySelector('.p278sh')||box.closest('.p278inc'))return;if(!box.querySelector('.p276bad')&&!/short/i.test((box.querySelector('.p276n')||{}).textContent||''))return;
+    const d=document.createElement('div');d.className='p278sh';d.innerHTML='<div><b>Planetary Shield</b><div class="p250s">'+(home?'Your lands cannot be captured while it is up. It arms in a few turns and halves production.':'Your lands cannot be captured while it is up. First bring all your armies home.')+'</div></div><div class="p250b">'+(home?'<button type="button" class="btn sm p250btn" data-p278shield="1">Engage shield</button>':lnk('Armies','data-p278tab="p250a|On the move"'))+'</div>';
+    const bad=box.querySelector('.p276bad');if(bad)bad.before(d);else box.appendChild(d);});}catch(e){}}
+['p250a'].forEach(k=>{const f=VIEWS&&VIEWS[k];if(typeof f!=='function')return;VIEWS[k]=function(v){const r=f.apply(this,arguments);try{shieldStep(v);}catch(e){}return r;};});
+{const vv=document.getElementById('view');if(vv)new MutationObserver(()=>{try{pins(vv);if(vv.querySelector('.p198m:not([data-p278w])'))warroom(vv);}catch(e){}}).observe(vv,{childList:true,subtree:true});}
+document.addEventListener('click',e=>{const b=e.target&&e.target.closest&&e.target.closest('[data-p278shield]');if(!b)return;e.preventDefault();e.stopPropagation();const c=ME();if(!c)return;let r=null;try{r=cmdShield(c,true);}catch(_){}try{toast(r&&r.ok?'Shield arming. Your lands cannot be captured once it is up.':((r&&r.error)||'Shield failed.'),r&&r.ok?'':'warn');}catch(_){}try{save();}catch(_){}try{go(view);}catch(_){}},true);
+
 /* ---------- 4. Map on the phone: Legend button ---------- */
 function addLegend(){try{document.querySelectorAll('.wmap').forEach(m=>{const w=m.querySelector('.wm-btns');if(!w||m.querySelector('.p278lg'))return;const b=document.createElement('button');b.type='button';b.className='wm-b p278lg';b.title='Legend';b.setAttribute('aria-label','Legend');b.textContent='?';
   b.onclick=ev=>{ev.preventDefault();ev.stopPropagation();const m=b.closest('.wmap');if(m)m.classList.toggle('showlegend');};w.appendChild(b);});}catch(e){}}
 setInterval(addLegend,1000);addLegend();
+// your nation's name in the top bar opens Overview
+document.addEventListener('click',e=>{const t=e.target&&e.target.closest&&e.target.closest('#topNation');if(!t||e.target.closest('button,a,[data-p278def]'))return;try{window.__p250classic=null;go('p250o');}catch(_){}},false);
 
 const st=document.createElement('style');st.textContent=`
 #strip .p278b{align-self:center;flex:0 0 auto;margin-left:6px;padding:6px 10px;border:1px solid var(--border);border-radius:999px;background:transparent;color:var(--muted);font:700 11px/1 var(--mono,monospace);letter-spacing:.06em;cursor:pointer;white-space:nowrap}
@@ -24863,6 +24946,12 @@ const st=document.createElement('style');st.textContent=`
 .p278w{color:var(--warn,#f6b62b);font-size:12px;margin-top:3px}.p278w:before{content:'! ';font-weight:700}.btn.p278wb{box-shadow:inset 0 0 0 1px var(--warn,#f6b62b)}
 .p278go{appearance:none;background:transparent;border:0;color:var(--accent);font:600 12.5px/1 inherit;cursor:pointer;padding:6px 2px;white-space:nowrap}.p278go:hover{text-decoration:underline}
 .p278top{border-left:3px solid var(--danger,#ef4444)}
+.p276note{font-size:13px;color:var(--muted);margin:4px 0 2px}.p276note b{color:var(--text);font-weight:600}.p278paths{margin:4px 0}.p278paths>summary{list-style:none;padding:8px 14px}.p278paths>summary::-webkit-details-marker{display:none}
+.p278add{display:flex;gap:6px;align-items:center}
+.p278who{margin:8px 0 4px;padding:6px 10px;border:1px solid var(--border);border-radius:8px}.p278wh{font:700 11px/1 var(--mono,monospace);letter-spacing:.1em;text-transform:uppercase;color:var(--muted);padding:4px 0 6px}.p278wr{display:flex;justify-content:space-between;gap:10px;align-items:center;padding:6px 0;border-top:1px solid var(--border)}.p278wr:first-of-type{border-top:0}.p278wb2{display:flex;gap:6px;align-items:center;flex-wrap:wrap;justify-content:flex-end}
+#topNation{cursor:pointer}
+#view{padding-bottom:96px}
+.p278hid{display:none!important}.p278pinact{margin-left:auto;display:inline-flex}.p278sh{display:flex;justify-content:space-between;gap:10px;align-items:center;padding:8px 0;border-top:1px solid var(--border);margin-top:6px}
 .p278lk{cursor:pointer;text-decoration:underline;text-underline-offset:3px}
 .wm-b.p278lg{font-weight:700;display:none}@media(max-width:760px){.wm-b.p278lg{display:inline-flex;align-items:center;justify-content:center}}
 .p278hb{display:none;position:relative}.p278hb i{position:absolute;top:-4px;right:-4px;font-style:normal;min-width:16px;padding:2px 4px;border-radius:9px;background:var(--danger,#ef4444);color:#fff;font:700 10px/1 var(--mono,monospace)}
