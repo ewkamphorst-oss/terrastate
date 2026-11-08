@@ -16,7 +16,7 @@
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="https://playterrastate.nl/img/v4/terrastate-share.jpg">
 <meta name="author" content="Wim Kamphorst">
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"VideoGame","@id":"https://playterrastate.nl/play.html#game","name":"Terrastate","url":"https://playterrastate.nl/play.html","description":"Free Planetarion-style grand strategy in your browser. Lead one nation against 500 AI nations on a world map, form alliances and fight for the Nexus. No account, no download, no pay-to-win.","image":"https://playterrastate.nl/img/v4/terrastate-share.jpg","genre":["Strategy","Grand strategy","Turn-based strategy","4X","Browser game"],"gamePlatform":["Web browser","Windows","macOS","Linux","Android","iOS"],"applicationCategory":"Game","operatingSystem":"Any (web browser)","playMode":"SinglePlayer","inLanguage":"en","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"EUR","availability":"https://schema.org/InStock"},"author":{"@type":"Person","@id":"https://playterrastate.nl/#wim","name":"Wim Kamphorst","url":"https://wimkamphorst.nl"},"publisher":{"@type":"Person","@id":"https://playterrastate.nl/#wim","name":"Wim Kamphorst","url":"https://wimkamphorst.nl"},"softwareVersion":"20.5","sameAs":["https://wimkamphorstcoaching.itch.io/terrastate"]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"VideoGame","@id":"https://playterrastate.nl/play.html#game","name":"Terrastate","url":"https://playterrastate.nl/play.html","description":"Free Planetarion-style grand strategy in your browser. Lead one nation against 500 AI nations on a world map, form alliances and fight for the Nexus. No account, no download, no pay-to-win.","image":"https://playterrastate.nl/img/v4/terrastate-share.jpg","genre":["Strategy","Grand strategy","Turn-based strategy","4X","Browser game"],"gamePlatform":["Web browser","Windows","macOS","Linux","Android","iOS"],"applicationCategory":"Game","operatingSystem":"Any (web browser)","playMode":"SinglePlayer","inLanguage":"en","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"EUR","availability":"https://schema.org/InStock"},"author":{"@type":"Person","@id":"https://playterrastate.nl/#wim","name":"Wim Kamphorst","url":"https://wimkamphorst.nl"},"publisher":{"@type":"Person","@id":"https://playterrastate.nl/#wim","name":"Wim Kamphorst","url":"https://wimkamphorst.nl"},"softwareVersion":"20.6","sameAs":["https://wimkamphorstcoaching.itch.io/terrastate"]}</script>
 <link rel="manifest" href="terrastate.webmanifest"><meta name="theme-color" content="#0d1420"><link rel="icon" href="icons/terrastate-64.png"><link rel="apple-touch-icon" href="icons/terrastate-180.png">
 <script>window.__MP_URL__=''; /* '' = live multiplayer not open yet */ if('serviceWorker' in navigator)addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));</script>
 <script data-goatcounter="https://playterrastatenl.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
@@ -1149,10 +1149,11 @@ const EDICT_CAP=2, EDICT_CD=6;
 function edictMods(c){const m={mult:{},stab:0,atk:0,def:0};(c&&c.edicts||[]).forEach(k=>{const e=EDICTS.find(x=>x.k===k);if(!e)return;if(e.mult)for(const r in e.mult)m.mult[r]=(m.mult[r]||0)+e.mult[r];m.stab+=e.stab||0;m.atk+=e.atk||0;m.def+=e.def||0;});return m;}
 function cmdSetEdict(c,key){if(!c)return err('No nation');const e=EDICTS.find(x=>x.k===key);if(!e)return err('Unknown edict');
   c.edicts=c.edicts||[];const on=c.edicts.includes(key);
-  if(c._edictCd&&G.tick<c._edictCd)return err('The charter was just changed, it settles in '+(c._edictCd-G.tick)+' tick(s) before you can adjust it again.');
-  if(on){c.edicts=c.edicts.filter(k=>k!==key);}
-  else{if(c.edicts.length>=EDICT_CAP)return err('Your charter holds at most '+EDICT_CAP+' edicts, repeal one first.');c.edicts.push(key);}
-  c._edictCd=G.tick+EDICT_CD;return ok({edicts:c.edicts.slice()});}
+  // Repealing is always allowed and starts no wait. Only adopting an edict starts the settling time.
+  if(on){c.edicts=c.edicts.filter(k=>k!==key);return ok({edicts:c.edicts.slice()});}
+  if(c._edictCd&&G.tick<c._edictCd)return err('The charter was just changed, it settles in '+(c._edictCd-G.tick)+' tick(s) before you can add another edict.');
+  if(c.edicts.length>=EDICT_CAP)return err('Your charter holds at most '+EDICT_CAP+' edicts, repeal one first.');
+  c.edicts.push(key);c._edictCd=G.tick+EDICT_CD;return ok({edicts:c.edicts.slice()});}
 function cmdClearEdicts(c){if(!c)return err('No nation');if(c._edictCd&&G.tick<c._edictCd)return err('The charter was just changed, wait '+(c._edictCd-G.tick)+' tick(s).');c.edicts=[];c._edictCd=G.tick+EDICT_CD;return ok();}
 // v3.23: AI nations adopt a National Charter fitting their temperament, so the edict layer is live across the whole
 // (mostly-AI) world — a scouted AI shows a real charter, and its projection/power reflect the same tradeoffs a human's do.
@@ -7474,7 +7475,7 @@ function p19DRender(){if(!p19Calm())return;let el=document.getElementById('p19d'
   if(!rows.length&&!evh){if(el)el.remove();return;}
   let act=null;try{if(!p19Training())act=soloNextAction(you());}catch(e){} // during training the training bar is the one next step
   const nb=rows.filter(r=>r.btn).length;const nn=rows.reduce((a,r)=>a+(r.btn?0:(r.cnt||1)),0);const sum=[nb?nb+' battle'+(nb>1?'s':''):'',evh?'1 choice':'',nn?nn+' note'+(nn>1?'s':''):''].filter(Boolean).join(' · ');
-  const tn=p19TurnNo();const hot=rows.some(r=>r.sev>=2);const col=P19.openTick===d.tick?false:(p19Phone()||(!evh&&(()=>{try{return localStorage.getItem('p19dcol')==='1';}catch(e){return false;}})())||P19.autoCol===d.tick);
+  const tn=p19TurnNo();const hot=rows.some(r=>r.sev>=2);const col=P19.openTick===d.tick?false:(p19Phone()||(!evh&&(()=>{try{return localStorage.getItem('p19dcol')!=='0';}catch(e){return true;}})())||P19.autoCol===d.tick);
   const html=`<div class="p19dh" data-p19t="1"><span class="p19dt">${esc(P19_DNAME.toUpperCase())} · TURN ${d.tick>=0?Math.max(0,d.tick-((G.season&&G.season.startTick)||0)):tn.n}</span><span class="p19ds">${esc(sum)}</span><span class="p19dc">${col?'▸':'▾'}</span><button class="p19dx" data-p19x="1" title="Close until next turn" aria-label="Close">✕</button></div>
     <div class="p19db">${evh}${rows.slice(0,9).map(r=>`<div class="p19r${r.sev>=2?' hot':''}"><span class="p19i">${r.ic}</span><div class="p19x">${r.h}</div>${r.btn||''}</div>`).join('')}${rows.length>9?`<div class="small muted" style="padding:4px 2px">+${rows.length-9} more in Reports</div>`:''}</div>
     ${act&&!evh?`<div class="p19df"><span class="small muted">Next:</span> <b class="small">${esc(act.what)}</b><button class="btn sm" data-p19go="${esc(act.go||'dashboard')}">${esc(act.btn||'Go')}</button></div>`:''}`;
@@ -10837,7 +10838,7 @@ function renderWorldMap(v,c,hostiles,incRegions,mode){
   v.appendChild(box);
   const svg=box.querySelector('#wsvg'),tip=box.querySelector('#wmtip'),hint=box.querySelector('#wmhint'),card=box.querySelector('#mapcard');
   {const sw=(col,extra)=>`<span class="ldot" style="background:${col};${extra||''}"></span>`;const ln=(col,dash)=>`<span style="display:inline-block;width:18px;border-top:2px ${dash?'dashed':'solid'} ${col};vertical-align:middle"></span>`;
-   const L=mode==='economic'?[[sw('hsl(45,85%,32%)')+sw('hsl(45,85%,66%)'),'low → high GDP']]:mode==='conflict'?[[sw('#f0625f'),'under attack'],[sw('hsl(10,85%,46%)'),'fighting'],[sw('#7a5a2a'),'recovering'],[sw('#2a3850'),'calm']]:[[sw(RELCOL.self),'you'],[sw(RELCOL.alliance),'alliance'],[sw(RELCOL.enemy),'war'],[sw('#3c6e96'),'everyone else'],[sw('#0c2240','border:1px solid #2a6a9a'),'open']];
+   const L=mode==='alliance'?[[sw(RELCOL.self),'you'],[sw('hsl(30,62%,50%)')+sw('hsl(170,62%,50%)')+sw('hsl(290,62%,50%)'),'one colour per alliance'],[sw('#2a3850'),'no alliance'],[sw('#0c2240','border:1px solid #2a6a9a'),'open']]:mode==='intel'?[[sw(RELCOL.self),'you'],[sw('hsl(150,70%,55%)')+sw('hsl(150,70%,32%)'),'scouted, fresh → nearly stale'],[sw('#5a6478'),'old intel'],[sw('#1b2638'),'never scouted']]:mode==='economic'?[[sw('hsl(45,85%,32%)')+sw('hsl(45,85%,66%)'),'low → high GDP']]:mode==='conflict'?[[sw('#f0625f'),'under attack'],[sw('hsl(10,85%,46%)'),'fighting'],[sw('#7a5a2a'),'recovering'],[sw('#2a3850'),'calm']]:[[sw(RELCOL.self),'you'],[sw(RELCOL.alliance),'alliance'],[sw(RELCOL.enemy),'war'],[sw('#3c6e96'),'everyone else'],[sw('#0c2240','border:1px solid #2a6a9a'),'open']];
    L.push([ln(RELCOL.self,true),'your fleet'],[ln(RELCOL.enemy,true),'inbound'],[ln(RELCOL.alliance,true),'alliance'],[ln('#b48cff',true),'ACS'],[ln(RELCOL.ally,false),'🤝 allied pact'],[ln(RELCOL.alliance,true),'🤝 NAP pact'],['👑','Nexus'],['📌','War Table']);
    box.querySelector('#wmlegend').innerHTML=L.map(([a,b])=>`<span class="row" style="gap:5px">${a} ${b}</span>`).join('');}
   const byId=new Map(G.regions.map(r=>[r.id,r]));
@@ -11180,7 +11181,7 @@ VIEWS.map=v=>{const c=you();const hostiles=hostileSet(c.id);const incRegions=new
   v.appendChild(bc);
   bc.querySelectorAll('button[data-up]').forEach(a=>a.onclick=()=>{const lv=+a.dataset.up;mapView.level=lv;if(lv<2)mapView.sector=null;if(lv<1)mapView.cluster=null;WM.jump=lv===0?{kind:'world'}:{kind:'theater',a:mapView.cluster};go('map');});
   if(!mapView.mode)mapView.mode='political';
-  const MODES=[['political','🏳 Political'],['economic','💰 Economic'],['conflict','🔥 Conflict']];
+  const MODES=[['political','🏳 Political'],['alliance','🤝 Alliances'],['economic','💰 Economic'],['conflict','🔥 Conflict'],['intel','🔍 Intel']];
   const mtog=h(`<div class="row wrap mb maptools" style="gap:8px;justify-content:space-between"><div class="seg" id="mapmode">${MODES.map(([k,l])=>`<button class="${k===mapView.mode?'on':''}" data-m="${k}">${l}</button>`).join('')}</div>
     <div class="seg" id="mapfilter" style="flex-wrap:wrap">${[['all','All'],['threats','🔴 Threats'],['allies','🟢 Allies'],['open','↗ Open']].map(([k,l])=>`<button class="${(mapView.filter||'all')===k?'on':''}" data-f="${k}">${l}</button>`).join('')}</div></div>`);
   v.appendChild(mtog);mtog.querySelectorAll('#mapmode button').forEach(b=>b.onclick=()=>{mapView.mode=b.dataset.m;go('map');});
@@ -24077,6 +24078,7 @@ VIEWS.p250e=v=>{const r=_e(v);try{const c=ME();if(!c)return r;const tg=groups(v)
 /* ---------- Alliance: + Diplomacy, Roles, Messages ---------- */
 const _al=VIEWS.p250al;VIEWS.p250al=v=>{const r=_al(v);try{const c=ME();if(!c)return r;const T=base(v);
   if(clanOf(c)){const dp=grp('Diplomacy',fromPage('p250d'));if(dp)T.push(dp);
+    T.push({name:'War room',boxes:[customBox('<div class="p250row"><div class="p250m"><div class="p250t">War room</div><div class="p250s">war goal, alliance target, plans and the operations board</div></div><div class="p250b"><button class="btn sm p250btn p250main" data-p250="classic" data-id="clans">Open war room</button></div></div>')]});
     T.push({name:'Roles',boxes:[customBox('<div class="p250row"><div class="p250m"><div class="p250t">Alliance roles</div><div class="p250s">what every title does, who holds it, and the buttons for your own</div></div><div class="p250b"><button class="btn sm p250btn p250main" data-p250="classic" data-id="roles">Open roles</button></div></div>')]});}
   const ms=grp('Messages',fromPage('p250c'));if(ms)T.push(ms);build(v,'p250al',T);links(v,['clans','roles','diplomacy','mail']);}catch(e){}return r;};
 
@@ -24085,12 +24087,12 @@ const _o=VIEWS.p250o;VIEWS.p250o=v=>{const r=_o(v);try{const T=base(v);const ev=
 
 /* ---------- old routes open the new place ---------- */
 const REDIR={p250m:['p250e','Market'],market:['p250e','Market'],p250s:['p250a','Scout'],covert:['p250a','Scout'],p250rep:['p250a','Battle reports'],battles:['p250a','Battle reports'],
-  reports:['p250o','Events'],p250c:['p250al','Messages'],mail:['p250al','Messages'],p250d:['p250al','Diplomacy'],diplomacy:['p250al','Diplomacy'],economy:['p250e','Tax & government']};
+  reports:['p250o','Events'],staff:['p250a','Staff'],p250c:['p250al','Messages'],mail:['p250al','Messages'],p250d:['p250al','Diplomacy'],diplomacy:['p250al','Diplomacy'],economy:['p250e','Tax & government']};
 const _go=go;go=function(k){try{if(k&&REDIR[k]&&window.__p250classic!==k){const t=REDIR[k];(window._p250tab||(window._p250tab={}))[t[0]]=t[1];k=t[0];window.__p250classic=null;}}catch(e){}
   const r=_go.apply(this,[k].concat([].slice.call(arguments,1)));try{nav();}catch(e){}return r;};try{window.go=go;}catch(e){}
 
 /* ---------- menus: Economy in the main menu, a short More ---------- */
-const HIDE=['p250m','p250e','p250rep','p250s','p250c','p250d','staff','calc','roles'];
+const HIDE=['p250e','calc','roles']; // 20.6: Market, Reports, Scouting, Comms, Diplomacy and Staff are back under More
 function nav(){try{const ec='<a class="p250n2 p268ec" data-p250="go" data-id="p250e" data-k="p250e"><svg class="ic" aria-hidden="true"><use href="#i-coin"></use></svg><span>Economy</span><b class="p250badge"></b></a>';
   document.querySelectorAll('.p250nav').forEach(n=>{if(!n.querySelector('.p268ec')){const b=n.querySelector('[data-k="p250b"]');if(b)b.insertAdjacentHTML('afterend',ec);}});
   document.querySelectorAll('.p250more a[data-id]:not(.p268ec2),.p250sh a[data-id]:not(.p268ec2)').forEach(a=>{if(HIDE.indexOf(a.dataset.id)>=0&&!a.closest('.p264full'))a.style.display='none';});
@@ -24727,5 +24729,148 @@ const st=document.createElement('style');st.textContent=`
 `;document.head.appendChild(st);
 }catch(e){try{console.error('p277',e);}catch(_){}}})();
 </script>
+<script>/*p278*/
+// 20.6: everything back, in the new style.
+// 1. More: Market, Reports, Scouting, Comms, Diplomacy and Staff are links again; each opens its tab on the new pages.
+// 2. Alliance: a War room tab that opens the full war room (war goal, alliance target, plans).
+// 3. Advisor: one button in the top bar. It shows how your nation stands and at most three things that need you.
+// 4. Map on the phone: a Legend button; notifications stay out of the way while a land card is open.
+// 5. Build: a building that would drive a resource below zero says so before you build it.
+// 6. Rankings: one line under Around you says where the nation above you leads.
+// 8. One place for everything: the full defence plan is on Army (Overview has one line with Defend), Lands has no second
+//    attack list, a log line that points somewhere has its button, old routes open the right tab.
+// 7. Map: two more views, Alliances (one colour per alliance, so the big blocs stand out) and Intel (fresh scouting green, old grey).
+(function(){try{
+if(typeof window==='undefined'||window.__MP__)return;
+const ME=()=>{try{return G.countries[G.you];}catch(e){return null;}};
+const E=s=>{try{return esc(String(s));}catch(e){return String(s);}};
+function openTab(page,tab){try{(window._p250tab||(window._p250tab={}))[page]=tab;window.__p250classic=null;go(page);}catch(e){}}
+
+/* ---------- 3. Advisor ---------- */
+function advice(c){const out=[];let score=100;
+  try{const inc=(typeof incomingTo==='function'?incomingTo(c.id):[]).filter(x=>x&&x.threat>=0.05);
+    if(inc.length){const eta=Math.min.apply(null,inc.map(x=>+x.eta||0));score-=inc.length>=3?25:15;
+      out.push({sev:0,t:inc.length===1?'An attack on you lands in '+eta+(eta===1?' turn':' turns'):inc.length+' attacks on you, the first lands in '+eta+(eta===1?' turn':' turns'),a:'Defend',go:['p250a','Defend a land']});}}catch(e){}
+  try{const pj=c._pj||projection(c);const short=[];['food','energy','fuel','money'].forEach(k=>{const n=pj&&pj.net?(+pj.net[k]||0):0;if(n<0){const t=Math.floor((+c.res[k]||0)/-n);if(t<6)short.push({k,t});}});
+    if(short.length){short.sort((a,b)=>a.t-b.t);const s=short[0];score-=s.t<3?18:10;const L=(RMETA[s.k]&&RMETA[s.k].l)||s.k;
+      out.push({sev:s.t<3?0:1,t:L+' runs out in about '+s.t+(s.t===1?' turn':' turns'),a:'Market',go:['p250e','Market']});}}catch(e){}
+  try{const cl=clanOf(c);if(cl&&typeof defenceCalls==='function'){const calls=defenceCalls(cl).filter(k=>k&&k.owner&&k.owner.id!==c.id);
+    if(calls.length){score-=6;out.push({sev:1,t:calls.length===1?'An ally asks for help':calls.length+' allies ask for help',a:'Help',go:['p250al','Joint attacks']});}}}catch(e){}
+  try{if((!c.rq||!c.rq.length)&&(+c.res.research||0)>2000){score-=8;out.push({sev:1,t:'Research is idle',a:'Research',go:['p250r','']});}}catch(e){}
+  try{const cap=typeof cpCap==='function'?cpCap(c):30;if(cap>0&&(+c.cp||0)>=cap*0.9){score-=5;out.push({sev:2,t:'Command points are almost full, use them',a:'Targets',go:['p250a','Targets']});}}catch(e){}
+  try{const full=[];Object.keys(c.res||{}).forEach(k=>{let cap=0;try{cap=capOf(c,k);}catch(e){}if(cap>0&&(+c.res[k]||0)>=cap*0.95)full.push((RMETA[k]&&RMETA[k].l)||k);});
+    if(full.length){score-=4;out.push({sev:2,t:'Storage full: '+full.slice(0,3).join(', '),a:'Sell',go:['p250e','Market']});}}catch(e){}
+  out.sort((a,b)=>a.sev-b.sev);score=Math.max(10,Math.min(99,Math.round(score)));return {score,items:out.slice(0,3)};}
+function advHTML(){const c=ME();if(!c)return '';const A=advice(c);const col=A.score>=80?'var(--good,#22c55e)':A.score>=55?'var(--accent)':A.score>=35?'var(--warn,#f6b62b)':'var(--danger,#ef4444)';
+  const rows=A.items.length?A.items.map((x,i)=>'<div class="p278r"><span class="p278d p278s'+x.sev+'"></span><span>'+E(x.t)+'</span><button type="button" class="btn sm p250btn" data-p278i="'+i+'">'+E(x.a)+'</button></div>').join(''):'<div class="p278r"><span class="p278d p278s2"></span><span>All steady. Nothing needs you right now.</span></div>';
+  window.__p278items=A.items;
+  return '<div class="p278h"><span>Advisor</span><b style="color:'+col+'">'+A.score+'%</b></div><div class="p278sub">how your nation stands</div>'+rows;}
+function urgent(){try{const c=ME();if(!c)return 0;return advice(c).items.filter(x=>x.sev===0).length;}catch(e){return 0;}}
+function addAdv(){try{const s=document.getElementById('strip');if(!s)return;let b=s.querySelector('.p278b');if(!b){b=document.createElement('button');b.type='button';b.className='p278b';b.setAttribute('aria-label','Advisor');s.appendChild(b);}
+  const n=urgent();const t='Advisor'+(n?' <i>'+n+'</i>':'');if(b.innerHTML!==t)b.innerHTML=t;
+  const hb=document.getElementById('helpbtn');if(hb&&hb.parentNode){let g=document.getElementById('p278hb');if(!g){g=document.createElement('button');g.type='button';g.id='p278hb';g.className='gearbtn p278b p278hb';g.title='Advisor';g.setAttribute('aria-label','Advisor');hb.parentNode.insertBefore(g,hb);}
+    const tg='<svg class="ic" aria-hidden="true"><use href="#i-compass"></use></svg>'+(n?'<i>'+n+'</i>':'');if(g.innerHTML!==tg)g.innerHTML=tg;}}catch(e){}}
+if(typeof drawTop==='function'){const _dt=drawTop;drawTop=function(){const r=_dt.apply(this,arguments);try{addAdv();const p=document.querySelector('.p278pop');if(p)p.innerHTML=advHTML();}catch(e){}return r;};try{window.drawTop=drawTop;}catch(e){}}
+addAdv();
+document.addEventListener('click',e=>{const t=e.target;if(!t||!t.closest)return;const go1=t.closest('[data-p278i]');
+  if(go1){e.preventDefault();e.stopPropagation();const x=(window.__p278items||[])[+go1.dataset.p278i];const pop=document.querySelector('.p278pop');if(pop)pop.remove();if(x&&x.go){if(x.go[1])openTab(x.go[0],x.go[1]);else{try{go(x.go[0]);}catch(_){}}}return;}
+  const b=t.closest('.p278b');const pop=document.querySelector('.p278pop');
+  if(!b){if(pop&&!t.closest('.p278pop'))pop.remove();return;}e.preventDefault();e.stopPropagation();if(pop){pop.remove();return;}
+  const sp=document.querySelector('.p277pop');if(sp)sp.remove();
+  const d=document.createElement('div');d.className='p277pop p278pop';d.innerHTML=advHTML();document.body.appendChild(d);const r=b.getBoundingClientRect();d.style.top=Math.round(r.bottom+6)+'px';if(window.innerWidth<=760){d.style.left='8px';d.style.right='8px';d.style.maxWidth='none';}else d.style.right=Math.max(8,Math.round(window.innerWidth-r.right))+'px';},true);
+
+/* ---------- 5. Build: warn before a building drives a resource below zero ---------- */
+function bdef(k){try{return (typeof BK!=='undefined'&&BK[k])||BUILD.find(x=>x.k===k);}catch(e){return null;}}
+function buildWarn(c,k,net){const d=bdef(k);if(!d)return '';const delta={};
+  for(const q in (d.maint||{}))delta[q]=(delta[q]||0)+(+d.maint[q]||0);
+  const ef=d.eff||{};for(const q in (ef.cons||{}))delta[q]=(delta[q]||0)+(+ef.cons[q]||0);for(const q in (ef.prod||{}))delta[q]=(delta[q]||0)-(+ef.prod[q]||0);
+  let worst=null;for(const q in delta){const dq=delta[q];if(!(dq>0))continue;const n=+net[q]||0;const after=n-dq;if(after<0){const s={q,after,already:n<0};if(!worst||after<worst.after)worst=s;}}
+  if(!worst)return '';const L=(RMETA[worst.q]&&RMETA[worst.q].l)||worst.q;const F2=v=>{try{return fmt(Math.abs(v),worst.q==='money');}catch(e){return Math.round(Math.abs(v));}};
+  return worst.already?L+' is already short, this makes it −'+F2(worst.after)+'/turn':L+' goes short: −'+F2(worst.after)+'/turn after this';}
+if(VIEWS&&VIEWS.p250b){const _b=VIEWS.p250b;VIEWS.p250b=function(v){const r=_b.apply(this,arguments);try{const c=ME();if(!c)return r;let pj=null;try{pj=projection(c);}catch(e){}const net=(pj&&pj.net)||{};
+  v.querySelectorAll('[data-p250="bld"][data-id]').forEach(btn=>{const row=btn.closest('.p250row');if(!row||row.querySelector('.p278w'))return;const w=buildWarn(c,btn.dataset.id,net);if(!w)return;
+    const s=row.querySelector('.p250s');if(s)s.insertAdjacentHTML('beforeend','<div class="p278w">'+E(w)+'</div>');btn.classList.add('p278wb');});}catch(e){}return r;};}
+
+/* ---------- 6. Rankings: why the nation above you is above you ---------- */
+if(VIEWS&&VIEWS.p250k){const _k=VIEWS.p250k;VIEWS.p250k=function(v){const r=_k.apply(this,arguments);try{const c=ME();if(!c)return r;let L=[];try{L=activeRanked();}catch(e){}const i=L.findIndex(x=>x&&x.id===c.id);if(i<=0)return r;
+  const up=(L[i-1]&&L[i-1].id!=null&&G.countries[L[i-1].id])||L[i-1];if(!up)return r;let a=null,b=null;try{a=scores(c);b=scores(up);}catch(e){}if(!a||!b)return r;
+  const N={economic:'economy',military:'army',technology:'research',territory:'land',diplomacy:'alliance',stability:'stability'};
+  const W=(typeof SCOREW!=='undefined')?SCOREW:{};const gaps=Object.keys(N).map(k=>({k,g:((+b[k]||0)-(+a[k]||0))*(+W[k]||1)})).filter(x=>x.g>0).sort((x,y)=>y.g-x.g).slice(0,3);
+  const strong=Object.keys(N).map(k=>({k,g:((+a[k]||0)-(+b[k]||0))*(+W[k]||1)})).filter(x=>x.g>0).sort((x,y)=>y.g-x.g)[0];
+  if(!gaps.length)return r;const txt='They lead you in '+gaps.map(x=>N[x.k]+' (+'+fmt(x.g)+')').join(', ')+(strong?'. You lead in '+N[strong.k]+'.':'.');
+  const html='<div class="p250row p278why"><div class="p250m"><div class="p250t">Why #'+i+' '+E(up.name)+' is above you</div><div class="p250s">'+E(txt)+'</div></div></div>';
+  const boxes=[...v.querySelectorAll('.p250box')];const aro=boxes.find(x=>/Around you/i.test(x.textContent))||boxes[0];if(aro&&!aro.querySelector('.p278why')){const h=aro.querySelector('.p250h');if(h)h.insertAdjacentHTML('afterend',html);else aro.insertAdjacentHTML('afterbegin',html);}}catch(e){}return r;};}
+
+/* ---------- 7. Map: Alliances and Intel views (two more map modes, no extra buttons) ---------- */
+function clanHue(id){return Math.round(((+id||0)*137.508+20)%360);}
+function clanFill(id){return 'hsl('+clanHue(id)+',62%,48%)';}
+function intelStyle(r,c){const o=r.owner!=null?G.countries[r.owner]:null;if(!o)return {fill:'#152238',op:1,stroke:'#233650',sw:.35,mark:''};
+  if(o.id===c.id)return {fill:RELCOL.self,op:.92,stroke:'#fff2c4',sw:.7,mark:'you'};
+  const it=(c._regionIntel||{})[r.id];if(!it||it.miss)return {fill:'#1b2638',op:1,stroke:'#233650',sw:.35,mark:''};
+  const age=Math.max(0,G.tick-(+it.tick||0)),ttl=(typeof SCOUT_TTL!=='undefined'?SCOUT_TTL:12);
+  if(age<=ttl){const t=1-age/Math.max(1,ttl);return {fill:'hsl(150,70%,'+Math.round(32+t*23)+'%)',op:.92,stroke:'#0a1420',sw:.35,mark:''};}
+  return {fill:'#5a6478',op:.85,stroke:'#0a1420',sw:.35,mark:''};}
+function allianceStyle(r,c){const o=r.owner!=null?G.countries[r.owner]:null;if(!o)return {fill:'#0c2240',op:.78,stroke:'#8fd4ff',sw:.55,mark:'open'};
+  if(o.id===c.id)return {fill:RELCOL.self,op:.92,stroke:'#fff2c4',sw:.7,mark:'you'};
+  if(o.clan==null)return {fill:'#2a3850',op:.85,stroke:'#0a1420',sw:.35,mark:''};
+  const mine=c.clan!=null&&o.clan===c.clan;return {fill:clanFill(o.clan),op:.9,stroke:mine?'#ffffff':'#0a1420',sw:mine?.7:.35,mark:mine?'ally':''};}
+if(typeof wmOwnerStyle==='function'){const _ws=wmOwnerStyle;wmOwnerStyle=function(r,c,hostiles,mode,ctx){try{if(mode==='alliance')return allianceStyle(r,c);if(mode==='intel')return intelStyle(r,c);}catch(e){}return _ws.apply(this,arguments);};try{window.wmOwnerStyle=wmOwnerStyle;}catch(e){}}
+if(typeof wmTheaterColor==='function'){const _wt=wmTheaterColor;wmTheaterColor=function(regs,mode,c){try{
+  if(mode==='alliance'){const n={};(regs||[]).forEach(r=>{const o=r.owner!=null?G.countries[r.owner]:null;if(o&&o.clan!=null)n[o.clan]=(n[o.clan]||0)+1;});let best=null,bc=0;for(const k in n)if(n[k]>bc){bc=n[k];best=k;}return best==null?'#243044':clanFill(best);}
+  if(mode==='intel'){let tot=0,fresh=0;const ttl=(typeof SCOUT_TTL!=='undefined'?SCOUT_TTL:12);(regs||[]).forEach(r=>{if(r.owner==null||r.owner===c.id)return;tot++;const it=(c._regionIntel||{})[r.id];if(it&&!it.miss&&G.tick-it.tick<=ttl)fresh++;});return !tot||!fresh?'#243044':'hsl(150,60%,'+Math.round(26+20*fresh/tot)+'%)';}
+  }catch(e){}return _wt.apply(this,arguments);};try{window.wmTheaterColor=wmTheaterColor;}catch(e){}}
+
+/* ---------- 8. One place for everything, every line has its action ---------- */
+// old routes open the right tab
+const TABOF={fleets:['p250a','On the move'],self:['p250a','Defend a land'],around:['p250a','Targets'],covert:['p250a','Scout'],battles:['p250a','Battle reports'],military:['p250b','Troops'],market:['p250e','Market'],economy:['p250e','Tax & government'],mail:['p250al','Messages'],diplomacy:['p250al','Diplomacy']};
+if(typeof go==='function'){const _g=go;go=function(k){try{const t=TABOF[k];if(t&&window.__p250classic!==k){(window._p250tab||(window._p250tab={}))[t[0]]=t[1];}}catch(e){}return _g.apply(this,arguments);};try{window.go=go;}catch(e){}}
+const DEST={p250o:'Overview',dashboard:'Overview',reports:'Overview',p250a:'Army',fleets:'Army',self:'Defend',around:'Targets',covert:'Scout',battles:'Report',p250l:'Lands',p250b:'Build',production:'Build',military:'Troops',p250e:'Economy',economy:'Economy',market:'Market',p250r:'Research',research:'Research',p250al:'Alliance',clans:'Alliance',mail:'Messages',diplomacy:'Diplomacy',p250k:'Rankings',rankings:'Rankings',map:'Map',codex:'Manual',staff:'Staff'};
+function defendBtn(rid){return '<button type="button" class="btn sm p250btn p250main" data-p278def="'+(rid==null?'':rid)+'">Defend</button>';}
+// Overview: one line per attack; the full plan lives on Army
+if(VIEWS&&VIEWS.p250o){const _o2=VIEWS.p250o;VIEWS.p250o=function(v){const r=_o2.apply(this,arguments);try{
+  v.querySelectorAll('.p276').forEach(x=>{if(x.closest('.p278inc'))return;const h=x.querySelector('.p276h'),n=x.querySelector('.p276n');const rid=x.dataset.p276open||'';
+    const d=document.createElement('div');d.className='p250row p278inc';d.innerHTML='<div class="p250m"><div class="p250t">'+(h?h.innerHTML:'Attack on you')+'</div><div class="p250s">'+(n?n.innerHTML:'')+'</div></div><div class="p250b">'+defendBtn(rid)+'</div>';x.replaceWith(d);});
+  // an attack is the most important thing on Overview: it goes on top, above every other notice, on every tab
+  const incs=[...v.querySelectorAll('.p278inc')];if(incs.length){let top=v.querySelector(':scope>.p278top');if(!top){top=document.createElement('section');top.className='p250box pin p278top';const hd=v.querySelector(':scope>.p250top');const goal=hd&&hd.nextElementSibling&&/season goal/i.test(hd.nextElementSibling.textContent||'')?hd.nextElementSibling:null;const ref=goal||hd;if(ref)ref.after(top);else v.prepend(top);}incs.forEach(x=>top.appendChild(x));}
+  // Events: a line that points somewhere gets its button
+  const c=ME();const S=(c&&c.sitrep)||[];const norm=t=>String(t||'').replace(/[^A-Za-z0-9 ]+/g,' ').replace(/\s+/g,' ').trim().toLowerCase();
+  const SELF={p250o:1,dashboard:1,reports:1};const idx=S.slice(0,120).filter(s=>s&&s.go&&DEST[s.go]&&!SELF[s.go]).map(s=>({k:norm(s.head).slice(0,48),go:s.go}));
+  if(idx.length)v.querySelectorAll('.p250box').forEach(bx=>{if(bx.dataset.p268t!=='Events')return;bx.querySelectorAll('.p250row').forEach(row=>{if(row.querySelector('button'))return;const t=norm(row.textContent);const hit=idx.find(x=>x.k.length>12&&t.indexOf(x.k.slice(0,36))>=0);if(!hit)return;
+    let b=row.querySelector('.p250b');if(!b){b=document.createElement('div');b.className='p250b';row.appendChild(b);}b.innerHTML='<button type="button" class="p278go" data-p278go="'+hit.go+'">'+E(DEST[hit.go])+' ›</button>';});});
+}catch(e){}return r;};}
+// Lands: no separate "Under attack" list; the red label opens the plan
+if(VIEWS&&VIEWS.p250l){const _l2=VIEWS.p250l;VIEWS.p250l=function(v){const r=_l2.apply(this,arguments);try{
+  const tabs=[...v.querySelectorAll('.p250tabs .p250tab, .p266sel option')];tabs.forEach(t=>{if(/^under attack/i.test((t.textContent||'').trim())){if(t.classList.contains('on')){const first=v.querySelector('.p250tabs .p250tab');if(first&&first!==t)setTimeout(()=>first.click(),0);}t.remove();}});
+  v.querySelectorAll('.p250row').forEach(row=>{const t=row.querySelector('.p250t');if(!t||t.querySelector('.p278lk'))return;[...t.querySelectorAll('span,b,em')].forEach(sp=>{if(/attack in \d+ turn/i.test(sp.textContent||'')&&!sp.querySelector('*')){sp.classList.add('p278lk');sp.setAttribute('data-p278def','');sp.setAttribute('role','button');sp.title='Open the defence plan';}});});
+}catch(e){}return r;};}
+document.addEventListener('click',e=>{const t=e.target;if(!t||!t.closest)return;const d=t.closest('[data-p278def]');if(d){e.preventDefault();e.stopPropagation();openTab('p250a','Defend a land');return;}
+  const g2=t.closest('[data-p278go]');if(g2){e.preventDefault();e.stopPropagation();try{window.__p250classic=null;go(g2.dataset.p278go);}catch(_){}}},true);
+
+/* ---------- 4. Map on the phone: Legend button ---------- */
+function addLegend(){try{document.querySelectorAll('.wmap').forEach(m=>{const w=m.querySelector('.wm-btns');if(!w||m.querySelector('.p278lg'))return;const b=document.createElement('button');b.type='button';b.className='wm-b p278lg';b.title='Legend';b.setAttribute('aria-label','Legend');b.textContent='?';
+  b.onclick=ev=>{ev.preventDefault();ev.stopPropagation();const m=b.closest('.wmap');if(m)m.classList.toggle('showlegend');};w.appendChild(b);});}catch(e){}}
+setInterval(addLegend,1000);addLegend();
+
+const st=document.createElement('style');st.textContent=`
+#strip .p278b{align-self:center;flex:0 0 auto;margin-left:6px;padding:6px 10px;border:1px solid var(--border);border-radius:999px;background:transparent;color:var(--muted);font:700 11px/1 var(--mono,monospace);letter-spacing:.06em;cursor:pointer;white-space:nowrap}
+#strip .p278b:hover{color:var(--text);border-color:var(--accent)}
+#strip .p278b i{font-style:normal;display:inline-block;min-width:16px;margin-left:4px;padding:2px 4px;border-radius:9px;background:var(--danger,#ef4444);color:#fff;font-size:10px;text-align:center}
+.p278pop{min-width:290px;max-width:min(380px,calc(100vw - 16px))}
+.p278h{display:flex;justify-content:space-between;align-items:baseline;padding:4px 0 0;font:700 12px/1 var(--mono,monospace);letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}.p278h b{font-size:20px;letter-spacing:0}
+.p278sub{font-size:12px;color:var(--muted);padding:2px 0 6px}
+.p278r{display:grid;grid-template-columns:10px 1fr auto;gap:10px;align-items:center;padding:8px 0;border-top:1px solid var(--border);font-size:13.5px}
+.p278d{width:8px;height:8px;border-radius:50%}.p278s0{background:var(--danger,#ef4444)}.p278s1{background:var(--warn,#f6b62b)}.p278s2{background:var(--good,#22c55e)}
+.p278w{color:var(--warn,#f6b62b);font-size:12px;margin-top:3px}.p278w:before{content:'! ';font-weight:700}.btn.p278wb{box-shadow:inset 0 0 0 1px var(--warn,#f6b62b)}
+.p278go{appearance:none;background:transparent;border:0;color:var(--accent);font:600 12.5px/1 inherit;cursor:pointer;padding:6px 2px;white-space:nowrap}.p278go:hover{text-decoration:underline}
+.p278top{border-left:3px solid var(--danger,#ef4444)}
+.p278lk{cursor:pointer;text-decoration:underline;text-underline-offset:3px}
+.wm-b.p278lg{font-weight:700;display:none}@media(max-width:760px){.wm-b.p278lg{display:inline-flex;align-items:center;justify-content:center}}
+.p278hb{display:none;position:relative}.p278hb i{position:absolute;top:-4px;right:-4px;font-style:normal;min-width:16px;padding:2px 4px;border-radius:9px;background:var(--danger,#ef4444);color:#fff;font:700 10px/1 var(--mono,monospace)}
+@media(max-width:760px){#strip .p278b{display:none}.p278hb{display:inline-flex;align-items:center;justify-content:center}}
+@media(max-width:760px){body.map-open.sheet-on .toasts{display:none!important}}
+`;document.head.appendChild(st);
+}catch(e){try{console.error('p278',e);}catch(_){}}})();
+</script>
+
 </body>
 </html>
