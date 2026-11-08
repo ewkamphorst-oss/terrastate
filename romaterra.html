@@ -16,7 +16,7 @@
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="https://playterrastate.nl/img/v4/romaterra-share.jpg">
 <meta name="author" content="Wim Kamphorst">
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"VideoGame","@id":"https://playterrastate.nl/romaterra.html#game","name":"Romaterra","url":"https://playterrastate.nl/romaterra.html","description":"Free Roman grand strategy in your browser. Rule a people of the ancient world against hundreds of AI rivals, take Roma, raise the Imperial Palace and hold it. No account, no download.","image":"https://playterrastate.nl/img/v4/romaterra-share.jpg","genre":["Strategy","Grand strategy","Turn-based strategy","4X","Browser game"],"gamePlatform":["Web browser","Windows","macOS","Linux","Android","iOS"],"applicationCategory":"Game","operatingSystem":"Any (web browser)","playMode":"SinglePlayer","inLanguage":"en","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"EUR","availability":"https://schema.org/InStock"},"author":{"@type":"Person","@id":"https://playterrastate.nl/#wim","name":"Wim Kamphorst","url":"https://wimkamphorst.nl"},"publisher":{"@type":"Person","@id":"https://playterrastate.nl/#wim","name":"Wim Kamphorst","url":"https://wimkamphorst.nl"},"softwareVersion":"20.7","sameAs":["https://wimkamphorstcoaching.itch.io/romaterra"]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"VideoGame","@id":"https://playterrastate.nl/romaterra.html#game","name":"Romaterra","url":"https://playterrastate.nl/romaterra.html","description":"Free Roman grand strategy in your browser. Rule a people of the ancient world against hundreds of AI rivals, take Roma, raise the Imperial Palace and hold it. No account, no download.","image":"https://playterrastate.nl/img/v4/romaterra-share.jpg","genre":["Strategy","Grand strategy","Turn-based strategy","4X","Browser game"],"gamePlatform":["Web browser","Windows","macOS","Linux","Android","iOS"],"applicationCategory":"Game","operatingSystem":"Any (web browser)","playMode":"SinglePlayer","inLanguage":"en","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"EUR","availability":"https://schema.org/InStock"},"author":{"@type":"Person","@id":"https://playterrastate.nl/#wim","name":"Wim Kamphorst","url":"https://wimkamphorst.nl"},"publisher":{"@type":"Person","@id":"https://playterrastate.nl/#wim","name":"Wim Kamphorst","url":"https://wimkamphorst.nl"},"softwareVersion":"20.8","sameAs":["https://wimkamphorstcoaching.itch.io/romaterra"]}</script>
 <link rel="manifest" href="romaterra.webmanifest"><meta name="theme-color" content="#1a1410"><link rel="icon" href="icons/romaterra-64.png"><link rel="apple-touch-icon" href="icons/romaterra-180.png">
 <script>window.__MP_URL__=''; /* '' = live multiplayer not open yet */ if('serviceWorker' in navigator)addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));</script>
 <script data-goatcounter="https://playterrastatenl.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
@@ -4228,7 +4228,7 @@ function aiDecide(c){
     if(q>0)cands.push({s:w.mil*(.5+p.mil/100)+(threatened?4:0),f:()=>{const order=dBudget>2e5?aiRecruitOrder(c,dBudget):null;if(order){const r=cmdRecruitBatch(c,order);if(r.ok)return r;}return cmdRecruit(c,uk,q);}});}
   if(threatened&&c.ready==='standby')cands.push({s:w.surv*1.5,f:()=>cmdReady(c,'ready')});
   // attack nearest weaker region
-  if(c.cp>=2&&c.res.influence>=800&&(p.aggression>50||p.expand>55||worldWantsRevenge(c)||worldAtWar(c))){
+  if((((G.tick+c.id)&1)===0||c._focus||G._rival===c.id)&&c.cp>=2&&c.res.influence>=800&&(p.aggression>50||p.expand>55||worldWantsRevenge(c)||worldAtWar(c))){
     // Grudge: an AI you've hit (or whose alliance you've hit) comes back for YOU specifically.
     const cl0=clanOf(c);const grudge=Math.min(6,((c.vsYou&&c.vsYou.grudge)||0)+(cl0&&cl0._grudge?(cl0._grudge[G.you]||0)*0.5:0));
     // ANTI-CHAOS: bots don't all pile on one region. A target already committed enough attack power
@@ -25332,7 +25332,9 @@ const REN={'Home':'Full overview','Build':'All buildings','R&D':'Research tree',
 const ORIG={dashboard:'p250o',reports:'p250o',calc:'p250a',around:'p250a',self:'p250a',covert:'p250a',battles:'p250a',staff:'p250a',production:'p250b',military:'p250b',research:'p250r',market:'p250e',economy:'p250e',clans:'p250al',roles:'p250al',diplomacy:'p250al',mail:'p250al',rankings:'p250k'};
 const MEM=window._p279||(window._p279={});
 function tabName(b){return ((b.childNodes[0]&&b.childNodes[0].textContent)||b.textContent||'').trim();}
-function inTabs(v,k){try{const bar=v.querySelector(':scope>.p250tabs');if(!bar)return;
+function inTabs(v,k){try{let bar=v.querySelector(':scope>.p250tabs');
+    if(!bar){const row0=v.querySelector(':scope>.p264all');const box0=v.querySelector(':scope>.p250box:not(.pin)');if(!row0||!box0)return;const h0=box0.querySelector(':scope>.p250h');const n0=((h0&&h0.childNodes[0]&&h0.childNodes[0].textContent)||'Main').trim()||'Main';
+      bar=document.createElement('div');bar.className='p250tabs p268tabs p266';bar.setAttribute('role','tablist');bar.innerHTML='<button role="tab" type="button" class="p250tab on">'+E(n0.charAt(0).toUpperCase()+n0.slice(1).toLowerCase())+'</button>';v.insertBefore(bar,box0);if(h0)h0.style.display='none';}
     const own=[...bar.querySelectorAll(':scope>button.p250tab:not(.p279x)')];const names=own.map(tabName);const low=names.map(x=>x.toLowerCase());
     // tabs that already are this full screen (Calculator, Staff, War room): their only content is an "Open" button
     const covered={};v.querySelectorAll(':scope>.p250box').forEach(b=>{const bs=b.querySelectorAll('button,a');if(bs.length===1&&bs[0].dataset.p250==='classic')covered[bs[0].dataset.id]=1;});
@@ -25367,16 +25369,16 @@ function defData(c){const cl=typeof clanOf==='function'?clanOf(c):null;const ids
     L.forEach(([o,f])=>{const r=_rgId(f.target);if(!r||r.owner!==mid)return;const t=T[r.id]||(T[r.id]={r,m,red:[],green:[]});const eta=Math.max(0,(f.eta||G.tick)-G.tick);const home=f.home!=null?_rgId(f.home):null;
       if(f.intent==='garrison'||f.intent==='reinforce'){if(o.id===mid||(o.clan!=null&&o.clan===m.clan))t.green.push({o,f,eta,home,p:pw(o,'def',f.units)});}
       else{const seen=!!(f.seen||(f._seenBy&&f._seenBy[c.id]));t.red.push({o,f,eta,home,p:f._atkP!=null?f._atkP:pw(o,'atk',f.units),seen});}});});
-  return Object.values(T).filter(t=>t.red.length).map(t=>{t.land=0;try{t.land=regionDef(t.r);}catch(e){}t.A=t.red.reduce((a,x)=>a+x.p,0);t.eta=Math.min.apply(null,t.red.map(x=>x.eta));t.G=t.green.filter(x=>x.eta<=t.eta).reduce((a,x)=>a+x.p,0);t.red.sort((a,b)=>a.eta-b.eta||b.p-a.p);t.green.sort((a,b)=>a.eta-b.eta);return t;}).sort((a,b)=>a.eta-b.eta);}
+  return Object.values(T).filter(t=>t.red.length).map(t=>{t.land=0;try{t.land=regionDef(t.r);}catch(e){}t.A=t.red.reduce((a,x)=>a+x.p,0);t.eta=Math.min.apply(null,t.red.map(x=>x.eta));t.G=t.green.filter(x=>x.eta<=t.eta+2).reduce((a,x)=>a+x.p,0);t.red.sort((a,b)=>a.eta-b.eta||b.p-a.p);t.green.sort((a,b)=>a.eta-b.eta);return t;}).sort((a,b)=>a.eta-b.eta);}
 function pw(o,k,u){try{return power(o,k,u||{});}catch(e){return 0;}}
 function sz(u){try{return fleetSize(u||{});}catch(e){return 0;}}
 function defHTML(c){const L=defData(c);
   if(!L.length)return '<div class="p250row"><div class="p250m"><div class="p250t">No attacks on your alliance</div><div class="p250s">When a member is attacked, every incoming army shows here in red with its ETA, the defence on the way in green, and whether the land holds.</div></div><div class="p250b"><button type="button" class="btn sm ghost p250btn" data-p278tab="p250a|Calculator">Calculator</button></div></div>';
   return L.map(t=>{const D=t.land+t.G;const short=t.A-D;const mine=t.m.id===c.id;let can=false;try{can=!mine&&canDefend(c,t.r)&&reinforceTravel(c,homeFor(c,t.r)||regionsOf(c)[0],t.r,c.units)<=t.eta;}catch(e){}
     const head='<div class="p280h">'+xyBtn(t.r.coord)+' <b>'+E(t.r.name)+'</b> <span class="muted">'+(mine?'your land':E(t.m.name))+'</span><span class="p280sum">red <b class="bad">'+F(t.A)+'</b> · green <b class="good">'+F(D)+'</b> · '+(short>0?'<b class="bad">short '+F(short)+'</b>':'<b class="good">holds by '+F(-short)+'</b>')+'</span></div>';
-    const btns='<div class="p280b">'+(mine?'<button type="button" class="btn sm p250btn p250main" data-p278def="">Defend</button>':can?'<button type="button" class="btn sm p250btn'+(short>0?' p250main':'')+'" data-p276="help" data-v="'+t.r.id+'">Help with half</button>':'')+'<button type="button" class="btn sm ghost p250btn" data-p278tab="p250a|Calculator">Calculator</button></div>';
+    const btns='<div class="p280b">'+(mine?'<button type="button" class="btn sm p250btn p250main" data-p278def="">Defend</button>':can?'<button type="button" class="btn sm p250btn'+(short>0?' p250main':'')+'" data-p276="help" data-v="'+t.r.id+'">Help with half</button>':'')+'<button type="button" class="btn sm ghost p250btn" data-p278calc="d|'+t.r.id+'">Calculator</button></div>';
     const red=t.red.map(x=>{const mix=x.seen?(fleetMixText(x.f.units,3)||'troops known'):'';return '<div class="p280r red"><span class="p280e">'+x.eta+'</span><span>'+(x.home&&x.home.coord?xyBtn(x.home.coord):'?')+'</span><span class="p280p">'+F(x.p)+'</span><span class="p280i">'+F(sz(x.f.units))+' troops · '+(x.seen?E(mix):'<button type="button" class="p278go" data-p278scan="'+E(x.f.id)+'">Scan ›</button>')+' <span class="muted">'+E(x.o.tag||x.o.name||'')+'</span></span></div>';}).join('');
-    const green='<div class="p280r green"><span class="p280e">0</span><span class="muted">land</span><span class="p280p">'+F(t.land)+'</span><span class="p280i muted">troops and walls on the land</span></div>'+t.green.map(x=>'<div class="p280r green"><span class="p280e">'+x.eta+'</span><span>'+(x.home&&x.home.coord?xyBtn(x.home.coord):'?')+'</span><span class="p280p">'+F(x.p)+'</span><span class="p280i">'+F(sz(x.f.units))+' troops <span class="muted">'+E(x.o.id===c.id?'you':(x.o.tag||x.o.name||''))+'</span>'+(x.eta>t.eta?' <b class="bad">late, not counted</b>':'')+'</span></div>').join('');
+    const green='<div class="p280r green"><span class="p280e">0</span><span class="muted">land</span><span class="p280p">'+F(t.land)+'</span><span class="p280i muted">troops and walls on the land</span></div>'+t.green.map(x=>'<div class="p280r green"><span class="p280e">'+x.eta+'</span><span>'+(x.home&&x.home.coord?xyBtn(x.home.coord):'?')+'</span><span class="p280p">'+F(x.p)+'</span><span class="p280i">'+F(sz(x.f.units))+' troops <span class="muted">'+E(x.o.id===c.id?'you':(x.o.tag||x.o.name||''))+'</span>'+(x.eta>t.eta+2?' <span class="muted">· after this battle, stays to guard</span>':x.eta>t.eta?' <b class="good">joins the fight</b>':'')+'</span></div>').join('');
     return '<div class="p280t'+(short>0?' bad':'')+'">'+head+'<div class="p280g"><div class="p280c"><span>ETA</span><span>from</span><span>power</span><span>scout</span></div>'+red+green+'</div>'+btns+'</div>';}).join('');}
 if(VIEWS&&VIEWS.p250al){const _al14=VIEWS.p250al;VIEWS.p250al=function(v){const r=_al14.apply(this,arguments);try{const c=ME();if(!c||c.clan==null)return r;const bar=v.querySelector(':scope>.p250tabs');
     const box=document.createElement('section');box.className='p250box p280';box.innerHTML='<div class="p250h">Defence <span>'+defData(c).length+'</span></div>'+defHTML(c);
@@ -25384,7 +25386,7 @@ if(VIEWS&&VIEWS.p250al){const _al14=VIEWS.p250al;VIEWS.p250al=function(v){const 
       const st=window._p250tab||(window._p250tab={});const others=()=>[...v.querySelectorAll(':scope>.p250box:not(.pin):not(.p280)')];
       const showMine=()=>{others().forEach(b=>b.style.display='none');box.style.display='';bar.querySelectorAll('.p250tab').forEach(x=>x.classList.toggle('on',x===btn));};
       btn.onclick=e=>{e.preventDefault();e.stopPropagation();st.p250al='Defence';showMine();};
-      bar.addEventListener('click',e=>{const t=e.target.closest('.p250tab');if(t&&t!==btn&&!t.classList.contains('p279x')){box.style.display='none';btn.classList.remove('on');}},true);
+      bar.addEventListener('click',e=>{const t=e.target.closest('.p250tab');if(t&&t!==btn&&!t.classList.contains('p279x')){box.style.display='none';btn.classList.remove('on');setTimeout(()=>{bar.querySelectorAll('.p250tab').forEach(x=>x.classList.toggle('on',x===t));try{const sel=bar.nextElementSibling;if(sel&&sel.classList.contains('p266sel'))sel.value=String([...bar.querySelectorAll(':scope>button')].indexOf(t));}catch(_){}},0);}},true);
       if(st.p250al==='Defence'||(n&&!st.p250al))showMine();else box.style.display='none';
       const h=box.querySelector(':scope>.p250h');if(h)h.style.display='none';}
     else v.insertBefore(box,v.querySelector(':scope>.p250box')||null);}catch(e){}return r;};}
@@ -25405,7 +25407,7 @@ function goalRow(c){try{if(typeof nexus!=='function')return '';const nx=nexus();
   const def=regionDef(nx);let atk=0;try{const all=Object.assign({},c.units||{});(c.fleets||[]).forEach(f=>{for(const k in (f.units||{}))all[k]=(all[k]||0)+(f.units[k]||0);});atk=power(c,'atk',all);}catch(e){}const intel=typeof regionIntel==='function'&&o?regionIntel(c,nx.id):true;
   const who=o?E(o.tag||o.name):'nobody';
   let warn='';if(o&&nx.ccBuild)warn=who+' builds the Command Center: ready in '+T(left);else if(o&&nx.commandCenter&&nx.ccHolder===o.id)warn=who+' wins the season in '+T(H-held);
-  const btn=!intel?'<button type="button" class="btn sm p250btn p250main" data-p250="scout" data-id="'+nx.id+'">Scout it</button>':atk>def*1.1?'<button type="button" class="btn sm p250btn p250main" data-p250="take" data-id="'+nx.id+'">Take it</button>':'<button type="button" class="btn sm p250btn'+(warn?' p250main':'')+'" data-p278tab="p250a|Calculator">Plan it</button>';
+  const btn=!intel?'<button type="button" class="btn sm p250btn p250main" data-p250="scout" data-id="'+nx.id+'">Scout it</button>':atk>def*1.1?'<button type="button" class="btn sm p250btn p250main" data-p250="take" data-id="'+nx.id+'">Take it</button>':'<button type="button" class="btn sm p250btn'+(warn?' p250main':'')+'" data-p278calc="a|'+nx.id+'">Plan it</button>';
   return row(warn?'bad':'', (warn?'<b class="bad">'+warn+'</b> · ':'')+'Take the Nexus '+xy, 'held by '+who+' · defence '+(intel?F(def):'unknown, scout it first')+' · your army '+F(atk)+(intel&&atk<=def*1.1?' · you need '+F(def*1.1-atk)+' more':''),btn);}catch(e){return '';}}
 if(VIEWS&&VIEWS.p250o){const _o15=VIEWS.p250o;VIEWS.p250o=function(v){const r=_o15.apply(this,arguments);try{const c=ME();if(!c)return r;const h=goalRow(c);if(!h)return r;
   const box=[...v.querySelectorAll(':scope>.p250box:not(.pin)')].find(b=>b.dataset.p268t==='Do now')||v.querySelector(':scope>.p250box:not(.pin)');if(!box)return r;
@@ -25435,6 +25437,104 @@ function offers(v){try{const c=ME();if(!c)return;const L=(c.mail||[]).filter(m=>
 ['p250al','mail','p250o'].forEach(k=>{const f=VIEWS&&VIEWS[k];if(typeof f!=='function')return;VIEWS[k]=function(v){const r=f.apply(this,arguments);try{offers(v);}catch(e){}return r;};});
 document.addEventListener('click',e=>{const b=e.target&&e.target.closest&&e.target.closest('[data-p278offer]');if(!b)return;e.preventDefault();e.stopPropagation();const c=ME();if(!c)return;const [id,yn]=b.dataset.p278offer.split('|');const mid=isNaN(+id)?id:+id;let r=null;
   try{r=yn==='y'?cmdAcceptOffer(c,mid):cmdDeclineOffer(c,mid);}catch(_){}try{toast(r&&r.ok?(yn==='y'?'Done.':'Declined.'):(r&&r.error)||'Not possible.',r&&r.ok?'good':'warn');}catch(_){}try{save();go(view);}catch(_){}},true);
+
+
+/* ---------- 18. 20.8 Speed: the home-cluster map was rebuilt ~150x per turn because forecasts move G.tick back and forth.
+   It is now rebuilt once per real turn (or when a land changes hands outside a turn). ---------- */
+try{if(typeof _hcRebuild==='function'&&typeof homeCluster==='function'){let rt=0,rk=-1,dirty=true,rG=null;
+  const fresh=()=>{if(dirty||rk!==rt||rG!==G||!_hcMap||!_hsMap){_hcRebuild();rk=rt;dirty=false;rG=G;}};
+  homeCluster=function(c){if(!c)return null;fresh();const v=_hcMap.get(c.id);return v===undefined?null:v;};
+  homeSector=function(c){if(!c)return null;fresh();const v=_hsMap.get(c.id);return v===undefined?null:v;};
+  homeClusterInvalidate=function(){dirty=true;};
+  try{window.homeCluster=homeCluster;window.homeSector=homeSector;window.homeClusterInvalidate=homeClusterInvalidate;}catch(e){}
+  
+// clanOf / clanById: a lookup table instead of a search through every alliance, thousands of times per turn
+try{if(typeof clanOf==='function'){let arr=null,len=-1,M=null;const build=C=>{M=new Map();C.forEach((x,i)=>{if(x)M.set(x.id,i);});arr=C;len=C.length;};const get=id=>{const C=G.clans||[];if(C!==arr||C.length!==len||!M)build(C);let i=M.get(id);let x=i!=null?C[i]:null;if(x&&x.id===id)return x;build(C);i=M.get(id);x=i!=null?C[i]:null;return x&&x.id===id?x:undefined;};
+  clanOf=function(c){return c&&c.clan!=null?get(c.clan):null;};clanById=function(id){return get(id);};try{window.clanOf=clanOf;window.clanById=clanById;}catch(e){}}}catch(e){}
+if(typeof runTick==='function'){const _rt18=runTick;runTick=function(){rt++;dirty=true;try{return _rt18.apply(this,arguments);}finally{rt++;dirty=true;}};try{window.runTick=runTick;}catch(e){}}}}catch(e){}
+
+
+/* ---------- 19. 20.8 Computer nations use the player's tools: shield in a deep siege, scans of what comes, spies
+   (covert centre, agents, sweeps, recon and sabotage), a staff of commanders, hold the line on bunkers, repeat
+   research, bounties, convoys to allies in need, readiness, wonders. A quarter of them per turn, each step guarded. ---------- */
+const AIX=window.__p282={};const cnt=k=>{AIX[k]=(AIX[k]||0)+1;};
+function fx(c,f){try{const r=f();return r&&r.ok;}catch(e){return false;}}
+function aiExtra(c){const rg=regionsOf(c);if(!rg.length)return;const cap=rg[0];const p=c.pers||{};const arch=p.arch||'balanced';
+  // what is coming at me
+  let inc=[];try{inc=incomingTo(c.id).filter(x=>x&&x.region);}catch(e){}
+  // 1. scan the biggest unseen army that is close
+  if(inc.length&&(c.res.influence||0)>=(typeof P7_SCAN!=='undefined'?P7_SCAN:250)*3&&(c.cp||0)>=2){const u=inc.filter(x=>x.fleet&&x.fleet.id!=null&&!(x.fleet._seenBy&&x.fleet._seenBy[c.id])&&x.eta<=5).sort((a,b)=>b.atkP-a.atkP)[0];if(u&&fx(c,()=>cmdScan(c,u.fleet.id)))cnt('scan');}
+  // 2. hold the line on a bunkered land about to be hit
+  inc.filter(x=>x.eta<=1).forEach(x=>{try{if(typeof bunkerLevel==='function'&&bunkerLevel(x.region)>=1&&!(x.region._p270hold>G.tick)&&fx(c,()=>cmdHoldLine(c,x.region.id)))cnt('holdline');}catch(e){}});
+  // 3. shield only in a deep siege (the attack on me is at least twice my whole defence), at most once per 40 turns
+  try{const A=inc.reduce((a,x)=>a+(x.atkP||0),0);let D=0;rg.forEach(r=>{try{D+=regionDef(r);}catch(e){}});
+    if(!c.shield&&A>=2*D&&inc.some(x=>x.eta>=3)&&G.tick-(c._p282sh||-99)>=40&&typeof fleetsAllHome==='function'&&fleetsAllHome(c)){if(fx(c,()=>cmdShield(c,true))){c._p282sh=G.tick;cnt('shield');}}
+    if(c.shield){if(inc.length)c._p282q=G.tick;else if(G.tick-(c._p282q||c._p282sh||0)>=6){if(fx(c,()=>typeof cmdLowerShield==='function'?cmdLowerShield(c):cmdShield(c,false)))cnt('shieldDown');}}}catch(e){}
+  // 4. readiness
+  try{if(bTotal(c,'base')>0&&typeof cmdSetReadiness==='function'){const want=inc.length?'ready':(p.mil||50)>55?'training':'normal';if(c._p270st!==want&&fx(c,()=>cmdSetReadiness(c,want)))cnt('readiness');}}catch(e){}
+  // 5. staff of commanders
+  try{if(typeof staffInit==='function'&&typeof cmdStaffAdd==='function'){const S=staffInit(c);if(S){c.commanders=c.commanders||[];const slots=typeof staffSlots==='function'?staffSlots(c):2;for(const k of S.unl){if(c.commanders.length>=slots)break;if(!c.commanders.includes(k)&&fx(c,()=>cmdStaffAdd(c,k)))cnt('staff');}}}}catch(e){}
+  // 6. spies: a covert centre for the spy-minded, agents, sweeps, recon and sabotage
+  try{const spy=c.id%3===0||arch==='opportunistic'||arch==='scientific';
+    if(spy&&bTotal(c,'covert')<1&&(c.tech||[]).includes('mil_advanced')&&(c.res.money||0)>2e7&&!(c.queue||[]).some(q=>q.k==='covert')){if(fx(c,()=>cmdBuild(c,cap.id,'covert')))cnt('covertCentre');}
+    if(bTotal(c,'covert')>=1){const max=maxAgents(c);const want=Math.floor(max*0.6)-(c.agents||0);if(want>=2&&(c.res.money||0)>want*15000*20&&fx(c,()=>cmdRecruitAgents(c,want)))cnt('agents');
+      if(!c.agentDoctrine&&typeof cmdSetAgentDoctrine==='function')fx(c,()=>cmdSetAgentDoctrine(c,(p.aggression||50)>55?'saboteur':'recon'));
+      if((c.agents||0)>=6&&G.tick%15===c.id%15&&fx(c,()=>cmdSweep(c)))cnt('sweep');
+      if(G.tick-(c._p282op||-99)>=6&&(c.agents||0)>=5){let t=null;const big=inc.sort((a,b)=>b.atkP-a.atkP)[0];if(big)t=big.from;else if(c._p282tgt!=null)t=G.countries[c._p282tgt];
+        if(t&&!t.retired&&t.id!==c.id){const human=t.isAI===false;const grudge=(c.vsYou&&c.vsYou.grudge)||0;let mk='deep_recon';
+          if(!human||grudge>0){if((c.agents||0)>=12&&(t.res&&t.res.money>2e7)&&Math.random()<0.4)mk='steal';else if((c.agents||0)>=8&&!big&&Math.random()<0.4)mk='radar';}
+          const op=COVERT_OPS.find(o=>o.k===mk);if(op&&fx(c,()=>cmdCovert(c,t.id,mk,Math.min(c.agents,op.min+2)))){c._p282op=G.tick;cnt('covert_'+mk);}}}}}catch(e){}
+  // 7. repeat research once the tree is done for what it wants
+  try{if(typeof cmdRepeat==='function'&&G.tick-(c._p282rp||-99)>=10){const k={aggressive:'doctrine',expansionist:'doctrine',opportunistic:'doctrine',defensive:'alloy',scientific:'ai',research:'ai'}[arch]||'prop';const cost=repeatCost(c,k);
+    if((c.res.research||0)>=cost.research*3&&(c.res.money||0)>=cost.money*5&&(c.cp||0)>=3&&fx(c,()=>cmdRepeat(c,k))){c._p282rp=G.tick;cnt('repeat');}}}catch(e){}
+  // 8. bounties paid from real surplus
+  try{(G.bounties||[]).slice(0,4).forEach(bn=>{if((c.res[bn.res]||0)>=bn.need*1.5&&(c.cp||0)>=3&&Math.random()<0.3&&fx(c,()=>cmdFulfillBounty(c,bn.id)))cnt('bounty');});}catch(e){}
+  // 9. convoy money to an ally under attack who runs dry
+  try{if(c.clan!=null&&(c.res.money||0)>5e7&&G.tick-(c._p282cv||-99)>=10){const cl=clanOf(c);const m=cl&&clanMembers(cl).find(x=>x.id!==c.id&&(x.res.money||0)<5e6&&incomingTo(x.id).length);
+    if(m&&fx(c,()=>cmdConvoy(c,m.id,'money',Math.min(1e7,Math.floor(c.res.money*0.05))))){c._p282cv=G.tick;cnt('convoy');}}}catch(e){}
+  // 10. a wonder for the great nations
+  try{if(typeof cmdWonder==='function'&&rg.length>=6&&G.tick%20===c.id%20&&Math.random()<0.3){const ks=['library','colossus','granary','harbour','citadel'];const k=ks[Math.floor(Math.random()*ks.length)];if(k&&fx(c,()=>cmdWonder(c,k,cap.id)))cnt('wonder');}}catch(e){}
+  // 11. capture doctrine once
+  try{if(!c.occDoctrine&&typeof cmdSetOccDoctrine==='function')fx(c,()=>cmdSetOccDoctrine(c,(p.aggression||50)>60?'loot':'hold'));}catch(e){}}
+// remember who an AI attacks, for its spies
+if(typeof cmdOp==='function'){const _op19=cmdOp;cmdOp=function(c,rid){const r=_op19.apply(this,arguments);try{if(c&&c.isAI&&r&&r.ok){const g=_rgId(rid);if(g&&g.owner!=null)c._p282tgt=g.owner;}}catch(e){}return r;};try{window.cmdOp=cmdOp;}catch(e){}}
+if(typeof runTick==='function'){const _rt19=runTick;runTick=function(){const out=_rt19.apply(this,arguments);try{if(!window.__MP__){const q=G.tick%4;const cs=G.countries;for(let i=0;i<cs.length;i++){const c=cs[i];if(!c||!c.isAI||c.retired||(c.id%4)!==q)continue;try{aiExtra(c);}catch(e){}}}}catch(e){}return out;};try{window.runTick=runTick;}catch(e){}}
+
+
+/* ---------- 20. 20.8 Full screens: every text card without a button gets the one that follows from it ---------- */
+const CRULE=[[/no battles|operations|theater|target|war planner|front/i,'Targets','p250a|Targets'],[/scout|recon|intel desk|agents|covert/i,'Scout','p250a|Scout'],
+  [/military #|army|troop|training capacity|readiness/i,'Train troops','p250b|Troops'],[/ledger|gdp|resource|storage|shortfall|stockpile|food|energy/i,'Market','p250e|Market'],
+  [/alliances? =|join|invite/i,'Alliance','p250al|Join'],[/research|tech/i,'Research','p250r|Available'],[/nexus|quiet turn|safe to log off|log off/i,'Do now','p250o|Do now']];
+const CDEF={reports:['Do now','p250o|Do now'],dashboard:['Do now','p250o|Do now'],around:['Targets','p250a|Targets'],self:['Defend a land','p250a|Defend a land'],covert:['Scout','p250a|Scout'],battles:['Targets','p250a|Targets'],
+  production:['Buildings','p250b|Buildings'],military:['Train troops','p250b|Troops'],research:['Research','p250r|Available'],market:['Market','p250e|Market'],economy:['Market','p250e|Market'],
+  clans:['Alliance','p250al|Join'],roles:['Alliance','p250al|Join'],diplomacy:['Alliance','p250al|Join'],mail:['Messages','p250al|Messages'],rankings:['Targets','p250a|Targets']};
+const CI='button,a,select,input,textarea,summary,[onclick],[data-p250],[data-go],[data-p278tab],[data-p278def],.coord-link,.p-coord,[role=button],label';
+function cardActs(){try{const k=window.__p250classic;if(!k||typeof view==='undefined'||view!==k||!CDEF[k])return;const v=document.getElementById('view');if(!v)return;
+  v.querySelectorAll('.card,section,details,.p165,.threatpanel,.p199,.p197wrap').forEach(cd=>{if(cd.dataset.p283||cd.querySelector('.card,section'))return;const t=(cd.textContent||'').replace(/\s+/g,' ').trim();if(t.length<25)return;if(cd.querySelector(CI)||cd.closest(CI))return;
+    cd.dataset.p283=1;const m=CRULE.find(r=>r[0].test(t));const a=m?[m[1],m[2]]:CDEF[k];cd.insertAdjacentHTML('beforeend','<div class="p283"><button type="button" class="p278go" data-p278tab="'+a[1]+'">'+E(a[0])+' ›</button></div>');});}catch(e){}}
+if(typeof go==='function'){const _g20=go;go=function(){const r=_g20.apply(this,arguments);try{cardActs();}catch(e){}return r;};try{window.go=go;}catch(e){}}
+{const vv=document.getElementById('view');if(vv)new MutationObserver(()=>{if(!cardActs._q)cardActs._q=requestAnimationFrame(()=>{cardActs._q=0;cardActs();});}).observe(vv,{childList:true});}
+
+
+/* ---------- 21. 20.8 Calculator opens filled in: what your scans saw, the defenders on the land and the help that
+   arrives in time (defence), or your army against your scouting report (attack). ---------- */
+function addU(a,u){for(const k in (u||{}))a[k]=(a[k]||0)+(u[k]||0);return a;}
+function homeU(c){try{if(typeof homeArmy==='function')return homeArmy(c);}catch(e){}return Object.assign({},c.units||{});}
+function openCalc(S2){try{const S=window.__p214=window.__p214||{atk:{},def:{},rid:null,mode:'attack',ifr:'even',form:'line',atkCid:null};Object.assign(S,S2);window.__p250classic='calc';go('calc');}catch(e){}}
+function calcDefend(rid){const c=ME();if(!c)return;const t=defData(c).find(x=>x.r.id===rid);if(!t){openCalc({mode:'defend',rid});return;}
+  const atk={};let unseen=0;t.red.forEach(x=>{if(x.seen)addU(atk,x.f.units);else unseen++;});
+  let def={};try{def=Object.assign({},defenderPool(t.r,t.m).units||{});}catch(e){def=t.m.id===c.id?homeU(c):{};}
+  t.green.filter(x=>x.eta<=t.eta+2).forEach(x=>addU(def,x.f.units));
+  const big=t.red.slice().sort((a,b)=>b.p-a.p)[0];openCalc({mode:'defend',rid:t.r.id,atkCid:big?big.o.id:null,atk,def});
+  if(unseen)try{toast(unseen+' attacking '+(unseen===1?'army is':'armies are')+' not scanned yet: scan them, or add what you expect.','warn');}catch(e){}}
+function calcAttack(rid){const c=ME();if(!c)return;let def={};try{const it=regionIntel(c,rid);def=Object.assign({},it&&it.comp||{});}catch(e){}openCalc({mode:'attack',rid,atkCid:null,atk:homeU(c),def});}
+document.addEventListener('click',e=>{const b=e.target&&e.target.closest&&e.target.closest('[data-p278calc]');if(!b)return;e.preventDefault();e.stopPropagation();const [m,id]=b.dataset.p278calc.split('|');if(m==='d')calcDefend(+id);else calcAttack(+id);},true);
+
+
+/* ---------- 22. 20.8 Side menu: compact. More in two columns, "All full screens" folded (they are tabs on the pages now),
+   one line per screen. Nothing removed. ---------- */
+function sideFix(){try{document.querySelectorAll('#side details.p264full,.p250nav details.p264full').forEach(d=>{if(d.dataset.p284)return;d.dataset.p284=1;let o=null;try{o=localStorage.getItem('p284full');}catch(e){}d.open=o==='1';d.addEventListener('toggle',()=>{try{localStorage.setItem('p284full',d.open?'1':'0');}catch(e){}});});}catch(e){}}
+setInterval(sideFix,1000);sideFix();
 
 const st=document.createElement('style');st.textContent=`
 #strip .p278b{align-self:center;flex:0 0 auto;margin-left:6px;padding:6px 10px;border:1px solid var(--border);border-radius:999px;background:transparent;color:var(--muted);font:700 11px/1 var(--mono,monospace);letter-spacing:.06em;cursor:pointer;white-space:nowrap}
@@ -25475,6 +25575,11 @@ const st=document.createElement('style');st.textContent=`
 .p280e,.p280p{font-family:var(--mono,monospace)}.p280b{display:flex;gap:8px;justify-content:flex-end;align-items:center;margin-top:8px;flex-wrap:wrap}.p280nr{font-size:12px}
 @media(max-width:700px){.p280c,.p280r{grid-template-columns:30px 82px 62px 1fr;gap:6px;font-size:12px}.p280sum{margin-left:0;width:100%}}
 .p281{border-left:3px solid var(--accent)}.p281.bad{border-left-color:var(--danger,#ef4444)}.p281.good{border-left-color:var(--good,#22c55e)}
+.p283{display:flex;justify-content:flex-end;margin-top:6px}
+#side details.p250more>a,.p250nav details.p250more>a{padding:6px 10px!important;font-size:13px!important;line-height:1.25!important;min-height:0!important;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#side details.p264full>summary,.p250nav details.p264full>summary{display:block;white-space:nowrap;font-size:11px!important;letter-spacing:.08em}
+#side details.p264full>a,.p250nav details.p264full>a{padding:5px 10px!important;font-size:12px!important;line-height:1.25!important;min-height:0!important;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#side details.p264full>a small,.p250nav details.p264full>a small{display:none!important}
 `;document.head.appendChild(st);
 }catch(e){try{console.error('p278',e);}catch(_){}}})();
 </script>
