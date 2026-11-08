@@ -25306,6 +25306,7 @@ function shieldStep(v){try{const c=ME();if(!c||typeof cmdShield!=='function'||c.
     const d=document.createElement('div');d.className='p278sh';d.innerHTML='<div><b>Planetary Shield</b><div class="p250s">'+(home?'Your lands cannot be captured while it is up. It arms in a few turns and halves production.':'Your lands cannot be captured while it is up. First bring all your armies home.')+'</div></div><div class="p250b">'+(home?'<button type="button" class="btn sm p250btn" data-p278shield="1">Engage shield</button>':lnk('Armies','data-p278tab="p250a|On the move"'))+'</div>';
     const bad=box.querySelector('.p276bad');if(bad)bad.before(d);else box.appendChild(d);});}catch(e){}}
 ['p250a'].forEach(k=>{const f=VIEWS&&VIEWS[k];if(typeof f!=='function')return;VIEWS[k]=function(v){const r=f.apply(this,arguments);try{shieldStep(v);}catch(e){}return r;};});
+setInterval(()=>{try{const k=window.__p250classic;if(!k||typeof view==='undefined'||view!==k)return;const pg=ORIG[k];if(!pg)return;document.querySelectorAll('.p250nav [data-k],.p250bn [data-k]').forEach(a=>{const on=a.dataset.k===pg;if(a.classList.contains('on')!==on)a.classList.toggle('on',on);});}catch(e){}},300);
 {const vv=document.getElementById('view');if(vv)new MutationObserver(()=>{try{pins(vv);if(vv.querySelector('.p198m:not([data-p278w])'))warroom(vv);}catch(e){}}).observe(vv,{childList:true,subtree:true});}
 document.addEventListener('click',e=>{const b=e.target&&e.target.closest&&e.target.closest('[data-p278shield]');if(!b)return;e.preventDefault();e.stopPropagation();const c=ME();if(!c)return;let r=null;try{r=cmdShield(c,true);}catch(_){}try{toast(r&&r.ok?'Shield arming. Your lands cannot be captured once it is up.':((r&&r.error)||'Shield failed.'),r&&r.ok?'':'warn');}catch(_){}try{save();}catch(_){}try{go(view);}catch(_){}},true);
 
@@ -25315,6 +25316,40 @@ function addLegend(){try{document.querySelectorAll('.wmap').forEach(m=>{const w=
 setInterval(addLegend,1000);addLegend();
 // your nation's name in the top bar opens Overview
 document.addEventListener('click',e=>{const t=e.target&&e.target.closest&&e.target.closest('#topNation');if(!t||e.target.closest('button,a,[data-p278def]'))return;try{window.__p250classic=null;go('p250o');}catch(_){}},false);
+
+
+/* ---------- 13. 20.6.2: "All options" become tabs on the page itself, and the full screen keeps the page's tab row ---------- */
+const P13=['p250o','p250a','p250l','p250b','p250e','p250r','p250al','p250k'];
+const REN={'Home':'Full overview','Build':'All buildings','R&D':'Research tree','Rankings':'Full rankings','War':'All targets','Homeland':'Homeland'};
+const ORIG={dashboard:'p250o',reports:'p250o',calc:'p250a',around:'p250a',self:'p250a',covert:'p250a',battles:'p250a',staff:'p250a',production:'p250b',military:'p250b',research:'p250r',market:'p250e',economy:'p250e',clans:'p250al',roles:'p250al',diplomacy:'p250al',mail:'p250al',rankings:'p250k'};
+const MEM=window._p279||(window._p279={});
+function tabName(b){return ((b.childNodes[0]&&b.childNodes[0].textContent)||b.textContent||'').trim();}
+function inTabs(v,k){try{const bar=v.querySelector(':scope>.p250tabs');if(!bar)return;
+    const own=[...bar.querySelectorAll(':scope>button.p250tab:not(.p279x)')];const names=own.map(tabName);const low=names.map(x=>x.toLowerCase());
+    // tabs that already are this full screen (Calculator, Staff, War room): their only content is an "Open" button
+    const covered={};v.querySelectorAll(':scope>.p250box').forEach(b=>{const bs=b.querySelectorAll('button,a');if(bs.length===1&&bs[0].dataset.p250==='classic')covered[bs[0].dataset.id]=1;});
+    const row=v.querySelector(':scope>.p264all');const ex=[];
+    if(row)row.querySelectorAll('a[data-id]').forEach(a=>{const id=a.dataset.id;if(covered[id])return;let n=a.textContent.trim();n=REN[n]||n;if(low.indexOf(n.toLowerCase())>=0)n='All '+n.toLowerCase();ex.push([id,n]);});
+    bar.querySelectorAll('.p279x,.p279sep').forEach(x=>x.remove());
+    if(ex.length){bar.insertAdjacentHTML('beforeend','<span class="p279sep" aria-hidden="true"></span>'+ex.map(([id,n])=>'<button role="tab" type="button" class="p250tab p279x" data-p250="classic" data-id="'+E(id)+'" title="The full screen, with every option">'+E(n)+'</button>').join(''));
+      if(row)row.classList.add('p279gone');}
+    MEM[k]={tabs:names,ex};ex.forEach(([id])=>{ORIG[id]=k;});
+    try{if(typeof window.__p266fix==='function')window.__p266fix();}catch(e){}}catch(e){}}
+P13.forEach(k=>{const f=VIEWS&&VIEWS[k];if(typeof f!=='function')return;VIEWS[k]=function(v){const r=f.apply(this,arguments);try{inTabs(v,k);}catch(e){}return r;};});
+// make sure every page's tab row is known, also when a full screen is opened before its page
+function learn(k){if(MEM[k])return MEM[k];try{const h=document.createElement('div');h.style.display='none';document.body.appendChild(h);const sv=window._p250tab?Object.assign({},window._p250tab):null;VIEWS[k](h);h.remove();if(sv)window._p250tab=sv;}catch(e){}return MEM[k];}
+function classicBar(){try{const k=window.__p250classic;if(!k||typeof view==='undefined'||view!==k){const vv=document.getElementById('view');if(vv)vv.classList.remove('p279c');return;}const pg=ORIG[k];if(!pg)return;const m=learn(pg);if(!m)return;
+    const hl=()=>document.querySelectorAll('.p250nav [data-k],.p250bn [data-k]').forEach(a=>a.classList.toggle('on',a.dataset.k===pg));hl();setTimeout(hl,0);
+    const v=document.getElementById('view');if(!v)return;v.classList.add('p279c');
+    const place=b=>{const top=v.querySelector(':scope>.p250top');const want=top?top.nextElementSibling:v.firstElementChild;if(want!==b){if(top)top.insertAdjacentElement('afterend',b);else v.insertBefore(b,v.firstChild);}};
+    const had=v.querySelector(':scope>.p279bar');if(had){place(had);return;}
+    const bar=document.createElement('div');bar.className='p250tabs p266 p279bar';bar.setAttribute('role','tablist');
+    bar.innerHTML=m.tabs.map(n=>'<button role="tab" type="button" class="p250tab" data-p278tab="'+E(pg)+'|'+E(n)+'">'+E(n)+'</button>').join('')+'<span class="p279sep" aria-hidden="true"></span>'+
+      m.ex.map(([id,n])=>'<button role="tab" type="button" class="p250tab p279x'+(id===k?' on':'')+'" data-p250="classic" data-id="'+E(id)+'">'+E(n)+'</button>').join('');
+    place(bar);
+    try{if(typeof window.__p266fix==='function')window.__p266fix();}catch(e){}}catch(e){}}
+if(typeof go==='function'){const _g13=go;go=function(){const r=_g13.apply(this,arguments);try{classicBar();}catch(e){}return r;};try{window.go=go;}catch(e){}}
+{const vv=document.getElementById('view');if(vv)new MutationObserver(()=>{if(!classicBar._q)classicBar._q=requestAnimationFrame(()=>{classicBar._q=0;classicBar();});}).observe(vv,{childList:true});}
 
 const st=document.createElement('style');st.textContent=`
 #strip .p278b{align-self:center;flex:0 0 auto;margin-left:6px;padding:6px 10px;border:1px solid var(--border);border-radius:999px;background:transparent;color:var(--muted);font:700 11px/1 var(--mono,monospace);letter-spacing:.06em;cursor:pointer;white-space:nowrap}
@@ -25339,6 +25374,10 @@ const st=document.createElement('style');st.textContent=`
 .p278hb{display:none;position:relative}.p278hb i{position:absolute;top:-4px;right:-4px;font-style:normal;min-width:16px;padding:2px 4px;border-radius:9px;background:var(--danger,#ef4444);color:#fff;font:700 10px/1 var(--mono,monospace)}
 @media(max-width:760px){#strip .p278b{display:none}.p278hb{display:inline-flex;align-items:center;justify-content:center}}
 @media(max-width:760px){body.map-open.sheet-on .toasts{display:none!important}}
+.p279sep{display:inline-block;width:1px;align-self:stretch;margin:4px 4px;background:var(--border)}
+#view .p250tabs .p250tab.p279x{font-weight:600}
+.p264all.p279gone{display:none}
+#view.p279c>.p250tabs.p265tabs{margin-top:-2px}#view.p279c>.p250tabs.p265tabs .p250tab{font-size:12px;padding:5px 10px;opacity:.9}
 `;document.head.appendChild(st);
 }catch(e){try{console.error('p278',e);}catch(_){}}})();
 </script>
