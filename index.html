@@ -100,7 +100,10 @@
 <p class="mut" style="margin:0">One battle on a hex map, or a board game of hidden ranks. A few minutes each.</p>
 <div class="l15list"><a class="l15s" href="tactics/terrastate.html"><img src="img/v3/tactics-terrastate.jpg" alt="" width="176" height="100" loading="lazy"><span><b>Conquer</b><small>Mini game · Terrastate</small></span><span class="go">PLAY ▶</span></a><a class="l15s" href="tactics/romaterra.html"><img src="img/v3/tactics-romaterra.jpg" alt="" width="176" height="100" loading="lazy"><span><b>Imperium</b><small>Mini game · Romaterra</small></span><span class="go">PLAY ▶</span></a><a class="l15s" href="tactics/ironfront.html"><img src="img/v3/tactics-ironfront.jpg" alt="" width="176" height="100" loading="lazy"><span><b>D-Day</b><small>Mini game · Ironfront</small></span><span class="go">PLAY ▶</span></a><a class="l15s" href="command/terrastate.html"><img src="img/v3/board-terrastate.jpg" alt="" width="176" height="100" loading="lazy"><span><b>Hidden Command</b><small>Board game · Terrastate</small></span><span class="go">PLAY ▶</span></a><a class="l15s" href="command/romaterra.html"><img src="img/v3/board-romaterra.jpg" alt="" width="176" height="100" loading="lazy"><span><b>Veiled Legions</b><small>Board game · Romaterra</small></span><span class="go">PLAY ▶</span></a><a class="l15s" href="command/ironfront.html"><img src="img/v3/board-ironfront.jpg" alt="" width="176" height="100" loading="lazy"><span><b>Sealed Orders</b><small>Board game · Ironfront</small></span><span class="go">PLAY ▶</span></a></div></div></section>
 <section class="l15 l15live" id="season"><div class="l15w"><div class="l15two">
-<div class="l15box"><div class="l15k">Multiplayer</div><h3>The world is fully playable today</h3><p>Every season is complete: you against 500 AI nations that play by your rules. A version with real players is in testing. News and the waitlist are on the Discord.</p><a class="l15btn disc" href="https://discord.gg/aYPtmqCHvU" rel="noopener">Join the Discord</a></div>
+<div class="l15box"><div class="l15k">Multiplayer</div><h3>The world is fully playable today</h3><p>Every season is complete: you against 500 AI nations that play by your rules. A version with real players is in testing. News and the waitlist are on the Discord.</p><a class="l15btn disc" href="https://discord.gg/aYPtmqCHvU" rel="noopener">Join the Discord</a>
+<form class="lpoll" id="lpoll" onsubmit="return false"><div class="lpq">Would you play with real players?</div><div class="lpo" data-q="mp"><button type="button" data-a="yes">Yes</button><button type="button" data-a="maybe">Maybe</button><button type="button" data-a="no">No</button></div>
+<div class="lpq">How long should one turn take?</div><div class="lpo" data-q="turn"><button type="button" data-a="5 min">5 min</button><button type="button" data-a="15 min">15 min</button><button type="button" data-a="1 hour">1 hour</button><button type="button" data-a="3 hours">3 hours</button></div>
+<button type="submit" class="l15btn ghost" id="lpsend" disabled>Send my vote</button><div class="lpmsg" id="lpmsg" aria-live="polite"></div></form></div>
 <div class="l15box"><div class="l15k">World ranking</div><h3>Finished a season?</h3><p>Put your nation on the world ranking at the end of a season, and see who held the prize in each world.</p><a class="l15btn ghost" href="hall-of-fame.html">See the ranking</a></div>
 </div></div></section>
 </main>
@@ -147,5 +150,16 @@
   </div>
 </footer>
 <script>if('serviceWorker' in navigator)addEventListener('load',function(){navigator.serviceWorker.register('sw.js').catch(function(){})});</script>
+<style>.lpoll{margin-top:16px;border-top:1px solid var(--border);padding-top:12px}.lpq{font-weight:700;margin:8px 0 6px}.lpo{display:flex;gap:6px;flex-wrap:wrap}.lpo button{min-height:40px;padding:0 14px;border-radius:10px;border:1px solid var(--border);background:transparent;color:inherit;font:inherit;cursor:pointer}.lpo button.on{background:var(--accent,#3b82f6);border-color:var(--accent,#3b82f6);color:#fff}#lpsend{margin-top:12px}.lpmsg{margin-top:8px;color:var(--muted);font-size:14px}</style>
+<script>(function(){var U='https://script.google.com/macros/s/AKfycby3_kn2rJlYyfF7dLNWq3JR4wM-rfthtpIK01yf_7e26yLgIa4vPnSK4sgmuPL23KeO3g/exec';var f=document.getElementById('lpoll');if(!f)return;var A={};var LS=function(k,v){try{if(v===undefined)return localStorage.getItem(k);localStorage.setItem(k,v);}catch(e){return null;}};
+var id=LS('ts_voter');if(!id){id='v'+Math.random().toString(36).slice(2,12)+Date.now().toString(36);LS('ts_voter',id);}
+try{var p=JSON.parse(LS('ts_vote')||'{}');A=p||{};}catch(e){}
+var send=document.getElementById('lpsend'),msg=document.getElementById('lpmsg');
+function paint(){f.querySelectorAll('.lpo').forEach(function(g){g.querySelectorAll('button').forEach(function(b){b.classList.toggle('on',A[g.dataset.q]===b.dataset.a);});});send.disabled=!(A.mp||A.turn);}
+f.querySelectorAll('.lpo button').forEach(function(b){b.addEventListener('click',function(){A[b.parentNode.dataset.q]=b.dataset.a;paint();msg.textContent='';});});
+if(LS('ts_voted'))msg.textContent='Thanks, your vote is in. You can change it and send again.';
+send.addEventListener('click',function(){send.disabled=true;msg.textContent='Sending...';
+fetch(U,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain'},body:JSON.stringify({type:'poll',voter:id,mp:A.mp||'',turn:A.turn||''})}).then(function(){LS('ts_vote',JSON.stringify(A));LS('ts_voted','1');msg.textContent='Thanks, your vote is in. The results go to the maker only.';paint();}).catch(function(){msg.textContent='Could not send. Check your connection and try again.';paint();});});
+paint();})();</script>
 </body>
 </html>
