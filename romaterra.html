@@ -26439,18 +26439,25 @@ if(typeof window.p218Replay==='function'){const _rp56=window.p218Replay;window.p
   const homeU=x=>Object.values(x.units||{}).reduce((a,b)=>a+(b||0),0);
   const cl=(v,a,b)=>Math.max(a,Math.min(b,v));
   const base=(x,me)=>Math.round(Math.max(2e6,net(me)*3)*cl(sc(x)/sc(me),0.5,2.5)/1e5)*1e5;
+  const recent=me=>(me._p58buys||[]).filter(t=>G.tick-t<40).length;
+  const threatOf=(o,me)=>{let th=0;try{(incomingTo(me.id)||[]).forEach(x=>{if(x.from&&x.from.id===o.id)th=Math.max(th,x.threat||0);});}catch(e){}return th;};
+  const peacePrice=(o,me)=>Math.round(base(o,me)*(1+Math.min(3,threatOf(o,me)))*Math.pow(1.5,recent(me))/1e5)*1e5;
+  const activePeace=me=>G.countries.filter(x=>x&&x.isAI&&!x.retired&&peaceOn(x,me)).length;
+  const MAXP=2;
+  const refuse=(o,me)=>{try{const nx=typeof nexus==='function'?nexus():null;if(nx&&(incomingTo(me.id)||[]).some(x=>x.from&&x.from.id===o.id&&x.region&&x.region.id===nx.id))return 'will not sell peace over the prize of the season';
+    if(o.clan!=null&&me.clan!=null&&typeof clanAtWar==='function'&&clanAtWar(o.clan,me.clan))return 'is at war with your alliance';if(activePeace(me)>=MAXP)return 'too many deals: you can buy peace from '+MAXP+' nations at a time';}catch(e){}return '';};
   const peaceOn=(o,me)=>!!(o&&me&&o._p58peace&&(o._p58peace[me.id]||0)>G.tick);
   window.p58peaceOn=peaceOn;
   function ally(me){try{const b=[];const A=arguments[1];G.countries.forEach(x=>{if(!x||!x.isAI||x.retired||x.id===A.id||x.id===me.id||!regionsOf(x).length)return;if(A.clan!=null&&x.clan===A.clan)return;if(me.clan!=null&&x.clan===me.clan)return;if(x.vsYou&&(x.vsYou.threat||0)>40)return;if(peaceOn(A,x))return;
       let same=0;try{same=homeCluster(x)===homeCluster(A)?1:0;}catch(e){}b.push({x,same,p:homeU(x)});});b.sort((a,c)=>(c.same-a.same)||(c.p-a.p));return b[0]?b[0].x:null;}catch(e){return null;}}
   window.p58btns=function(o){try{const me=ME();if(!me||!o||!o.isAI||o.retired)return '';let h='';if(!peaceOn(o,me)){let th=0;try{(incomingTo(me.id)||[]).forEach(x=>{if(x.from&&x.from.id===o.id)th=Math.max(th,x.threat||0);});}catch(e){}if(th<0.6)return '';}
     if(peaceOn(o,me))h+='<span class="p250s">peace bought, '+(o._p58peace[me.id]-G.tick)+' turns left</span>';
-    else{const pr=base(o,me);h+=' <button type="button" class="btn sm ghost p250btn" data-p58p="'+o.id+'" title="It will not attack your lands for 20 turns">Buy peace · '+fmt(pr,true)+'</button>';}
+    else{const no=refuse(o,me);if(no)h+=' <span class="p250s">no peace: '+E(/^too many/.test(no)?'already 2 deals running':no)+'</span>';else{const pr=peacePrice(o,me);h+=' <button type="button" class="btn sm ghost p250btn" data-p58p="'+o.id+'" title="It will not attack your lands for 20 turns. The stronger its attack and the more peace you bought lately, the higher the price.">Buy peace · '+fmt(pr,true)+'</button>';}}
     const b=ally(me,o);if(b&&!(me._p58job&&me._p58job.until>G.tick)){const pr=Math.round(base(b,me)*1.5/1e5)*1e5;h+=' <button type="button" class="btn sm ghost p250btn" data-p58t="'+o.id+'|'+b.id+'" title="'+E(b.name)+' marches on '+E(o.name)+' when it can win. If not within 6 turns, you get half back">Pay '+E(String(b.name).slice(0,22))+' to attack them · '+fmt(pr,true)+'</button>';}else if(b&&me._p58job&&me._p58job.until>G.tick&&!me._p58job.done){h+=' <span class="p250s">one paid attack at a time</span>';}
     return h;}catch(e){return '';}};
   window.p58peace=function(me,oid){const o=G.countries[oid];if(!me||!o||!o.isAI)return err('No such nation');if(peaceOn(o,me))return err('Peace already bought');
     if(((o._p58last||{})[me.id]||-99)>G.tick-40&&o._p58last)return err(o.name+' will not sell peace again so soon (wait '+(o._p58last[me.id]+40-G.tick)+' turns)');
-    const pr=base(o,me);if((me.res.money||0)<pr)return err('You need '+fmt(pr,true));me.res.money-=pr;o.res.money=(o.res.money||0)+pr;
+    const no=refuse(o,me);if(no)return err(/^too many/.test(no)?'You can buy peace from '+MAXP+' nations at a time':o.name+' '+no);const pr=peacePrice(o,me);if((me.res.money||0)<pr)return err('You need '+fmt(pr,true));me.res.money-=pr;o.res.money=(o.res.money||0)+pr;(me._p58buys=me._p58buys||[]).push(G.tick);me._p58buys=me._p58buys.filter(t=>G.tick-t<40);
     (o._p58peace=o._p58peace||{})[me.id]=G.tick+20;(o._p58last=o._p58last||{})[me.id]=G.tick;try{if(o.vsYou)o.vsYou.threat=Math.max(0,(o.vsYou.threat||0)-30);}catch(e){}
     let back=0;(o.fleets||[]).forEach(f=>{try{const r=_rgId(f.target);if(f.status==='outbound'&&r&&r.owner===me.id&&f.intent!=='garrison'&&f.intent!=='reinforce'){if(typeof recallFleet==='function'){const rr=recallFleet(o,f.id);if(rr&&rr.ok!==false)back++;}}}catch(e){}});
     try{sitrep(me,'diplomacy','🤝 Peace bought from '+o.name+': no attacks on your lands for 20 turns'+(back?', '+back+' army turned back':'')+'.',{go:'p250a'});}catch(e){}
@@ -26642,6 +26649,30 @@ if(typeof VIEWS!=='undefined'&&VIEWS.p250b){const _b69=VIEWS.p250b;VIEWS.p250b=f
   if(typeof cmdMarket==='function'){const _m=cmdMarket;cmdMarket=function(c,resr,side,qty){if(side!=='sell'||!c||c.isAI)return _m.apply(this,arguments);const q=Math.floor(qty)||0;const f=fac(c,resr,q);const m0=c.res.money||0;const r=_m.apply(this,arguments);
     try{if(r&&r.ok&&f<1){const got=(c.res.money||0)-m0;const cut=Math.max(0,Math.round(got*(1-f)));c.res.money=Math.max(0,(c.res.money||0)-cut);if(r.data)r.data.paid=Math.round(got-cut);}}catch(e){}return r;};try{window.cmdMarket=cmdMarket;}catch(e){}}
   if(typeof marketQuote==='function'){const _q=marketQuote;marketQuote=function(c,resr,side,qty){const o=_q.apply(this,arguments);try{if(o&&side==='sell'&&c&&!c.isAI){const f=fac(c,resr,Math.floor(+qty)||0);if(f<1){o.get=Math.round(o.get*f);o.why=(o.why?o.why+' ':'')+'A big sale at once fetches a lower average price ('+Math.round(f*100)+'% of the market price).';}}}catch(e){}return o;};try{window.marketQuote=marketQuote;}catch(e){}}
+})();
+
+/* 71. Research tree: a line to a requirement in another lane ran right through the nodes and their names of the lanes in
+   between. Those long lines are left out; the requirement is still named on the card when you pick the node. */
+(function(){const prune=svg=>{try{svg.querySelectorAll('path').forEach(p=>{const n=(p.getAttribute('d')||'').match(/-?\d+(?:\.\d+)?/g);if(!n||n.length<4)return;const y1=+n[1],y2=+n[n.length-1];if(Math.abs(y2-y1)>160)p.remove();});}catch(e){}};
+  const watch=()=>{try{const svg=document.querySelector('#view .p194web .p194svg');if(!svg||svg.dataset.p71)return;svg.dataset.p71=1;prune(svg);new MutationObserver(()=>prune(svg)).observe(svg,{childList:true});}catch(e){}};
+  try{new MutationObserver(()=>watch()).observe(document.getElementById('view')||document.body,{childList:true,subtree:true});}catch(e){}})();
+
+/* 72. A battle on your land stays visible while it is fought: an army that landed fights up to 3 turns. Overview, Army >
+   Defend a land and the top bar show "battle at <land>, round x of 3", with Reinforce and the Calculator. */
+(function(){
+  const fights=me=>{const out=[];try{G.countries.forEach(o=>{if(!o||o.id===me.id||o.retired)return;(o.fleets||[]).forEach(f=>{if(f.status!=='battle'||f.intent==='garrison'||f.intent==='reinforce')return;const r=_rgId(f.target);if(!r||r.owner!==me.id)return;
+    let ap=0;try{ap=f._atkP!=null?f._atkP:power(o,'atk',f.units);}catch(e){}let dp=0;try{dp=regionDef(r);}catch(e){}out.push({o,r,round:Math.min(3,(f.bTick||0)+1),ap,dp,n:Object.values(f.units||{}).reduce((a,b)=>a+(b||0),0)});});});}catch(e){}return out;};
+  window.p72fights=fights;
+  const rowsHTML=(L)=>L.slice(0,4).map(x=>'<div class="p250row p72"><div class="p250m"><div class="p250t"><b class="bad">⚔ Battle at '+E(x.r.name)+'</b> '+xyBtn(x.r.coord)+' · round '+x.round+' of 3</div><div class="p250s">'+E(x.o.name)+' · their attack '+F(x.ap)+' · your defence '+F(x.dp)+(x.ap>x.dp?' · <b class="bad">they are winning</b>':' · you are holding')+'</div></div><div class="p250b"><button type="button" class="btn sm p250btn'+(x.ap>x.dp?' p250main':'')+'" data-p278tab="p250a|Defend a land">Reinforce</button><button type="button" class="btn sm ghost p250btn" data-p278calc="d|'+x.r.id+'">Calculator</button></div></div>').join('');
+  if(typeof VIEWS!=='undefined'){
+    if(VIEWS.p250o){const _o=VIEWS.p250o;VIEWS.p250o=function(v){const r=_o.apply(this,arguments);try{const me=ME();if(!me||v.querySelector('.p72'))return r;const L=fights(me);if(!L.length)return r;const box=v.querySelector('.p250box');if(box){const h=box.querySelector('.p250h');const d=document.createElement('div');d.innerHTML=rowsHTML(L);const nodes=[...d.children];let at=h;nodes.forEach(n=>{if(at)at.after(n);else box.prepend(n);at=n;});}}catch(e){}return r;};}
+    if(VIEWS.p250a){const _a=VIEWS.p250a;VIEWS.p250a=function(v){const r=_a.apply(this,arguments);try{const me=ME();if(!me||v.querySelector('.p72'))return r;const L=fights(me);if(!L.length)return r;const box=[...v.querySelectorAll('.p250box')].find(b=>b.dataset.p268t==='Defend a land'||(b.querySelector('.p250h')&&/^Defend a land/.test(b.querySelector('.p250h').textContent.trim())));if(box){const h=box.querySelector('.p250h');const d=document.createElement('div');d.innerHTML=rowsHTML(L);const nodes=[...d.children];let at=h;nodes.forEach(n=>{if(at)at.after(n);else box.prepend(n);at=n;});}}catch(e){}return r;};}}
+  // top bar: a red chip while a battle is fought on your land
+  const chip=()=>{try{const me=ME();const t=document.getElementById('topNation');if(!me||!t)return;let el=t.querySelector('.p72chip');const L=fights(me);
+    if(!L.length){if(el)el.remove();return;}const txt='⚔ '+(L.length===1?'battle at '+L[0].r.name+' · round '+L[0].round+'/3':L.length+' battles on your land');
+    if(!el){el=document.createElement('span');el.className='pill p72chip';el.style.cssText='background:rgba(240,98,95,.15);color:#f0625f;border:1px solid #f0625f;cursor:pointer;font-weight:700';el.dataset.p278tab='p250a|Defend a land';t.appendChild(el);}if(el.textContent!==txt)el.textContent=txt;}catch(e){}};
+  if(typeof drawTop==='function'){const _dt=drawTop;drawTop=function(){const r=_dt.apply(this,arguments);chip();return r;};try{window.drawTop=drawTop;}catch(e){}}
+  if(typeof go==='function'){const _g=go;go=function(){const r=_g.apply(this,arguments);try{chip();}catch(e){}return r;};try{window.go=go;}catch(e){}}
 })();
 
 }catch(e){try{console.error('p278',e);}catch(_){}}})();
