@@ -4610,7 +4610,7 @@ function advanceBattle(c,f){const r=_rgId(f.target);
   if(t<3&&fleetSize(f.units)>=1){const _rt=EG.R.ratio;const _lost=f.bStart?Math.round((1-fleetSize(f.units)/Math.max(1,fleetSize(f.bStart)))*100):0;
     if(f._shieldTest&&defC&&typeof newbieProtected==='function'&&newbieProtected(defC)){const _line=_rt>=1.25?('🛡 '+r.name+' — tick '+t+' of 3. They are through the line. Your beginner shield is what keeps the flag.'):('🛡 '+r.name+' — tick '+t+' of 3. They are not through your line. The shield is still up if a stronger wave comes.');if(defC.isAI===false)sitrep(defC,'battle',_line,{coord:r.coord,sev:1,go:'reports'});}
     else{const _how=_rt>=1.25?'you are breaking their line':_rt>=1?'you hold the upper hand':'they are winning the exchange';
-    if(c.isAI===false){sitrep(c,'battle','⚔ '+r.name+' — tick '+t+' of 3: '+_how+' (power ratio '+_rt.toFixed(2)+'), ~'+_lost+'% of this army lost so far. Choose Press on or Retreat on the War tab before the next turn.',{coord:r.coord,sev:_rt<1?2:1,go:'fleets'});
+    if(c.isAI===false){sitrep(c,'battle','⚔ '+r.name+' — tick '+t+' of 3: '+_how+' (power ratio '+_rt.toFixed(2)+'), ~'+_lost+'% of this army lost so far. Choose Press on or Retreat under Army › On the move before the next turn.',{coord:r.coord,sev:_rt<1?2:1,go:'fleets'});
       if(c.id===G.you&&typeof toast==='function')toast('⚔ '+r.name+' '+t+'/3: '+(_rt>=1?'winning':'losing')+' (ratio '+_rt.toFixed(2)+'), press on or retreat?',_rt<1?'warn':'');}
     if(defC&&defC.isAI===false&&defC.id!==c.id){sitrep(defC,'battle','🛡 '+r.name+' — tick '+t+' of 3 holding vs '+c.name+': '+(_rt<1?'you have the edge':_rt<1.25?'it is close':'they are pushing through')+' (enemy power ratio '+_rt.toFixed(2)+'). Reinforce fast units now to swing it.',{coord:r.coord,sev:_rt>=1.25?3:2,go:'fleets'});}}
   }
@@ -5543,8 +5543,8 @@ function trainShowCard(){if(!window._trainCard||document.querySelector('.modal-b
   const bg=h(`<div class="modal-bg" style="z-index:181"><div class="modal" style="max-width:460px;text-align:left">
     <div class="mono small" style="letter-spacing:2px;color:var(--accent2)">FIELD TRAINING COMPLETE</div>
     <h2 style="margin:6px 0 10px">You know the basics</h2>
-    <p class="small" style="line-height:1.65;margin:0 0 10px">Research, build, train, fight, end the turn: that is the whole loop. Every menu is open now: scouting and spies are on <b>Army</b>, the market, diplomacy and reports under <b>More</b>. Your <b>National Path</b> can now be chosen in ${esc(navLabel('research'))}, take your time with it.</p>
-    <p class="small muted" style="margin:0 0 14px">The goal of the season stays the same: take the prize on the map and hold it. Home always shows what needs you next.</p>
+    <p class="small" style="line-height:1.65;margin:0 0 10px">Research, build, train, fight, end the turn: that is the whole loop. Every menu is open now: scouting and spies are on <b>Army</b>, the market, diplomacy and reports under <b>More</b>. Your <b>National Path</b> can now be chosen in <b>Research</b>, take your time with it.</p>
+    <p class="small muted" style="margin:0 0 14px">The goal of the season stays the same: take the prize on the map and hold it. Overview always shows what needs you next.</p>
     <div class="row" style="justify-content:flex-end"><button class="btn" data-x style="min-height:44px">Play on →</button></div></div></div>`);
   document.body.appendChild(bg);bg.querySelector('[data-x]').onclick=()=>{bg.remove();go('dashboard');};try{sfx('victory');}catch(e){}return true;}
 function trainMenus(){try{document.body.classList.toggle('novice',noviceMenus());}catch(e){}}
@@ -24045,7 +24045,7 @@ function box(title,inner,extra){return '<section class="p250box"><div class="p25
 function head(t,sub){return '<div class="p250top"><h2>'+t+'</h2>'+(sub?'<div class="p250sub">'+sub+'</div>':'')+'</div>';}
 function now(c,limit){const out=[];
   inc(c).forEach(g=>{out.push(row('<b class="bad">Attack on '+RN(g.r)+'</b> in '+T(g.eta),'their attack '+F(g.atk)+' vs your defence '+F(def(g.r)),B('def50',g.r.id,'Send half')+B('defall',g.r.id,'Send all')+B('go','p250b','Train'),'alert'));});
-  regionsOf(c).filter(r=>isNew(r)&&onLand(c,r.id)===0&&!inc(c).some(g=>g.r.id===r.id)).slice(0,3).forEach(r=>{out.push(row('<span class="p250new">NEW</span> '+RN(r)+' has no '+W.troops,'defence '+F(def(r)),B('st25',r.id,'Station 25%')+B('st50',r.id,'Station 50%')));});
+  regionsOf(c).filter(r=>isNew(r)&&onLand(c,r.id)===0&&!inc(c).some(g=>g.r.id===r.id)).slice(0,3).forEach(r=>{out.push(row('<span class="p250new">NEW</span> '+RN(r)+' has no '+W.troops,'defence '+F(def(r))+' from walls and ground only',B('st25',r.id,'Station 25%')+B('st50',r.id,'Station 50%')));});
   try{const pj=projection(c);['food','energy','fuel','money'].forEach(k=>{const net=pj.net[k]||0,have=(c.res||{})[k]||0;if(net<0&&have/(-net)<12){const t=Math.max(0,Math.floor(have/(-net)));out.push(row('<b class="warn">'+E(rl(k))+(t<=0?' has run out':' runs out in '+T(t))+'</b>',F(net)+' per turn',B('go','market','Buy')+B('go','p250b','Build')));}});}catch(e){}
   return limit?out.slice(0,limit):out;}
 
@@ -24497,7 +24497,7 @@ function data(){if(cache&&cache.t===G.tick&&cache.n===G.countries.length)return 
   const cl=(G.clans||[]).map(k=>{let ms=[];try{ms=clanMembers(k);}catch(e){}return {k,n:ms.length,s:ms.reduce((a,m)=>a+(sc[m.id]||0),0)};}).filter(x=>x.n>0).sort((a,b)=>b.s-a.s);
   const cpos={};cl.forEach((x,i)=>{cpos[x.k.id]=i+1;});
   cache={t:G.tick,n:G.countries.length,L,pos,sc,cl,cpos};return cache;}
-function arrow(c){try{const t=rankTrend(c);if(t.mv>0)return '<b class="good">▲'+t.mv+'</b>';if(t.mv<0)return '<b class="bad">▼'+(-t.mv)+'</b>';}catch(e){}return '';}
+function arrow(c){try{const t=rankTrend(c);if(t.mv>0)return '<b class="good">▲'+t.mv+'</b>'+'<span class="muted small"> since turn '+Math.max(0,G.tick-G.tick%8-8)+'</span>';if(t.mv<0)return '<b class="bad">▼'+(-t.mv)+'</b>'+'<span class="muted small"> since turn '+Math.max(0,G.tick-G.tick%8-8)+'</span>';}catch(e){}return '';}
 function row(main,sub,btns,cls){return '<div class="p250row'+(cls?' '+cls:'')+'"><div class="p250m"><div class="p250t">'+main+'</div>'+(sub?'<div class="p250s">'+sub+'</div>':'')+'</div><div class="p250b">'+(btns||'')+'</div></div>';}
 function nationRow(id,d,me){const m=G.countries[id];if(!m)return '';const k=clanOf(m);const lands=(()=>{try{return regionsOf(m).length;}catch(e){return 0;}})();
   return row('#'+d.pos[id]+' '+E(m.name)+' <span class="p250c">['+E(m.tag||'')+']'+(k?' '+E(k.tag):'')+'</span>'+(id===me.id?' <b class="good">you</b>':'')+' '+arrow(m),
@@ -25213,7 +25213,7 @@ window.__p272={tick,makeOffer,list,find};
 if(typeof VIEWS==='undefined')return;
 const _o=VIEWS.p250o;VIEWS.p250o=v=>{const r=_o(v);try{const c=ME();if(!c||!c._p272)return r;const L=c._p272.filter(x=>x.state==='offer'||x.state==='open');if(!L.length)return r;
   const rows=L.map(x=>{const o=G.countries[x.from];const nm=o?E(o.name):'a neighbour';const have=c.res[x.k]||0;
-    if(x.state==='offer')return '<div class="p250row"><div class="p250m"><div class="p250t">Export offer from '+nm+'</div><div class="p250s">'+F(x.qty)+' '+RL(x.k)+' within '+TIME+' turns, for '+F(x.pay)+' money and '+x.inf+' influence. Too late costs '+F(Math.round(x.pay*0.2))+'. Offer open '+Math.max(0,OFFER-(G.tick-x.offered))+' more turns.</div></div><div class="p250b"><button class="btn sm p250btn p250main" data-p272="accept" data-id="'+x.id+'">Accept</button><button class="btn sm p250btn" data-p272="decline" data-id="'+x.id+'">Decline</button></div></div>';
+    if(x.state==='offer')return '<div class="p250row"><div class="p250m"><div class="p250t">Export offer from '+nm+'</div><div class="p250s">'+F(x.qty)+' '+RL(x.k)+' within '+TIME+' turns, for '+(((RMETA.money||{}).i)||'')+F(x.pay)+' and '+x.inf+' influence. Too late costs '+F(Math.round(x.pay*0.2))+'. Offer open '+Math.max(0,OFFER-(G.tick-x.offered))+' more turns.</div></div><div class="p250b"><button class="btn sm p250btn p250main" data-p272="accept" data-id="'+x.id+'">Accept</button><button class="btn sm p250btn" data-p272="decline" data-id="'+x.id+'">Decline</button></div></div>';
     const can=have>=x.qty;return '<div class="p250row"><div class="p250m"><div class="p250t">Contract for '+nm+': '+F(x.qty)+' '+RL(x.k)+'</div><div class="p250s">'+(x.due-G.tick)+' turns left · you have '+F(have)+' · pays '+F(x.pay)+'</div></div><div class="p250b"><button class="btn sm p250btn'+(can?' p250main':'')+'" data-p272="deliver" data-id="'+x.id+'"'+(can?'':' disabled')+'>Deliver</button></div></div>';}).join('');
   const html='<section class="p250box p272box"><div class="p250h">Export contracts</div>'+rows+'</section>';const a=[...v.querySelectorAll('.p261bar,.p260train,.p263box,.p270box')].pop()||v.querySelector('.p250top');if(a)a.insertAdjacentHTML('afterend',html);}catch(e){}return r;};
 document.addEventListener('click',e=>{const b=e.target&&e.target.closest&&e.target.closest('[data-p272]');if(!b)return;e.preventDefault();e.stopPropagation();const c=ME();if(!c)return;let r=null;
@@ -25845,7 +25845,7 @@ function goalRow(c){try{if(typeof nexus!=='function')return '';const nx=nexus();
   const def=regionDef(nx);let atk=0;try{const all=Object.assign({},c.units||{});(c.fleets||[]).forEach(f=>{for(const k in (f.units||{}))all[k]=(all[k]||0)+(f.units[k]||0);});atk=power(c,'atk',all);}catch(e){}const intel=typeof regionIntel==='function'&&o?regionIntel(c,nx.id):true;
   const who=o?E(o.tag||o.name):'nobody';
   let warn='';if(o&&nx.ccBuild)warn=who+' builds the Command Center: ready in '+T(left);else if(o&&nx.commandCenter&&nx.ccHolder===o.id)warn=who+' wins the season in '+T(H-held);
-  const btn=!intel?'<button type="button" class="btn sm p250btn p250main" data-p250="scout" data-id="'+nx.id+'">Scout it</button>':atk>def*1.1?'<button type="button" class="btn sm p250btn p250main" data-p250="take" data-id="'+nx.id+'">Take it</button>':'<button type="button" class="btn sm p250btn'+(warn?' p250main':'')+'" data-p278calc="a|'+nx.id+'">Plan it</button>';
+  const btn=!intel?'<button type="button" class="btn sm p250btn p250main" data-p250="scout" data-id="'+nx.id+'">Scout it</button>':atk>def*1.1?'<button type="button" class="btn sm p250btn p250main" data-p250="take" data-id="'+nx.id+'">Attack now</button>':'<button type="button" class="btn sm p250btn'+(warn?' p250main':'')+'" data-p278calc="a|'+nx.id+'">Plan it</button>';
   const ally=c.clan!=null?'<button type="button" class="btn sm p250btn'+(warn||atk<=def*1.1?' p250main':'')+'" data-p278acs="'+nx.id+'">Attack with alliance</button>':'';
   return row(warn?'bad':'', (warn?'<b class="bad">'+warn+'</b> · ':'')+'<span data-p287="1" class="p278lk">Take the Nexus</span> '+xy, 'held by '+who+' · defence '+(intel?F(def):'unknown, scout it first')+' · your attack '+F(atk)+(intel&&atk<=def*1.1?' · you need '+F(def*1.1-atk)+' more':''),ally+btn);}catch(e){return '';}}
 if(VIEWS&&VIEWS.p250o){const _o15=VIEWS.p250o;VIEWS.p250o=function(v){const r=_o15.apply(this,arguments);try{const c=ME();if(!c)return r;const h=goalRow(c);if(!h)return r;
@@ -26729,7 +26729,7 @@ if(typeof COVERT_OPS!=='undefined'&&Array.isArray(COVERT_OPS)&&typeof cmdCovert=
       if(mk==='tech_steal'){const tk=Math.min((t.res.research||0)*0.10,3000);t.res.research=Math.max(0,(t.res.research||0)-tk);let cap=Infinity;try{cap=capOf(c,'research');}catch(e){}c.res.research=Math.min(cap,(c.res.research||0)+tk);detail='took '+fmt(tk)+' research points';}
       else{const ks=(t.commanders||[]).filter(k=>k!==out52(t)).sort((a,b)=>cmdrPow(b)-cmdrPow(a));const k=ks[0];const cm=COMMANDERS.find(x=>x.k===k);t._cmdrOut={k,until:G.tick+6};detail=(cm?cm.n:'their commander')+' is out of action for 6 turns';}
       r.data.detail=detail;
-      try{const sr=(c.sitrep||[]).slice(0,6).find(x=>x&&x.tick===G.tick&&/SUCCESS: (·|$)/.test(String(x.head||''))&&String(x.head).indexOf(t.name)>0);if(sr)sr.head=String(sr.head).replace(/SUCCESS: /,'SUCCESS: '+detail+' ');}catch(e){}
+      try{const sr=(c.sitrep||[]).slice(0,6).find(x=>x&&x.tick===G.tick&&/SUCCESS:\s*(·|$)/.test(String(x.head||''))&&String(x.head).indexOf(t.name)>0);if(sr)sr.head=String(sr.head).replace(/SUCCESS:\s*/,'SUCCESS: '+detail+' ');}catch(e){}
       try{const alert=alertLevel(t)||0;const id=alert>=6;sitrep(t,'intel','🕵 Enemy agents: '+detail.replace(/^took/,'they took')+(id?' · traced to '+c.name+' ['+c.tag+']':' · origin unknown (raise your alert level to trace agents)'),{sev:2,go:'covert'});}catch(e){}
       try{if(t.isAI&&typeof vs==='function')vs(t).threat+=10;}catch(e){}}
     return r;};
@@ -26767,7 +26767,7 @@ if(/Romaterra/i.test(document.title)){
     G.countries.forEach(t=>{if(!t||t._clientOf==null)return;const o=G.countries[t._clientOf];
       if(!o||o.retired||!regionsOf(o).length||t.retired||!regionsOf(t).length){t._clientOf=null;return;}
       let net=0;try{const pj=projection(t);net=(pj.net&&pj.net.money)||0;}catch(e){}const pay=Math.max(0,Math.min(net*0.15,(t.res.money||0)));
-      if(pay>0){t.res.money-=pay;o.res.money=Math.min(typeof CAP!=='undefined'&&CAP.money?CAP.money:Infinity,(o.res.money||0)+pay);t._p53paid=pay;}else t._p53paid=0;
+      if(pay>0){t.res.money-=pay;o.res.money=Math.min(typeof capOf==='function'?capOf(o,'money'):Infinity,(o.res.money||0)+pay);t._p53paid=pay;}else t._p53paid=0;
       if(G.tick-(t._clientSince||0)>=10&&sc(t)>sc(o)*0.6&&Math.random()<0.1)p53free(o,t.id,'broke free: it grew strong again and stopped paying tribute.');});
   }catch(e){}return out;};try{window.runTick=runTick;}catch(e){}}
   // Army > Targets: a button on beaten nations, and one line with your client kingdoms
@@ -26808,7 +26808,7 @@ if(/Ironfront/i.test(document.title)&&window.__p273&&typeof VIEWS!=='undefined')
     if((c.res.fuel||0)<RAID_FUEL)return err('A raid needs '+F(RAID_FUEL)+' '+FN);if((c.cp||0)<1)return err(cpNote(c,1));
     c.res.fuel-=RAID_FUEL;c.cp--;(o._p54raid=o._p54raid||{})[c.id]=G.tick+6;
     const lv=bTotal(c,'shipyard');const ch=Math.min(0.85,0.5+0.1*lv)-(live.some(x=>x.esc)?0.25:0);
-    if(Math.random()<ch){const x=live.sort((a,b)=>val(o,b).money-val(o,a).money)[0];const v=val(o,x);x.cutUntil=G.tick+4;c.res.money=Math.min(typeof CAP!=='undefined'&&CAP.money?CAP.money:Infinity,(c.res.money||0)+v.money);
+    if(Math.random()<ch){const x=live.sort((a,b)=>val(o,b).money-val(o,a).money)[0];const v=val(o,x);x.cutUntil=G.tick+4;c.res.money=Math.min(typeof capOf==='function'?capOf(c,'money'):Infinity,(c.res.money||0)+v.money);
       try{if(o.isAI&&typeof vs==='function')vs(o).threat+=8;}catch(e){}return ok({msg:'Convoy sunk: '+o.name+"'s route pays nothing for 4 turns. Cargo taken: "+fmt(v.money,true)+'.'});}
     return ok({msg:'The raid missed: the convoy got away.'});};
   // computer nations raid your convoys too: that is the sinking above. On Build > Shipyard: escort per route, enemy convoys to raid.
@@ -26905,9 +26905,10 @@ if(typeof window.p218Replay==='function'){const _rp56=window.p218Replay;window.p
   const blocked=(c,r)=>{try{if(!c||!c.isAI||!r||r.owner==null)return false;const o=G.countries[r.owner];return !!(o&&o.isAI===false&&peaceOn(c,o));}catch(e){return false;}};
   if(typeof cmdOp==='function'){const _o=cmdOp;cmdOp=function(c,rid){if(blocked(c,_rgId(rid)))return err('Peace was bought');return _o.apply(this,arguments);};try{window.cmdOp=cmdOp;}catch(e){}}
   if(typeof cmdLaunchACS==='function'){const _l=cmdLaunchACS;cmdLaunchACS=function(c,rid){if(blocked(c,_rgId(rid)))return err('Peace was bought');return _l.apply(this,arguments);};try{window.cmdLaunchACS=cmdLaunchACS;}catch(e){}}
+  if(typeof cmdJoinACS==='function'){const _j=cmdJoinACS;cmdJoinACS=function(c,opId){try{const op=(G.acs||[]).find(x=>x.id===opId);if(op&&blocked(c,_rgId(op.target)))return err('Peace was bought');}catch(e){}return _j.apply(this,arguments);};try{window.cmdJoinACS=cmdJoinACS;}catch(e){}}
   // the paid march
   if(typeof runTick==='function'){const _rt=runTick;runTick=function(){const out=_rt.apply(this,arguments);try{const me=ME();const J=me&&me._p58job;if(J&&!J.done){const A=G.countries[J.a],B=G.countries[J.b];
-      if(!A||!B||A.retired||B.retired||!regionsOf(A).length){J.done=1;J.until=G.tick;}
+      if(!A||!B||A.retired||B.retired||!regionsOf(A).length){J.done=1;J.until=G.tick;if(B&&J.paid>0){const back=Math.round(J.paid/2);me.res.money=(me.res.money||0)+back;B.res.money=Math.max(0,(B.res.money||0)-back);try{sitrep(me,'diplomacy','🤝 '+(A?A.name:'Your attacker')+' fell before '+B.name+' marched. You got '+fmt(back,true)+' back.',{go:'p250a'});}catch(e){}}}
       else if(G.tick>J.at){const share={};for(const k in (B.units||{})){const v=Math.floor((B.units[k]||0)*0.6);if(v>0)share[k]=v;}let ap=0;try{ap=power(B,'atk',share);}catch(e){}
         const T=regionsOf(A).map(r=>{let d=1e18;try{d=regionDef(r);}catch(e){}return {r,d};}).sort((x,y)=>x.d-y.d);let sent=null;
         for(const t of T){if(ap<t.d*1.15)break;let r=null;try{r=cmdOp(B,t.r.id,share);}catch(e){}if(r&&r.ok){sent=t.r;break;}}
@@ -26999,7 +27000,7 @@ if(typeof VIEWS!=='undefined'&&VIEWS.p250o){const _o63=VIEWS.p250o;VIEWS.p250o=f
     if(k==='mountain')m+=0.25*ar;else if(k==='urban')m+=0.2*ar-0.15*inf;else if(k==='forest')m+=0.2*ai;else if(k==='open')m-=0.1*ar;
     return Math.max(0.85,Math.min(1.45,m));}catch(e){return 1;}};
   // the defence shown everywhere carries the base value of the ground
-  if(typeof _regionDef==='function'){const _rd=_regionDef;_regionDef=function(r){const d=_rd.apply(this,arguments);try{if(r&&r.owner!=null)return d*TER[terOf(r)].b;}catch(e){}return d;};try{window._regionDef=_regionDef;}catch(e){}}
+  if(typeof _regionDef==='function'){const _rd=_regionDef;_regionDef=function(r){const d=_rd.apply(this,arguments);try{if(r)return d*TER[terOf(r)].b;}catch(e){}return d;};try{window._regionDef=_regionDef;}catch(e){}}
   window.p65Row=function(r){const t=TER[terOf(r)];return ['Battle ground',E(t.ic+' '+t.n)+' <span class="muted">· '+E(t.d)+'</span>'];};
   window.p65Line=function(r){const t=TER[terOf(r)];return t.ic+' '+t.n+': '+t.d;};
   // the attack window and the Calculator name the ground
@@ -27025,7 +27026,7 @@ if(typeof VIEWS!=='undefined'&&VIEWS.p250o){const _o63=VIEWS.p250o;VIEWS.p250o=f
     const box=[...v.querySelectorAll('.p250box')].find(b=>{const h=b.querySelector('.p250h');return h&&/^Buildings/.test(h.textContent.trim());});if(!box)return r;
     const rid=window._p250rid!=null?window._p250rid:(regionsOf(c)[0]||{}).id;const T=c._p66tpl;
     const d=document.createElement('div');d.className='p250row p66';
-    d.innerHTML='<div class="p250m"><div class="p250t">Plan for new lands'+(T?': '+T.map(k=>E(nm(k))).join(', '):'')+'</div><div class="p250s">'+(T?'every land you take starts these buildings by itself when you can pay':'copy the buildings of this land, and every land you take starts them by itself')+'</div></div><div class="p250b"><button type="button" class="btn sm p250btn'+(T?' ghost':' p250main')+'" data-p66="'+rid+'">Copy this land</button>'+(T?'<button type="button" class="btn sm ghost p250btn" data-p66="off">Off</button>':'')+'</div>';
+    d.innerHTML='<div class="p250m"><div class="p250t">Plan for new lands'+(T?': '+T.map(k=>E(nm(k))).join(', '):'')+'</div><div class="p250s">'+(T?'every land you take starts these buildings the turn it joins, as far as money and room allow then':'copy the buildings of this land, and every land you take starts them by itself')+'</div></div><div class="p250b"><button type="button" class="btn sm p250btn'+(T?' ghost':' p250main')+'" data-p66="'+rid+'">Copy this land</button>'+(T?'<button type="button" class="btn sm ghost p250btn" data-p66="off">Off</button>':'')+'</div>';
     const h=box.querySelector('.p250h');if(h)h.after(d);else box.prepend(d);}catch(e){}return r;};}
   document.addEventListener('click',e=>{const b=e.target&&e.target.closest&&e.target.closest('[data-p66]');if(!b)return;e.preventDefault();e.stopPropagation();const c=ME();if(!c)return;
     const r=b.dataset.p66==='off'?p66off(c):p66set(c,+b.dataset.p66);try{if(r.ok)toast(r.data.msg,'good');else toast(r.error,'bad');save();}catch(x){}try{go(view);}catch(x){}},true);
@@ -27081,10 +27082,10 @@ if(typeof VIEWS!=='undefined'&&VIEWS.p250b){const _b69=VIEWS.p250b;VIEWS.p250b=f
    the average price. Selling 5 million food no longer brings in 60 turns of income at once. */
 (function(){
   const depth=(c,k)=>{let prod=0;try{const pj=projection(c);prod=Math.max(0,(pj.net&&pj.net[k])||0);}catch(e){}return Math.max(2e5,prod*20);};
-  const fac=(c,k,q)=>{const d=depth(c,k);return q<=d?1:(d+d*Math.log(q/d))/q;};
-  if(typeof cmdMarket==='function'){const _m=cmdMarket;cmdMarket=function(c,resr,side,qty){if(side!=='sell'||!c||c.isAI)return _m.apply(this,arguments);const q=Math.floor(qty)||0;const f=fac(c,resr,q);const m0=c.res.money||0;const r=_m.apply(this,arguments);
+  const R=(d,q)=>q<=d?q:d+d*Math.log(q/d);const fac=(c,k,q)=>{const d=depth(c,k);const L=(c._p70&&c._p70.t===G.tick)?(c._p70[k]||0):0;return q>0?(R(d,L+q)-R(d,L))/q:1;};
+  if(typeof cmdMarket==='function'){const _m=cmdMarket;cmdMarket=function(c,resr,side,qty){if(side!=='sell'||!c||c.isAI)return _m.apply(this,arguments);const q=Math.floor(qty)||0;const f=fac(c,resr,q);const m0=c.res.money||0;const r=_m.apply(this,arguments);try{if(r&&r.ok){if(!c._p70||c._p70.t!==G.tick)c._p70={t:G.tick};c._p70[resr]=(c._p70[resr]||0)+q;}}catch(e){}
     try{if(r&&r.ok&&f<1){const got=(c.res.money||0)-m0;const cut=Math.max(0,Math.round(got*(1-f)));c.res.money=Math.max(0,(c.res.money||0)-cut);if(r.data)r.data.paid=Math.round(got-cut);}}catch(e){}return r;};try{window.cmdMarket=cmdMarket;}catch(e){}}
-  if(typeof marketQuote==='function'){const _q=marketQuote;marketQuote=function(c,resr,side,qty){const o=_q.apply(this,arguments);try{if(o&&side==='sell'&&c&&!c.isAI){const f=fac(c,resr,Math.floor(+qty)||0);if(f<1){o.get=Math.round(o.get*f);o.why=(o.why?o.why+' ':'')+'A big sale at once fetches a lower average price ('+Math.round(f*100)+'% of the market price).';}}}catch(e){}return o;};try{window.marketQuote=marketQuote;}catch(e){}}
+  if(typeof marketQuote==='function'){const _q=marketQuote;marketQuote=function(c,resr,side,qty){const o=_q.apply(this,arguments);try{if(o&&side==='sell'&&c&&!c.isAI){const f=fac(c,resr,Math.floor(+qty)||0);if(f<1){o.get=Math.round(o.get*f);o.why=(o.why?o.why+' ':'')+'A big sale in one turn fetches a lower average price ('+Math.round(f*100)+'% of the market price).';}}}catch(e){}return o;};try{window.marketQuote=marketQuote;}catch(e){}}
 })();
 
 /* 71. Research tree: a line to a requirement in another lane ran right through the nodes and their names of the lanes in
@@ -27110,6 +27111,42 @@ if(typeof VIEWS!=='undefined'&&VIEWS.p250b){const _b69=VIEWS.p250b;VIEWS.p250b=f
   if(typeof drawTop==='function'){const _dt=drawTop;drawTop=function(){const r=_dt.apply(this,arguments);chip();return r;};try{window.drawTop=drawTop;}catch(e){}}
   if(typeof go==='function'){const _g=go;go=function(){const r=_g.apply(this,arguments);try{chip();}catch(e){}return r;};try{window.go=go;}catch(e){}}
 })();
+
+/* 73. After the blind test of 21.8 (9 nov): Take it never buys troops that cannot be ready in time and knows when a
+   land is already yours; Attack now in the attack panel and on the Nexus row attacks at once; every button in the
+   attack panel closes it; auto-buy shows in the money forecast and in Events */
+{let inT=0;const p73tr=()=>/Romaterra/i.test(document.title)?'legionaries':'troops';const qLoad=c=>(c.mq||[]).reduce((a,q)=>a+(q.count||0),0);
+ const need=(c,r)=>{let atk=0;try{atk=power(c,'atk');}catch(e){}if(r.owner==null){try{return Math.max(0,regionDef(r)*1.3-atk);}catch(e){return 0;}}
+   try{const o=typeof p14Odds==='function'?p14Odds(c,r,Object.assign({},c.units||{})):null;if(o&&!o.blind&&o.ratio>0)return o.ratio>=1.3?0:Math.max(1,o.need||0);}catch(e){}try{return Math.max(0,regionDef(r)*1.3-atk);}catch(e){return 0;}};
+ const sendNow=(c,r)=>{let atk=1;try{atk=Math.max(1,power(c,'atk'));}catch(e){}let f=1;try{if(r.owner==null)f=Math.min(1,regionDef(r)*1.7/atk);}catch(e){}
+   const com={};for(const k in (c.units||{})){const n=Math.ceil((c.units[k]||0)*f);if(n>0)com[k]=n;}if(!Object.keys(com).length)return {ok:false,error:'No '+p73tr()+' at home. Train some first.'};return cmdOp(c,r.id,com,{});};
+ window.p73Attack=function(rid){const c=ME();const r=_rgId(+rid);if(!c||!r)return;closeNx();if(r.owner===c.id){toast(r.name+' is already yours.','good');return;}
+   try{const o=typeof p14Odds==='function'?p14Odds(c,r,Object.assign({},c.units||{})):null;if(o&&!o.blind&&o.ratio>0&&o.ratio<1){toast('The battle maths give you only '+o.ratio.toFixed(2)+' : 1 at '+r.name+', ground and their army included. You would likely lose: nothing was sent. Bring more troops or check the Calculator.','warn');return;}}catch(e){}
+   const res=sendNow(c,r);if(res&&res.ok){toast('⚔ Your army marches on '+r.name+'.','good');try{sfx('ok');}catch(e){}}else toast((res&&res.error)||'Your army cannot march right now.','warn');try{save();go(view);}catch(e){}};
+ if(typeof window.p186Take==='function'){const _t=window.p186Take;window.p186Take=function(rid){try{const c=ME();const r=_rgId(+rid);if(c&&r){
+   if(r.owner===c.id){toast(r.name+' is already yours.','good');try{go(view);}catch(e){}return;}
+   if(c._p186go&&c._p186go.rid===r.id){toast('Your troops already train for '+r.name+' and march as soon as they are ready.','good');return;}
+   const gap=need(c,r);const m=c.res.money||0;
+   if(gap>0&&m>1e5&&typeof p14RecOrder==='function'){const o=p14RecOrder(c,m*0.5);const g=o?power(c,'atk',o):0;
+     if(g>0){const per=g/(m*0.5);const ord=p14RecOrder(c,Math.min(m*0.9,gap/per*1.05))||{};let n=0;for(const k in ord)n+=ord[k]||0;
+       const cap=Math.max(1,trainCap(c));const turns=Math.ceil((n+qLoad(c))/cap);let left=99;try{left=endgameLeft();}catch(e){}let tv=0;try{tv=acsTravel(c,r)||0;}catch(e){}
+       const win=Math.max(1,Math.min(12,left-tv));
+       if(turns>win){toast('Taking '+r.name+' needs about +'+F(gap)+' attack: about '+F(n)+' '+p73tr()+'. Your country trains '+F(cap)+' a turn, so that takes about '+turns+' turns'+(left-tv<12?', more than the season has left':'')+'. Nothing was bought. Build more '+E(typeof BN==='function'?BN('base'):'Military Bases')+' first, or attack with your alliance.','warn');
+         try{openTab('p250b','In progress');}catch(e){}return;}}}}}catch(e){}return _t.apply(this,arguments);};}
+ // the attack panel: Attack now attacks, and any choice closes the panel (other click handlers stop the click before the panel sees it)
+ window.addEventListener('click',e=>{const t=e.target;if(!t||!t.closest)return;const bg=t.closest('.p287bg');const row=t.closest('.p281');if(!bg&&!row)return;
+   const tk=t.closest('button[data-p250="take"]');if(tk){e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();p73Attack(tk.dataset.id);return;}
+   if(bg&&t.closest('button,a')&&!t.closest('.p287x'))setTimeout(closeNx,0);},true);
+ // auto-buy: the money it will spend is in the forecast, and what it bought is in Events
+ if(typeof projection==='function'){const _pj73=projection;projection=function(c){const pj=_pj73.apply(this,arguments);try{if(!inT&&c&&c.isAI===false&&c._p18auto&&pj&&pj.net){let cost=0;
+     ['food','energy'].forEach(k=>{const net=pj.net[k]||0;if(net>=0||(c.res[k]||0)>-net*6)return;const pr=(G.prices&&G.prices[k])||1;const q=Math.floor(Math.min(-net*10,capOf(c,k)-(c.res[k]||0),(c.res.money||0)*0.2/Math.max(1,pr)));if(q>0){const bp=(typeof BASEP!=='undefined'&&BASEP[k])||pr;const heat=Math.max(0,Math.min(1,(pr/bp-1)/2));const vol=q>-net*8?Math.max(0,Math.min(1,q/60000)):0;cost+=q*pr*(1+Math.max(0.05,Math.min(0.45,0.05+heat*0.30+vol*0.10)));}});
+     if(cost>0){pj.net.money=(pj.net.money||0)-cost;if(pj.cons)pj.cons.money=(pj.cons.money||0)+cost;pj._p73auto=cost;}}}catch(e){}return pj;};try{window.projection=projection;}catch(e){}}
+ if(typeof cmdMarket==='function'){const _cm73=cmdMarket;cmdMarket=function(c,k,side,q){const m0=c&&c.res?c.res.money||0:0;const r=_cm73.apply(this,arguments);
+   try{if(inT&&r&&r.ok&&c&&c.isAI===false&&side==='buy'){const a=(c._p73ab=c._p73ab||{});a[k]=(a[k]||0)+(+q||0);a.$=(a.$||0)+Math.max(0,m0-(c.res.money||0));}}catch(e){}return r;};try{window.cmdMarket=cmdMarket;}catch(e){}}
+ if(typeof runTick==='function'){const _rt73=runTick;runTick=function(){inT++;let out;try{out=_rt73.apply(this,arguments);}finally{inT--;}
+   try{const c=ME();if(c&&c._p73ab){const a=c._p73ab;c._p73ab=null;const parts=Object.keys(a).filter(k=>k!=='$').map(k=>F(a[k])+' '+((RMETA[k]&&RMETA[k].l)||k).toLowerCase());
+     if(parts.length)sitrep(c,'economy','🛒 Auto-buy bought '+parts.join(' and ')+' for '+(((RMETA.money||{}).i)||'')+F(a.$)+' before it ran out. Switch it off under Market › Automatic.',{go:'p250m'});}}catch(e){}return out;};try{window.runTick=runTick;}catch(e){}}
+}
 
 }catch(e){try{console.error('p278',e);}catch(_){}}})();
 </script>
