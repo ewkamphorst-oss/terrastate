@@ -13521,7 +13521,7 @@ function p173Treasury(){try{(G.clans||[]).forEach(cl=>{if(!cl||(cl.id+G.tick)%P1
 // 3. Strength of an alliance strike: what its AI members could bring together (the 5 strongest, about 45% of each army).
 function p173ClanPunch(cl,sh){sh=sh||0.45;const L=clanMembers(cl).filter(m=>m&&m.isAI&&!m.retired&&regionsOf(m).length&&!p173Threat(m)).map(m=>power(m,'atk')*sh).sort((a,b)=>b-a).slice(0,ACS_MAX_FLEETS);return L.reduce((a,b)=>a+b,0);}
 function p173FarTarget(o,lc,punch){const home=regionsOf(o)[0];if(!home||!lc)return null;let best=null,bd=1e18;
-  regionsOf(lc).forEach(r=>{if(r.nexus||!p17Far(lc,r))return;try{if(napActive(o,lc.id))return;if(typeof newbieProtected==='function'&&newbieProtected(lc))return;}catch(e){return;}
+  regionsOf(lc).forEach(r=>{if(r.nexus||(!p17Far(lc,r)&&!(lc.isAI===false&&typeof window.p74Leader==='function'&&window.p74Leader(lc))))return;try{if(napActive(o,lc.id))return;if(typeof newbieProtected==='function'&&newbieProtected(lc))return;}catch(e){return;}
     const tv=travelFor(o,home,r);if(tv>ACS_MAX_WINDOW-1)return;const d=regionDef(r);if(d>punch/0.7)return;if(d+tv*400<bd){bd=d+tv*400;best={r,tv};}});return best;}
 function p173HuntOk(lc){if(!lc||lc.retired)return false;if(lc.isAI===false&&typeof SOLO_DIFF!=='undefined'&&SOLO_DIFF&&(SOLO_DIFF.humBias||0)<0)return false;return true;} // Recruit: nobody hunts the human
 // the front-runner draws every alliance's strikes, when the alliance together can actually break a far region
@@ -25970,7 +25970,7 @@ if(/Romaterra/i.test(document.title)){
    for 3 turns). An escort costs fuel and makes that much rarer. You can raid enemy convoys too, from your Shipyard. */
 if(/Ironfront/i.test(document.title)&&window.__p273&&typeof VIEWS!=='undefined'){
   const P3=window.__p273;const ESC=1500,RAID_FUEL=3000;const FN=(()=>{try{return (RMETA.fuel&&RMETA.fuel.l||'fuel').toLowerCase();}catch(e){return 'fuel';}})();
-  const hostile=(a,b)=>{try{if(!a||!b||a.id===b.id)return false;if(a.clan!=null&&b.clan!=null&&typeof clanAtWar==='function'&&clanAtWar(a.clan,b.clan))return true;if(b.isAI&&a.isAI===false&&b.vsYou&&(b.vsYou.threat||0)>40)return true;if(a.isAI&&b.isAI===false&&a.vsYou&&(a.vsYou.threat||0)>40)return true;}catch(e){}return false;};
+  const hostile=(a,b)=>{try{if(!a||!b||a.id===b.id)return false;if(a.clan!=null&&b.clan!=null&&typeof clanAtWar==='function'&&clanAtWar(a.clan,b.clan))return true;const mo=(x,y)=>(x.fleets||[]).some(f=>{const r=_rgId(f.target);return r&&r.owner===y.id&&f.status!=='garrison'&&!f.returning;});if(b.isAI&&a.isAI===false&&(mo(b,a)||mo(a,b)))return true;if(a.isAI&&b.isAI===false&&(mo(a,b)||mo(b,a)))return true;}catch(e){}return false;};
   const R=c=>(c&&c._p273r)||[];const cut=x=>(x.cutUntil||0)>G.tick;
   const foes=c=>G.countries.filter(o=>o&&!o.retired&&o.id!==c.id&&regionsOf(o).length&&hostile(c,o));
   const val=(c,x)=>{try{return P3.routeValue(c,x);}catch(e){return {money:0,inf:0};}};
@@ -25979,7 +25979,7 @@ if(/Ironfront/i.test(document.title)&&window.__p273&&typeof VIEWS!=='undefined')
       if(cut(x)){const v=val(c,x);p.prod.money=(p.prod.money||0)-v.money;p.prod.influence=(p.prod.influence||0)-v.inf;if(p.net){p.net.money=(p.net.money||0)-v.money;p.net.influence=(p.net.influence||0)-v.inf;}}
       if(x.esc){if(p.net)p.net.fuel=(p.net.fuel||0)-ESC;}});}}catch(e){}return p;};try{window.projection=projection;}catch(e){}}
   if(typeof runTick==='function'){const _rt=runTick;runTick=function(){const out=_rt.apply(this,arguments);try{const me=ME();if(me&&!me.retired&&R(me).length){
-      const F=foes(me);const subs=F.filter(o=>bTotal(o,'shipyard')>0||(o.units&&Object.keys(o.units).length));
+      const F=foes(me);const subs=F.filter(o=>bTotal(o,'shipyard')>0);
       R(me).forEach(x=>{if(x.esc){if((me.res.fuel||0)<ESC){x.esc=false;try{sitrep(me,'trade','Escort to '+((G.countries[x.to]||{}).name||'?')+' stopped: no '+FN+'.',{go:'p250b',sev:1});}catch(e){}}}
         if(!subs.length||cut(x))return;const risk=x.esc?0.015:0.06;if(Math.random()<risk){x.cutUntil=G.tick+3;const by=subs[Math.floor(Math.random()*subs.length)];
           try{sitrep(me,'trade','🚢 U-boats of '+by.name+' sank your convoy to '+((G.countries[x.to]||{}).name||'?')+': the route pays nothing for 3 turns.'+(x.esc?'':' An escort makes this much rarer.'),{go:'p250b',sev:2});}catch(e){}}});
@@ -26018,6 +26018,7 @@ if(/Ironfront/i.test(document.title)&&window.__p273&&typeof VIEWS!=='undefined')
     if(!r||r.owner!==c.id){c._p55=null;try{sitrep(c,'military','🚩 Rally point stopped: '+(r?r.name:'that land')+' is no longer yours.',{go:'p250a',sev:1});}catch(e){}return;}
     const now=units(c);const base=R.base||{};for(const k in base)if((now[k]||0)<base[k])base[k]=now[k]||0;
     if(G.tick-(R.at||0)<EVERY){R.base=base;return;}
+    if(c._p186go){R.base=base;return;} // troops trained for Take it march there first
     const tot=Object.values(now).reduce((a,b)=>a+(b||0),0);const com={};let n=0;
     const away=(c.fleets||[]).reduce((a,f)=>a+Object.values(f.units||{}).reduce((x,y)=>x+(y||0),0),0);const room=Math.max(0,tot-KEEP*(tot+away));const f=tot>0?Math.min(1-KEEP,room/tot):0;
     for(const k in now){const add=Math.max(0,(now[k]||0)-(base[k]||0));const max=Math.floor((now[k]||0)*f);const v=Math.min(add,max);if(v>0){com[k]=v;n+=v;}}
@@ -26208,7 +26209,7 @@ if(typeof VIEWS!=='undefined'&&VIEWS.p250o){const _o63=VIEWS.p250o;VIEWS.p250o=f
     const box=[...v.querySelectorAll('.p250box')].find(b=>{const h=b.querySelector('.p250h');return h&&/^Buildings/.test(h.textContent.trim());});if(!box)return r;
     const rid=window._p250rid!=null?window._p250rid:(regionsOf(c)[0]||{}).id;const T=c._p66tpl;
     const d=document.createElement('div');d.className='p250row p66';
-    d.innerHTML='<div class="p250m"><div class="p250t">Plan for new lands'+(T?': '+T.map(k=>E(nm(k))).join(', '):'')+'</div><div class="p250s">'+(T?'every land you take starts these buildings the turn it joins, as far as money and room allow then':'copy the buildings of this land, and every land you take starts them by itself')+'</div></div><div class="p250b"><button type="button" class="btn sm p250btn'+(T?' ghost':' p250main')+'" data-p66="'+rid+'">Copy this land</button>'+(T?'<button type="button" class="btn sm ghost p250btn" data-p66="off">Off</button>':'')+'</div>';
+    d.innerHTML='<div class="p250m"><div class="p250t">Plan for new lands'+(T?': '+T.map(k=>E(nm(k))).join(', '):'')+'</div><div class="p250s">'+(T?'every land you take starts these buildings by itself, and keeps trying for 10 turns when money or room is short':'copy the buildings of this land, and every land you take starts them by itself')+'</div></div><div class="p250b"><button type="button" class="btn sm p250btn'+(T?' ghost':' p250main')+'" data-p66="'+rid+'">Copy this land</button>'+(T?'<button type="button" class="btn sm ghost p250btn" data-p66="off">Off</button>':'')+'</div>';
     const h=box.querySelector('.p250h');if(h)h.after(d);else box.prepend(d);}catch(e){}return r;};}
   document.addEventListener('click',e=>{const b=e.target&&e.target.closest&&e.target.closest('[data-p66]');if(!b)return;e.preventDefault();e.stopPropagation();const c=ME();if(!c)return;
     const r=b.dataset.p66==='off'?p66off(c):p66set(c,+b.dataset.p66);try{if(r.ok)toast(r.data.msg,'good');else toast(r.error,'bad');save();}catch(x){}try{go(view);}catch(x){}},true);
@@ -26321,13 +26322,70 @@ if(typeof VIEWS!=='undefined'&&VIEWS.p250b){const _b69=VIEWS.p250b;VIEWS.p250b=f
    if(bg&&t.closest('button,a')&&!t.closest('.p287x'))setTimeout(closeNx,0);},true);
  // auto-buy: the money it will spend is in the forecast, and what it bought is in Events
  if(typeof projection==='function'){const _pj73=projection;projection=function(c){const pj=_pj73.apply(this,arguments);try{if(!inT&&c&&c.isAI===false&&c._p18auto&&pj&&pj.net){let cost=0;
-     ['food','energy'].forEach(k=>{const net=pj.net[k]||0;if(net>=0||(c.res[k]||0)>-net*6)return;const pr=(G.prices&&G.prices[k])||1;const q=Math.floor(Math.min(-net*10,capOf(c,k)-(c.res[k]||0),(c.res.money||0)*0.2/Math.max(1,pr)));if(q>0){const bp=(typeof BASEP!=='undefined'&&BASEP[k])||pr;const heat=Math.max(0,Math.min(1,(pr/bp-1)/2));const vol=q>-net*8?Math.max(0,Math.min(1,q/60000)):0;cost+=q*pr*(1+Math.max(0.05,Math.min(0.45,0.05+heat*0.30+vol*0.10)));}});
+     const src=(c._pj&&c._pj.net)?c._pj.net:pj.net;['food','energy'].forEach(k=>{const net=src[k]||0;if(net>=0||(c.res[k]||0)>-net*6)return;const pr=(G.prices&&G.prices[k])||1;const q=Math.floor(Math.min(-net*10,capOf(c,k)-(c.res[k]||0),(c.res.money||0)*0.2/Math.max(1,pr)));if(q>0){const bp=(typeof BASEP!=='undefined'&&BASEP[k])||pr;const heat=Math.max(0,Math.min(1,(pr/bp-1)/2));const vol=q>-net*8?Math.max(0,Math.min(1,q/60000)):0;cost+=q*pr*(1+Math.max(0.05,Math.min(0.45,0.05+heat*0.30+vol*0.10)));}});
      if(cost>0){pj.net.money=(pj.net.money||0)-cost;if(pj.cons)pj.cons.money=(pj.cons.money||0)+cost;pj._p73auto=cost;}}}catch(e){}return pj;};try{window.projection=projection;}catch(e){}}
  if(typeof cmdMarket==='function'){const _cm73=cmdMarket;cmdMarket=function(c,k,side,q){const m0=c&&c.res?c.res.money||0:0;const r=_cm73.apply(this,arguments);
    try{if(inT&&r&&r.ok&&c&&c.isAI===false&&side==='buy'){const a=(c._p73ab=c._p73ab||{});a[k]=(a[k]||0)+(+q||0);a.$=(a.$||0)+Math.max(0,m0-(c.res.money||0));}}catch(e){}return r;};try{window.cmdMarket=cmdMarket;}catch(e){}}
  if(typeof runTick==='function'){const _rt73=runTick;runTick=function(){inT++;let out;try{out=_rt73.apply(this,arguments);}finally{inT--;}
    try{const c=ME();if(c&&c._p73ab){const a=c._p73ab;c._p73ab=null;const parts=Object.keys(a).filter(k=>k!=='$').map(k=>F(a[k])+' '+((RMETA[k]&&RMETA[k].l)||k).toLowerCase());
      if(parts.length)sitrep(c,'economy','🛒 Auto-buy bought '+parts.join(' and ')+' for '+(((RMETA.money||{}).i)||'')+F(a.$)+' before it ran out. Switch it off under Market › Automatic.',{go:'p250m'});}}catch(e){}return out;};try{window.runTick=runTick;}catch(e){}}
+}
+
+/* 74. 21.8.2, balance and loose ends: a plan for new lands keeps trying for 10 turns; many battle reports at one place fold;
+   a nation that leads the world gets visited (computer nations near it strike its weakest land more often and harder,
+   only when a real battle calculation says they win); and money that piles up can hire mercenaries: troops at once,
+   outside the training queue, at three times the price, once every 10 turns. */
+{const HUM=()=>{try{if(typeof __mpHumanList==='function')return __mpHumanList();}catch(e){}const c=ME();return c?[c]:[];};
+ const nm74=k=>{try{return typeof BN==='function'?BN(k):((BUILD.find(x=>x.k===k)||{}).n||k);}catch(e){return k;}};
+ // a. the plan for new lands keeps trying
+ function planTick(c){if(!c||!c._p66tpl||c.retired)return;const J=c._p74join||(c._p74join={});const mine=regionsOf(c);const ids=new Set(mine.map(r=>r.id));
+   for(const k in J)if(!ids.has(+k)||G.tick-J[k]>10)delete J[k];
+   if(c._p74seen){mine.forEach(r=>{if(!c._p74seen[r.id])J[r.id]=G.tick;});}c._p74seen={};mine.forEach(r=>{c._p74seen[r.id]=1;});
+   let started=[];for(const k in J){if(G.tick===J[k])continue;const rid=+k;const r=_rgId(rid);if(!r)continue;
+     c._p66tpl.forEach(b=>{const has=(c.buildings||[]).some(x=>x&&x.rid===rid&&x.k===b)||(c.queue||[]).some(q=>q&&q.rid===rid&&q.k===b);if(has)return;let res=null;try{res=cmdBuild(c,rid,b);}catch(e){}if(res&&res.ok)started.push(nm74(b)+' on '+r.name);});}
+   if(started.length){try{sitrep(c,'eco','🏗 Plan for new lands: '+started.slice(0,4).join(', ')+(started.length>4?' and '+(started.length-4)+' more':'')+' started now.',{go:'p250b'});}catch(e){}}}
+ // b. a nation that leads gets visited
+ const LEAD={TOP:3,GAP:6,SHARE:0.75,NEED:1.15,MAXT:8,WAVE:2};
+ window.p74Leader=h=>!!(h&&h._p74top!=null&&G.tick-h._p74top>=10);
+ function leadTick(){if(G.tick%2)return;HUM().forEach(h=>{try{if(!h||h.retired||h.isAI!==false)return;let pos=999;try{pos=rankTitle(h.id).pos;}catch(e){}if(pos>LEAD.TOP){h._p74top=null;return;}if(h._p74top==null)h._p74top=G.tick;
+   if(G.tick-(h._p74at==null?-99:h._p74at)<LEAD.GAP)return;if(typeof newbieProtected==='function'&&newbieProtected(h))return;if(typeof shieldActive==='function'&&shieldActive(h))return;
+   const regs=regionsOf(h);if(regs.length<3)return;const used=new Set(),hit=new Set();let sent=0;
+   const cands=G.countries.filter(ai=>ai&&ai.isAI&&!ai.retired&&!(h.clan!=null&&ai.clan===h.clan)&&((ai.pers&&ai.pers.aggression)!=null?ai.pers.aggression:50)>=45&&fleetSize(ai.units||{})>=40);
+   for(let w=0;w<LEAD.WAVE;w++){let best=null;
+     for(const ai of cands){if(used.has(ai.id))continue;try{if(typeof napActive==='function'&&(napActive(ai,h.id)||napActive(h,ai.id)))continue;if((incomingTo(ai.id)||[]).length)continue;}catch(e){}
+       const com={};for(const k in ai.units){const n=Math.floor((ai.units[k]||0)*LEAD.SHARE);if(n>0)com[k]=n;}if(!fleetSize(com))continue;
+       for(const r of regs){if(hit.has(r.id))continue;try{if(typeof p219Block==='function'&&p219Block(ai,r))continue;const hm=homeFor(ai,r);if(!hm)continue;const t=travelFor(ai,hm,r);if(t>LEAD.MAXT||(best&&t>=best.t))continue;
+         const B=battleCalc(ai,com,r,h,defenderPool(r,h).units,{});if(!B||!B.wouldTake||!(B.ratio>=LEAD.NEED))continue;best={ai,r,com,t};}catch(e){}}}
+     if(!best)break;let res=null;try{res=cmdOp(best.ai,best.r.id,best.com,{_p217:1});}catch(e){res={ok:false,error:String(e)};}used.add(best.ai.id);if(!(res&&res.ok))h._p74why=(res&&res.error)||'?';
+     if(res&&res.ok){sent++;hit.add(best.r.id);try{sitrep(h,'war','⚠ You lead the world, and '+best.ai.name+' wants a piece of it: an army marches on '+best.r.name+'.',{coord:best.r.coord,sev:2,go:'p250a'});}catch(e){}}}
+   if(sent)h._p74at=G.tick;}catch(e){}});}
+ if(typeof runTick==='function'){const _rt74=runTick;runTick=function(){const out=_rt74.apply(this,arguments);try{HUM().forEach(planTick);}catch(e){}try{leadTick();}catch(e){}return out;};try{window.runTick=runTick;}catch(e){}}
+ // c. mercenaries: money that piles up becomes troops at once
+ const MERC={MULT:3,GAP:10,MAXF:0.25};
+ const mercOffer=c=>{try{const m=c.res.money||0;if(m<1e6||typeof p14RecOrder!=='function')return null;let army=fleetSize(c.units||{});(c.fleets||[]).forEach(f=>{army+=fleetSize(f.units||{});});
+   const cap=Math.max(trainCap(c)*5,Math.floor(army*MERC.MAXF));let budget=m*0.5/MERC.MULT;let o=p14RecOrder(c,budget);if(!o)return null;let n=0;for(const k in o)n+=o[k];
+   if(n>cap){budget*=cap/n;o=p14RecOrder(c,budget);if(!o)return null;n=0;for(const k in o)n+=o[k];}
+   let cost=0;for(const k in o){const u=UBYK[k];cost+=(u&&u.cost&&u.cost.money||0)*o[k];}cost=Math.round(cost*MERC.MULT);return n>0&&cost>0&&cost<=m?{o,n,cost}:null;}catch(e){return null;}};
+ window.cmdP74Hire=function(c){if(!c)return err('No nation');if(G.tick-(c._p74hire==null?-99:c._p74hire)<MERC.GAP)return err('Mercenaries come again in '+(MERC.GAP-(G.tick-c._p74hire))+' turns');
+   const of=mercOffer(c);if(!of)return err('Not enough money for mercenaries');c.res.money-=of.cost;c.units=c.units||{};for(const k in of.o)c.units[k]=(c.units[k]||0)+of.o[k];c._p74hire=G.tick;
+   return ok({msg:F(of.n)+' mercenaries joined your army at home for '+(((RMETA.money||{}).i)||'')+F(of.cost)+'.'});};
+ if(typeof VIEWS!=='undefined'&&VIEWS.p250b){const _b74=VIEWS.p250b;VIEWS.p250b=function(v){const r=_b74.apply(this,arguments);try{const c=ME();if(!c||v.querySelector('.p74m'))return r;
+   const box=[...v.querySelectorAll('.p250box')].find(b=>{const h=b.querySelector('.p250h');return h&&/^Troops/.test(h.textContent.trim());});if(!box)return r;
+   const of=mercOffer(c);const wait=c._p74hire!=null&&G.tick-c._p74hire<MERC.GAP?MERC.GAP-(G.tick-c._p74hire):0;if(!of&&!wait)return r;const R74=/Romaterra/i.test(document.title);
+   const d=document.createElement('div');d.className='p250row p74m';
+   d.innerHTML='<div class="p250m"><div class="p250t">'+(R74?'Hire auxiliaries':'Hire mercenaries')+(of&&!wait?': +'+F(of.n)+' now':'')+'</div><div class="p250s">'+(wait?'they come again in '+T(wait):'troops at once, outside the training queue, for three times the price ('+(((RMETA.money||{}).i)||'')+F(of.cost)+'), once every '+MERC.GAP+' turns')+'</div></div><div class="p250b">'+(wait?'':'<button type="button" class="btn sm p250btn" data-p74hire="1">Hire</button>')+'</div>';
+   const h=box.querySelector('.p250h');if(h)h.after(d);else box.prepend(d);}catch(e){}return r;};}
+ document.addEventListener('click',e=>{const b=e.target&&e.target.closest&&e.target.closest('[data-p74hire]');if(!b)return;e.preventDefault();e.stopPropagation();const c=ME();if(!c)return;
+   Promise.resolve(cmdP74Hire(c)).then(r=>{try{if(r&&r.ok)toast((r.data&&r.data.msg)||'Sent.','good');else toast((r&&r.error)||'Not possible right now.','bad');save();drawTop();}catch(x){}try{go(view);}catch(x){}});},true);
+ // e. the ARMY and COMMAND tiles in the top bar open their own page, not also the resource sheet over END TURN
+ window.addEventListener('click',e=>{try{const t=e.target&&e.target.closest&&e.target.closest('#strip > *');if(!t)return;const tx=(t.innerText||'').toUpperCase();if(!/\bARMY\b|\bCOMMAND\b|\bLEGIONS\b/.test(tx))return;
+   setTimeout(()=>{const ms=document.getElementById('ressheet');if(ms)ms.classList.remove('on');},0);}catch(x){}},true);
+ // d. many battle reports at one place fold after the first two
+ function foldReports(){try{const v=document.getElementById('view');if(!v)return;const D=[...v.querySelectorAll('details.brep')].filter(d=>!d.closest('.p74fold'));const by={};D.forEach(d=>{const k=d.dataset.bc;if(!k)return;(by[k]=by[k]||[]).push(d);});
+   Object.keys(by).forEach(k=>{const L=by[k];if(L.length<=3)return;const fold=document.createElement('details');fold.className='p278more p74fold';const rg=G.regions.find(q=>q.coord===k);fold.innerHTML='<summary>'+(L.length-2)+' more battle reports at '+E(rg?rg.name+' ('+k+')':k)+'</summary>';
+     const anchor=L[1].nextElementSibling&&!L[1].nextElementSibling.matches('details')?L[1].nextElementSibling:L[1];anchor.after(fold);
+     L.slice(2).forEach(d=>{const nx=d.nextElementSibling;fold.appendChild(d);if(nx&&!nx.matches('details')&&nx.querySelector('[data-copyrep],[data-share]'))fold.appendChild(nx);});});}catch(e){}}
+ if(typeof go==='function'){const _g74=go;go=function(){const r=_g74.apply(this,arguments);try{foldReports();}catch(e){}return r;};try{window.go=go;}catch(e){}}
 }
 
 }catch(e){try{console.error('p278',e);}catch(_){}}})();
