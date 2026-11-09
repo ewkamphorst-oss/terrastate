@@ -8522,7 +8522,7 @@ function renderSetup(scenarioKey){const SC=scenarioKey?scenarioOf(scenarioKey):n
   const rec=[];for(const r of ranked){if(rec.length>=3)break;if(!rec.some(x=>x.arch===r.arch))rec.push(r);}
   for(const r of ranked){if(rec.length>=3)break;if(!rec.includes(r))rec.push(r);}
   // Wizard state (preserved across steps)
-  const st={name:'Federation of Northland',tag:'FNL',ally:'',sel:null,gov:'federation',doc:'welfare',preset:'defender',step:1,showAll:false,diff:'veteran',len:'standard'};try{if(!playerLegacyHistory().length){st.diff='recruit';st.len='sprint';}}catch(e){}
+  const st={name:'Federation of Northland',tag:'FNL',ally:'',sel:null,gov:'federation',doc:'welfare',preset:'defender',step:1,showAll:false,diff:'veteran',len:'standard'};try{if(!playerLegacyHistory().length){st.diff='veteran';st.len='sprint';}}catch(e){}
   const host=h(`<div class="setup card">
     <div class="row between" style="margin-bottom:8px"><div class="brand" style="margin:0"><span class="g">🌍</span><div><h1>TERRASTATE</h1><div class="s">${SC?'Scenario: '+SC.ic+' '+esc(SC.n):'New World Order · Alt-history 2026'}</div></div></div><button class="btn ghost sm" id="lback">← Home</button></div>
     <div class="row" id="wizsteps" style="gap:6px;margin-bottom:12px"></div>
@@ -26323,7 +26323,8 @@ if(typeof VIEWS!=='undefined'&&VIEWS.p250b){const _b69=VIEWS.p250b;VIEWS.p250b=f
    if(bg&&t.closest('button,a')&&!t.closest('.p287x'))setTimeout(closeNx,0);},true);
  // auto-buy: the money it will spend is in the forecast, and what it bought is in Events
  if(typeof projection==='function'){const _pj73=projection;projection=function(c){const pj=_pj73.apply(this,arguments);try{if(!inT&&c&&c.isAI===false&&c._p18auto&&pj&&pj.net){let cost=0;
-     const src=(c._pj&&c._pj.net)?c._pj.net:pj.net;['food','energy'].forEach(k=>{const net=src[k]||0;if(net>=0||(c.res[k]||0)>-net*6)return;const pr=(G.prices&&G.prices[k])||1;const q=Math.floor(Math.min(-net*10,capOf(c,k)-(c.res[k]||0),(c.res.money||0)*0.2/Math.max(1,pr)));if(q>0){const bp=(typeof BASEP!=='undefined'&&BASEP[k])||pr;const heat=Math.max(0,Math.min(1,(pr/bp-1)/2));const vol=q>-net*8?Math.max(0,Math.min(1,q/60000)):0;cost+=q*pr*(1+Math.max(0.05,Math.min(0.45,0.05+heat*0.30+vol*0.10)));}});
+     const src=(c._pj&&c._pj.net)?c._pj.net:pj.net;['food','energy'].forEach(k=>{const net=Math.min(src[k]||0,pj.net[k]||0);if(net>=0)return;const after=Math.max(0,(c.res[k]||0)+net);if(after>-net*6)return; // auto-buy looks after this turn's use
+     const pr=(G.prices&&G.prices[k])||1;const q=Math.floor(Math.min(-net*10,capOf(c,k)-after,Math.max(0,(c.res.money||0)+((pj.net.money)||0))*0.2/Math.max(1,pr)));if(q>0){pj.net[k]=(pj.net[k]||0)+q;const bp=(typeof BASEP!=='undefined'&&BASEP[k])||pr;const heat=Math.max(0,Math.min(1,(pr/bp-1)/2));const vol=q>-net*8?Math.max(0,Math.min(1,q/60000)):0;cost+=q*pr*(1+Math.max(0.05,Math.min(0.45,0.05+heat*0.30+vol*0.10)));}});
      if(cost>0){pj.net.money=(pj.net.money||0)-cost;if(pj.cons)pj.cons.money=(pj.cons.money||0)+cost;pj._p73auto=cost;}}}catch(e){}return pj;};try{window.projection=projection;}catch(e){}}
  if(typeof cmdMarket==='function'){const _cm73=cmdMarket;cmdMarket=function(c,k,side,q){const m0=c&&c.res?c.res.money||0:0;const r=_cm73.apply(this,arguments);
    try{if(inT&&r&&r.ok&&c&&c.isAI===false&&side==='buy'){const a=(c._p73ab=c._p73ab||{});a[k]=(a[k]||0)+(+q||0);a.$=(a.$||0)+Math.max(0,m0-(c.res.money||0));}}catch(e){}return r;};try{window.cmdMarket=cmdMarket;}catch(e){}}
@@ -26455,6 +26456,103 @@ if(typeof VIEWS!=='undefined'&&VIEWS.p250b){const _b69=VIEWS.p250b;VIEWS.p250b=f
     if(box&&t.closest('button[data-p250],button[data-p278calc],button[data-p278xy],button[data-p292mark],button[data-p278acs]')){const row=t.closest('.p250row');const m=row&&row.querySelector('.mono');if(m)remember(c,m.textContent.trim());}},true);
 })();
 
+/* 76. 21.8.5, after Wim's design talk: every coordinate opens the same choice (Attack, Scout, Calculator, Watch, Sector,
+   Map), a watch list of lands you follow turn by turn, and a sector overview you can sort. */
+(function(){
+  const CSS='.p76t{width:100%;border-collapse:collapse;font-size:13px}.p76t th{text-align:left;font-weight:600;color:var(--muted);padding:4px 6px;cursor:pointer;white-space:nowrap;border-bottom:1px solid var(--border,#334155)}.p76t td{padding:5px 6px;border-bottom:1px solid var(--border,#334155);vertical-align:middle}.p76t tr.me td{background:rgba(55,217,169,.08)}'+
+    '.p76wrap{overflow-x:auto}.p76up{color:var(--good,#37d9a9)}.p76dn{color:var(--bad,#e5484d)}.p76bg{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:9000;display:flex;align-items:flex-start;justify-content:center;padding:40px 10px;overflow:auto}'+
+    '.p76p{background:var(--panel,#0f172a);border:1px solid var(--border2,#475569);border-radius:12px;max-width:900px;width:100%;padding:14px}.p76h{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:8px}.p76x{background:none;border:0;color:var(--text);font-size:18px;cursor:pointer;min-width:36px;min-height:36px}';
+  try{const st=document.createElement('style');st.textContent=CSS;document.head.appendChild(st);}catch(e){}
+  const MAXW=12,HIST=12;
+  const W=c=>(c._p76w=c._p76w||[]);
+  const scoreOf=o=>{try{return Math.round(scores(o).overall);}catch(e){return 0;}};
+  const knownDef=(c,r)=>{try{if(r.owner===c.id||r.owner==null)return Math.round(regionDef(r));const it=typeof regionIntel==='function'?regionIntel(c,r.id):null;return it?Math.round(regionDef(r)):null;}catch(e){return null;}};
+  function snap(c,x){const r=_rgId(x.rid);if(!r)return;const o=r.owner!=null?G.countries[r.owner]:null;x.h=x.h||[];const last=x.h[x.h.length-1];
+    const e={t:G.tick,own:r.owner,sc:o?scoreOf(o):0,def:knownDef(c,r)};if(last&&last.t===G.tick)x.h[x.h.length-1]=e;else x.h.push(e);if(x.h.length>HIST)x.h=x.h.slice(-HIST);}
+  window.p76watch=function(c,rid){if(!c)return err('No nation');const r=_rgId(+rid);if(!r)return err('No such land');if(r.owner===c.id)return err('That land is yours');const L=W(c);
+    const i=L.findIndex(x=>x.rid===r.id);if(i>=0){L.splice(i,1);return ok({msg:r.name+' is off your watch list.'});}if(L.length>=MAXW)return err('Your watch list is full ('+MAXW+'). Remove a land first.');
+    const x={rid:r.id,at:G.tick,h:[]};snap(c,x);L.push(x);return ok({msg:r.name+' is on your watch list (Army › Targets).'});};
+  window.cmdP76Watch=window.p76watch;
+  const watched=(c,rid)=>W(c).some(x=>x.rid===rid);
+  if(typeof runTick==='function'){const _rt=runTick;runTick=function(){const out=_rt.apply(this,arguments);try{const L=(typeof __mpHumanList==='function'?__mpHumanList():[ME()]).filter(Boolean);
+    L.forEach(c=>{const keep=[];W(c).forEach(x=>{const r=_rgId(x.rid);if(!r)return;if(r.owner===c.id){try{sitrep(c,'intel','👁 '+r.name+' is yours now and left your watch list.',{coord:r.coord,go:'p250a'});}catch(e){}return;}
+      const prev=x.h&&x.h[x.h.length-1];snap(c,x);const now=x.h[x.h.length-1];
+      try{if(prev&&prev.own!==now.own){const o=now.own!=null?G.countries[now.own]:null;sitrep(c,'intel','👁 Watched land '+r.name+' changed hands: now '+(o?o.name:'empty')+'.',{coord:r.coord,go:'p250a'});}
+        else if(prev&&prev.def!=null&&now.def!=null&&now.def<prev.def*0.75)sitrep(c,'intel','👁 Watched land '+r.name+' got weaker: defence '+F(prev.def)+' → '+F(now.def)+'.',{coord:r.coord,go:'p250a'});}catch(e){}
+      keep.push(x);});c._p76w=keep;});}catch(e){}return out;};try{window.runTick=runTick;}catch(e){}}
+  const arrow=(a,b)=>{if(a==null||b==null||a===b)return '';const up=b>a;return ' <span class="'+(up?'p76dn':'p76up')+'">'+(up?'▲':'▼')+Math.abs(Math.round((b-a)/Math.max(1,a)*100))+'%</span>';};
+  function watchBox(c){const L=W(c);if(!L.length)return '';
+    const rows=L.map(x=>{const r=_rgId(x.rid);if(!r)return '';const o=r.owner!=null?G.countries[r.owner]:null;const h=x.h||[];const now=h[h.length-1]||{};const old=h.length>5?h[h.length-6]:h[0]||{};
+      const defTxt=now.def!=null?F(now.def)+arrow(old.def,now.def):'unknown';const scTxt=o?F(now.sc||0)+arrow(old.sc,now.sc):'empty';
+      return '<div class="p250row"><div class="p250m"><div class="p250t"><b>'+E(r.name)+'</b> '+xyBtn(r.coord)+'</div><div class="p250s">'+(o?E(o.name)+' '+E(o.tag||''):'empty')+' · defence '+defTxt+' · score '+scTxt+' <span class="muted">(vs 5 turns ago)</span></div></div><div class="p250b">'+
+        '<button type="button" class="btn sm p250btn p250main" data-p75a="'+r.id+'">Attack</button>'+(o&&now.def==null?'<button type="button" class="btn sm p250btn" data-p250="scout" data-id="'+r.id+'">Scout</button>':'')+'<button type="button" class="btn sm ghost p250btn" data-p278calc="a|'+r.id+'">Calculator</button><button type="button" class="btn sm ghost p250btn" data-p76w="'+r.id+'">Remove</button></div></div>';}).join('');
+    return '<div class="p250box p76box"><div class="p250h">Watch list · '+L.length+' of '+MAXW+'</div>'+rows+'</div>';}
+  if(typeof VIEWS!=='undefined'&&VIEWS.p250a){const _a=VIEWS.p250a;VIEWS.p250a=function(v){const r=_a.apply(this,arguments);try{const c=ME();if(!c||v.querySelector('.p76box'))return r;const t=(window._p250tab||{}).p250a||'';if(t&&!/^Targets/.test(t))return r;
+    const html=watchBox(c);if(!html)return r;const bar=v.querySelector('.p75');const d=document.createElement('div');d.innerHTML=html;const box=d.firstElementChild;if(bar)bar.after(box);else{const tabs=[...v.querySelectorAll(':scope>.p250tabs')];if(tabs.length)tabs[tabs.length-1].after(box);else v.prepend(box);}}catch(e){}return r;};}
+  // sector overview
+  const S={a:null,b:null,key:'sc',dir:-1};
+  function sectorRows(c,a,b){const pre=a+':'+b+':';return G.regions.filter(r=>r.coord&&r.coord.indexOf(pre)===0).map(r=>{const o=r.owner!=null?G.countries[r.owner]:null;const cl=o&&o.clan!=null?(G.clans||[]).find(x=>x.id===o.clan):null;let tv=null;try{tv=acsTravel(c,r);}catch(e){}
+    return {r,o,slot:+r.coord.split(':')[2],name:r.name,own:o?o.name:'',tag:cl?cl.tag||cl.name:'',sc:o?scoreOf(o):0,lands:o?regionsOf(o).length:0,def:knownDef(c,r),tv:tv==null||tv>=99?null:tv,mine:r.owner===c.id};});}
+  function sectorHTML(c){const L=sectorRows(c,S.a,S.b);if(!L.length)return '<div class="p75msg">No lands in sector '+S.a+':'+S.b+'.</div>';
+    const k=S.key,d=S.dir;L.sort((x,y)=>{const A=x[k],B=y[k];if(A==null&&B==null)return 0;if(A==null)return 1;if(B==null)return -1;return (typeof A==='string'?A.localeCompare(B):A-B)*d;});
+    const col=(key,label)=>'<th data-p76s="'+key+'">'+label+(S.key===key?(S.dir>0?' ▲':' ▼'):'')+'</th>';
+    return '<div class="p76wrap"><table class="p76t"><thead><tr>'+col('slot','#')+col('name','Land')+col('own','Owner')+col('tag','Alliance')+col('sc','Score')+col('lands','Lands')+col('def','Defence')+col('tv','Turns')+'<th></th></tr></thead><tbody>'+
+      L.map(x=>'<tr class="'+(x.mine?'me':'')+'"><td class="mono">'+x.slot+'</td><td>'+E(x.name)+'</td><td>'+(x.mine?'<b>you</b>':x.o?E(x.own):'<span class="muted">empty</span>')+'</td><td>'+E(x.tag)+'</td><td>'+(x.o?F(x.sc):'')+'</td><td>'+(x.o?x.lands:'')+'</td><td>'+(x.def!=null?F(x.def):'<span class="muted">?</span>')+'</td><td>'+(x.tv!=null?x.tv:'')+'</td><td style="white-space:nowrap">'+
+        (x.mine?'':'<button type="button" class="btn sm p250btn" data-p75a="'+x.r.id+'">Attack</button>'+(x.o&&x.def==null?' <button type="button" class="btn sm ghost p250btn" data-p250="scout" data-id="'+x.r.id+'">Scout</button>':'')+' <button type="button" class="btn sm ghost p250btn" data-p76w="'+x.r.id+'">'+(watched(c,x.r.id)?'Unwatch':'Watch')+'</button>')+'</td></tr>').join('')+'</tbody></table></div>';}
+  window.p76sector=function(a,b){const c=ME();if(!c)return;S.a=+a;S.b=+b;document.querySelectorAll('.p76bg').forEach(x=>x.remove());try{closeNx();}catch(e){}try{const p=document.getElementById('_coordpop');if(p)p.remove();}catch(e){}
+    const bg=document.createElement('div');bg.className='p76bg';bg.innerHTML='<div class="p76p" role="dialog" aria-label="Sector"><div class="p76h"><b>Sector '+S.a+':'+S.b+'</b><span class="muted small">tap a column to sort · defence shows where you scouted</span><button type="button" class="p76x" aria-label="Close">✕</button></div><div class="p76body">'+sectorHTML(c)+'</div></div>';
+    document.body.appendChild(bg);bg.addEventListener('click',e=>{if(e.target===bg||e.target.closest('.p76x')){bg.remove();return;}const th=e.target.closest('[data-p76s]');if(th){const k=th.dataset.p76s;if(S.key===k)S.dir=-S.dir;else{S.key=k;S.dir=(k==='name'||k==='own'||k==='tag'||k==='slot'||k==='tv')?1:-1;}bg.querySelector('.p76body').innerHTML=sectorHTML(c);return;}
+      if(e.target.closest('button[data-p75a],button[data-p250],button[data-p278calc]'))setTimeout(()=>bg.remove(),0);});};
+  document.addEventListener('click',e=>{const b=e.target&&e.target.closest&&e.target.closest('[data-p76w]');if(!b)return;e.preventDefault();e.stopPropagation();const c=ME();if(!c)return;
+    Promise.resolve(cmdP76Watch(c,+b.dataset.p76w)).then(r=>{try{toast(r&&r.ok?(r.data&&r.data.msg)||'Done.':(r&&r.error)||'Not possible.',r&&r.ok?'good':'warn');save();}catch(x){}
+      try{const bg=b.closest('.p76bg');if(bg){bg.querySelector('.p76body').innerHTML=sectorHTML(c);return;}const pop=b.closest('#_coordpop');if(pop){pop.remove();return;}go(view);}catch(x){}});},true);
+  // the coordinate menu gets Calculator, Watch and Sector
+  if(typeof coordMenu==='function'){const _cm76=coordMenu;coordMenu=function(coord){const out=_cm76.apply(this,arguments);try{const c=ME();const pop=document.getElementById('_coordpop');const r=G.regions.find(x=>x.coord===coord);if(!c||!pop||!r)return out;
+      const box=pop.querySelector('div[style*="flex-direction:column"]')||pop.firstElementChild||pop;const [a,b]=coord.split(':');
+      let html='';if(r.owner!==c.id){html+='<button class="btn ghost sm" data-p278calc="a|'+r.id+'">🧮 Calculator</button><button class="btn ghost sm" data-p76w="'+r.id+'">👁 '+(watched(c,r.id)?'Stop watching':'Watch this land')+'</button>';}
+      html+='<button class="btn ghost sm" data-p76sec="'+a+':'+b+'">▦ Whole sector '+a+':'+b+'</button>';const bs=[...pop.querySelectorAll('button')].filter(x=>x.textContent.trim()!=='✕'&&!/close/i.test(x.getAttribute('aria-label')||''));const last=bs[bs.length-1];if(last)last.insertAdjacentHTML('afterend',html);else box.insertAdjacentHTML('beforeend',html);}catch(e){}return out;};try{window.coordMenu=coordMenu;}catch(e){}}
+  document.addEventListener('click',e=>{const b=e.target&&e.target.closest&&e.target.closest('[data-p76sec]');if(!b)return;e.preventDefault();e.stopPropagation();const [a,bb]=b.dataset.p76sec.split(':');p76sector(a,bb);},true);
+  // every coordinate in news, reports and messages opens the choice, not the map (on the Map itself it still jumps)
+  window.addEventListener('click',e=>{try{const t=e.target;if(!t||!t.closest||typeof view==='undefined'||view==='map')return;if(t.closest('#_coordpop,.p76bg,.p287bg,[data-p278xy]'))return;
+    const el=t.closest('[onclick*="GOTO_COORD("],[data-wf-coord],[data-p7="coord"]');if(!el)return;const txt=(el.textContent||'').trim();if(/map|nexus/i.test(txt)&&!/^\W*\d+:\d+:\d+\W*$/.test(txt))return;
+    const m=(el.getAttribute('onclick')||'').match(/GOTO_COORD\(\s*'(\d+:\d+:\d+)'/)||[null,el.getAttribute('data-wf-coord')||el.dataset.c];const coord=m&&m[1];if(!coord||!G.regions.some(r=>r.coord===coord))return;
+    e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();coordMenu(coord,e.clientX,e.clientY);}catch(x){}},true);
+  // the coordinate field: a sector (1:2) opens the sortable overview; one land gets a Watch button
+  document.addEventListener('click',e=>{const b=e.target&&e.target.closest&&e.target.closest('.p75 [data-p75go]');if(!b)return;const inp=b.closest('.p75').querySelector('input');const m=String(inp&&inp.value||'').trim().match(/^(\d{1,3})\s*[:.,\s]\s*(\d{1,3})$/);if(!m)return;e.preventDefault();e.stopImmediatePropagation();p76sector(m[1],m[2]);},true);
+  document.addEventListener('keydown',e=>{if(e.key!=='Enter')return;const inp=e.target&&e.target.closest&&e.target.closest('.p75 input');if(!inp)return;const m=String(inp.value||'').trim().match(/^(\d{1,3})\s*[:.,\s]\s*(\d{1,3})$/);if(!m)return;e.preventDefault();e.stopImmediatePropagation();p76sector(m[1],m[2]);},true);
+  new MutationObserver(()=>{try{const c=ME();if(!c)return;document.querySelectorAll('.p75out .p250row .p250b:not([data-p76])').forEach(b=>{b.dataset.p76=1;const a=b.querySelector('[data-p75a]');if(!a)return;const rid=+a.dataset.p75a;b.insertAdjacentHTML('beforeend','<button type="button" class="btn sm ghost p250btn" data-p76w="'+rid+'">'+(watched(c,rid)?'Unwatch':'Watch')+'</button>');});
+    document.querySelectorAll('.p75out .p75msg:not([data-p76])').forEach(m=>{m.dataset.p76=1;const x=/^Sector (\d+):(\d+):/.exec(m.textContent||'');if(x)m.insertAdjacentHTML('beforeend',' <button type="button" class="btn sm p250btn" data-p76sec="'+x[1]+':'+x[2]+'">Open as a table</button>');});}catch(e){}}).observe(document.getElementById('view')||document.body,{childList:true,subtree:true});
+})();
+
+/* 77. The market had buyers but no sellers: computer nations with full stores never sold, so every AI that ran short pushed
+   food to the 3x price cap while the world produced a huge surplus. Now a computer nation whose store of a good is almost
+   full sells part of the surplus when the price is above normal, with the same market command (and costs) as you. */
+(function(){
+  if(typeof runTick!=='function')return;
+  const GOODS=()=>(typeof MARKET!=='undefined'?MARKET:[]).filter(k=>k!=='money');
+  function sellTick(){const goods=GOODS();if(!goods.length)return;let n=0;
+    for(const c of G.countries){if(n>=120)break;if(!c||!c.isAI||c.retired||(c.cp||0)<1)continue;const pj=c._pj;if(!pj||!pj.net)continue;
+      for(const k of goods){const p=G.prices[k]||0,b=BASEP[k]||1;if(p<b*1.2)continue;const net=pj.net[k]||0;if(net<=0)continue;let cap=0;try{cap=capOf(c,k);}catch(e){continue;}const have=c.res[k]||0;if(have<cap*0.7)continue;
+        const q=Math.floor(Math.min(net*4,have-cap*0.5));if(q<1000)continue;let r=null;try{r=cmdMarket(c,k,'sell',q);}catch(e){}if(r&&r.ok){n++;break;}}}}
+  const _rt77=runTick;runTick=function(){const out=_rt77.apply(this,arguments);try{sellTick();}catch(e){}return out;};try{window.runTick=runTick;}catch(e){}
+})();
+
+/* 78. An empty treasury now costs troops: when a nation cannot pay its army (money at 0 and still a deficit), up to 5% of
+   its troops desert each turn in proportion to the unpaid part, and stability drops 2. Same rule for every nation.
+   Before, an army with no money behind it simply kept fighting for free. */
+(function(){
+  if(typeof runTick!=='function')return;
+  function upkeepMoney(c){let m=0;try{const rd=(typeof READY!=='undefined'&&READY[c.ready])||{u:1};const all={};for(const k in (c.units||{}))all[k]=(all[k]||0)+(c.units[k]||0);(c.fleets||[]).forEach(f=>{for(const k in (f.units||{}))all[k]=(all[k]||0)+(f.units[k]||0);});
+    UNIT.forEach(u=>{const n=all[u.k]||0;if(n&&u.up&&u.up.money)m+=u.up.money*n*(rd.u||1);});}catch(e){}return m;}
+  function payTick(){G.countries.forEach(c=>{try{if(!c||c.retired||(c.res.money||0)>1)return;const pj=c._pj;const net=pj&&pj.net?pj.net.money||0:0;if(net>=0)return;
+    const up=upkeepMoney(c);if(up<=0)return;const frac=Math.min(0.05,(-net)/up);if(frac<0.002)return;let lost=0;
+    for(const k in (c.units||{})){const n=Math.floor((c.units[k]||0)*frac);if(n>0){c.units[k]-=n;lost+=n;}}
+    c.stab=Math.max(0,(c.stab||0)-2);c._p78lost=(c._p78lost||0)+lost;
+    if(c.isAI===false&&lost>0&&G.tick-(c._p78msg==null?-99:c._p78msg)>=3){c._p78msg=G.tick;c._brokeMsg=G.tick;try{sitrep(c,'economy','💸 Treasury empty: '+F(lost)+' troops deserted and stability −2. Raise tax, sell stock or disband troops.',{sev:3,go:'p250e'});}catch(e){}}}catch(e){}});}
+  const _rt78=runTick;runTick=function(){try{payTick();}catch(e){}return _rt78.apply(this,arguments);}; // before the turn, so the treasury message (39) counts the deserterstry{window.runTick=runTick;}catch(e){}
+})();
+
+try{window.atkPanel=atkPanel;window.calcAttack=calcAttack;}catch(e){} // for the test routine
 }catch(e){try{console.error('p278',e);}catch(_){}}})();
 </script>
 
