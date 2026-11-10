@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Unit and commander cards: Terrastate, Romaterra and Ironfront</title>
+<meta name="description" content="Collect all 25 cards of each world: every unit and commander from Terrastate, Romaterra and Ironfront, with numbers from the game. Print them at real card size.">
+<link rel="canonical" href="https://playterrastate.nl/world/cards.html">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Terrastate">
+<meta property="og:title" content="Unit and commander cards: Terrastate, Romaterra and Ironfront">
+<meta property="og:description" content="Collect all 25 cards of each world: every unit and commander from Terrastate, Romaterra and Ironfront, with numbers from the game. Print them at real card size.">
+<meta property="og:image" content="https://playterrastate.nl/world/img/ts-hero.jpg">
+<meta name="theme-color" content="#0b0f17">
+<link rel="icon" href="../icons/terrastate-64.png">
+<link rel="stylesheet" href="world.css?v=2">
+<script data-goatcounter="https://playterrastatenl.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+</head>
+<body>
+<div id="top"></div>
+<main><section><div class="wrap"><div class="noprint">
+<div class="kick" id="kick"></div><h1 id="h1"></h1>
+<p class="lead" id="lead">Every unit and commander in this world has a card. Play the game on this device and every unit you train or commander you hire unlocks its card here.</p>
+<div id="sw"></div></div>
+<div class="bar noprint"><b id="cnt"></b><div class="prog"><i id="pr"></i></div>
+<button class="chip on" data-f="all">All</button><button class="chip" data-f="cmd">Commanders</button><button class="chip" data-f="0">Common</button><button class="chip" data-f="1">Uncommon</button><button class="chip" data-f="2">Rare</button><button class="chip" data-f="3">Epic</button><button class="chip" data-f="4">Legendary</button>
+<button class="chip" data-f="have">Collected</button>
+<button class="btn ghost sm" id="print" style="margin-left:auto">🖨 Print cards</button></div>
+<div class="cards" id="cards"></div><div class="backs" id="backs"></div>
+<p class="muted small noprint" style="margin-top:22px">Printing: the cards come out at real card size (63 x 88 mm), nine per A4 page. Turn on "Background graphics" in your print settings. Locked cards print in full colour too. After the fronts come pages with card backs, mirrored so they line up when you print on both sides.</p>
+</div></section></main>
+<div id="foot"></div>
+<script src="data.js?v=2"></script>
+<script src="lore.js?v=2"></script>
+<script src="lz.js?v=2"></script>
+<script src="world.js?v=2"></script>
+<script>
+
+var P=PT,w=P.w,l=P.L[w];document.getElementById('top').innerHTML=P.topbar('cards.html');document.getElementById('foot').innerHTML=P.footer();
+document.getElementById('sw').innerHTML=P.switcher('cards.html');
+document.getElementById('kick').textContent=l.era;document.getElementById('h1').textContent=l.name+' cards';
+var all=P.deck(),have=P.collected(),f='all';
+function draw(){var n=all.filter(function(x){return have[x.id];}).length;
+ document.getElementById('cnt').textContent='Collected '+n+' / '+all.length;document.getElementById('pr').style.width=(100*n/all.length)+'%';
+ var list=all.filter(function(x){if(f==='all')return true;if(f==='cmd')return x.kind==='cmd';if(f==='have')return !!have[x.id];return x.kind==='unit'&&String(x.tier)===f;});
+ document.getElementById('cards').innerHTML=list.length?list.map(function(x){return P.cardHTML(x,{lock:!have[x.id]});}).join(''):'<p class="muted">No cards here yet. Play '+P.esc(l.name)+' and come back.</p>';}
+draw();
+document.querySelectorAll('[data-f]').forEach(function(b){b.onclick=function(){f=b.dataset.f;document.querySelectorAll('[data-f]').forEach(function(x){x.classList.toggle('on',x===b);});draw();};});
+document.getElementById('print').onclick=function(){var n=document.querySelectorAll('#cards .card').length,h='';
+ for(var pg=0;pg<Math.ceil(n/9);pg++){h+='<div class="cards bk">';for(var i=0;i<9;i++){var idx=pg*9+[2,1,0,5,4,3,8,7,6][i];h+=idx<n?'<div class="card cb" style="background-image:url(img/'+l.back+')"></div>':'<div class="card cb empty"></div>';}h+='</div>';}
+ document.getElementById('backs').innerHTML=h;setTimeout(function(){window.print();},300);};
+function openCard(id){var x=all.find(function(y){return y.id===id;});if(!x)return;var cl=P.CLS[w],got=!!have[x.id];
+ var rows=x.kind==='cmd'?[['Role',x.role],['Bonus',x.d],x.alt?['Second stance',x.alt.n+': '+x.alt.d]:null]
+  :[['Rarity',P.RAR[x.tier]+' (tier '+x.tier+')'],['Type',x.phase===(cl[x.cls]||x.cls)?x.phase:x.phase+' · '+(cl[x.cls]||x.cls)],['Attack',x.atk],['Defence',x.def],['Training',x.bt+' turn'+(x.bt>1?'s':'')],['Speed',x.fast?'Fast':'Normal'],['Unlocked by',x.req||'Available from the start']];
+ var kv=rows.filter(Boolean).map(function(r){return '<b>'+P.esc(r[0])+'</b><span>'+P.esc(r[1])+'</span>';}).join('');
+ var more=x.kind==='cmd'?'<a class="btn ghost sm" href="heroes.html?w='+w+'#'+x.k+'">Read the story</a>':'<a class="btn ghost sm" href="codex.html?w='+w+'#'+x.k+'">Open in the Codex</a>';
+ P.modal(P.cardHTML(x,{big:true})+'<div class="tx"><div class="kick">'+(got?'Collected':'Not yet collected')+'</div><h2>'+P.esc(x.n)+'</h2><p>'+P.esc(x.lore)+'</p><div class="kv">'+kv+'</div>'+
+  (got?'':'<p class="muted small">'+(x.kind==='cmd'?'Hire this commander':'Train this unit')+' in '+P.esc(l.name)+' on this device to collect the card.</p>')+
+  '<div class="row" style="display:flex;gap:8px;flex-wrap:wrap">'+more+'<button class="btn ghost sm" data-share>📤 Save as image</button>'+'<a class="btn sm" href="../'+l.game+'">Play '+P.esc(l.name)+'</a></div></div>');var sb=document.querySelector('[data-share]');if(sb)sb.onclick=function(){sb.disabled=true;P.shareCard(x).then(function(){sb.disabled=false;});};}
+document.getElementById('cards').addEventListener('click',function(e){var c=e.target.closest('.card');if(c)openCard(c.dataset.id);});
+document.getElementById('cards').addEventListener('keydown',function(e){if(e.key==='Enter'){var c=e.target.closest('.card');if(c)openCard(c.dataset.id);}});
+
+</script>
+</body>
+</html>

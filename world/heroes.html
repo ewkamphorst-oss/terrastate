@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Heroes: the commanders of Terrastate, Romaterra and Ironfront</title>
+<meta name="description" content="Short stories about the six commanders of each world in Terrastate, Romaterra and Ironfront: who they are, where they came from and why they fight.">
+<link rel="canonical" href="https://playterrastate.nl/world/heroes.html">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Terrastate">
+<meta property="og:title" content="Heroes: the commanders of Terrastate, Romaterra and Ironfront">
+<meta property="og:description" content="Short stories about the six commanders of each world in Terrastate, Romaterra and Ironfront: who they are, where they came from and why they fight.">
+<meta property="og:image" content="https://playterrastate.nl/world/img/ts-hero.jpg">
+<meta name="theme-color" content="#0b0f17">
+<link rel="icon" href="../icons/terrastate-64.png">
+<link rel="stylesheet" href="world.css?v=2">
+<script data-goatcounter="https://playterrastatenl.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+</head>
+<body>
+<div id="top"></div>
+<header class="hero" id="hero"><div class="wrap"><div class="kick" id="kick"></div><h1 id="h1"></h1><p class="lead">You hire them in the game for their bonus. Here you get to know them. Six short stories, one for every commander.</p></div></header>
+<main><section><div class="wrap"><div id="sw"></div><div class="toc" id="toc"></div><div id="st"></div></div></section></main>
+<div id="foot"></div>
+<script src="data.js?v=2"></script>
+<script src="lore.js?v=2"></script>
+<script src="lz.js?v=2"></script>
+<script src="world.js?v=2"></script>
+<script>
+
+var P=PT,w=P.w,l=P.L[w],e=P.esc;document.getElementById('top').innerHTML=P.topbar('heroes.html');document.getElementById('foot').innerHTML=P.footer();
+document.getElementById('sw').innerHTML=P.switcher('heroes.html');
+document.getElementById('hero').style.backgroundImage='url(img/'+w+'-hero.jpg)';
+document.getElementById('kick').textContent=l.era;document.getElementById('h1').textContent='The commanders of '+l.name;
+var have=P.collected(),cm=P.deck().filter(function(x){return x.kind==='cmd';});
+document.getElementById('toc').innerHTML=cm.map(function(x){return '<a href="#'+x.k+'">'+e(x.n)+'</a>';}).join('');
+document.getElementById('st').innerHTML=cm.map(function(x){var s=(l.cmd[x.k]||{}).story||{t:'',p:[]};
+ return '<article class="story" id="'+x.k+'"><div class="cardwrap">'+P.cardHTML(x,{lock:!have[x.id]})+'</div><div><div class="who">'+e(x.n)+' · '+e(x.role)+'</div><h3>'+e(s.t)+'</h3>'+s.p.map(function(p){return '<p>'+e(p)+'</p>';}).join('')+
+ '<p class="muted small" style="font-family:var(--sans)">In the game: '+e(x.d)+(x.alt?'. Second stance, '+e(x.alt.n)+': '+e(x.alt.d):'')+'.</p></div></article>';}).join('');
+
+</script>
+</body>
+</html>

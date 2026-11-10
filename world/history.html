@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>History: what happened before Season 1 in Terrastate, Romaterra and Ironfront</title>
+<meta name="description" content="The history of each world before the first season: how the nations of Terrastate, Romaterra and Ironfront rose, who their rivals are and why everyone wants the prize.">
+<link rel="canonical" href="https://playterrastate.nl/world/history.html">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Terrastate">
+<meta property="og:title" content="History: what happened before Season 1 in Terrastate, Romaterra and Ironfront">
+<meta property="og:description" content="The history of each world before the first season: how the nations of Terrastate, Romaterra and Ironfront rose, who their rivals are and why everyone wants the prize.">
+<meta property="og:image" content="https://playterrastate.nl/world/img/ts-hero.jpg">
+<meta name="theme-color" content="#0b0f17">
+<link rel="icon" href="../icons/terrastate-64.png">
+<link rel="stylesheet" href="world.css?v=2">
+<script data-goatcounter="https://playterrastatenl.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+</head>
+<body>
+<div id="top"></div>
+<header class="hero" id="hero"><div class="wrap"><div class="kick" id="kick"></div><h1 id="h1"></h1><p class="lead">Every season starts in a world that already has a past. This is how it came to this.</p></div></header>
+<main><section><div class="wrap"><div id="sw"></div><ol class="tl" id="tl"></ol>
+<p style="text-align:center;margin-top:26px"><a class="btn" id="play" href="#">Write the next chapter ▶</a></p></div></section></main>
+<div id="foot"></div>
+<script src="data.js?v=2"></script>
+<script src="lore.js?v=2"></script>
+<script src="lz.js?v=2"></script>
+<script src="world.js?v=2"></script>
+<script>
+
+var P=PT,w=P.w,l=P.L[w],e=P.esc;document.getElementById('top').innerHTML=P.topbar('history.html');document.getElementById('foot').innerHTML=P.footer();
+document.getElementById('sw').innerHTML=P.switcher('history.html');
+document.getElementById('hero').style.backgroundImage='url(img/'+w+'-hero.jpg)';
+document.getElementById('kick').textContent=l.era;document.getElementById('h1').textContent='The history of '+l.name;
+document.getElementById('play').href='../'+l.game;
+document.getElementById('tl').innerHTML=(l.timeline||[]).map(function(x,i){return '<li class="tle"><div class="tld"><span>'+e(x.y)+'</span></div><div class="tlc"><div class="tlp" style="background-image:url(img/'+x.img+')"></div><div class="tlt"><h3>'+e(x.t)+'</h3><p>'+e(x.p)+'</p></div></div></li>';}).join('');
+
+</script>
+</body>
+</html>

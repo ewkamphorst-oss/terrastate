@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>The Chronicle: a newspaper for every season of Terrastate, Romaterra and Ironfront</title>
+<meta name="description" content="The newspaper of each world: The Terrastate Wire, The Romaterra Herald and The Ironfront Dispatch. After every season you play, a front page about your world is printed here.">
+<link rel="canonical" href="https://playterrastate.nl/world/chronicle.html">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Terrastate">
+<meta property="og:title" content="The Chronicle: a newspaper for every season of Terrastate, Romaterra and Ironfront">
+<meta property="og:description" content="The newspaper of each world: The Terrastate Wire, The Romaterra Herald and The Ironfront Dispatch. After every season you play, a front page about your world is printed here.">
+<meta property="og:image" content="https://playterrastate.nl/world/img/ts-hero.jpg">
+<meta name="theme-color" content="#0b0f17">
+<link rel="icon" href="../icons/terrastate-64.png">
+<link rel="stylesheet" href="world.css?v=2">
+<script data-goatcounter="https://playterrastatenl.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+</head>
+<body>
+<div id="top"></div>
+<main><section><div class="wrap">
+<div class="noprint"><div class="kick" id="kick"></div><h1 id="h1"></h1>
+<p class="lead">Every world has its own newspaper. Finish a season on this device and the next edition is about your world: who won, the biggest battle, and how you did.</p>
+<div id="sw"></div><div class="ptabs" id="tabs"></div></div>
+<div id="paper"></div>
+<div id="arch" class="noprint"></div>
+<p class="muted small noprint" style="text-align:center;margin-top:16px"><button class="btn ghost sm" onclick="window.print()">🖨 Print this front page</button> <button class="btn ghost sm" id="shr">📤 Save front page as image</button></p>
+</div></section></main>
+<div id="foot"></div>
+<script src="data.js?v=2"></script>
+<script src="lore.js?v=2"></script>
+<script src="lz.js?v=2"></script>
+<script src="world.js?v=2"></script>
+<script>
+
+var P=PT,w=P.w,l=P.L[w],e=P.esc,np=l.paper;document.getElementById('top').innerHTML=P.topbar('chronicle.html');document.getElementById('foot').innerHTML=P.footer();
+document.getElementById('sw').innerHTML=P.switcher('chronicle.html');
+document.getElementById('kick').textContent=l.era;document.getElementById('h1').textContent=np.name;
+var H=P.hall().slice().reverse(),LG=P.legacy(),cur=H.length?0:-1;
+function dt(t){try{return new Date(t).toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'});}catch(x){return '';}}
+function mast(sub,date){return '<div class="mast"><div style="font-size:13px;letter-spacing:2px;text-transform:uppercase">'+e(np.motto)+'</div><h1>'+e(np.name)+'</h1><div class="mt"><span>'+e(sub)+'</span><span>'+e(date)+'</span><span>Price: one command point</span></div></div>';}
+function first(){var a=np.lead;return mast(np.issue,'Before the first season')+'<div class="hl">'+e(a.h)+'</div><p class="sub">'+e(a.sub)+'</p><img class="ph" src="img/'+w+'-hero.jpg" alt=""><div class="cap">Archive photo.</div><div class="cols">'+a.p.map(function(p){return '<p>'+e(p)+'</p>';}).join('')+'</div><div class="brief">'+np.items.map(function(i){return '<div><h4>'+e(i.h)+'</h4><p>'+e(i.p)+'</p></div>';}).join('')+'</div>';}
+function nm(o){return o?e(o.name)+(o.tag&&o.tag!=='—'?' ['+e(o.tag)+']':''):'An unknown nation';}
+function edition(r){var PL=l.places||[],pl=PL.length?PL[(+r.season||0)%PL.length]:null,y=r.you||{},ch=r.champion,win=r.endType==='command',prize=P.PRIZE[w];
+ var hl=y.won?(y.name?e(y.name)+' wins the season':'Victory'):ch?(win?nm(ch)+' takes '+prize:nm(ch)+' ends the season on top'):'The season ends without a master';
+ var sub=r.championAlliance?'The '+e(r.championAlliance.name)+' alliance stands above the rest':(win?'The prize changed hands, and held':'Nobody held '+prize+' to the end. The score decides.');
+ var p1=ch?nm(ch)+' finished Season '+r.season+' as the leading power of '+e(l.name)+'. '+(win?'Its commanders held '+prize+' through the final turns, and the world had no answer.':'Nobody managed to hold '+prize+' to the very end, so the final score decided it.'):'Season '+r.season+' came to an end with no clear master of the world.';
+ var p2=y.name?'For '+e(y.name)+', the season ended '+(y.won?'in triumph':'at rank '+y.rank+' of '+y.total)+'. The world will remember them as: '+e(y.title||'a survivor')+'.':'';
+ var b=r.biggestAttack,battle=b?nm({name:b.atk,tag:b.atkTag})+' threw '+P.fmt(b.atkP)+' power against '+nm({name:b.def,tag:b.defTag})+' at '+e(b.region)+'. The defenders answered with '+P.fmt(b.defP)+'. '+(b.captured?'The region fell.':'The line held.'):'No single battle stood out this season.';
+ var tn=(r.topNations||[]).map(function(x){return '<tr><td>'+x.rank+'</td><td>'+nm(x)+'</td><td>'+P.fmt(x.score)+'</td></tr>';}).join('');
+ var ta=(r.topAlliances||[]).map(function(x){return '<tr><td>'+x.rank+'</td><td>'+nm(x)+'</td><td>'+x.members+'</td></tr>';}).join('');
+ var past=LG.slice().reverse().slice(0,6).map(function(x){return '<tr><td>'+x.season+'</td><td>'+e(x.title||'')+'</td><td>'+(x.won?'Won':x.rank+' / '+x.total)+'</td></tr>';}).join('');
+ return mast('Season '+r.season+' edition',dt(r.date))+'<div class="hl">'+hl+'</div><p class="sub">'+sub+'</p><img class="ph" src="img/'+(pl?pl.img:w+'-hero.jpg')+'" alt=""><div class="cap">'+(pl?e(pl.n)+', in the last days of Season '+r.season+'.':'The front in the last days of Season '+r.season+'.')+'</div>'+
+ '<div class="cols"><p>'+p1+'</p>'+(p2?'<p>'+p2+'</p>':'')+'<p><b>The battle everyone talks about.</b> '+battle+'</p>'+(r.richest?'<p><b>Richest nation.</b> '+nm(r.richest)+', with a treasury of '+P.fmt(r.richest.money)+'.</p>':'')+(r.largest?'<p><b>Largest nation.</b> '+nm(r.largest)+', with '+r.largest.regions+' regions under its flag.</p>':'')+'</div>'+
+ '<div class="brief"><div><h4>Top nations</h4><table><tr><th>#</th><th>Nation</th><th>Score</th></tr>'+(tn||'<tr><td colspan=3>No data</td></tr>')+'</table></div><div><h4>Top alliances</h4><table><tr><th>#</th><th>Alliance</th><th>Members</th></tr>'+(ta||'<tr><td colspan=3>No alliances this season</td></tr>')+'</table></div>'+
+ (past?'<div><h4>Your record</h4><table><tr><th>Season</th><th>Title</th><th>Result</th></tr>'+past+'</table></div>':'')+'</div>';}
+function draw(){var t='';H.forEach(function(r,i){t+='<button class="chip'+(i===cur?' on':'')+'" data-i="'+i+'">Season '+e(r.season)+'</button>';});
+ t+='<button class="chip'+(cur===-1?' on':'')+'" data-i="-1">'+e(np.issue.split(' · ')[0])+'</button>';
+ document.getElementById('tabs').innerHTML=H.length?t:'<span class="muted small">No season finished yet on this device. Here is the very first issue. <a href="../'+l.game+'">Play '+e(l.name)+'</a> to make the next one.</span>';
+ document.getElementById('paper').innerHTML='<div class="paper">'+(cur<0?first():edition(H[cur]))+'</div>';
+ document.querySelectorAll('[data-i]').forEach(function(b){b.onclick=function(){cur=+b.dataset.i;draw();};});}
+draw();
+document.getElementById('shr').onclick=function(){var b=this;b.disabled=true;P.shareFront(document.querySelector('.paper')).then(function(){b.disabled=false;});};
+var A=l.archive||[];if(A.length)document.getElementById('arch').innerHTML='<h2 style="margin-top:34px">From the archive</h2><p class="muted">Old front pages from the presses of '+e(l.name)+'.</p><div class="grid g3">'+A.map(function(a){return '<a class="tile" href="img/'+a.img+'" target="_blank" rel="noopener"><div class="im" style="background-image:url(img/'+a.img+')"></div><div class="bd small">'+e(a.t)+'</div></a>';}).join('')+'</div>';
+
+</script>
+</body>
+</html>

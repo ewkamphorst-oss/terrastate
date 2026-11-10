@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Codex: the world, governments, doctrines, commanders and units</title>
+<meta name="description" content="The encyclopedia of Terrastate, Romaterra and Ironfront: what each world is, its governments and doctrines, its commanders and every unit with attack, defence and unlocks from the game.">
+<link rel="canonical" href="https://playterrastate.nl/world/codex.html">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Terrastate">
+<meta property="og:title" content="Codex: the world, governments, doctrines, commanders and units">
+<meta property="og:description" content="The encyclopedia of Terrastate, Romaterra and Ironfront: what each world is, its governments and doctrines, its commanders and every unit with attack, defence and unlocks from the game.">
+<meta property="og:image" content="https://playterrastate.nl/world/img/ts-hero.jpg">
+<meta name="theme-color" content="#0b0f17">
+<link rel="icon" href="../icons/terrastate-64.png">
+<link rel="stylesheet" href="world.css?v=2">
+<script data-goatcounter="https://playterrastatenl.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+</head>
+<body>
+<div id="top"></div>
+<header class="hero" id="hero"><div class="wrap"><div class="kick" id="kick"></div><h1 id="h1"></h1><p class="lead" id="tag"></p></div></header>
+<main><section><div class="wrap">
+<div id="sw"></div>
+<div class="toc"><a href="#world">The world</a><a href="#places">Places</a><a href="#rivals">Rivals</a><a href="#gov">Governments</a><a href="#doc">Doctrines</a><a href="#cmd">Commanders</a><a href="#units">Units</a><a href="#build">Buildings</a><a href="#tech">Research</a><a href="#table">All numbers</a></div>
+<div id="world" style="scroll-margin-top:80px;margin-top:26px"></div>
+<h2 id="places" style="margin-top:34px;scroll-margin-top:80px">Famous places</h2><p class="muted">Where the big battles of this world are fought.</p><div class="grid g2" id="plc"></div>
+<h2 id="rivals" style="margin-top:34px;scroll-margin-top:80px">Rivals</h2><p class="muted">Nations you will meet again and again. Their flags fly in the stories of this world.</p><div class="list" id="riv"></div>
+<h2 id="gov" style="margin-top:34px;scroll-margin-top:80px">Governments</h2><p class="muted">Chosen when you found your nation. Each one bends the rules a little.</p><div class="grid g3" id="govs"></div>
+<h2 id="doc" style="margin-top:34px;scroll-margin-top:80px">Doctrines</h2><p class="muted">Ready-made army plans. A doctrine is a starting mix, not a cage.</p><div class="grid g2" id="docs"></div>
+<h2 id="cmd" style="margin-top:34px;scroll-margin-top:80px">Commanders</h2><p class="muted">Leaders you can hire. Each gives a bonus, and can switch to a second, sharper stance.</p><div class="list" id="cmds"></div>
+<h2 id="units" style="margin-top:34px;scroll-margin-top:80px">Units</h2><p class="muted">From the first levy to the legendary. Higher tiers need research before you can train them.</p><div class="list" id="ulist"></div>
+<h2 id="build" style="margin-top:34px;scroll-margin-top:80px">Buildings</h2><p class="muted">What you can build in your regions, straight from the game.</p><div class="grid g3" id="bld"></div>
+<h2 id="tech" style="margin-top:34px;scroll-margin-top:80px">Research</h2><p class="muted">Every project in the research tree, and the units it opens up.</p><div class="grid g2" id="tch"></div>
+<h2 id="table" style="margin-top:34px;scroll-margin-top:80px">All numbers</h2><div class="panel" style="overflow-x:auto"><table class="t" id="tbl"></table></div>
+</div></section></main>
+<div id="foot"></div>
+<script src="data.js?v=2"></script>
+<script src="lore.js?v=2"></script>
+<script src="lz.js?v=2"></script>
+<script src="world.js?v=2"></script>
+<script>
+
+var P=PT,w=P.w,l=P.L[w],d=P.D[w],e=P.esc;document.getElementById('top').innerHTML=P.topbar('codex.html');document.getElementById('foot').innerHTML=P.footer();
+document.getElementById('sw').innerHTML=P.switcher('codex.html');
+document.getElementById('hero').style.backgroundImage='url(img/'+w+'-hero.jpg)';
+document.getElementById('kick').textContent=l.era;document.getElementById('h1').textContent='The '+l.name+' Codex';document.getElementById('tag').textContent=l.tagline;
+document.title='Codex of '+l.name+': world, governments, doctrines, commanders and units';
+document.getElementById('world').innerHTML='<div class="grid g2"><div>'+l.intro.map(function(p){return '<p>'+e(p)+'</p>';}).join('')+'</div><div><div class="facts">'+l.facts.map(function(f){return '<div><b>'+e(f[0])+'</b>'+e(f[1])+'</div>';}).join('')+'</div><a class="btn" href="../'+l.game+'">Play '+e(l.name)+' ▶</a></div></div><figure style="margin:22px 0 0"><a href="img/'+w+'-map.jpg" target="_blank" rel="noopener"><img src="img/'+w+'-map.jpg" alt="Map of '+e(l.name)+'" loading="lazy" style="width:100%;max-width:560px;display:block;margin:0 auto;border-radius:12px;border:1px solid var(--border)"></a><figcaption class="muted small" style="text-align:center;margin-top:6px">The world of '+e(l.name)+'. Tap to open the full map.</figcaption></figure>';
+document.getElementById('plc').innerHTML=(l.places||[]).map(function(x){return '<div class="tile"><div class="im" style="background-image:url(img/'+x.img+')"></div><div class="bd"><h3>'+e(x.n)+'</h3><div class="muted">'+e(x.p)+'</div></div></div>';}).join('');
+document.getElementById('riv').innerHTML=(l.rivals||[]).map(function(x){return '<div class="ent"><div class="pic"><img src="img/'+x.flag+'" alt="Flag of '+e(x.n)+'" loading="lazy" style="object-fit:cover"></div><div><h3>'+e(x.n)+' <span class="muted small">['+e(x.tag)+']</span></h3>'+(x.who?'<span class="tag">Led by '+e(x.who)+'</span>':'')+'<span class="tag">'+e(x.style)+'</span><p style="margin:6px 0 0">'+e(x.p)+'</p></div>'+(x.lead?'<div class="pic rl"><img src="img/'+x.lead+'" alt="'+e(x.who)+'" loading="lazy" style="object-fit:cover"></div>':'')+'</div>';}).join('');
+document.getElementById('govs').innerHTML=d.gov.map(function(g){return '<div class="panel"><h3>'+e(g.n)+'</h3><div class="muted">'+e(g.d)+'</div></div>';}).join('');
+document.getElementById('docs').innerHTML=d.doc.map(function(g){return '<div class="panel"><h3>'+e(g.n)+'</h3><div class="muted">'+e(g.d)+'</div></div>';}).join('');
+var all=P.deck(),cl=P.CLS[w];
+document.getElementById('cmds').innerHTML=all.filter(function(x){return x.kind==='cmd';}).map(function(x){return '<div class="ent" id="'+x.k+'"><div class="pic"><img src="'+e(x.art)+'" alt="" loading="lazy"></div><div><h3>'+e(x.n)+'</h3><span class="tag">'+e(x.role)+'</span><span class="tag">'+e(x.d)+'</span>'+(x.alt?'<span class="tag">'+e(x.alt.n)+': '+e(x.alt.d)+'</span>':'')+'<p style="margin:6px 0 0">'+e(x.lore)+' <a href="heroes.html?w='+w+'#'+x.k+'">Read the story</a></p></div></div>';}).join('');
+var R=['--c0','--c1','--c2','--c3','--c4'];
+document.getElementById('ulist').innerHTML=all.filter(function(x){return x.kind==='unit';}).sort(function(a,b){return a.tier-b.tier;}).map(function(x){
+ var pic=x.art?'<img src="'+e(x.art)+'" alt="" loading="lazy">':'';
+ return '<div class="ent" id="'+x.k+'" style="--r:var('+R[x.tier]+')"><div class="pic">'+pic+'</div><div><h3>'+e(x.n)+'</h3>'+
+ '<span class="tag r">'+P.RAR[x.tier]+'</span><span class="tag">'+(x.phase===(cl[x.cls]||x.cls)?e(x.phase):e(x.phase)+' · '+e(cl[x.cls]||x.cls))+'</span><span class="tag">Attack '+x.atk+'</span><span class="tag">Defence '+x.def+'</span><span class="tag">'+x.bt+' turn'+(x.bt>1?'s':'')+' to train</span>'+(x.fast?'<span class="tag">Fast</span>':'')+
+ '<p style="margin:6px 0 0">'+e(x.lore)+'</p><div class="muted small">'+(x.req?'Unlocked by research: '+e(x.req):'Available from the start')+'</div></div></div>';}).join('');
+var BL=d.build||[],TC=d.tech||[];
+function bcard(x){return '<div class="tile"'+(x.id?' id="'+x.id+'" style="scroll-margin-top:80px"':'')+'>'+(x.img?'<div class="im" style="background-image:url(img/'+x.img+')"></div>':'')+'<div class="bd"><div class="kick" style="font-size:11px">'+e(x.cat)+'</div><h3 style="margin:2px 0 4px">'+e(x.n)+'</h3><div class="muted small">'+e(x.d)+'</div>'+(x.t?'<div class="small" style="margin-top:6px">'+x.t+' turn'+(x.t>1?'s':'')+(x.req?' to research':' to build')+'</div>':'')+(x.req&&x.req.length?'<div class="small muted">Needs: '+e(x.req.join(', '))+'</div>':'')+(x.un&&x.un.length?'<div class="small" style="margin-top:4px">Opens: '+x.un.map(function(u){return '<a href="#'+u.k+'">'+e(u.n)+'</a>';}).join(', ')+'</div>':'')+'</div></div>';}
+BL.slice().sort(function(a,b){return (b.img?1:0)-(a.img?1:0);}).forEach(function(x){});
+document.getElementById('bld').innerHTML=BL.slice().sort(function(a,b){return (b.img?1:0)-(a.img?1:0);}).map(function(x){return bcard({id:'b-'+x.k,n:x.n,cat:x.cat,d:x.d,t:x.t,img:x.img});}).join('');
+document.getElementById('tch').innerHTML=TC.slice().sort(function(a,b){return (b.img?1:0)-(a.img?1:0);}).map(function(x){var un=d.units.filter(function(u){return u.req===x.n;});return bcard({id:'t-'+x.k,n:x.n,cat:x.cat,d:x.d,t:x.t,req:x.req,un:un,img:x.img});}).join('');
+var t='<thead><tr><th>Unit</th><th>Rarity</th><th>Type</th><th>Attack</th><th>Defence</th><th>Turns</th><th>Research</th></tr></thead><tbody>';
+all.filter(function(x){return x.kind==='unit';}).sort(function(a,b){return a.tier-b.tier||b.atk-a.atk;}).forEach(function(x){t+='<tr><td><a href="#'+x.k+'">'+e(x.n)+'</a></td><td>'+P.RAR[x.tier]+'</td><td>'+e(cl[x.cls]||x.cls)+'</td><td>'+x.atk+'</td><td>'+x.def+'</td><td>'+x.bt+'</td><td>'+e(x.req||'None')+'</td></tr>';});
+document.getElementById('tbl').innerHTML=t+'</tbody>';
+if(location.hash){var el=document.getElementById(location.hash.slice(1));if(el)setTimeout(function(){el.scrollIntoView();el.style.borderColor='var(--acc)';},50);}
+
+</script>
+</body>
+</html>

@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>The worlds of Terrastate, Romaterra and Ironfront: cards, codex, chronicle and heroes</title>
+<meta name="description" content="Step outside the games: collect the unit cards, read the codex, follow the chronicle of your seasons and meet the commanders of Terrastate, Romaterra and Ironfront.">
+<link rel="canonical" href="https://playterrastate.nl/world/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Terrastate">
+<meta property="og:title" content="The worlds of Terrastate, Romaterra and Ironfront: cards, codex, chronicle and heroes">
+<meta property="og:description" content="Step outside the games: collect the unit cards, read the codex, follow the chronicle of your seasons and meet the commanders of Terrastate, Romaterra and Ironfront.">
+<meta property="og:image" content="https://playterrastate.nl/world/img/ts-hero.jpg">
+<meta name="theme-color" content="#0b0f17">
+<link rel="icon" href="../icons/terrastate-64.png">
+<link rel="stylesheet" href="world.css?v=2">
+<script data-goatcounter="https://playterrastatenl.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+</head>
+<body>
+<div id="top"></div>
+<header class="hero" id="hero"><div class="wrap"><div class="kick">Beyond the map</div>
+<h1>Three worlds. One story that keeps going.</h1>
+<p class="lead">The games are where the wars are fought. This is where the worlds live: the units you command, the people who lead them, and the history your seasons write.</p></div></header>
+<main>
+<section><div class="wrap"><h2>Choose a world</h2><div class="grid g3" id="worlds"></div></div></section>
+<section style="padding-top:0"><div class="wrap"><h2>What you will find here</h2><div class="grid g2" id="feats"></div></div></section>
+</main>
+<div id="foot"></div>
+<script src="data.js?v=2"></script>
+<script src="lore.js?v=2"></script>
+<script src="lz.js?v=2"></script>
+<script src="world.js?v=2"></script>
+<script>
+
+var P=PT;document.getElementById('top').innerHTML=P.topbar('index.html');document.getElementById('foot').innerHTML=P.footer();
+document.getElementById('hero').style.backgroundImage='url(img/'+P.w+'-hero.jpg)';
+var h='';P.WORLDS.forEach(function(w){var l=P.L[w],have=Object.keys(P.collected(w)).length;
+ h+='<div class="tile"><a href="cards.html?w='+w+'" style="text-decoration:none;color:inherit"><div class="im" style="background-image:url(img/'+w+'-hero.jpg)"></div></a><div class="bd" style="position:relative"><img src="img/'+l.back+'" alt="" width="54" style="position:absolute;right:14px;top:-40px;border-radius:8px;box-shadow:0 4px 14px rgba(0,0,0,.6)"><div class="kick">'+P.esc(l.era)+'</div><h3>'+P.esc(l.name)+'</h3><p class="muted small" style="margin:0 0 10px">'+P.esc(l.tagline)+'</p>'+
+ '<div class="toc"><a href="cards.html?w='+w+'">Cards '+have+'/25</a><a href="codex.html?w='+w+'">Codex</a><a href="chronicle.html?w='+w+'">Chronicle</a><a href="heroes.html?w='+w+'">Heroes</a><a href="history.html?w='+w+'">History</a></div></div></div>';});
+document.getElementById('worlds').innerHTML=h;
+var F=[['🃏','Collect the cards','Every unit and commander has a card: 25 per world, from Common to Legendary. Play on this device and every unit you train unlocks its card here. Print them at real card size.','cards.html'],
+['📖','Read the Codex','The encyclopedia of each world: what the world is, how its governments and doctrines work, and every unit with its numbers from the game.','codex.html'],
+['📰','Your own newspaper','After every season the Chronicle prints a front page about what happened in your world: who won, the biggest battle and how you did.','chronicle.html'],
+['📜','The history','How each world came to this: the fall of the old order, the rise of the rivals and the road to Season 1.','history.html'],
+['🎖','Meet the commanders','Six commanders per world, each with a short story. You hire them in the game. Here you learn who they are.','heroes.html']];
+document.getElementById('feats').innerHTML=F.map(function(f){return '<a class="feat" href="'+P.link(f[3])+'"><i aria-hidden="true">'+f[0]+'</i><div><h3 style="margin:0 0 4px">'+f[1]+'</h3><div class="muted small">'+f[2]+'</div></div></a>';}).join('');
+
+</script>
+</body>
+</html>
