@@ -26742,6 +26742,18 @@ if(typeof VIEWS!=='undefined'&&VIEWS.p250b){const _b69=VIEWS.p250b;VIEWS.p250b=f
    bx.querySelectorAll(':scope>.p250row,:scope>.p250e').forEach(x=>x.remove());bx.insertAdjacentHTML('beforeend',rows);}catch(e){}return r;};
 })();
 
+/* 83. 21.9.1 The folded turn report no longer lies over buttons: on a phone it is one slim line that sits on the menu
+   bar, on a computer a slim line in the empty strip under the page. And More says Messages, as the tab does. */
+(function(){
+ try{const st=document.createElement('style');st.textContent='#p19d.col{bottom:14px!important;right:76px!important;width:auto!important;max-width:420px!important;border-radius:10px}'+
+  '#p19d.col .p19dh{padding:2px 4px 2px 12px!important}#p19d.col .p19dx{min-height:32px!important;min-width:36px!important}'+
+  '@media(max-width:760px){#p19d.col{left:0!important;right:0!important;max-width:none!important;bottom:calc(var(--bottomnav-h,62px) + env(safe-area-inset-bottom))!important;border-radius:0!important;border-left-width:4px;border-right:0;border-bottom:0}}';document.head.appendChild(st);}catch(e){}
+ function place(){try{const el=document.getElementById('p19d');const n=document.querySelector('.bottomnav');if(!el)return;if(!n||!el.classList.contains('col')||!window.matchMedia('(max-width:760px)').matches){el.style.removeProperty('bottom');return;}
+   const r=n.getBoundingClientRect();if(r.height>0)el.style.setProperty('bottom',Math.max(0,Math.round(innerHeight-r.top))+'px','important');}catch(e){}}
+ function names(){try{document.querySelectorAll('.p250more a[data-id="p250c"],.p250sh a[data-id="p250c"]').forEach(a=>{const t=[...a.childNodes].find(x=>x.nodeType===3&&/Comms/.test(x.nodeValue));if(t)t.nodeValue=t.nodeValue.replace('Comms','Messages');else{const sp=[...a.querySelectorAll('span')].find(x=>x.textContent.trim()==='Comms');if(sp)sp.textContent='Messages';}});}catch(e){}}
+ const run=()=>{place();names();};new MutationObserver(()=>{if(run._q)return;run._q=requestAnimationFrame(()=>{run._q=0;run();});}).observe(document.body,{childList:true,subtree:true,attributes:true,attributeFilter:['class','open']});addEventListener('resize',run);run();
+})();
+
 try{window.atkPanel=atkPanel;window.calcAttack=calcAttack;}catch(e){} // for the test routine
 }catch(e){try{console.error('p278',e);}catch(_){}}})();
 </script>
