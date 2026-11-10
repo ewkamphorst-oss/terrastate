@@ -25023,7 +25023,7 @@ const _l=VIEWS.p250l;if(_l)VIEWS.p250l=function(v){const r=_l.apply(this,argumen
 /* Army › Targets: how much attack you miss */
 const _a=VIEWS.p250a;VIEWS.p250a=function(v){const r=_a.apply(this,arguments);try{const c=ME();if(!c)return r;let atk=0;try{atk=power(c,'atk');}catch(e){}
   v.querySelectorAll('.p250row').forEach(x=>{const b=x.querySelector('button');if(!b||!/train first/i.test(b.textContent))return;const s=x.querySelector('.p250s');if(!s||s.querySelector('.p276add'))return;const m=(s.textContent||'').match(/defence\s+([\d.,]+)\s*([KMB]?)/i);if(!m)return;
-    let dv=parseFloat(m[1].replace(/,/g,''));dv*=({K:1e3,M:1e6,B:1e9}[(m[2]||'').toUpperCase()]||1);const need=Math.max(0,dv*1.3-atk);s.insertAdjacentHTML('beforeend','<span class="p276add"> · your attack '+F(atk)+' · you need '+F(need)+' more</span>');});}catch(e){}return r;};
+    let dv=parseFloat(m[1].replace(/,/g,''));dv*=({K:1e3,M:1e6,B:1e9}[(m[2]||'').toUpperCase()]||1);const need=Math.max(0,dv*1.3-atk);s.insertAdjacentHTML('beforeend','<span class="p276add"> · your attack '+F(atk)+' · you need '+F(need)+' more (a capture needs about 1.3 times their defence)</span>');});}catch(e){}return r;};
 
 /* Alliance › Joint attacks: allies under attack, with Help */
 function mates(c){const out=[];try{const cl=c.clan;if(cl==null)return out;G.countries.forEach(o=>{if(!o||o.retired||o.id===c.id||o.clan!==cl)return;let inc=[];try{inc=incomingTo(o.id)||[];}catch(e){}const by={};
@@ -25410,9 +25410,9 @@ function goalRow(c){try{if(typeof nexus!=='function')return '';const nx=nexus();
   const def=regionDef(nx);let atk=0;try{const all=Object.assign({},c.units||{});(c.fleets||[]).forEach(f=>{for(const k in (f.units||{}))all[k]=(all[k]||0)+(f.units[k]||0);});atk=power(c,'atk',all);}catch(e){}const intel=typeof regionIntel==='function'&&o?regionIntel(c,nx.id):true;
   const who=o?E(o.tag||o.name):'nobody';
   let warn='';if(o&&nx.ccBuild)warn=who+' builds the Command Center: ready in '+T(left);else if(o&&nx.commandCenter&&nx.ccHolder===o.id)warn=who+' wins the season in '+T(H-held);
-  const btn=!intel?'<button type="button" class="btn sm p250btn p250main" data-p250="scout" data-id="'+nx.id+'">Scout it</button>':atk>def*1.1?'<button type="button" class="btn sm p250btn p250main" data-p250="take" data-id="'+nx.id+'">Attack now</button>':'<button type="button" class="btn sm p250btn'+(warn?' p250main':'')+'" data-p278calc="a|'+nx.id+'">Plan it</button>';
-  const ally=c.clan!=null?'<button type="button" class="btn sm p250btn'+(warn||atk<=def*1.1?' p250main':'')+'" data-p278acs="'+nx.id+'">Attack with alliance</button>':'';
-  return row(warn?'bad':'', (warn?'<b class="bad">'+warn+'</b> · ':'')+'<span data-p287="1" class="p278lk">Take the Nexus</span> '+xy, 'held by '+who+' · defence '+(intel?F(def):'unknown, scout it first')+' · your army, home and away '+F(atk)+(intel&&atk<=def*1.1?' · you need '+F(def*1.1-atk)+' more':''),ally+btn);}catch(e){return '';}}
+  const TKn=intel&&o?p81take(c,nx):null;const CANn=TKn?TKn.can:atk>def*1.25;const btn=!intel?'<button type="button" class="btn sm p250btn p250main" data-p250="scout" data-id="'+nx.id+'">Scout it</button>':CANn?'<button type="button" class="btn sm p250btn p250main" data-p250="take" data-id="'+nx.id+'">Attack now</button>':'<button type="button" class="btn sm p250btn'+(warn?' p250main':'')+'" data-p278calc="a|'+nx.id+'">Plan it</button>';
+  const ally=c.clan!=null?'<button type="button" class="btn sm p250btn'+(warn||!CANn?' p250main':'')+'" data-p278acs="'+nx.id+'">Attack with alliance</button>':'';
+  return row(warn?'bad':'', (warn?'<b class="bad">'+warn+'</b> · ':'')+'<span data-p287="1" class="p278lk">Take the Nexus</span> '+xy, 'held by '+who+' · defence '+(intel?F(def):'unknown, scout it first')+' · your army, home and away '+F(atk)+(intel&&!CANn?' · you need about '+F(TKn?TKn.more:def*1.25-atk)+' more attack':''),ally+btn);}catch(e){return '';}}
 if(VIEWS&&VIEWS.p250o){const _o15=VIEWS.p250o;VIEWS.p250o=function(v){const r=_o15.apply(this,arguments);try{const c=ME();if(!c)return r;const h=goalRow(c);if(!h)return r;
   const box=[...v.querySelectorAll(':scope>.p250box:not(.pin)')].find(b=>b.dataset.p268t==='Do now')||v.querySelector(':scope>.p250box:not(.pin)');if(!box)return r;
   const hd=box.querySelector(':scope>.p250h');if(hd)hd.insertAdjacentHTML('afterend',h);else box.insertAdjacentHTML('afterbegin',h);}catch(e){}return r;};}
@@ -25610,25 +25610,29 @@ if(typeof go==='function'){const _g24=go;go=function(){const r=_g24.apply(this,a
    It says who holds it, how long until they win, their defence against your army, and gives the buttons:
    Attack (alone, when you are strong enough), Attack with alliance, Scout, Calculator, Map. ---------- */
 function nxPanel(){try{const nx=typeof nexus==='function'?nexus():null;if(nx)atkPanel(nx.id);}catch(e){}}
+// 81. 21.9 "Attack now" only when the real battle maths say you take it (capture needs ratio 1.25, not 1.1 of raw power)
+function p81take(c,r){try{const o=r.owner!=null?G.countries[r.owner]:null;if(o&&o.id===c.id)return null;const D=o?defenderPool(r,o).units:garrisonUnits(r);const B=battleCalc(c,c.units||{},r,o,D,{});if(!B)return null;
+  let atk=0;try{atk=power(c,'atk');}catch(e){}return {can:!!B.wouldTake,ratio:B.ratio,more:B.wouldTake?0:Math.max(1,atk*(1.25/Math.max(0.01,B.ratio||0.01)-1))};}catch(e){return null;}}
 function atkPanel(rid){try{const c=ME();if(!c)return;const nx=_rgId(rid);if(!nx)return;const isNx=!!nx.nexus;closeNx();const o=nx.owner!=null?G.countries[nx.owner]:null;const mine=nx.owner===c.id;
   const H=typeof NEXUS_HOLD!=='undefined'?NEXUS_HOLD:12;const held=nx.ccHeld||0;const intel=mine||!o||(typeof regionIntel==='function'&&regionIntel(c,nx.id));let def=0;try{def=regionDef(nx);}catch(e){}
-  let atk=0;try{atk=power(c,'atk');}catch(e){}const tv=acsTravel(c,nx);
+  let atk=0;try{atk=power(c,'atk');}catch(e){}const tv=acsTravel(c,nx);const TK=(!mine&&intel)?p81take(c,nx):null;const CAN=!!(TK&&TK.can);let mate=false;try{mate=!mine&&!!o&&typeof sameTheaterAlly==='function'&&!!sameTheaterAlly(c,nx);}catch(e){}
   const st=!isNx?'':nx.ccBuild?(o?E(o.tag||o.name):'Someone')+' builds the Command Center: ready in '+T(nx.ccBuild.done-G.tick):nx.commandCenter&&nx.ccHolder!=null&&nx.ccHolder===nx.owner?(mine?'You hold it '+held+' of '+H+' turns':'<b class="bad">'+(o?E(o.tag||o.name):'?')+' wins the season in '+T(H-held)+'</b> ('+held+'/'+H+' held)'):'No Command Center yet';
   let btns='',infNote='';
   if(mine)btns='<button type="button" class="btn sm p250btn p250main" data-p278tab="p250a|Defend a land">Defend it</button>';
   else{if(!intel)btns+='<button type="button" class="btn sm p250btn p250main" data-p250="scout" data-id="'+nx.id+'">Scout it first</button>';
-    if(intel&&atk>def*1.1)btns+='<button type="button" class="btn sm p250btn p250main" data-p250="take" data-id="'+nx.id+'">Attack now, alone</button>';
+    if(intel&&CAN&&!mate)btns+='<button type="button" class="btn sm p250btn p250main" data-p250="take" data-id="'+nx.id+'">Attack now, alone</button>';
     const inf=c.res.influence||0;let ir=0;try{const pj=projection(c);ir=(pj.net&&pj.net.influence)||(pj.prod&&pj.prod.influence)||0;}catch(e){}
-    if(c.clan!=null&&inf>=600)btns+='<button type="button" class="btn sm p250btn'+(intel&&atk<=def*1.1?' p250main':'')+'" data-p278acs="'+nx.id+'">Attack with alliance</button>';
+    if(c.clan!=null&&inf>=600)btns+='<button type="button" class="btn sm p250btn'+(intel&&!CAN?' p250main':'')+'" data-p278acs="'+nx.id+'">Attack with alliance</button>';
     else if(c.clan!=null)infNote='<div class="p287s"><b class="bad">A joint attack costs 600 influence to join, 1.2K to lead.</b> You have '+F(inf)+(ir>0?', ready in '+T(Math.ceil((600-inf)/ir)):'')+'.</div>';
     else btns+='<button type="button" class="btn sm ghost p250btn" data-p278tab="p250al|Join">Join an alliance to attack together</button>';
-    if(atk<1||(intel&&atk<=def*1.1))btns+='<button type="button" class="btn sm p250btn'+(atk<1?' p250main':' ghost')+'" data-p278tab="p250b|Troops">'+(atk<1?'No troops: train some':'Train troops')+'</button>';
+    if(atk<1||(intel&&!CAN))btns+='<button type="button" class="btn sm p250btn'+(atk<1?' p250main':' ghost')+'" data-p278tab="p250b|Troops">'+(atk<1?'No troops: train some':'Train troops')+'</button>';
     btns+='<button type="button" class="btn sm ghost p250btn" data-p278calc="a|'+nx.id+'">Calculator</button>';}
+  if(mate){btns='';infNote='<div class="p287s"><b>Your sector-mate.</b> Sector-mates are your team: you cannot attack them, and you can defend each other.</div>';}
   btns+='<button type="button" class="btn sm ghost p250btn" data-p278xy="'+E(nx.coord)+'">Map</button>';
   const d=document.createElement('div');d.className='p287bg';d.innerHTML='<div class="p287" role="dialog" aria-label="Attack"><div class="p287h"><b>'+(isNx?(/Romaterra/i.test(document.title)?'Roma':/Ironfront/i.test(document.title)?'Capital Sector':'The Nexus'):'Attack')+'</b> '+xyBtn(nx.coord)+' <span class="muted">'+E(nx.name)+'</span><button type="button" class="p287x" aria-label="Close">✕</button></div>'+
-    '<div class="p287s">'+(mine?'Yours':o?'Held by <b>'+E(o.name)+'</b> '+E(o.tag||''):'Unclaimed')+(st?' · '+st:'')+'</div>'+
-    (mine?'':'<div class="p287n"><span>their defence <b>'+(intel?F(def):'unknown')+'</b></span><span>your attack <b>'+F(atk)+'</b></span><span>there in <b>'+T(tv)+'</b></span>'+(intel&&atk<=def*1.1?'<span class="bad">alone you need '+F(def*1.1-atk)+' more</span>':'')+'</div>')+
-    infNote+(function(){try{if(mine||!intel||!o||def<=Math.max(1,atk)*1.5)return '';const R=/Romaterra/i.test(document.title);
+    '<div class="p287s">'+(mine?'Yours':o?'Held by <b>'+E(o.name)+'</b> '+E(o.tag||''):'Unclaimed')+(st?' · '+st:'')+'</div>'+(mine||!o||!window.p79who?'':window.p79who(o,c))+
+    (mine?'':'<div class="p287n"><span>their defence <b>'+(intel?F(def):'unknown')+'</b></span><span>your attack <b>'+F(atk)+'</b></span><span>there in <b>'+T(tv)+'</b></span>'+(intel&&!CAN&&TK?'<span class="bad">alone you need about '+F(TK.more)+' more attack</span>':'')+'</div>')+
+    infNote+(function(){try{if(mine||mate||!intel||!o||def<=Math.max(1,atk)*1.5)return '';const R=/Romaterra/i.test(document.title);
       return '<div class="p287s"><b>Too strong to take head-on.</b> Ways round the wall: <a class="p278lk" data-p278tab="p250a|'+(R?'Spies':'Covert Ops')+'">'+(R?'sabotage their watchtowers':'sabotage their radar')+'</a> · <a class="p278lk" data-p278tab="p250r|">heavier troops in Research</a>'+(c.clan!=null?' · a joint attack with your alliance':'')+' · or break a pact for a surprise strike (+35%).</div>';}catch(e){return '';}})()+'<div class="p287b">'+btns+'</div></div>';
   document.body.appendChild(d);d.addEventListener('click',e=>{if(e.target===d||e.target.closest('.p287x')){closeNx();return;}if(e.target.closest('button[data-p250],button[data-p278acs],button[data-p278calc],[data-p278tab],button[data-p278xy]'))setTimeout(closeNx,0);});}catch(e){}}
 function closeNx(){document.querySelectorAll('.p287bg').forEach(x=>x.remove());}
@@ -26732,10 +26736,12 @@ if(typeof VIEWS!=='undefined'&&VIEWS.p250b){const _b69=VIEWS.p250b;VIEWS.p250b=f
  const LEAD={TOP:3,GAP:6,SHARE:0.75,NEED:1.15,MAXT:8,WAVE:2};
  window.p74Leader=h=>!!(h&&h._p74top!=null&&G.tick-h._p74top>=10);
  function leadTick(){if(G.tick%2)return;let rec=false;try{rec=typeof SOLO_DIFF!=='undefined'&&SOLO_DIFF&&(SOLO_DIFF.humBias||0)<0;}catch(e){} // Recruit: only a clear number one for 20 turns, one strike at a time, never joint
- HUM().forEach(h=>{try{if(!h||h.retired||h.isAI!==false)return;let pos=999;try{pos=rankTitle(h.id).pos;}catch(e){}if(pos>(rec?1:LEAD.TOP)){h._p74top=null;return;}if(h._p74top==null)h._p74top=G.tick;if(rec&&G.tick-h._p74top<20)return;
-   if(G.tick-(h._p74at==null?-99:h._p74at)<(rec?12:LEAD.GAP))return;if(typeof newbieProtected==='function'&&newbieProtected(h))return;if(typeof shieldActive==='function'&&shieldActive(h))return;
-   const regs=regionsOf(h);if(regs.length<3)return;const used=new Set(),hit=new Set();let sent=0;
-   const cands=G.countries.filter(ai=>ai&&ai.isAI&&!ai.retired&&!(h.clan!=null&&ai.clan===h.clan)&&((ai.pers&&ai.pers.aggression)!=null?ai.pers.aggression:50)>=45&&fleetSize(ai.units||{})>=40);
+ HUM().forEach(h=>{try{if(!h||h.retired||h.isAI!==false)return;let pos=999;try{pos=rankTitle(h.id).pos;}catch(e){}if(pos>(rec?1:LEAD.TOP)){h._p74top=null;h._p79p=Math.max(0,(h._p79p||0)-2);return;}if(h._p74top==null)h._p74top=G.tick;if(rec&&G.tick-h._p74top<20)return;
+   if(rec&&G.tick-(h._p74at==null?-99:h._p74at)<12)return;if(typeof newbieProtected==='function'&&newbieProtected(h))return;if(typeof shieldActive==='function'&&shieldActive(h))return;
+   const regs=regionsOf(h);if(regs.length<3)return;
+   if(!rec&&!(window.p79Dir&&window.p79Dir(h,pos,regs)))return; // 79c: the war director decides when, not a fixed clock
+   const used=new Set(),hit=new Set();let sent=0;
+   const cands=G.countries.filter(ai=>ai&&ai.isAI&&!ai.retired&&!(h.clan!=null&&ai.clan===h.clan)&&(((ai.pers&&ai.pers.aggression)!=null?ai.pers.aggression:50)>=45||(window.p79Bad&&window.p79Bad(ai,h)))&&fleetSize(ai.units||{})>=40);
    for(let w=0;w<(rec?1:LEAD.WAVE);w++){let best=null;
      for(const ai of cands){if(used.has(ai.id))continue;try{if(typeof napActive==='function'&&(napActive(ai,h.id)||napActive(h,ai.id)))continue;if((incomingTo(ai.id)||[]).length)continue;}catch(e){}
        const com={};for(const k in ai.units){const n=Math.floor((ai.units[k]||0)*LEAD.SHARE);if(n>0)com[k]=n;}if(!fleetSize(com))continue;
@@ -26743,8 +26749,8 @@ if(typeof VIEWS!=='undefined'&&VIEWS.p250b){const _b69=VIEWS.p250b;VIEWS.p250b=f
          const B=battleCalc(ai,com,r,h,defenderPool(r,h).units,{});if(!B||!B.wouldTake||!(B.ratio>=LEAD.NEED))continue;best={ai,r,com,t};}catch(e){}}}
      if(!best)break;let res=null;try{res=cmdOp(best.ai,best.r.id,best.com,{_p217:1});}catch(e){res={ok:false,error:String(e)};}used.add(best.ai.id);if(!(res&&res.ok))h._p74why=(res&&res.error)||'?';
      if(res&&res.ok){sent++;hit.add(best.r.id);try{sitrep(h,'war','⚠ You lead the world, and '+best.ai.name+' wants a piece of it: an army marches on '+best.r.name+'.',{coord:best.r.coord,sev:2,go:'p250a'});}catch(e){}}}
-   if(!sent&&!rec&&G.tick-(h._p74jt==null?-99:h._p74jt)>=12&&typeof window.p74Leader==='function'&&window.p74Leader(h)){try{if(joint(h,regs,cands)){sent=1;h._p74jt=G.tick;}}catch(e){}}
-   if(sent)h._p74at=G.tick;}catch(e){}});}
+   if(!sent&&!rec&&G.tick-(h._p74jt==null?-99:h._p74jt)>=12&&!(h._p79calm>G.tick)&&typeof window.p74Leader==='function'&&window.p74Leader(h)){try{if(joint(h,regs,cands)){sent=1;h._p74jt=G.tick;}}catch(e){}}
+   if(sent){h._p74at=G.tick;try{window.p79Fired&&window.p79Fired(h,sent);}catch(e){}}}catch(e){}});}
  // c2. no single neighbour can win: up to three of them strike the same land in the same turn
  function joint(h,regs,cands){const L=regs.map(r=>{let d=0;try{d=regionDef(r);}catch(e){}return {r,d};}).sort((a,b)=>a.d-b.d).slice(0,4);
    for(const x of L){const r=x.r;const team=[];
@@ -26931,7 +26937,191 @@ if(typeof VIEWS!=='undefined'&&VIEWS.p250b){const _b69=VIEWS.p250b;VIEWS.p250b=f
     for(const k in (c.units||{})){const n=Math.floor((c.units[k]||0)*frac);if(n>0){c.units[k]-=n;lost+=n;}}
     c.stab=Math.max(0,(c.stab||0)-2);c._p78lost=(c._p78lost||0)+lost;
     if(c.isAI===false&&lost>0&&G.tick-(c._p78msg==null?-99:c._p78msg)>=3){c._p78msg=G.tick;c._brokeMsg=G.tick;try{sitrep(c,'economy','💸 Treasury empty: '+F(lost)+' troops deserted and stability −2. Raise tax, sell stock or disband troops.',{sev:3,go:'p250e'});}catch(e){}}}catch(e){}});}
-  const _rt78=runTick;runTick=function(){try{payTick();}catch(e){}return _rt78.apply(this,arguments);}; // before the turn, so the treasury message (39) counts the deserterstry{window.runTick=runTick;}catch(e){}
+  const _rt78=runTick;runTick=function(){try{payTick();}catch(e){}return _rt78.apply(this,arguments);}; /* before the turn, so the treasury message (39) counts the deserters */try{window.runTick=runTick;}catch(e){}
+})();
+
+/* 79. Nations that judge you (21.9): good deeds count too; your name in a theater, earned by deeds and fading with
+   time; and a war director that sends the pressure on a leader when the moment is right, never with extra troops. */
+(function(){
+ const HUM=()=>{try{if(typeof __mpHumanList==='function')return __mpHumanList();}catch(e){}const c=ME();return c?[c]:[];};
+ const isHum=c=>!!(c&&c.isAI===false&&!c.retired);
+ // ---- a. your name in a theater ----
+ const REP={MIN:-20,MAX:20,BAD:-8,GOOD:5,FADE:0.9};
+ const RW={took:'took a land',broke:'broke a pact',helped:'helped a neighbour hold',kept:'kept a pact to the end',gift:'made amends',failed:'attacked and was thrown back'};
+ function homeCl(c){try{const rs=regionsOf(c);if(!rs.length)return null;const cap=rs.find(r=>r.capital||r.isCapital)||null;if(cap)return cap.cluster;const n={};rs.forEach(r=>{n[r.cluster]=(n[r.cluster]||0)+1;});return +Object.keys(n).sort((a,b)=>n[b]-n[a])[0];}catch(e){return null;}}
+ function rep(cl,id){const R=G._p79r;return (R&&R[cl]&&R[cl][id])||0;}
+ function repAdd(cl,id,d,k){if(cl==null||id==null||!d)return;const R=G._p79r=G._p79r||{};const m=R[cl]=R[cl]||{};m[id]=Math.max(REP.MIN,Math.min(REP.MAX,(m[id]||0)+d));
+   const c=G.countries[id];if(isHum(c)){const L=c._p79e=c._p79e||[];L.unshift({t:G.tick,k,cl,d});if(L.length>6)L.length=6;}}
+ function repWord(v){return v>=10?'respected':v>=REP.GOOD?'trusted':v<=-14?'feared and hated':v<=REP.BAD?'distrusted':v<=-3?'watched':'neutral';}
+ window.p79Rep=(c,cl)=>rep(cl==null?homeCl(c):cl,c.id);window.p79HomeCl=homeCl;
+ // a neighbour that has heard of your deeds joins the pressure on you
+ window.p79Bad=(ai,h)=>{try{return rep(homeCl(ai),h.id)<=REP.BAD;}catch(e){return false;}};
+ function fade(){if(G.tick%5)return;const R=G._p79r;if(!R)return;for(const cl in R){const m=R[cl];for(const id in m){m[id]*=REP.FADE;if(Math.abs(m[id])<0.3)delete m[id];}if(!Object.keys(m).length)delete R[cl];}}
+ // ---- b. good deeds count: help, trade, a pact kept to the end, an army that broke on your walls ----
+ const _act=k=>(ai,why)=>{try{if(!ai||!ai.isAI||typeof playerActed!=='function')return;const g=ai._p79g=ai._p79g||{};if(g[k]!=null&&G.tick-g[k]<5)return;g[k]=G.tick;playerActed(ai,k,why||'');}catch(e){}};
+ const solo=()=>{try{return typeof isSoloGame==='function'?isSoloGame():true;}catch(e){return true;}};
+ if(typeof finalizeBattle==='function'){const _fb=finalizeBattle;finalizeBattle=function(c,f,r,defC,R,retreated){const before=r?r.owner:null;const helpers=[];
+   try{if(r&&defC)(G.countries||[]).forEach(o=>{if(!o||o.id===defC.id||o.id===c.id)return;if((o.fleets||[]).some(x=>x&&x.target===r.id&&x.status==='garrison'))helpers.push(o.id);});}catch(e){}
+   const out=_fb.apply(this,arguments);
+   try{if(c&&defC&&r&&before===defC.id){const took=r.owner===c.id;const cl=r.cluster;
+     if(took)repAdd(cl,c.id,-3,'took');else repAdd(cl,c.id,-1,'failed');
+     if(!took)helpers.forEach(hid=>repAdd(cl,hid,2,'helped'));
+     if(!took&&c.isAI&&isHum(defC)){try{memNote(c,defC.id,'held',0,0);}catch(e){}if(solo()&&defC.id===G.you)_act('crush_army')(c,r.name);}
+     helpers.forEach(hid=>{if(solo()&&hid===G.you&&defC.isAI)_act('help')(defC,r.name);});}}catch(e){}
+   return out;};}
+ if(typeof cmdStation==='function'){const _st=cmdStation;cmdStation=function(c,rid){const out=_st.apply(this,arguments);try{if(out&&out.ok&&solo()&&c&&c.id===G.you){const r=_rgId(rid);const o=r&&r.owner!=null?G.countries[r.owner]:null;if(o&&o.isAI&&o.id!==c.id)_act('help')(o,r.name);}}catch(e){}return out;};}
+ if(typeof cmdAcceptOffer==='function'){const _ao=cmdAcceptOffer;cmdAcceptOffer=function(c,msgId){let m=null;try{m=findMailMsg(c,msgId);}catch(e){}const kind=m&&m.offer&&m.offer.kind;const out=_ao.apply(this,arguments);
+   try{if(out&&out.ok&&kind==='trade'){const ai=G.countries[m.peerId];try{memNote(ai,c.id,'traded',4,0);}catch(e){}if(solo()&&c.id===G.you)_act('trade')(ai);}}catch(e){}return out;};}
+ if(typeof cmdMakeAmends==='function'){const _ma=cmdMakeAmends;cmdMakeAmends=function(c,oid){const out=_ma.apply(this,arguments);try{if(out&&out.ok){const o=G.countries[Math.floor(+oid)];repAdd(homeCl(o),c.id,1,'gift');}}catch(e){}return out;};}
+ // a pact that ran its full term, or one that was broken
+ function pacts(){(G.countries||[]).forEach(o=>{if(!o||o.retired)return;
+   if(o._p7betray)for(const k in o._p7betray){if(o._p7betray[k]===G.tick){const cl=homeCl(o);repAdd(cl,+k,-6,'broke');}}
+   if(o._nap&&o.isAI)for(const k in o._nap){if(o._nap[k]!==G.tick)continue;const h=G.countries[k];if(!h||h.retired)continue;const back=h._nap&&h._nap[o.id];if(back==null||back<G.tick)continue;
+     repAdd(homeCl(o),h.id,2,'kept');try{memNote(o,h.id,'kept',8,0);}catch(e){}if(solo()&&h.id===G.you)_act('honor_nap')(o);}});}
+ // ---- c. what a bad or a good name does ----
+ if(typeof offerFor==='function'){const _of=offerFor;offerFor=function(ai,t){try{if(t&&rep(homeCl(ai),t.id)<=REP.BAD)return null;}catch(e){}return _of.apply(this,arguments);};}
+ if(typeof cmdP7Nap==='function'){const _np=cmdP7Nap;cmdP7Nap=function(c,aiId){try{const ai=G.countries[aiId];if(ai&&c){const cl=homeCl(ai);const v=rep(cl,c.id);if(v<=REP.BAD)return err(ai.name+' will not sign: in '+theaterName(cl)+' you are '+repWord(v)+'. Keep the peace and help neighbours hold, and your name recovers.');}}catch(e){}return _np.apply(this,arguments);};}
+ if(typeof p217Reason==='function'){const _pr=p217Reason;p217Reason=function(c,r,defC){const w=_pr.apply(this,arguments);try{if(w==='weak'&&defC&&rep(r.cluster,defC.id)>=REP.GOOD)return '';}catch(e){}return w;};}
+ // ---- d. the war director: pressure on a leader builds while they lead undisturbed, and eases after a blow ----
+ const DIR=()=>{let wl=false;try{wl=typeof SOLO_DIFF!=='undefined'&&(SOLO_DIFF.skill||0)>=0.1;}catch(e){}return {TH:wl?5:6,WARN:2,CALM:6};};
+ window.p79Dir=(h,pos,regs)=>{const D=DIR();const n=regs.length;
+   if(h._p79n!=null&&n<h._p79n){h._p79calm=G.tick+D.CALM;h._p79p=Math.max(0,(h._p79p||0)-6);}h._p79n=n;
+   let hit=false;try{hit=(incomingTo(h.id)||[]).length>0;}catch(e){}
+   if(!hit&&!(h._p79calm>G.tick)){let g=2;if(pos===1)g+=1;try{if(rep(homeCl(h),h.id)<=REP.BAD)g+=1;}catch(e){}h._p79p=Math.min(30,(h._p79p||0)+g);}
+   const p=h._p79p||0;
+   if(p>=D.TH-D.WARN&&!(h._p79calm>G.tick)&&G.tick-(h._p79w==null?-99:h._p79w)>=10){h._p79w=G.tick;try{sitrep(h,'war','👁 Your lead is noticed: neighbours are weighing an attack on your weakest lands. Strengthen them in Army › Defend a land.',{sev:1,go:'p250a'});}catch(e){}}
+   return p>=D.TH&&!(h._p79calm>G.tick);};
+ window.p79Fired=(h,n)=>{const D=DIR();h._p79p=Math.max(0,(h._p79p||0)-D.TH*n);};
+ if(typeof runTick==='function'){const _rt=runTick;runTick=function(){const out=_rt.apply(this,arguments);try{pacts();}catch(e){}try{fade();}catch(e){}return out;};try{window.runTick=runTick;}catch(e){}}
+ // ---- e. on the screens: who they are, at the moment you decide to attack; your name on the Diplomacy screen ----
+ const TYPEW={defensive:'defender',aggressive:'raider',expansionist:'conqueror',opportunistic:'opportunist',trader:'trader',economic:'trader',diplomatic:'diplomat',scientific:'builder'};
+ window.p79type=o=>{const ar=(o&&o.pers&&o.pers.arch)||'';return TYPEW[ar]||'';};
+ window.p79who=(o,c)=>{try{if(!o||!o.isAI||typeof p217Traits!=='function')return '';const t=p217Traits(o);const a=typeof p217About==='function'?p217About(o,c.id):null;const ar=(o.pers&&o.pers.arch)||'';
+   const MEAN={defensive:'hits back hard',aggressive:'strikes often',expansionist:'grabs land',opportunistic:'strikes when you are away',trader:'prefers deals',economic:'prefers deals',diplomatic:'offers pacts',scientific:'builds and studies',balanced:''};
+   const bits=[];if(t.length)bits.push(E(t.join(', ')));if(MEAN[ar])bits.push(E(MEAN[ar]));
+   if(a){bits.push('trust in you <b class="'+(a.trust>=62?'ok':a.trust<=38?'bad':'')+'">'+a.trust+'</b>');if(a.grudge>=2)bits.push('<b class="bad">wants payback</b>');}
+   if(!t.length&&!MEAN[ar])bits.unshift('no strong traits');return bits.length?'<div class="p287s">Character: '+bits.join(' · ')+(a&&a.grudge>=2?' · <a class="p278lk" data-p79dip="1">Make amends</a>':'')+'</div>':'';}catch(e){return '';}};
+ document.addEventListener('click',e=>{const b=e.target&&e.target.closest&&e.target.closest('[data-p79dip]');if(!b)return;e.preventDefault();e.stopPropagation();try{closeNx();}catch(_){}try{go('diplomacy');}catch(_){}},true);
+ // ---- f. one place: Army › Defend a land says who around you wants payback and who trusts you, with why, and what to do ----
+ try{if(typeof P217_WORDS==='object'){P217_WORDS.kept='you kept a pact to the end';P217_WORDS.traded='you traded with them';P217_WORDS.held='you threw back their army';}}catch(e){}
+ const GOODK={helped:1,amends:1,kept:1,traded:1,helped_me:1,traded_:1,honored_nap:1};
+ const SOLOW={attacked_me:'you attacked them',captured_my_region:'you took their land',broke_nap:'you broke a pact',helped_me:'you helped them hold',traded:'you traded with them',honored_nap:'you kept a pact to the end',defeated_my_army:'you threw back their army'};
+ const SOLOK={helped_me:'helped',traded:'traded',honored_nap:'kept',defeated_my_army:'held',attacked_me:'attacked',captured_my_region:'took_land',broke_nap:'broke'};
+ const INT={retaliate:['bad','plans payback'],prepare_war:['bad','arming against you'],contain:['','wary of your army'],watch:['','watching you'],seek_peace:['ok','wants peace']};
+ function why(ai,c){const out=[];const seen={};const m=ai._mem&&ai._mem[c.id];
+   const add=(k,t,w)=>{if(!w||seen[w])return;seen[w]=1;out.push({k,t,w,good:!!GOODK[k]||k==='held'});};
+   try{if(c.id===G.you&&ai.vsYou&&ai.vsYou.mem)ai.vsYou.mem.forEach(x=>add(SOLOK[x.type]||x.type,x.tick,SOLOW[x.type]));}catch(e){}
+   try{if(m)m.log.forEach(x=>add(x.k,x.t,(typeof P217_WORDS==='object'&&P217_WORDS[x.k])||null));}catch(e){}
+   out.forEach(x=>{x.neu=(x.k==='beat'||x.k==='fought');});
+   return out.sort((a,b)=>b.t-a.t).slice(0,3);}
+ function about(ai,c){let tr=50,gr=0;try{const a=p217About(ai,c.id);tr=a.trust;gr=a.grudge;}catch(e){}try{if(c.id===G.you&&ai.vsYou)gr=Math.max(gr,ai.vsYou.grudge||0);}catch(e){}return {tr,gr};}
+ function neighbours(c){const cl=homeCl(c);const L=[];(G.countries||[]).forEach(ai=>{if(!ai||!ai.isAI||ai.retired||ai.id===c.id)return;if(c.clan!=null&&ai.clan===c.clan)return;
+   const near=cl!=null&&homeCl(ai)===cl;const m=ai._mem&&ai._mem[c.id];const sm=c.id===G.you&&ai.vsYou&&ai.vsYou.mem&&ai.vsYou.mem.length;if(!near&&!m&&!sm)return;
+   const a=about(ai,c);const w=why(ai,c);const score=a.gr*12+Math.abs(a.tr-50)+(w.length?8:0)+(near?4:0);if(!w.length&&a.gr<1&&Math.abs(a.tr-50)<8)return;L.push({ai,a,w,score,near});});
+   return L.sort((x,y)=>y.score-x.score).slice(0,5);}
+ function napOn(ai,c){try{return typeof napActive==='function'&&napActive(ai,c.id);}catch(e){return false;}}
+ function nbBox(c){const cl=homeCl(c);if(cl==null)return '';const val=rep(cl,c.id);const tone=val>=REP.GOOD?'ok':val<=REP.BAD?'bad':'';
+   const eff=val<=REP.BAD?'neighbours refuse pacts and deals, and more of them join the pressure on you':val>=REP.GOOD?'neighbours do not prey on you for looking weak, and they listen to your offers':'what you do next decides it';
+   let cost=0;try{cost=p222GiftCost(c);}catch(e){}const R=/Romaterra/i.test(document.title);
+   const rows=neighbours(c).map(({ai,a,w})=>{let it='';try{if(c.id===G.you&&typeof aiIntent==='function'){const k=aiIntent(ai);if(INT[k])it=' · <b class="'+INT[k][0]+'">'+INT[k][1]+'</b>';}}catch(e){}
+     const reasons=w.length?w.map(x=>'<span class="'+(x.neu?'muted':x.good?'ok':'bad')+'">'+(x.neu?'':x.good?'+ ':'− ')+E(x.w)+'</span> <span class="muted">turn '+x.t+'</span>').join(' · '):'<span class="muted">no dealings yet</span>';
+     const cur=(((RMETA.money||{}).i)||'');const inf=Math.floor(c.res.influence||0);const pact=napOn(ai,c);let btn='';
+     if(pact)btn='<span class="ok small">pact in force</span>';
+     if(a.gr>=(pact?2:1)||(!pact&&a.tr<45))btn+=(c.res.money||0)>=cost?'<button type="button" class="btn sm p250btn'+(a.gr>=2?' p250main':'')+'" data-p79am="'+ai.id+'">Make amends · '+cur+F(cost)+'</button>':'<span class="muted small">a gift costs '+cur+F(cost)+', you have '+cur+F(c.res.money||0)+'</span>';
+     else if(!pact&&a.tr>=55)btn=inf>=150?'<button type="button" class="btn sm p250btn" data-p79nap="'+ai.id+'">Offer a pact · 150 of your '+F(inf)+' influence</button>':'<span class="muted small">a pact offer costs 150 influence, you have '+F(inf)+'</span>';
+     let ty='';try{ty=window.p79type?window.p79type(ai):'';}catch(e){}
+     return '<div class="p250row"><div class="p250m"><div class="p250t">'+E(ai.name)+' <span class="muted">'+E(ai.tag||'')+'</span>'+(ty?' <span class="muted small">'+E(ty)+'</span>':'')+'</div><div class="p250s">trust <b class="'+(a.tr>=62?'ok':a.tr<=38?'bad':'')+'">'+a.tr+'</b>'+(a.gr>=1?' · grudge <b class="bad">'+Math.round(a.gr)+'</b>':'')+it+'</div><div class="p250s">'+reasons+'</div></div><div class="p250b">'+btn+'</div></div>';}).join('');
+   return '<div class="p79nb"><div class="p250row"><div class="p250m"><div class="p250t">Your name in '+E(theaterName(cl))+': <b class="'+tone+'">'+repWord(val)+'</b> <span class="muted small">('+(val>0?'+':'')+Math.round(val)+')</span></div><div class="p250s">'+eff+'. A gift (Make amends) raises their trust and eases their grudge. Taking land and breaking pacts hurt your name, helping a neighbour hold and keeping a pact to the end restore it, and it fades back over time.</div></div></div>'+
+     (rows||'<div class="p250row"><div class="p250m"><div class="p250s muted">No neighbour has an opinion of you yet.</div></div></div>')+'</div>';}
+ if(typeof VIEWS!=='undefined'&&VIEWS.p250a){const _a79=VIEWS.p250a;VIEWS.p250a=function(v){const r=_a79.apply(this,arguments);try{const c=ME();if(!c)return r;const box=[...v.querySelectorAll(':scope>.p250box')].find(b=>b.dataset.p268t==='Defend a land');if(!box||box.querySelector('.p79nb'))return r;
+   const html=nbBox(c);if(!html)return r;const hd=document.createElement('div');hd.className='p250h';hd.innerHTML='<span>How neighbours see you</span>';const wrap=document.createElement('div');wrap.innerHTML=html;box.appendChild(hd);box.appendChild(wrap.firstChild);}catch(e){}return r;};}
+ document.addEventListener('click',e=>{const t=e.target;if(!t||!t.closest)return;const am=t.closest('[data-p79am]'),np=t.closest('[data-p79nap]');if(!am&&!np)return;e.preventDefault();e.stopPropagation();if((am||np).dataset.busy)return;document.querySelectorAll('[data-p79am],[data-p79nap]').forEach(x=>{x.dataset.busy=1;x.disabled=true;});const c=ME();if(!c)return;
+   const id=+(am?am.dataset.p79am:np.dataset.p79nap);Promise.resolve(am?cmdMakeAmends(c,id):cmdP7Nap(c,id)).then(r=>{try{if(r&&r.ok)toast((r.data&&r.data.msg)||(am?'Gift sent.':'Pact offered.'),'good');else toast((r&&r.error)||'Not possible right now.','bad');save();drawTop();}catch(x){}try{go(view);}catch(x){}});},true);
+})();
+
+/* 80. Every type has its own mark (21.9). Measured first: the types differed in how often they attack, not in how.
+   The defender never strikes a nation first, but when its walls hold it hits back at once. The opportunist strikes the
+   nation whose army has marched away. The trader and the diplomat come to their neighbours with deals and pacts. */
+(function(){
+ const HUM=()=>{try{if(typeof __mpHumanList==='function')return __mpHumanList();}catch(e){}const c=ME();return c?[c]:[];};
+ const AR=o=>(o&&o.pers&&o.pers.arch)||'';const isHum=c=>!!(c&&c.isAI===false&&!c.retired);
+ let rec=()=>{try{return typeof SOLO_DIFF!=='undefined'&&SOLO_DIFF&&(SOLO_DIFF.humBias||0)<0;}catch(e){return false;}};
+ function wronged(c,t){try{const m=c._mem&&c._mem[t.id];if(m&&(m.gr>0||m.log.some(x=>x.k==='took_land'||x.k==='attacked'||x.k==='blocked')))return true;}catch(e){}
+   try{if(t.id===G.you&&c.vsYou&&((c.vsYou.grudge||0)>0||(c.vsYou.mem||[]).some(x=>x.type==='attacked_me'||x.type==='captured_my_region'||x.type==='broke_nap')))return true;}catch(e){}
+   try{if(c._wg&&c._wg[t.id])return true;const cl=c.clan!=null&&typeof clanOf==='function'?clanOf(c):null;if(cl&&cl.target!=null&&(cl.target===t.clan||cl.target===t.id))return true;}catch(e){}return false;}
+ function blocked(a,t){try{if(!t||t.retired)return true;if(typeof napActive==='function'&&(napActive(a,t.id)||napActive(t,a.id)))return true;if(typeof newbieProtected==='function'&&newbieProtected(t))return true;if(typeof shieldActive==='function'&&shieldActive(t))return true;if(a.clan!=null&&a.clan===t.clan)return true;}catch(e){return true;}return false;}
+ const away=t=>{let out=0;try{(t.fleets||[]).forEach(f=>{if(f&&(f.status==='outbound'||f.status==='battle'||f.status==='staged'||f.status==='returning'))out+=fleetSize(f.units||{});});}catch(e){}const home=fleetSize(t.units||{});return {out,home,share:out+home>0?out/(out+home):0};};
+ // a. the defender does not strike first
+ if(typeof cmdOp==='function'){const _op=cmdOp;cmdOp=function(c,rid){try{if(c&&c.isAI&&AR(c)==='defensive'){const r=_rgId(rid);const t=r&&r.owner!=null?G.countries[r.owner]:null;if(t&&t.id!==c.id&&!wronged(c,t))return err('A defender does not strike first');}}catch(e){}return _op.apply(this,arguments);};try{window.cmdOp=cmdOp;}catch(e){}}
+ //    ... but when its walls hold, it hits back at once
+ if(typeof finalizeBattle==='function'){const _fb=finalizeBattle;finalizeBattle=function(c,f,r,defC){const before=r?r.owner:null;const out=_fb.apply(this,arguments);
+   try{if(c&&defC&&r&&defC.isAI&&AR(defC)==='defensive'&&before===defC.id&&r.owner===defC.id&&c.id!==defC.id){defC._p80ret={who:c.id,at:G.tick+1};try{const S=G._p80s=G._p80s||{};S.held=(S.held||0)+1;}catch(e){}}}catch(e){}return out;};}
+ function bestHit(a,t,share,maxT){const com={};for(const k in (a.units||{})){const n=Math.floor((a.units[k]||0)*share);if(n>0)com[k]=n;}if(fleetSize(com)<20)return null;let best=null;
+   regionsOf(t).forEach(r=>{try{if(r.nexus)return;if(typeof p219Block==='function'&&p219Block(a,r))return;const hm=homeFor(a,r);if(!hm)return;const tv=travelFor(a,hm,r);if(tv>maxT)return;
+     const B=battleCalc(a,com,r,t,defenderPool(r,t).units,{});if(!B||!B.wouldTake||!(B.ratio>=1.2))return;if(!best||tv<best.tv)best={r,com,tv};}catch(e){}});return best;}
+ const stat=k=>{try{const S=G._p80s=G._p80s||{};S[k]=(S[k]||0)+1;}catch(e){}};
+ function strike(a,t,hit,line,kind){let res=null;try{res=cmdOp(a,hit.r.id,hit.com,{_p217:1});}catch(e){res=null;}if(!(res&&res.ok))return false;stat(kind);
+   if(isHum(t)){try{sitrep(t,'war',line,{coord:hit.r.coord,sev:2,go:'p250a'});}catch(e){}}return true;}
+ function retTick(){(G.countries||[]).forEach(a=>{if(!a||!a.isAI||a.retired||!a._p80ret)return;const q=a._p80ret;if(G.tick<q.at)return;delete a._p80ret;const t=G.countries[q.who];if(!t||blocked(a,t)){try{const S=G._p80s=G._p80s||{};S.retBlk=(S.retBlk||0)+1;}catch(e){}return;}
+   if(isHum(t)&&rec())return;const hit=bestHit(a,t,0.7,10);if(!hit){try{const S=G._p80s=G._p80s||{};S.retNo=(S.retNo||0)+1;}catch(e){}return;}
+   strike(a,t,hit,'↩ '+a.name+' held its walls against you and hits back at once: an army marches on '+hit.r.name+'.','ret');});}
+ // b. the opportunist strikes the nation whose army has marched away
+ function oppTick(){if(G.tick%3)return;let n=0;const L=(G.countries||[]).filter(a=>a&&a.isAI&&!a.retired&&AR(a)==='opportunistic'&&fleetSize(a.units||{})>=40);
+   for(const a of L){if(n>=6)break;if(G.tick-(a._p80op==null?-99:a._p80op)<8)continue;try{if((a.fleets||[]).some(f=>f&&f.status==='outbound'))continue;}catch(e){}
+     const cl=(()=>{try{return window.p79HomeCl?window.p79HomeCl(a):null;}catch(e){return null;}})();if(cl==null)continue;
+     const prey=(G.countries||[]).filter(t=>t&&!t.retired&&t.id!==a.id&&regionsOf(t).some(r=>r.cluster===cl)&&!blocked(a,t)&&away(t).share>=0.5&&!(isHum(t)&&(rec()||G.tick-(t._p80prey==null?-99:t._p80prey)<10)));
+     for(const t of prey){const hit=bestHit(a,t,0.6,6);if(!hit)continue;if(strike(a,t,hit,'🦊 '+a.name+' saw your army march away and strikes '+hit.r.name+' while it is gone.','opp')){a._p80op=G.tick;if(isHum(t))t._p80prey=G.tick;n++;}break;}}}
+ // c. traders and diplomats come to their neighbours with deals and pacts
+ function envoyTick(){if(G.tick%5)return;HUM().forEach(h=>{try{if(!isHum(h))return;if(G.tick-(h._p80env==null?-99:h._p80env)<15)return;const cl=window.p79HomeCl?window.p79HomeCl(h):null;if(cl==null)return;
+   if(window.p79Rep&&window.p79Rep(h,cl)<=-8)return;
+   const L=(G.countries||[]).filter(a=>a&&a.isAI&&!a.retired&&a.leader&&['trader','economic','diplomatic'].indexOf(AR(a))>=0&&window.p79HomeCl(a)===cl&&!(a.clan!=null&&a.clan===h.clan));
+   const ok=L.filter(a=>{let tr=50,gr=0;try{const x=p217About(a,h.id);tr=x.trust;gr=x.grudge;}catch(e){}return tr>=45&&gr<=1;});if(!ok.length)return;
+   const a=ok[Math.floor(Math.random()*ok.length)];let off=null;
+   if(AR(a)==='diplomatic'){if(typeof napActive==='function'&&napActive(a,h.id))return;off={text:'We share '+theaterName(cl)+'. I propose a pact: neither of us strikes the other for '+NAP_TICKS+' turns.',offer:{kind:'nap',ticks:NAP_TICKS,status:'open'}};}
+   else{const ks=MARKET.filter(k=>(a.res[k]||0)>2e4);if(!ks.length)return;let need=ks[0],lo=1e99;ks.forEach(k=>{let cap=1;try{cap=capOf(h,k)||1;}catch(e){}const f=(h.res[k]||0)/cap;if(f<lo){lo=f;need=k;}});
+     const qty=Math.max(1000,Math.floor((a.res[need]||0)*0.15));const price=+(((G.prices[need]||BASEP[need])*0.85).toFixed(2));
+     off={text:'You run lower on '+(RMETA[need]?RMETA[need].l:need)+' than we do. I can ship you '+full(qty)+' at '+fmt(price,true)+' each, 15% under the market. Interested?',offer:{kind:'trade',res:need,qty,price,status:'open'}};}
+   mailPush(h,{kind:'direct',mine:false,peerId:a.id,peerName:leaderName(a),peerTag:a.tag,text:off.text,offer:off.offer});h._p80env=G.tick;stat('env');}catch(e){}});}
+ // d. rules for every computer army (solo and the live world). Measured: half of all AI attacks on nations landed on a
+ //    defence two to ten times stronger, because the target's army came home while they marched. Now the general looks
+ //    again on the last turn a recall is allowed and turns back when it has become hopeless, as a player can recall.
+ function recallTick(){let n=0;(G.countries||[]).forEach(c=>{if(!c||!c.isAI||c.retired||!c.fleets)return;c.fleets.forEach(f=>{try{if(!f||f.status!=='outbound'||f._p80chk||f.intent==='garrison'||f.intent==='reinforce'||f.acs!=null)return;
+   const lt=f.eta==null?99:f.eta-G.tick;if(lt>2||lt<=1)return;f._p80chk=1;/* the last turn a recall is allowed, for players too */const r=_rgId(f.target);if(!r||r.owner===c.id)return;const defC=r.owner!=null?G.countries[r.owner]:null;if(defC&&c.clan!=null&&defC.clan===c.clan)return;
+   const A=Object.assign({},f.units||{});(G.countries||[]).forEach(o=>{if(!o||!o.fleets)return;if(o.id!==c.id&&!(c.clan!=null&&o.clan===c.clan))return;o.fleets.forEach(g=>{if(g===f||!g||g.target!==f.target||g.status!=='outbound'||Math.abs((g.eta||0)-(f.eta||0))>1)return;for(const k in g.units||{})A[k]=(A[k]||0)+(g.units[k]||0);});});
+   let D={};try{D=defC?defenderPool(r,defC).units:garrisonUnits(r);}catch(e){return;}let B=null;try{B=battleCalc(c,A,r,defC,D,{});}catch(e){return;}
+   if(B&&B.ratio<0.7){const res=recallFleet(c,f.id);if(!(res&&res.ok)){try{const S=G._p80s=G._p80s||{};S.recallNo=(S.recallNo||0)+1;}catch(e){}}if(res&&res.ok){n++;try{const S=G._p80s=G._p80s||{};S.recall=(S.recall||0)+1;}catch(e){}
+     if(isHum(defC)){try{sitrep(defC,'war','🏳 '+c.name+' saw your defence at '+r.name+' and turned its army back before the landing.',{coord:r.coord,sev:1,go:'p250a'});}catch(e){}}}}}catch(e){}});});}
+ //    a weak nation that has a grudge against you and cannot win asks for peace itself, instead of fighting on for ever
+ function peaceTick(){if(G.tick%3)return;HUM().forEach(h=>{try{if(!isHum(h))return;if(G.tick-(h._p80pc==null?-99:h._p80pc)<12)return;let hd=0;try{hd=power(h,'def');}catch(e){}
+   const L=(G.countries||[]).filter(a=>{if(!a||!a.isAI||a.retired||!a.leader||!regionsOf(a).length)return false;if(typeof napActive==='function'&&napActive(a,h.id))return false;if(G.tick-((a._p80pa||{})[h.id]==null?-99:a._p80pa[h.id])<24)return false;
+     let gr=0;try{gr=memGrudge(a,h.id);}catch(e){}try{if(h.id===G.you&&a.vsYou)gr=Math.max(gr,a.vsYou.grudge||0);}catch(e){}if(gr<3)return false;let aa=0;try{aa=power(a,'atk');}catch(e){}return aa<hd*0.35;});
+   if(!L.length)return;const a=L[0];(a._p80pa=a._p80pa||{})[h.id]=G.tick;h._p80pc=G.tick;
+   mailPush(h,{kind:'direct',mine:false,peerId:a.id,peerName:leaderName(a),peerTag:a.tag,text:'We cannot win this war against you and we will not pretend we can. Let it end: a pact, '+NAP_TICKS+' turns in which neither of us strikes the other, and the old grudge laid to rest.',offer:{kind:'nap',ticks:NAP_TICKS,status:'open',p80peace:1}});
+   try{const S=G._p80s=G._p80s||{};S.peace=(S.peace||0)+1;}catch(e){}}catch(e){}});}
+ if(typeof cmdAcceptOffer==='function'){const _ao=cmdAcceptOffer;cmdAcceptOffer=function(c,msgId){let m=null;try{m=findMailMsg(c,msgId);}catch(e){}const peace=!!(m&&m.offer&&m.offer.p80peace&&m.offer.status==='open');const out=_ao.apply(this,arguments);
+   try{if(out&&out.ok&&peace){const a=G.countries[m.peerId];if(a){try{memNote(a,c.id,'kept',10,0);const mm=a._mem&&a._mem[c.id];if(mm)mm.gr=Math.max(0,mm.gr-3);}catch(e){}try{if(c.id===G.you&&a.vsYou){a.vsYou.grudge=Math.max(0,(a.vsYou.grudge||0)-3);a.vsYou.stage=0;}}catch(e){}}}}catch(e){}return out;};}
+ if(typeof runTick==='function'){const _rt=runTick;runTick=function(){try{recallTick();}catch(e){}const out=_rt.apply(this,arguments);try{retTick();}catch(e){}try{oppTick();}catch(e){}try{envoyTick();}catch(e){}try{peaceTick();}catch(e){}return out;};try{window.runTick=runTick;}catch(e){}}
+})();
+
+/* 82. 21.9 Messages: the newest 25 first (it showed the oldest 25), and an open offer says its total price and how long it stays open,
+   next to its Buy / Sign / No buttons. */
+(function(){
+ if(typeof VIEWS==='undefined'||!VIEWS.p250c)return;
+ const KIND={nap:'Pact',trade:'Trade',intel:'Report',war:'Joint war'};
+ const _c=VIEWS.p250c;VIEWS.p250c=function(v){const r=_c.apply(this,arguments);try{const c=ME();if(!c)return r;const bx=v.querySelector('.p250box');if(!bx||bx.querySelector('.p82'))return r;
+   const M=(c.mail||[]).slice(0,25);if(!M.length)return r;let TTL=8;try{TTL=OFFER_TTL;}catch(e){}
+   const rows=M.map(m=>{const who=E(m.mine?'You':(m.authorName||m.peerName||'?'))+((m.authorTag||m.peerTag)?' <span class="p250c">'+E(m.authorTag||m.peerTag)+'</span>':'')+(m.kind&&m.kind!=='dm'&&m.kind!=='direct'?' <span class="p250c">'+E(m.kind)+'</span>':'');
+     const o=m.offer;const open=o&&(!o.status||o.status==='open')&&G.tick-m.tick<=TTL;let btn='';let sub=E(m.text||'');
+     if(o&&open){const left=TTL-(G.tick-m.tick);let tag=KIND[o.kind]||'Offer';if(o.p80peace)tag='Peace';
+       if(o.kind==='trade'){const tot=Math.round((o.qty||0)*(o.price||0));sub+=' <b>'+tag+': '+F(o.qty)+' for '+(((RMETA.money||{}).i)||'')+F(tot)+(c.res.money<tot?' <span class="bad">(you have '+(((RMETA.money||{}).i)||'')+F(c.res.money)+')</span>':'')+'</b>';}
+       else sub+=' <b>'+tag+'</b>';
+       sub+=' <span class="muted">open '+T(left)+' more</span>';
+       btn=' ';}/* the Buy / Sign / No buttons are added by the offer layer (section 23 era) that matches the text */
+     else if(o&&o.status&&o.status!=='open')sub+=' <span class="muted">('+E(o.status)+')</span>';
+     else if(o)sub+=' <span class="muted">(expired)</span>';
+     if(btn===' ')btn='';else if(!btn&&!m.mine&&m.peerId!=null)btn='<button class="btn sm p250btn" data-p250="reply" data-id="'+E(m.peerId)+'">Reply</button>';
+     return '<div class="p250row p82"><div class="p250m"><div class="p250t">'+who+' <span class="muted small">turn '+m.tick+'</span></div><div class="p250s">'+sub+'</div></div><div class="p250b">'+btn+'</div></div>';}).join('');
+   bx.querySelectorAll(':scope>.p250row,:scope>.p250e').forEach(x=>x.remove());bx.insertAdjacentHTML('beforeend',rows);}catch(e){}return r;};
 })();
 
 try{window.atkPanel=atkPanel;window.calcAttack=calcAttack;}catch(e){} // for the test routine
