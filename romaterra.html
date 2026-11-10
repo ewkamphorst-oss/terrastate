@@ -27197,6 +27197,78 @@ if(typeof VIEWS!=='undefined'&&VIEWS.p250b){const _b69=VIEWS.p250b;VIEWS.p250b=f
    if(!(B&&B.wouldTake&&B.ratio>=p217Need(c))){try{const S=G._p80s=G._p80s||{};S.alone=(S.alone||0)+1;}catch(e){}return {ok:false,why:'not enough landing together',ratio:B?B.ratio:0};}}catch(e){}return k;};}
 })();
 
+/* 85. 21.10 Faces and flags from the worlds.
+   a. Staff: the six first commanders show their portrait. Click it to read their story in the worlds.
+   b. A new season seeds the named rivals of this world (The Obsidian Accord, Regnum Aquilae, Vallmark, ...) as the
+      first computer alliances. Their flag stands before their tag everywhere, the two great rivals have a leader
+      with a name and a face.
+   c. Pictures load only when they are needed, are small, and come from playterrastate.nl on itch.io and Game Jolt.
+      No picture (offline) means the game looks as before: nothing is drawn until a picture has really loaded. */
+(function(){try{
+ const R85=/Romaterra/i.test(document.title),I85=/Ironfront/i.test(document.title),W85=R85?'ro':I85?'if':'ts';
+ const RIV={ts:[['The Obsidian Accord','OBS','Marshal Teren Kaito'],['The Azure Phoenix Union','APU','Chancellor Amara Osei'],['The Red Vanguard','RVG'],['The Ashen Coalition','ASH'],['The Violet Syndicate','VIO'],['The Teal Ascendancy','TEA']],
+  ro:[['Regnum Aquilae','AQL','Rex Marcus Severanus'],['Res Publica Lupina','LUP','Consul Livia Aurelia'],['The Old Guard of the Capitol','CAP'],['The Bull Legions of Hispania','TAU'],['Gens Taurina','GTA']],
+  if:[['The Federated Republic of Vallmark','VLM','Marshal Edmund Kessler'],['The Northern Commonwealth of Ostra','OST','Field Marshal Ren Arashi'],['The Grey Shield Union','GSU']]}[W85];
+ const SITE='https://playterrastate.nl/';
+ const BASE=window.__p85base||((/(^|\.)playterrastate\.nl$|^127\.0\.0\.1$|^localhost$/i.test(location.hostname))?'world/img/':SITE+'world/img/');
+ const OK85=/^(ts|ro|if)-r[1-6]$/;
+ /* which rival is this? The mark from the season start, or (multiplayer, where the client gets a short list of fields)
+    the exact name and tag of a computer alliance. */
+ function idOf(cl){if(!cl||cl.ai===false||typeof cl.name!=='string')return null;if(typeof cl._p85==='string'&&OK85.test(cl._p85))return cl._p85;const i=RIV.findIndex(x=>x[0]===cl.name&&x[1]===cl.tag);return i<0?null:W85+'-r'+(i+1);}
+ function leadId(c){if(!c||!c.leader)return null;if(typeof c._p85l==='string'&&OK85.test(c._p85l))return c._p85l;if(c.isAI===false||c.clan==null)return null;const i=RIV.findIndex(x=>x[2]&&x[2]===c.leader.name);if(i<0)return null;const cl=(G.clans||[]).find(x=>x&&x.id===c.clan);return cl&&cl.leader===c.id&&idOf(cl)===W85+'-r'+(i+1)?W85+'-r'+(i+1):null;}
+ const SIX={general:1,admiral:1,minister:1,scientist:1,diplomat:1,spymaster:1};
+ const IMG={};let fails=0,oks=0;
+ const off=()=>fails>=3&&!oks;
+ function need(url){const st=IMG[url];if(st)return st===1;if(off())return false;IMG[url]=3;try{const im=new Image();im.onload=()=>{IMG[url]=1;oks++;kick();};im.onerror=()=>{IMG[url]=2;fails++;};im.src=url;}catch(e){IMG[url]=2;}return false;}
+ const css=document.createElement('style');css.id='p85css';css.textContent=
+  '.p85f{display:inline-block;width:24px;height:24px;border-radius:4px;background-color:#0b0d12;background-repeat:no-repeat;background-size:165% auto;background-position:50% 37%;vertical-align:-7px;margin-right:6px;box-shadow:0 0 0 1px rgba(255,255,255,.16);pointer-events:none}'+
+  '.p85l{border-radius:9px;flex-shrink:0;object-fit:cover;object-position:50% 14%;box-shadow:inset 0 0 0 1px rgba(255,255,255,.12)}'+
+  '.p211c .p85p{position:absolute;top:10px;right:10px;width:58px;height:78px;border-radius:8px;overflow:hidden;display:block;box-shadow:0 0 0 1px rgba(255,255,255,.14);background-size:cover;background-position:50% 14%;text-decoration:none}'+
+  '.p211c .p85p span{position:absolute;left:0;right:0;bottom:0;font:700 9.5px/1 var(--mono,monospace);letter-spacing:.04em;text-align:center;color:#fff;background:rgba(8,10,14,.72);padding:4px 0}'+
+  '.p211c.p85has>.rt,.p211c.p85has>.nm,.p211c.p85has>.bio,.p211c.p85has>.p211rk{padding-right:68px}.p211c.p85has>.bio{min-height:34px}.p211c.p85has .p211new{right:76px}';
+ document.head.appendChild(css);
+
+ /* b. the rivals of this world are the first alliances of a new season */
+ function mark(){(G.clans||[]).forEach(cl=>{if(!cl||!cl.ai||cl._p85)return;const i=RIV.findIndex(x=>x[0]===cl.name&&x[1]===cl.tag);if(i<0)return;cl._p85=W85+'-r'+(i+1);
+   try{(cl.forum||[]).forEach(p=>{if(p&&typeof p.text==='string')p.text=p.text.replace('The The ','The ');if(p&&typeof p.msg==='string')p.msg=p.msg.replace('The The ','The ');});}catch(e){}
+   const who=RIV[i][2];const f=G.countries[cl.leader];if(who&&f){G._usedNames=G._usedNames||{};if(!G._usedNames[who]){G._usedNames[who]=1;f.leader=Object.assign({persona:'the Pragmatist',seed:7},f.leader||{},{name:who});f._p85l=cl._p85;}}});}
+ if(typeof seedAIClans==='function'&&typeof uniqueAlliance==='function'){
+  let seeding=false;const _ua=uniqueAlliance;
+  uniqueAlliance=function(){if(seeding){try{for(let i=0;i<RIV.length;i++){const x=RIV[i];if(!clanNameTaken(x[0])&&!clanTagTaken(x[1]))return {name:x[0],tag:x[1]};}}catch(e){}}return _ua.apply(this,arguments);};
+  const _sa=seedAIClans;seedAIClans=function(){seeding=true;let r;try{r=_sa.apply(this,arguments);}finally{seeding=false;}try{mark();}catch(e){}return r;};
+  try{window.seedAIClans=seedAIClans;window.uniqueAlliance=uniqueAlliance;}catch(e){}}
+
+ /* the leader of a great rival has a face */
+ if(typeof portraitSVG==='function'){const _ps=portraitSVG;portraitSVG=function(c,size){try{const li=leadId(c);if(li){const u=BASE+'r/'+li+'-lead.jpg';if(need(u)){const s=size||38;return '<img class="p85l" src="'+u+'" alt="" width="'+s+'" height="'+s+'" style="width:'+s+'px;height:'+s+'px">';}}}catch(e){}return _ps.apply(this,arguments);};try{window.portraitSVG=portraitSVG;}catch(e){}}
+
+ /* the flag before the name or the tag of a rival, wherever it is written */
+ const esc85=s=>s.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
+ function flags(){if(off()||typeof G==='undefined'||!G||!G.clans)return;const byN={},byT={};let n=0;G.clans.forEach(cl=>{const id=idOf(cl);if(id){byN[cl.name]=id;byT[cl.tag]=id;n++;}});if(!n)return;
+  (G.countries||[]).forEach(c=>{if(c&&byT[c.tag])delete byT[c.tag];});const names=Object.keys(byN),tags=Object.keys(byT);
+  const body=document.body;
+  const re=new RegExp('('+names.map(esc85).join('|')+')'+(tags.length?'|\\[('+tags.join('|')+')\\]':''));const tagSet={};tags.forEach(t=>tagSet[t]=1);
+  const tw=document.createTreeWalker(body,NodeFilter.SHOW_ELEMENT|NodeFilter.SHOW_TEXT,{acceptNode:x=>x.nodeType===1?(/^(SCRIPT|STYLE|SVG|svg|CANVAS|TEMPLATE)$/.test(x.nodeName)?NodeFilter.FILTER_REJECT:NodeFilter.FILTER_SKIP):NodeFilter.FILTER_ACCEPT});const list=[];let nd;
+  while((nd=tw.nextNode())){const v=nd.nodeValue;if(v.length<2)continue;const bare=tagSet[v.trim()];if(!bare&&(v.length<4||!re.test(v)))continue;const p=nd.parentNode;if(!p||/^(SCRIPT|STYLE|TEXTAREA|OPTION|TITLE|INPUT|SELECT)$/.test(p.nodeName)||p.isContentEditable)continue;list.push(nd);}
+  const put=(t,id)=>{const pv=t.previousSibling;if(pv&&pv.nodeType===1&&pv.classList.contains('p85f'))return;const u=BASE+'r/'+id+'-flag.jpg';if(!need(u))return;const s=document.createElement('span');s.className='p85f';s.style.backgroundImage='url('+u+')';s.setAttribute('aria-hidden','true');t.parentNode.insertBefore(s,t);};
+  const named=el=>{let e=el,k=0;while(e&&k++<3){if(e.querySelector&&e.querySelector('.p85f'))return true;const t=e.textContent||'';if(t.length>400)return false;if(names.some(nm=>t.indexOf(nm)>=0))return true;e=e.parentNode;}return false;};
+  list.forEach(node=>{const v=node.nodeValue,tr=v.trim();
+   if(tagSet[tr]){if(!named(node.parentNode)){const lead=v.indexOf(tr);put(lead>0?node.splitText(lead):node,byT[tr]);}return;}
+   const mm=re.exec(v);if(!mm)return;if(mm[2]&&named(node.parentNode))return;const t=mm.index>0?node.splitText(mm.index):node;put(t,mm[1]?byN[mm[1]]:byT[mm[2]]);});}
+
+ /* a. the six first commanders */
+ function staffPics(){if(off())return;const v=document.getElementById('view');if(!v)return;const cards=v.querySelectorAll('.p211c:not([data-p85])');if(!cards.length)return;let db=[];try{db=staffDB()||[];}catch(e){}
+  cards.forEach(card=>{const nm=card.querySelector('.nm');if(!nm)return;const name=nm.textContent.trim();const d=db.find(x=>x&&x.n===name);if(!d||!SIX[d.k]){card.dataset.p85='0';return;}
+   const u=BASE+'u/'+W85+'-c_'+d.k+'.jpg';if(!need(u))return;card.dataset.p85='1';card.classList.add('p85has');
+   const a=document.createElement('a');a.className='p85p';a.href=SITE+'world/heroes.html?w='+W85+'#'+d.k;a.target='_blank';a.rel='noopener';a.title='Read the story of '+name;a.style.backgroundImage='url('+u+')';a.innerHTML='<span>STORY ›</span>';card.insertBefore(a,card.firstChild);});}
+
+ let q=0,last=0;function run(){q=0;last=Date.now();try{staffPics();}catch(e){}try{flags();}catch(e){}}
+ function kick(){if(q)return;q=setTimeout(run,Math.max(120,400-(Date.now()-last)));}
+ try{new MutationObserver(kick).observe(document.body,{childList:true,subtree:true,characterData:false});}catch(e){}
+ try{if(typeof G!=='undefined'&&G&&G.clans)mark();}catch(e){}
+ kick();
+ window.__p85={riv:RIV,img:IMG,base:BASE,run:run,off:off};
+}catch(e){try{console.error('p85',e);}catch(_){}}})();
+
 try{window.atkPanel=atkPanel;window.calcAttack=calcAttack;}catch(e){} // for the test routine
 }catch(e){try{console.error('p278',e);}catch(_){}}})();
 </script>
