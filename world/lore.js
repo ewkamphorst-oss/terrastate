@@ -33,7 +33,7 @@ ts:{
   general:{bio:'A former tank officer who believes the best defence is arriving first.',story:{t:'The Long Road to the Nexus',p:[
    'General Novak never liked waiting rooms. When the old order cracked, he was sitting in one, outside a ministry that no longer had a minister. By evening he had a desk, a staff of eleven and a map with too many new borders.',
    'His first campaign was a mistake. He pushed too far, too fast, and lost half his armour in a river valley he had not scouted. He kept a photo of that valley on his desk for the rest of the season. Next to it he wrote one word: look.',
-   'Since then her nation sends Spec-Ops ahead of every strike. His soldiers joke that he would scout his own breakfast. But when the tanks roll under his command, they roll fast, and they do not stop until the job is done.']}},
+   'Since then his nation sends Spec-Ops ahead of every strike. His soldiers joke that he would scout his own breakfast. But when the tanks roll under his command, they roll fast, and they do not stop until the job is done.']}},
   admiral:{bio:'A patient strategist who counts supply lines before soldiers.',story:{t:'The Wall at Harbor Seven',p:[
    'Admiral Zhao had never lost a harbor, and she did not plan to start. When three nations moved against Harbor Seven at once, her advisers wanted to strike back. Zhao asked for coffee and the logistics report.',
    'She dug in. SAM batteries on the cranes, militia in the warehouses, every road into the port covered by artillery. Then she waited. The attackers came in waves and broke on the harbor walls, one after another.',
