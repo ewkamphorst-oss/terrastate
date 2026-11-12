@@ -23217,6 +23217,7 @@ function armies(c){const L=[];
     else if(f.status==='garrison'){a.what='Stationed';a.st='defending';a.btn=B('recall',f.id,'Bring home');}
     else if(f.status==='returning'){a.what='Coming home';a.st='home in '+T((f.rEta||G.tick)-G.tick);}
     else return;L.push(a);});
+  (G.countries||[]).forEach(o=>{if(!o||o.id===c.id)return;(o.fleets||[]).forEach(f=>{if(!f||f.status!=='battle'||!f.acs||!(f.members||[]).some(m=>m&&m.owner===c.id))return;const r=R(f.target);const my=(f.members||[]).filter(m=>m&&m.owner===c.id).reduce((s,m)=>s+(m.share||0),0);L.push({r,n:my,id:f.id,what:'Joint attack with '+(o.name||'ally')+' · in battle',st:'phase '+Math.min(3,f.bTick||1)+'/3 · '+F(N(f.units))+' fight together',btn:''});});});
   (G.acs||[]).forEach(op=>{if(!op||!(op.fleets||[]).some(f=>f.owner===c.id))return;const r=R(op.target);const left=op.landTick-G.tick;const lead=op.leader===c.id;
     const n=(op.fleets||[]).reduce((s,f)=>s+N(f.units),0);const ld=G.countries[op.leader];
     L.push({r,n,what:'Joint attack'+(lead?' (you lead)':' with '+(ld?ld.name:'ally')),st:'lands in '+T(left),btn:left>=1?(lead?B('calloff',op.id,'Call off','warn'):B('leave',op.id,'Leave')):''});});
@@ -27272,13 +27273,24 @@ function row(c){const st=state(c);const n=STEPS.filter(x=>st.d[x.k]!=null).lengt
  const age=G.tick-((G.season&&G.season.startTick)||0);if(age<3||age>60)return '';
  const i=STEPS.findIndex(x=>st.d[x.k]==null);const x=STEPS[i];
  return '<div class="p250row p305"><div class="p250m"><div class="p250t">Step '+(n+1)+' of '+STEPS.length+': '+x.t+'</div><div class="p250s">'+x.s+'</div></div><div class="p250b"><button type="button" class="btn sm p250btn" data-p305="'+i+'">'+x.b+'</button></div></div>';}
-try{if(typeof VIEWS!=='undefined'&&VIEWS.p250o){const _o=VIEWS.p250o;VIEWS.p250o=function(v){const r=_o.apply(this,arguments);try{const c=ME_();if(!c||!G)return r;const h=row(c);if(!h)return r;
-  const box=[...v.querySelectorAll('.p250box')].find(b=>b.dataset&&b.dataset.p268t==='Do now')||v.querySelector('.p250box:not(.pin)');if(!box||box.querySelector('.p305'))return r;
+// alliance strike: when your alliance has a joint attack you can still reach, Overview offers to join it with half your army
+function strikeOp(c){try{if(c.clan==null)return null;const ops=(G.acs||[]).filter(op=>op&&op.clan===c.clan&&op.landTick>G.tick&&!(op.fleets||[]).some(f=>f.owner===c.id)&&(op.fleets||[]).length<(typeof ACS_MAX_FLEETS!=='undefined'?ACS_MAX_FLEETS:99));
+ for(const op of ops){const r=_rgId(op.target);if(!r||r.owner===c.id)continue;const h=homeFor(c,r);if(!h)continue;if(travelFor(c,h,r)>op.landTick-G.tick)continue;return {op,r,left:op.landTick-G.tick};}}catch(e){}return null;}
+function half(c){const com={};for(const k in (c.units||{})){const u=(typeof UBYK!=='undefined'&&UBYK[k])||null;const n=Math.floor((c.units[k]||0)*0.5);if(n>0&&(!u||(u.atk||0)>0))com[k]=n;}return com;}
+function strikeRow(c){const x=strikeOp(c);if(!x)return '';const n=Object.values(half(c)).reduce((a,b)=>a+b,0);if(!n)return '';
+ const nm=(typeof esc==='function'?esc(x.r.name):x.r.name);
+ return '<div class="p250row p305s"><div class="p250m"><div class="p250t">Your alliance strikes '+nm+' '+(x.r.coord||'')+'</div><div class="p250s">'+(x.op.fleets||[]).length+' armies take part, they land in '+x.left+(x.left===1?' turn':' turns')+'. Join with half of your army at home ('+n+' '+TROOPS+').</div></div><div class="p250b"><button type="button" class="btn sm p250btn p250main" data-p305j="'+x.op.id+'">Join the strike</button></div></div>';}
+document.addEventListener('click',e=>{const b=e.target&&e.target.closest&&e.target.closest('[data-p305j]');if(!b)return;e.preventDefault();e.stopPropagation();const c=ME_();if(!c)return;let r=null;
+ try{r=cmdJoinACS(c,+b.dataset.p305j,half(c));}catch(x){r={ok:false,error:String(x)};}
+ try{toast(r&&r.ok?'You joined the alliance strike.':(r&&r.error)||'Not possible right now.',r&&r.ok?'good':'warn');}catch(x){}
+ try{if(r&&r.ok){if(typeof save==='function')save();if(typeof drawTop==='function')drawTop();go('p250o');}}catch(x){}},true);
+try{if(typeof VIEWS!=='undefined'&&VIEWS.p250o){const _o=VIEWS.p250o;VIEWS.p250o=function(v){const r=_o.apply(this,arguments);try{const c=ME_();if(!c||!G)return r;const h=strikeRow(c)+row(c);if(!h)return r;
+  const box=[...v.querySelectorAll('.p250box')].find(b=>b.dataset&&b.dataset.p268t==='Do now')||v.querySelector('.p250box:not(.pin)');if(!box||box.querySelector('.p305,.p305s'))return r;
   const rows=box.querySelectorAll('.p250row');if(rows.length)rows[rows.length-1].insertAdjacentHTML('afterend',h);else box.insertAdjacentHTML('beforeend',h);}catch(e){}return r;};}}catch(e){}
 document.addEventListener('click',e=>{const b=e.target&&e.target.closest&&e.target.closest('[data-p305]');if(!b)return;e.preventDefault();e.stopPropagation();
  const x=STEPS[+b.dataset.p305];if(!x)return;try{if(x.tab)(window._p250tab||(window._p250tab={}))[x.page]=x.tab;go(x.page);}catch(err){}
  try{if(window.__p302count)window.__p302count('step-'+x.k);}catch(err){}},true);
-window.__p305={steps:STEPS,state};
+window.__p305={steps:STEPS,state,strikeOp,strikeRow};
 })();
 </script>
 
