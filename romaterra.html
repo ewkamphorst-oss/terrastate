@@ -27489,9 +27489,9 @@ try{document.addEventListener('click',e=>{const b=e.target&&e.target.closest&&e.
 // 3. Overview: the "money is waiting" line of 23.0 stays away when the older treasury line already shows.
 (function(){'use strict';
 try{if(typeof SCOREW==='object'&&SCOREW){SCOREW.economic=1;SCOREW.territory=1275;SCOREW.military=25;SCOREW.technology=24;SCOREW.diplomacy=8;SCOREW.stability=10;}}catch(e){}
-/* rank does not follow the tax rate: economy is always counted at the standard rate */
+/* rank does not follow the tax rate or a raised shield: economy is counted at the standard rate and full production (23.2) */
 const __p303TAX=(typeof TAX!=='undefined'&&TAX.includes(15))?15:(typeof TAX!=='undefined'?TAX[Math.floor(TAX.length/2)]:15);
-try{if(typeof scores==='function'){const _sc=scores;const sc2=function(c){let s;const _t=c&&c.tax;if(c&&!(c._fog&&c._pub)&&typeof _t==='number'&&_t!==__p303TAX){c.tax=__p303TAX;try{s=_sc.apply(this,arguments);}finally{c.tax=_t;}}else s=_sc.apply(this,arguments);try{if(!s||!c||(c._fog&&c._pub)||!(c.fleets||[]).length)return s;
+try{if(typeof scores==='function'){const _sc=scores;const sc2=function(c){let s;const _t=c&&c.tax,_sh=c&&c.shield;const tx=typeof _t==='number'&&_t!==__p303TAX,sh=!!_sh;if(c&&!(c._fog&&c._pub)&&(tx||sh)){if(tx)c.tax=__p303TAX;if(sh)c.shield=null;try{s=_sc.apply(this,arguments);}finally{if(tx)c.tax=_t;if(sh)c.shield=_sh;}}else s=_sc.apply(this,arguments);try{if(!s||!c||(c._fog&&c._pub)||!(c.fleets||[]).length)return s;
     let add=0;c.fleets.forEach(f=>{try{if(f&&f.units)add+=power(c,'atk',f.units)/10;}catch(e){}});add=Math.round(add);if(!(add>0))return s;
     const o=Object.assign({},s);o.military=(s.military||0)+add;o.overall=Math.round((s.overall||0)+add*SCOREW.military);return o;}catch(e){return s;}};
   scores=sc2;try{window.scores=sc2;}catch(e){}}}catch(e){}
@@ -27519,6 +27519,115 @@ try{if(typeof cmdRequestJoin==='function'){const _q=cmdRequestJoin;cmdRequestJoi
     const nx=G.solo.diff==='recruit'?'veteran':'warlord';const d=document.createElement('div');d.className='p250row p302';
     d.innerHTML='<div class="p250m"><div class="p250t">You finished #'+pos+'. The next level is '+SOLO_DIFFS[nx].n+'</div><div class="p250s">Rivals play sharper there and you get less protection. Pick it under Difficulty when you start a new game.</div></div>';
     const first=v.querySelector('.p250row');if(first&&first.parentNode)first.parentNode.insertBefore(d,first);else v.appendChild(d);}catch(e){}return r;};}catch(e){}})();
+</script>
+<script>/* p304 */
+// 23.3: pictures from the worlds, second set (world/img/v2). Same rules as 21.10 (p278 section 85):
+// pictures are never inside the game file, they load from playterrastate.nl (or the local site), nothing is drawn
+// until a picture has really loaded, after 3 failed loads (and none that worked) the layer stops, small size on a phone,
+// off when the browser asks to save data. Only mood: a picture sits behind or beside something that is already there.
+// 1. Staff: more commanders get a portrait (only portraits that belong to this world).
+// 2. Page header: the title of Overview, Army, Research, Alliance and Economy gets a picture of a room of this world.
+// 3. The land sheet on the map shows a small landscape that fits the province.
+// 4. The paper of the turn: Terrastate and Ironfront print on a real front page (Romaterra keeps its plain sheet).
+// 5. Computer alliances that are not one of the named rivals carry an emblem before their name.
+(function(){try{
+if(typeof window==='undefined'||typeof document==='undefined'||!document.head)return;
+const W=/Romaterra/i.test(document.title)?'ro':/Ironfront/i.test(document.title)?'if':'ts';
+const SITE='https://playterrastate.nl/';
+const base=()=>window.__p304base||((/(^|\.)playterrastate\.nl$|^127\.0\.0\.1$|^localhost$/i.test(location.hostname))?'world/img/v2/':SITE+'world/img/v2/');
+let saveData=false;try{saveData=!!(navigator.connection&&navigator.connection.saveData);}catch(e){}
+const small=()=>{try{return window.innerWidth<700;}catch(e){return false;}};
+const url=p=>base()+p+(small()?'-s':'')+'.webp';
+const IMG={};let fails=0,oks=0;
+const off=()=>saveData||(fails>=3&&!oks);
+function need(u){const st=IMG[u];if(st)return st===1;if(off())return false;IMG[u]=3;try{const im=new Image();im.decoding='async';im.onload=()=>{IMG[u]=1;oks++;kick();};im.onerror=()=>{IMG[u]=2;fails++;};im.src=u;}catch(e){IMG[u]=2;}return false;}
+
+// pictures per world (only the ones in the house style: dark, cinematic, no bright studio backgrounds)
+const STAFF={
+ ts:{army:['portretten/ts-generaal','portretten/ts-officier-groen','portretten/ts-officier-grijs','portretten/ts-soldaat','portretten/ts-piloot'],
+     defense:['portretten/ts-admiraal','portretten/ts-logistiek-man','portretten/ts-logistiek-vrouw'],
+     economy:['portretten/ts-minister-man','portretten/ts-staatsman','portretten/ts-minister-vrouw','portretten/ts-premier'],
+     diplomacy:['portretten/ts-diplomaat-man','portretten/ts-diplomaat-vrouw'],
+     intel:['portretten/ts-spionnenmeester','portretten/ts-agent']},
+ ro:{army:['portretten/ro-legaat'],economy:['portretten/ro-senator'],diplomacy:['portretten/ro-patricier']},
+ if:{army:['portretten/if-officier']}}[W];
+const HEAD={
+ ts:{Overview:'zalen/ts-war-room',Army:'zalen/ts-commandocentrum',Research:'zalen/ts-bibliotheek',Alliance:'zalen/ts-parlement',Economy:'zalen/ts-vergaderkamer'},
+ ro:{Overview:'zalen/ro-troonzaal',Legions:'zalen/ro-krijgsraad',Army:'zalen/ro-krijgsraad',Research:'zalen/ro-bibliotheek',Alliance:'zalen/ro-senaat',Economy:'zalen/ro-paleiszaal'},
+ if:{Overview:'zalen/if-kaartenkamer',Army:'zalen/if-kaarttafel-bunker',Research:'zalen/if-studiezaal',Alliance:'zalen/if-briefing'}}[W];
+const PAPER={ts:['kranten/ts-vanguard-chronicle'],if:['kranten/if-frontline-dispatch','kranten/if-industrial-herald','kranten/if-grey-shield-gazette'],ro:[]}[W];
+const EMB=['emblemen/rood-zwart','emblemen/rood-schild','emblemen/groen-goud','emblemen/oranje-zwart','emblemen/paars-zilver','emblemen/petrol-wit','emblemen/blauw-vleugels','emblemen/groen-koper','emblemen/marine-goud','emblemen/rood-goud','emblemen/marine-rood'];
+
+// landscape for a province: from the name of its region, the same answer every time
+const T={snow:'terrein/toendra',ice:'terrein/ijsvlakte',desert:'terrein/woestijn',jungle:'terrein/regenwoud',jungle2:'terrein/jungle',coast:'terrein/kust',mountain:'terrein/bergen',mountain2:'terrein/bergweg',river:'terrein/riviervallei',forest:'terrein/bos-mist',plain:'terrein/steppe',hills:'terrein/heuvels'};
+if(W==='ro'){T.mountain='terrein/ro-kastelen-dal';T.mountain2='terrein/ro-vesting-mist';T.desert='terrein/ro-woestijnvesting';T.snow='terrein/ro-sneeuwmuur';T.plain='terrein/ro-vlakte-toren';T.hills='terrein/ro-burcht';T.hills2='terrein/ro-heuvelburcht';}
+if(W==='if')T.front='terrein/if-loopgraven';
+const RULES=[
+ ['ice',/greenland|kola|lapland|svalbard/i],
+ ['snow',/siberia|alaska|yukon|nordic|northern norway|karelia|scandia|caledonian highlands/i],
+ ['front',/stalingrad|leningrad|apennine line|don bend|bocage|ardennes/i],
+ ['desert',/sahara|sahel|north africa|middle east|desert|arabia|libya|fezzan|gaetulia\b|nefud|hejaz|gedrosia|carmania|cyrenaica|tripolitania|thebais|nubia|sinai|syria & iraq|babylonia|susiana|persis|blemmyes|nasamonia|horn of africa|high plateaus|central asia|sahara edge|red sea/i],
+ ['jungle',/amazon|southeast asia|melanesia|sub-saharan|caribbean|axum/i],
+ ['coast',/coast|isles|islands|oceania|sicilia|sardinia|corsica|baleares|balearics|crete|cyclades|dodecanese|azores|madeira|channel|biscay|approaches|strait|aegean|japan|hibernia|cimbric|denmark|brittany|cotentin|calvados|taurica|crimea|phoenicia|magna graecia|achaea|greece|portugal|lusitania/i],
+ ['mountain',/mountain|highland|atlas|caucasus|caucasica|armenia|raetia|noricum|alps|andes|southern cone|bactria|arachosia|sogdiana|georgia|terek|fjords|norway|albania|dalmatia|yugoslavia|epirus|cappadocia|galatia|media|tyrol|austria|bohemia/i],
+ ['river',/rhine|rh[oô]ne|volga|danube|po valley|nile|dnieper|vistula|seine|albis|mesopotamia|adiabene|aegyptus|heptanomis|delta|pannonia|moesia|dacia|ruhr|gelderland|holland|flanders/i],
+ ['forest',/germania|belorussia|pripet|pacific northwest|smolensk|novgorod|lithuania|amber|baltic|svealand|sweden|finland|britannia|cambria|gallia belgica|moscow/i],
+ ['plain',/steppe|sarmatia|scythia|ukraine|kuban|hungary|castile|dahae|massagetae|chorasmia|hyrcania|anatolia|thracia|voronezh|saratov|kursk|oryol|bastarnia|maeotis|sindica|bosporan|donbas|margiana|south asia|midlands|the north|castile|bulgaria|romania|silesia|galicia/i]];
+function hash(s){let h=0;for(let i=0;i<s.length;i++)h=(h*31+s.charCodeAt(i))|0;return Math.abs(h);}
+function terrainOf(r){if(!r)return null;const n=String(r.cont||'')+' '+String(r.name||'');let k=null;for(const [t,re] of RULES){if(re.test(n)&&T[t]){k=t;break;}}
+ const h=hash(String(r.cont||r.name||''));if(!k)k=['hills','river','forest','plain','hills'][h%5];
+ if(k==='mountain'&&h%2)k='mountain2';if(k==='jungle'&&h%2)k='jungle2';if(k==='hills'&&T.hills2&&h%2)k='hills2';return T[k]||T.hills;}
+
+const css=document.createElement('style');css.id='p304css';css.textContent=
+ '.p304hd{position:relative;border-radius:10px;padding:22px 14px 14px;margin-bottom:12px;background-color:#0b0f17;background-size:cover;background-position:50% 50%;color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.7);overflow:hidden}'+
+ '.p304tr{height:64px;border-radius:9px;margin:0 0 10px;background-size:cover;background-position:50% 55%;box-shadow:inset 0 0 0 1px rgba(255,255,255,.08)}'+
+ '.p304pp{background-size:cover!important;background-position:50% 30%!important}'+
+ '.p211c .p304p{position:absolute;top:10px;right:10px;width:58px;height:78px;border-radius:8px;display:block;box-shadow:0 0 0 1px rgba(255,255,255,.14);background-size:cover;background-position:50% 14%;pointer-events:none}'+
+ '.p211c.p304has>.rt,.p211c.p304has>.nm,.p211c.p304has>.bio,.p211c.p304has>.p211rk{padding-right:68px}.p211c.p304has>.bio{min-height:34px}.p211c.p304has .p211new{right:76px}'+
+ '.p304e{display:inline-block;width:16px;height:22px;border-radius:3px;background-color:#0b0d12;background-size:cover;background-position:50% 50%;vertical-align:-6px;margin-right:6px;box-shadow:0 0 0 1px rgba(255,255,255,.16);pointer-events:none}'+
+ '@media (max-width:700px){.p304hd{padding:16px 12px 10px}.p304tr{height:52px}}';
+document.head.appendChild(css);
+const SHADE='linear-gradient(90deg,rgba(8,11,18,.94) 0%,rgba(8,11,18,.72) 45%,rgba(8,11,18,.38) 100%)';
+
+// 1. staff
+function staff(){if(!STAFF)return;const v=document.getElementById('view');if(!v)return;const cards=v.querySelectorAll('.p211c:not([data-p304])');if(!cards.length)return;let db=[];try{db=staffDB()||[];}catch(e){}
+ cards.forEach(card=>{if(card.querySelector('.p85p')){card.dataset.p304='0';return;}const nm=card.querySelector('.nm');if(!nm)return;const name=nm.textContent.trim();const d=db.find(x=>x&&x.n===name);
+  const L=d&&STAFF[d.role];const p=L&&d.i>0?L[d.i-1]:null;if(!p){card.dataset.p304='0';return;}const u=url(p);if(!need(u))return;
+  card.dataset.p304='1';card.classList.add('p304has');const a=document.createElement('span');a.className='p304p';a.setAttribute('aria-hidden','true');a.style.backgroundImage='url('+u+')';card.insertBefore(a,card.firstChild);});}
+
+// 2. page header
+function header(){if(!HEAD)return;const v=document.getElementById('view');if(!v)return;const h=v.querySelector('h2');if(!h||h.dataset.p304||v.querySelector('.p304hd'))return;
+ if(h.closest('.modal,.modal-bg'))return;const t=(h.textContent||'').trim();const p=HEAD[t];if(!p){h.dataset.p304='0';return;}const u=url(p);if(!need(u))return;
+ h.dataset.p304='1';const box=(h.parentElement&&h.parentElement!==v&&h.parentElement.children.length<=4&&!h.parentElement.classList.contains('p304hd'))?h.parentElement:h;box.classList.add('p304hd');box.style.backgroundImage=SHADE+',url('+u+')';}
+
+// 4. paper of the turn
+function paper(){if(!PAPER.length)return;document.querySelectorAll('.p218paper:not([data-p304])').forEach(el=>{const tk=+((el.querySelector('.mast span')||{}).textContent||'').replace(/\D+/g,'')||0;
+ const u=url(PAPER[tk%PAPER.length]);if(!need(u))return;el.dataset.p304='1';el.classList.add('p304pp');el.style.backgroundImage='linear-gradient(rgba(10,13,20,.88),rgba(10,13,20,.93)),url('+u+')';});}
+
+// 5. emblems for the other computer alliances
+const esc=s=>s.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
+function emblems(){if(typeof G==='undefined'||!G||!G.clans)return;const by={};let n=0;
+ G.clans.forEach(cl=>{if(!cl||!cl.ai||typeof cl.name!=='string'||cl.name.length<6)return;if(cl._p85)return;try{if(window.__p85&&window.__p85.riv&&window.__p85.riv.some(x=>x[0]===cl.name))return;}catch(e){}
+  const u=url(EMB[hash(String(cl.id)+cl.name)%EMB.length]);if(!need(u))return;by[cl.name]=u;n++;});
+ if(!n)return;const re=new RegExp('('+Object.keys(by).sort((a,b)=>b.length-a.length).map(esc).join('|')+')');
+ const tw=document.createTreeWalker(document.body,NodeFilter.SHOW_ELEMENT|NodeFilter.SHOW_TEXT,{acceptNode:x=>x.nodeType===1?(/^(SCRIPT|STYLE|SVG|svg|CANVAS|TEMPLATE|TEXTAREA|SELECT|OPTION|INPUT)$/.test(x.nodeName)?NodeFilter.FILTER_REJECT:NodeFilter.FILTER_SKIP):NodeFilter.FILTER_ACCEPT});
+ const list=[];let nd;while((nd=tw.nextNode())){const v=nd.nodeValue;if(!v||v.length<6||!re.test(v))continue;const p=nd.parentNode;if(!p||p.isContentEditable)continue;list.push(nd);}
+ list.slice(0,300).forEach(node=>{const m=re.exec(node.nodeValue);if(!m)return;const t=m.index>0?node.splitText(m.index):node;const pv=t.previousSibling;if(pv&&pv.nodeType===1&&(pv.classList.contains('p304e')||pv.classList.contains('p85f')))return;
+  const s=document.createElement('span');s.className='p304e';s.setAttribute('aria-hidden','true');s.style.backgroundImage='url('+by[m[1]]+')';t.parentNode.insertBefore(s,t);});}
+
+// 3. land sheet
+try{if(typeof regionSheetHTML==='function'){const _rs=regionSheetHTML;const w=function(r){const html=_rs.apply(this,arguments);try{if(off()||!r)return html;const p=terrainOf(r);if(!p)return html;const u=url(p);if(!need(u))return html;
+   return '<div class="p304tr" aria-hidden="true" style="background-image:linear-gradient(rgba(8,11,18,.15),rgba(8,11,18,.45)),url('+u+')"></div>'+html;}catch(e){return html;}};
+  regionSheetHTML=w;try{window.regionSheetHTML=w;}catch(e){}
+  // warm up the picture of the lands you own, so the first sheet already has it
+  setTimeout(()=>{try{const me=typeof you==='function'?you():null;if(me&&!off())regionsOf(me).slice(0,3).forEach(r=>{const p=terrainOf(r);if(p)need(url(p));});}catch(e){}},1500);}}catch(e){}
+
+let q=0,last=0;function run(){q=0;last=Date.now();if(off())return;try{staff();}catch(e){}try{header();}catch(e){}try{paper();}catch(e){}try{emblems();}catch(e){}}
+function kick(){if(q||off())return;q=setTimeout(run,Math.max(150,450-(Date.now()-last)));}
+try{new MutationObserver(kick).observe(document.body,{childList:true,subtree:true});}catch(e){}
+kick();
+window.__p304={img:IMG,terrainOf,off,run};
+}catch(e){try{console.error('p304',e);}catch(_){}}})();
 </script>
 
 </body>
