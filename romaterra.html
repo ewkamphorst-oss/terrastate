@@ -1084,7 +1084,7 @@ const UNIT=[
  {k:'interceptor',  n:'Velites',       cls:'airdef', tier:2,req:'mil_air',     phase:'Ranged',   fast:true, atk:18,def:24,bt:3,cost:{money:70000,electronics:30,fuel:15},   up:{money:1100,fuel:10}},
  {k:'strike_fighter',n:'Horse Archers',   cls:'air',    tier:2,req:'mil_air',     phase:'Ranged',   fast:true, atk:40,def:16,bt:3,cost:{money:80000,electronics:35,fuel:20},   up:{money:1400,fuel:10}} /* v2 air balance */,
  {k:'sam',          n:'Shield Wall',      cls:'sam',    tier:2,req:'mil_air',     phase:'Ranged',   fast:false,atk:6, def:30,bt:2,cost:{money:46000,steel:15,electronics:20}, up:{money:300,energy:10}},
- {k:'powered_armor',n:'Praetorian Guard',      cls:'inf',    tier:3,req:'mil_advanced',phase:'Ground',fast:false,atk:30,def:30,bt:3,cost:{money:90000,steel:40,electronics:30},up:{money:1500,energy:20}},
+ {k:'powered_armor',n:'Praetorian Guard',      cls:'inf',    tier:3,req:'mil_advanced',phase:'Ground',fast:false,atk:30,def:30,bt:3,cost:{money:50000,steel:40,electronics:30},up:{money:1500,energy:20}},
  {k:'strat_bomber', n:'Siege Onagers',  cls:'air',    tier:3,req:'mil_advanced',phase:'Ranged',   fast:true, atk:58,def:18,bt:4,cost:{money:135000,electronics:50,fuel:30}, up:{money:2200,fuel:16}},
  {k:'quantum_hacker',n:'Sicarii Assassins',   cls:'cyber',  tier:4,req:'mil_quantum', phase:'Intrigue', fast:true, atk:14,def:26,bt:3,cost:{money:95000,electronics:80,research:60},up:{money:900,energy:25}},
  // v3.13.4 DOCTRINE UNITS (Tier 4). Asymmetric: cheap glass-cannon drones that shred armour in the Air phase, and recon that
@@ -1092,7 +1092,7 @@ const UNIT=[
  // logistics penalty, the anti-militia-spam answer) plus a mobile air-defence (cls airdef) that shoots the drones down.
  {k:'loitering_munition',n:'Slinger Swarms',      cls:'air',   tier:4,req:'mil_asymmetric',phase:'Ranged',   fast:true, atk:22,def:4, bt:2,cost:{money:28000,electronics:28,steel:6}, up:{money:400,energy:6}},
  {k:'ghost_squad',       n:'Shadow Exploratores',   cls:'recon', tier:4,req:'mil_asymmetric',phase:'Recon', fast:true, atk:20,def:16,bt:3,cost:{money:82000,electronics:40,research:28},up:{money:880,food:5}},
- {k:'titan_mech',        n:'War Elephants',       cls:'armor', tier:4,req:'mil_juggernaut',phase:'Ground',fast:false,atk:68,def:62,bt:4,cost:{money:210000,steel:140,fuel:48},up:{money:2800,fuel:40}},
+ {k:'titan_mech',        n:'War Elephants',       cls:'armor', tier:4,req:'mil_juggernaut',phase:'Ground',fast:false,atk:68,def:62,bt:4,cost:{money:160000,steel:140,fuel:48},up:{money:2800,fuel:40}},
  {k:'mobile_shield',     n:'Testudo Cohorts',cls:'airdef',tier:4,req:'mil_juggernaut',phase:'Ranged',fast:false,atk:5,def:50,bt:3,cost:{money:90000,electronics:60,fuel:15},up:{money:1200,energy:25}},
  // v3.18 SUPPORT UNITS (Batch C). Field Hospital: a support unit that cuts YOUR post-battle casualties (attrition tool, adds almost no
  // combat power, so it can never win a fight you would otherwise lose). EW Drones: light air-defence that also jams enemy scouts,
@@ -26264,11 +26264,11 @@ const fm49=(k,v)=>{try{return fmt(v,RMETA[k]&&RMETA[k].money)+(RMETA[k]&&RMETA[k
 function costLine49(cost){return Object.keys(cost||{}).filter(k=>cost[k]>0).map(k=>fm49(k,cost[k])).join(' + ');}
 if(typeof trainSkip==='function'){const _ts49=trainSkip;trainSkip=function(){const r=_ts49.apply(this,arguments);try{setTimeout(()=>{try{if(typeof view!=='undefined')go(view);}catch(e){}},0);}catch(e){}return r;};try{window.trainSkip=trainSkip;}catch(e){}}
 if(VIEWS&&VIEWS.p250al){const _al49=VIEWS.p250al;VIEWS.p250al=function(v){const r=_al49.apply(this,arguments);try{const c=ME();if(!c)return r;
-  let closed=0,open=0;v.querySelectorAll('[data-p250="askjoin"]').forEach(b=>{const cl=(G.clans||[]).find(x=>String(x.id)===String(b.dataset.id));if(cl&&cl.ai){closed++;const sp=document.createElement('span');sp.className='p250s';sp.textContent='computer-led, closed';b.replaceWith(sp);}else open++;});
+  let closed=0,open=0;v.querySelectorAll('[data-p250="askjoin"]').forEach(b=>{const cl=(G.clans||[]).find(x=>String(x.id)===String(b.dataset.id));if(cl&&cl.ai&&!(typeof __p304Join==='function'&&__p304Join(cl))){closed++;const sp=document.createElement('span');sp.className='p250s';sp.textContent='computer-led, closed';b.replaceWith(sp);}else{open++;if(cl&&cl.ai)b.textContent='Join';}});
   const fb=v.querySelector('[data-p250="found"]');let cost=null;try{cost=allianceFoundCost();}catch(e){}
   if(fb&&cost){fb.textContent='Found · '+costLine49(cost);fb.title='Founding costs '+costLine49(cost);}
   if(closed&&!open&&fb){const jb=[...v.querySelectorAll('.p250box')].find(x=>x.querySelector('.p250h')&&/^Join/.test(x.querySelector('.p250h').textContent.trim()));
-    if(jb&&!jb.querySelector('.p49n')){const h=jb.querySelector('.p250h');h.insertAdjacentHTML('afterend','<div class="p250row p49n"><div class="p250m"><div class="p250s">Computer-led alliances do not take members. Found your own below: nearby nations join it.</div></div></div>');}}
+    if(jb&&!jb.querySelector('.p49n')){const h=jb.querySelector('.p250h');h.insertAdjacentHTML('afterend','<div class="p250row p49n"><div class="p250m"><div class="p250s">These alliances are full. Found your own below: nearby nations join it.</div></div></div>');}}
   v.querySelectorAll('input.p250n[data-q]').forEach(inp=>{if(inp.dataset.p49)return;inp.dataset.p49='1';const k=inp.dataset.q;const have=Math.floor((c.res||{})[k]||0);let d=Math.floor(have*0.1);if(d>=100){const m=Math.pow(10,Math.floor(Math.log10(d))-1);d=Math.floor(d/m)*m;}inp.value=String(Math.max(1,d));});
 }catch(e){}return r;};}
 // name and tag are needed before the money goes
@@ -27407,6 +27407,118 @@ try{if(typeof aiKnownDef==='function'){const _k=aiKnownDef;aiKnownDef=function(c
 try{if(typeof aiGuessDef==='function'){const _g=aiGuessDef;aiGuessDef=function(c,r){const k=aiKnownDef(c,r);if(k!=null)return k;return _g.apply(this,arguments)*GUESS_SCALE;};try{window.aiGuessDef=aiGuessDef;}catch(e){}}}catch(e){}
 try{if(typeof aiDecide==='function'){const _d=aiDecide;aiDecide=function(c){try{if(c&&c.isAI&&c.pers&&!c._p301){c._p301=1;if((c.pers.expand||0)<EXPAND_MIN)c.pers.expand=EXPAND_MIN;}}catch(e){}return _d.apply(this,arguments);};try{window.aiDecide=aiDecide;}catch(e){}}}catch(e){}
 })();
+</script>
+<script>/* p302 */
+// 23.0: anonymous counts (GoatCounter, website only) and advice that plays well.
+// 1. Counts: season started, turn 5/20/40/80 reached, season over, second season, main page opened, training started/skipped,
+//    alliance founded. No names, no game state. Only in the solo browser game, only when GoatCounter is loaded.
+// 2. "Train first" and Quick recruit pick the unit that does best in a real battle (the battle maths), not the one with the
+//    most raw power per euro (that was always militia, the weakest unit in a fight).
+// 3. Overview: one line to start research when nothing runs (Combined Arms first: it opens tanks), and one line when your
+//    army is on Standby while it attacks (Standby fights at 60%, Ready at 85%).
+(function(){'use strict';
+if(typeof window==='undefined')return;
+const SOLO_UI=()=>{try{return !window.__MP__&&(typeof isSoloGame!=='function'||isSoloGame());}catch(e){return false;}};
+const ME_=()=>{try{return G&&G.countries?G.countries[G.you]:null;}catch(e){return null;}};
+
+/* ---------- 1. counts ---------- */
+const GAME=(()=>{try{return (GAME_CFG&&GAME_CFG.track)||'terrastate';}catch(e){return 'terrastate';}})();
+const sent=new Set();
+function count(ev){try{if(!SOLO_UI())return;const k=GAME+'/'+ev;if(sent.has(k))return;sent.add(k);const gc=window.goatcounter;if(gc&&typeof gc.count==='function')gc.count({path:'event/'+k,title:ev,event:true});}catch(e){}}
+window.__p302count=count;
+function seasonKey(){try{return (G.season&&G.season.num||1)+':'+((G.season&&G.season.startTick)||0);}catch(e){return '?';}}
+function onTick(){try{if(!SOLO_UI()||!G)return;const st=(G._p302=G._p302||{});const sk=seasonKey();if(st.sk!==sk){st.sk=sk;st.hit={};}
+  const t=G.tick-((G.season&&G.season.startTick)||0);
+  [5,20,40,80].forEach(n=>{if(t>=n&&!st.hit[n]){st.hit[n]=1;count('turn-'+n);}});
+  if((G._winner!=null||G._seasonEnd)&&!st.hit.end){st.hit.end=1;count('season-over');}}catch(e){}}
+try{const _rt=window.runTick;if(typeof _rt==='function'){window.runTick=function(){const r=_rt.apply(this,arguments);if(r&&typeof r.then==='function')r.then(onTick,()=>{});else onTick();return r;};}}catch(e){}
+function seasonStart(){try{if(!SOLO_UI()||!G||!G.countries||G.you==null)return;const st=(G._p302=G._p302||{});if(st.started===seasonKey())return;st.started=seasonKey();
+  if(G.tick-((G.season&&G.season.startTick)||0)>1)return;count('season-start');
+  let n=0;try{n=+(localStorage.getItem('p302seasons')||0)+1;localStorage.setItem('p302seasons',String(n));}catch(e){}if(n>=2)count('season-start-again');}catch(e){}}
+try{const _go=window.go;if(typeof _go==='function'){const MAIN={p250o:'overview',p250a:'army',p250l:'lands',p250b:'build',p250r:'research',p250al:'alliance',p250e:'economy',p250m:'economy',p250k:'rankings',map:'map',codex:'manual'};
+  window.go=function(v){const r=_go.apply(this,arguments);try{seasonStart();if(MAIN[v])count('page-'+MAIN[v]);}catch(e){}return r;};}}catch(e){}
+try{document.addEventListener('click',e=>{try{const b=e.target&&e.target.closest&&e.target.closest('button');if(!b)return;const t=(b.textContent||'').trim();
+  if(/^Skip, I know/i.test(t))count('training-skipped');else if(/^Start training/i.test(t))count('training-started');}catch(_){}},true);}catch(e){}
+try{const _fc=window.cmdFoundClan;if(typeof _fc==='function'){window.cmdFoundClan=function(c){const r=_fc.apply(this,arguments);try{if(r&&r.ok&&c&&c.isAI===false)count('alliance-founded');}catch(e){}return r;};}}catch(e){}
+
+/* ---------- 2. troops that win the fight ---------- */
+function refFight(c,tgt){try{if(tgt){const o=tgt.owner!=null?G.countries[tgt.owner]:null;if(o&&o.id!==c.id){let d=null;try{const it=regionIntel(c,tgt.id);if(it&&it.comp&&Object.keys(it.comp).length)d=Object.assign({},it.comp);}catch(e){}return {r:tgt,o,d:d||garrisonUnits(tgt)};}
+    return {r:tgt,o:null,d:garrisonUnits(tgt)};}
+  const r=(G.regions||[]).find(x=>x&&x.owner==null&&!x.nexus)||regionsOf(c)[0];return r?{r,o:null,d:{infantry:800,militia:800}}:null;}catch(e){return null;}}
+function bestAttacker(c,us,tgt){const F=refFight(c,tgt);if(!F)return null;const B=2e7;let best=null,bv=-1;
+  us.forEach(u=>{const n=Math.floor(B/u.cost.money);if(n<1)return;let v=0;try{const R=resolveBattle(c,{[u.k]:n},F.r,F.o,1,Object.assign({},F.d));v=+R.ratio||0;}catch(e){v=0;}if(v>bv){bv=v;best=u;}});return best;}
+try{if(typeof p14RecOrder==='function'){const _ro=p14RecOrder;const rec=function(c,budget){try{if(!c||!(budget>0))return _ro.apply(this,arguments);
+    const us=UNIT.filter(u=>{try{return unitUnlocked(c,u)&&(u.cost||{}).money>0&&(u.atk||0)>0;}catch(e){return false;}});if(!us.length)return _ro.apply(this,arguments);
+    const tgt=window.__p302tgt||null;const ua=bestAttacker(c,us,tgt);if(!ua)return _ro.apply(this,arguments);
+    const o={};const add=(u,m)=>{const q=Math.floor(m/u.cost.money);if(q>0)o[u.k]=(o[u.k]||0)+q;};
+    if(tgt)add(ua,budget);
+    else{const val=u=>power(c,'def',{[u.k]:1})/Math.max(1,u.cost.money);const ud=us.slice().sort((a,b)=>val(b)-val(a))[0];if(ud===ua)add(ua,budget);else{add(ua,budget*0.6);add(ud,budget*0.4);}}
+    return Object.keys(o).length?o:_ro.apply(this,arguments);}catch(e){return _ro.apply(this,arguments);}};
+  p14RecOrder=rec;try{window.p14RecOrder=rec;}catch(e){}}}catch(e){}
+try{const _tk=window.p186Take;if(typeof _tk==='function'){window.p186Take=function(rid){try{window.__p302tgt=_rgId(+rid)||null;}catch(e){window.__p302tgt=null;}try{return _tk.apply(this,arguments);}finally{window.__p302tgt=null;}};}}catch(e){}
+
+/* ---------- 3. two lines on Overview ---------- */
+const ORDER=['mil_combined','supply','armor','rapid','advman','automation','renewables','mil_air','fortify','mil_advanced'];
+function nextTech(c){try{const have=new Set(c.tech||[]);if((c.rq||[]).length)return null;
+  for(const k of ORDER){const d=TECH.find(x=>x.k===k);if(!d||have.has(k))continue;if((d.req||[]).some(r=>!have.has(r)))continue;if((d.excludes||[]).some(e=>have.has(e)))continue;return d;}return null;}catch(e){return null;}}
+const F=n=>{try{return fmt(n,false);}catch(e){return String(Math.round(n));}};
+function lines(c){const out=[];try{
+  const d=nextTech(c);if(d){const can=(c.res.research||0)>=d.cost.research&&(c.res.money||0)>=d.cost.money;
+    out.push('<div class="p250row p302"><div class="p250m"><div class="p250t">Research: '+esc(d.n)+'</div><div class="p250s">'+esc(d.d||'')+' · '+F(d.cost.research)+' research, '+F(d.cost.money)+' money · '+(can?'you can start it now':'you have '+F(c.res.research||0)+' research')+'</div></div><div class="p250b">'+(can?'<button type="button" class="btn sm p250btn p250main" data-p302r="'+esc(d.k)+'">Start</button>':'<button type="button" class="btn sm p250btn" data-p250="go" data-id="p250r">Research</button>')+'</div></div>');}
+  try{const pj=projection(c);const inc=Math.max(1,(pj.net&&pj.net.money)||1);const m=c.res.money||0;
+    if(m>3e7&&m>inc*15&&!(c.queue||[]).some(q=>q.k==='lab'||q.k==='base')){const rp=(pj.net&&pj.net.research)||0;const k=rp<500?'lab':'base';const d=BUILD.find(x=>x.k===k);
+      if(d){const lv=bTotal(c,k);const why=k==='lab'?'+90 research a turn (you make '+F(rp)+')':'+500 troops trained a turn (now '+F(trainCap(c))+')';
+        out.push('<div class="p250row p302"><div class="p250m"><div class="p250t">'+(window.__p302hasTreas?'Put it to work':F(m)+' is waiting in the treasury')+': build '+esc(d.n)+'</div><div class="p250s">'+why+(lv?' · you have '+lv+' level'+(lv===1?'':'s'):'')+'</div></div><div class="p250b"><button type="button" class="btn sm p250btn p250main" data-p302b="'+k+'">'+(k==='lab'?'Build institute':'Build base')+'</button></div></div>');}}}catch(e){}
+  const out2=(c.fleets||[]).some(f=>f&&(f.status==='outbound'||f.status==='staged'||f.status==='battle')&&f.intent!=='garrison'&&f.intent!=='reinforce');
+  if(c.ready==='standby'&&(out2||c._p186go))out.push('<div class="p250row p302"><div class="p250m"><div class="p250t"><b class="warn">Your army is on Standby</b></div><div class="p250s">it attacks and defends at 60% strength; Ready is 85% and doubles upkeep</div></div><div class="p250b"><button type="button" class="btn sm p250btn p250main" data-p302ready="ready">Ready</button></div></div>');
+}catch(e){}return out.join('');}
+try{if(typeof VIEWS!=='undefined'&&VIEWS.p250o){const _o=VIEWS.p250o;VIEWS.p250o=function(v){const r=_o.apply(this,arguments);try{if(!SOLO_UI()&&!window.__MP__)return r;const c=ME_();if(!c)return r;window.__p302hasTreas=/is sitting in the treasury/.test(v.textContent||'');const h=lines(c);if(!h)return r;
+  const box=[...v.querySelectorAll('.p250box')].find(b=>b.dataset&&b.dataset.p268t==='Do now')||v.querySelector('.p250box:not(.pin)');if(!box||box.querySelector('.p302'))return r;
+  const rows=box.querySelectorAll('.p250row');const anchor=rows.length?rows[Math.min(1,rows.length-1)]:null;if(anchor)anchor.insertAdjacentHTML('afterend',h);else box.insertAdjacentHTML('beforeend',h);}catch(e){}return r;};}}catch(e){}
+try{document.addEventListener('click',e=>{const b=e.target&&e.target.closest&&e.target.closest('[data-p302r],[data-p302ready],[data-p302b]');if(!b)return;e.preventDefault();e.stopPropagation();const c=ME_();if(!c)return;let r=null;
+  try{if(b.dataset.p302r)r=cmdResearch(c,b.dataset.p302r);else if(b.dataset.p302b){const k=b.dataset.p302b;const rg=regionsOf(c).slice().sort((x,y)=>blevel(c,y.id,k)-blevel(c,x.id,k));r={ok:false,error:'No room for it in your lands. Build page shows where.'};for(const kk of [k,k==='lab'?'base':'lab','factory']){let done=false;for(const x of rg){const t=cmdBuild(c,x.id,kk);if(t&&t.ok){r=t;done=true;break;}if(kk===k)r=t||r;}if(done)break;}}else r=cmdReady(c,b.dataset.p302ready);}catch(x){r={ok:false,error:String(x)};}
+  try{if(r&&r.ok)toast(b.dataset.p302r?'Research started.':b.dataset.p302b?'Construction started.':'Your army is Ready.','good');else toast((r&&r.error)||'Not possible right now.','warn');}catch(x){}
+  try{save();}catch(x){}try{go(typeof view!=='undefined'?view:'p250o');}catch(x){}},true);}catch(e){}
+})();
+</script>
+<script>/* p303 */
+// 23.1: a rank worth fighting for, and honest texts.
+// 1. Score: land, army and research count. For the median nation the score was 96% economy; now it is about
+//    40% economy, 25% land, 20% army, 10% research, 5% alliance and stability. An army on the march counts too.
+// 2. Juggernaut Doctrine says what its logistics penalty does, and how to offset it.
+// 3. Overview: the "money is waiting" line of 23.0 stays away when the older treasury line already shows.
+(function(){'use strict';
+try{if(typeof SCOREW==='object'&&SCOREW){SCOREW.economic=1;SCOREW.territory=1275;SCOREW.military=25;SCOREW.technology=24;SCOREW.diplomacy=8;SCOREW.stability=10;}}catch(e){}
+/* rank does not follow the tax rate: economy is always counted at the standard rate */
+const __p303TAX=(typeof TAX!=='undefined'&&TAX.includes(15))?15:(typeof TAX!=='undefined'?TAX[Math.floor(TAX.length/2)]:15);
+try{if(typeof scores==='function'){const _sc=scores;const sc2=function(c){let s;const _t=c&&c.tax;if(c&&!(c._fog&&c._pub)&&typeof _t==='number'&&_t!==__p303TAX){c.tax=__p303TAX;try{s=_sc.apply(this,arguments);}finally{c.tax=_t;}}else s=_sc.apply(this,arguments);try{if(!s||!c||(c._fog&&c._pub)||!(c.fleets||[]).length)return s;
+    let add=0;c.fleets.forEach(f=>{try{if(f&&f.units)add+=power(c,'atk',f.units)/10;}catch(e){}});add=Math.round(add);if(!(add>0))return s;
+    const o=Object.assign({},s);o.military=(s.military||0)+add;o.overall=Math.round((s.overall||0)+add*SCOREW.military);return o;}catch(e){return s;}};
+  scores=sc2;try{window.scores=sc2;}catch(e){}}}catch(e){}
+try{const t=TECH.find(x=>x.k==='mil_juggernaut');const hub=(typeof BUILD!=='undefined'&&BUILD.find(x=>x.k==='logi_hub'))||null;
+  if(t&&!/army strength/.test(t.d||''))t.d=String(t.d||'').replace(/\.?\s*$/,'')+'. The logistics penalty lowers your army strength by about 15% until you build '+(hub?'a '+hub.n:'logistics buildings')+' (each level gives it back).';}catch(e){}
+// 4. Solo: you can join a computer-led alliance that has room, as a plain member (no treasury, no leadership).
+//    In the live world this stays closed (the rule against inheriting a bot alliance).
+const SOLO4=()=>{try{return !(typeof window!=='undefined'&&window.__MP__)&&typeof isSoloGame==='function'&&isSoloGame();}catch(e){return false;}};
+const canJoin=cl=>{try{return SOLO4()&&!!cl&&!!cl.ai&&clanMembers(cl).length<clanCap(cl);}catch(e){return false;}};
+try{if(typeof window!=='undefined')window.__p304Join=canJoin;}catch(e){}
+function joinAI(c,clanId){const cl=(G.clans||[]).find(x=>x.id===clanId||String(x.id)===String(clanId));if(!c||c.isAI!==false||!cl||!cl.ai||!canJoin(cl))return null;
+  if(c.clan!=null)return err('Leave your current alliance first');
+  cl.members.push(c.id);cl.roles[c.id]='member';c.clan=cl.id;c._clanJoin=G.tick;try{if(c.id===G.you)slog(c).alliances++;}catch(e){}
+  try{clanPost(cl,c.id,c.name+' has joined the alliance.');}catch(e){}
+  try{const L=G.countries[cl.leader];if(L)clanPost(cl,L.id,'Welcome, '+c.name+'. Answer our defence calls and join our attacks, and we will stand by you.','general');}catch(e){}
+  return ok({msg:'You joined '+cl.name+'.'});}
+try{if(typeof cmdJoinClan==='function'){const _j=cmdJoinClan;cmdJoinClan=function(c,id){try{const r=joinAI(c,id);if(r)return r;}catch(e){}return _j.apply(this,arguments);};try{window.cmdJoinClan=cmdJoinClan;}catch(e){}}}catch(e){}
+try{if(typeof cmdRequestJoin==='function'){const _q=cmdRequestJoin;cmdRequestJoin=function(c,id){try{const r=joinAI(c,id);if(r)return r;}catch(e){}return _q.apply(this,arguments);};try{window.cmdRequestJoin=cmdRequestJoin;}catch(e){}}}catch(e){}
+})();
+/* season over on an easier level: point to the harder one (solo browser only) */
+(function(){try{if(typeof window==='undefined'||typeof document==='undefined'||window.__MP__||typeof VIEWS==='undefined'||!VIEWS.p250o)return;
+  const _o=VIEWS.p250o;VIEWS.p250o=function(v){const r=_o.apply(this,arguments);try{
+    if(!(G._winner!=null||G._seasonEnd)||!G.solo||G.solo.diff==='warlord'||typeof SOLO_DIFFS==='undefined')return r;
+    const c=G.countries[G.you];if(!c||typeof rankTitle!=='function')return r;const pos=rankTitle(c.id).pos;if(!(pos>=1&&pos<=25))return r;
+    const nx=G.solo.diff==='recruit'?'veteran':'warlord';const d=document.createElement('div');d.className='p250row p302';
+    d.innerHTML='<div class="p250m"><div class="p250t">You finished #'+pos+'. The next level is '+SOLO_DIFFS[nx].n+'</div><div class="p250s">Rivals play sharper there and you get less protection. Pick it under Difficulty when you start a new game.</div></div>';
+    const first=v.querySelector('.p250row');if(first&&first.parentNode)first.parentNode.insertBefore(d,first);else v.appendChild(d);}catch(e){}return r;};}catch(e){}})();
 </script>
 
 </body>
