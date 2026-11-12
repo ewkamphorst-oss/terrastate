@@ -27629,6 +27629,40 @@ kick();
 window.__p304={img:IMG,terrainOf,off,run};
 }catch(e){try{console.error('p304',e);}catch(_){}}})();
 </script>
+<script>/* p305 */
+// 23.4: after minute five. Five first steps to a strong nation, one line on Overview with the next one and a button
+// that opens the right page and tab. Shown from turn 3 until all five are done or turn 60. Nothing new to read
+// elsewhere: the line sits in the "Do now" list, below the other advice.
+// 1. research  2. heavy troops  3. scout a target  4. guard one of your lands  5. join or found an alliance
+(function(){'use strict';
+if(typeof window==='undefined'||typeof document==='undefined')return;
+const ME_=()=>{try{return G&&G.countries?G.countries[G.you]:null;}catch(e){return null;}};
+const W=/Romaterra/i.test(document.title)?'ro':/Ironfront/i.test(document.title)?'if':'ts';
+const HEAVY={ts:'tanks',ro:'cataphracts',if:'tank battalions'}[W];
+const TROOPS={ts:'troops',ro:'legions',if:'troops'}[W];
+function heavy(c){let n=(c.units&&c.units.tank)||0;(c.fleets||[]).forEach(f=>{n+=(f.units&&f.units.tank)||0;});return n>0;}
+function guards(c){try{return (c.fleets||[]).some(f=>f&&(f.status==='garrison'||f.status==='outbound')&&(()=>{const r=_rgId(f.target);return r&&r.owner===c.id;})());}catch(e){return false;}}
+const STEPS=[
+ {k:'research',t:'Start your first research',s:'Research makes every unit and building stronger.',done:c=>(c.tech||[]).length>0||(c.rq||[]).length>0,b:'Research',page:'p250r'},
+ {k:'heavy',t:'Train your first '+HEAVY,s:'Heavy troops win the fights that infantry loses. '+((()=>{try{const t=TECH.find(x=>x.k==='mil_combined');return t?t.n+' research opens them.':'';}catch(e){return '';}})())+'',done:heavy,b:'Train',page:'p250b',tab:'Troops'},
+ {k:'scout',t:'Scout a land before you attack it',s:'A scout report shows the real defence, so you send enough and not too much.',done:c=>Object.keys(c._regionIntel||{}).length>0,b:'Scout',page:'p250a',tab:'Scout'},
+ {k:'guard',t:'Put a guard on one of your lands',s:'New and far lands are taken back most often. A few '+TROOPS+' on guard stop the easy raids.',done:guards,b:'Guard',page:'p250a',tab:'Defend a land'},
+ {k:'ally',t:'Join or found an alliance',s:'Allies guard your land, attack with you and share their scout reports.',done:c=>c.clan!=null,b:'Alliance',page:'p250al'}];
+function state(c){const st=(G._p305=G._p305||{});const sk=(G.season&&G.season.num||1)+':'+((G.season&&G.season.startTick)||0);if(st.sk!==sk){st.sk=sk;st.d={};}
+ STEPS.forEach(x=>{if(!st.d[x.k]){try{if(x.done(c))st.d[x.k]=G.tick;}catch(e){}}});return st;}
+function row(c){const st=state(c);const n=STEPS.filter(x=>st.d[x.k]!=null).length;if(n>=STEPS.length)return '';
+ const age=G.tick-((G.season&&G.season.startTick)||0);if(age<3||age>60)return '';
+ const i=STEPS.findIndex(x=>st.d[x.k]==null);const x=STEPS[i];
+ return '<div class="p250row p305"><div class="p250m"><div class="p250t">Step '+(n+1)+' of '+STEPS.length+': '+x.t+'</div><div class="p250s">'+x.s+'</div></div><div class="p250b"><button type="button" class="btn sm p250btn" data-p305="'+i+'">'+x.b+'</button></div></div>';}
+try{if(typeof VIEWS!=='undefined'&&VIEWS.p250o){const _o=VIEWS.p250o;VIEWS.p250o=function(v){const r=_o.apply(this,arguments);try{const c=ME_();if(!c||!G)return r;const h=row(c);if(!h)return r;
+  const box=[...v.querySelectorAll('.p250box')].find(b=>b.dataset&&b.dataset.p268t==='Do now')||v.querySelector('.p250box:not(.pin)');if(!box||box.querySelector('.p305'))return r;
+  const rows=box.querySelectorAll('.p250row');if(rows.length)rows[rows.length-1].insertAdjacentHTML('afterend',h);else box.insertAdjacentHTML('beforeend',h);}catch(e){}return r;};}}catch(e){}
+document.addEventListener('click',e=>{const b=e.target&&e.target.closest&&e.target.closest('[data-p305]');if(!b)return;e.preventDefault();e.stopPropagation();
+ const x=STEPS[+b.dataset.p305];if(!x)return;try{if(x.tab)(window._p250tab||(window._p250tab={}))[x.page]=x.tab;go(x.page);}catch(err){}
+ try{if(window.__p302count)window.__p302count('step-'+x.k);}catch(err){}},true);
+window.__p305={steps:STEPS,state};
+})();
+</script>
 
 </body>
 </html>
