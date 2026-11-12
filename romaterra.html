@@ -2776,7 +2776,7 @@ function cmdScoutRegion(c,rid){const r=_rgId(rid);if(!r)return err('Region not f
   const block=owner?clamp(0.08+radarLevel(owner)*0.12-reconLevel(c)*0.05,0.08,0.62):0;
   if(owner&&Math.random()<block){
     (c._regionIntel=c._regionIntel||{})[rid]={tick:G.tick,miss:true};
-    sitrep(c,'intel','🔍 Scan of '+r.name+' bounced off '+owner.name+'\'s watchtower. You learned nothing.',{coord:r.coord,sev:1,go:'fleets'});
+    sitrep(c,'intel','🔍 Scan of '+r.name+' bounced off '+owner.name+'\'s watchtower. You learned nothing.',{coord:r.coord,sev:1,go:'covert'});
     if(owner&&radarLevel(owner)>=1&&Math.random()<0.7)sitrep(owner,'intel','👁 Watchtower swallowed a scan over '+r.name+(radarLevel(owner)>=2?', origin: '+c.name+' ['+c.tag+']':''),{coord:r.coord,sev:1,go:'fleets'});
     return ok({miss:true});
   }
@@ -2785,7 +2785,7 @@ function cmdScoutRegion(c,rid){const r=_rgId(rid);if(!r)return err('Region not f
   const lo=Math.max(0,Math.round(truth*(1-spread))),hi=Math.round(truth*(1+spread));
   const comp={};{let pu={};try{pu=owner?defenderPool(r,owner).units:garrisonUnits(r);}catch(e){pu=owner?owner.units:{};}for(const k in pu)if((pu[k]||0)>=1)comp[k]=Math.round(pu[k]);}
   (c._regionIntel=c._regionIntel||{})[rid]={tick:G.tick,lo,hi,conf:Math.round(conf*100),comp,tag:owner?owner.tag:null,exact:true};
-  sitrep(c,'intel','🔍 Scouted '+r.name+(owner?' ('+owner.name+')':'')+': the exact defending army is known for '+SCOUT_TTL+' turns. Open Legions → Calculator to work out the battle.',{coord:r.coord,go:'fleets'});
+  sitrep(c,'intel','🔍 Scouted '+r.name+(owner?' ('+owner.name+')':'')+': the exact defending army is known for '+SCOUT_TTL+' turns. The report is on Legions, Scout.',{coord:r.coord,go:'covert'});
   if(c.id===G.you)toast('Scouting report in: the exact army at '+r.name+' is known.');
   if(owner){const rl=radarLevel(owner);if(rl>=1&&Math.random()<Math.min(0.9,0.35+rl*0.15))sitrep(owner,'intel','👁 Watchtower detected a scouting mission over '+r.name+(rl>=2?', origin: '+c.name+' ['+c.tag+']':', origin unknown (Watchtower L2+ identifies)'),{coord:r.coord,sev:1,go:'fleets'});}
   return ok({lo,hi,conf:Math.round(conf*100)});}
@@ -7680,7 +7680,7 @@ function relationTo(ownerId,hostiles){
 function nationContext(c,o){if(!o)return '';const hos=hostileSet(c.id);const mate=c.clan!=null&&o.clan===c.clan;const theater=homeCluster(o)===homeCluster(c);const sector=homeSector(o)===homeSector(c);const war=(()=>{try{const a=clanOf(c),b=clanOf(o);return a&&b&&clanAtWar(a.id,b.id);}catch(e){return false;}})();
   const rel=mate?['Alliance member','var(--good)']:war?['AT WAR with your alliance','var(--bad)']:hos.has(o.id)?['Hostile, armies aimed at you','var(--bad)']:sector?['Sector-mate (cannot attack you)','var(--good)']:theater?['Province neighbour (can attack, 5 ticks away)','var(--muted)']:['Neutral','var(--muted)'];
   const known=regionsOf(o).some(rr=>regionIntel(c,rr.id));const mineN=regionsOf(c).length,theirN=regionsOf(o).length;const cmp=known?(theirN>mineN+1?'more ground than you':theirN+1<mineN?'less ground than you':'about your size'):'size unknown until you scout';const oc=clanOf(o);
-  return `<div class="row wrap small" style="gap:6px 12px;align-items:center;margin:2px 0 6px"><span style="color:${rel[1]};font-weight:600">${rel[0]}</span><span class="muted">${esc(o.name)}${oc?' · '+esc(oc.name)+' ['+esc(oc.tag)+']':''} · ${esc(theaterName(homeCluster(o)))} · ${cmp}${known?' (#'+rankTitle(o.id).pos+')':''}</span><span class="row" style="gap:4px;margin-left:auto"><button class="btn ghost sm" onclick="GOTO_NATION(${o.id})">🗺 Map</button><button class="btn ghost sm" onclick="(async function(){const hr=homeRegionOf(G.countries[${o.id}]);if(!hr){toast('No ground to scout','bad');return;}const r=await cmdScoutRegion(you(),hr.id);if(r&&r.ok){toast(r.data&&r.data.miss?'Scan bounced':'Scout report filed');go('reports');}else toast((r&&r.error)||'Cannot scan','bad');})()">🔍 Scout</button></span></div>`;}
+  return `<div class="row wrap small" style="gap:6px 12px;align-items:center;margin:2px 0 6px"><span style="color:${rel[1]};font-weight:600">${rel[0]}</span><span class="muted">${esc(o.name)}${oc?' · '+esc(oc.name)+' ['+esc(oc.tag)+']':''} · ${esc(theaterName(homeCluster(o)))} · ${cmp}${known?' (#'+rankTitle(o.id).pos+')':''}</span><span class="row" style="gap:4px;margin-left:auto"><button class="btn ghost sm" onclick="GOTO_NATION(${o.id})">🗺 Map</button><button class="btn ghost sm" onclick="(async function(){const hr=homeRegionOf(G.countries[${o.id}]);if(!hr){toast('No ground to scout','bad');return;}const r=await cmdScoutRegion(you(),hr.id);if(r&&r.ok){toast(r.data&&r.data.miss?'Scan bounced':'Scout report filed');(window._p250tab=window._p250tab||{}).p250a='Scout';window.__p250classic=null;go('p250a');}else toast((r&&r.error)||'Cannot scan','bad');})()">🔍 Scout</button></span></div>`;}
 // ==== BATTLE FORECAST, "what will this cost me, and what do I get?" before the launch button. Dry-runs the real combat
 // math (resolveBattle is pure) against the scouted garrison (or the public estimate when unscouted), applies the 3-tick loss
 // curve, and prices the prize: the region's output, your trucks' loot, spoils, war score, alliance XP.
@@ -24287,7 +24287,7 @@ const SKIP=e=>!e||e.nodeType!==1||e.matches('.p250top,.p265tabs,script,style,tem
 function visible(e){try{if(e.classList.contains('p194old')||e.classList.contains('p9hide')||e.classList.contains('p202hide')||e.classList.contains('p219hide'))return false;if(e.tagName==='DETAILS')return e.style.display!=='none';const had=e.classList.contains('p265off');if(had)e.classList.remove('p265off');e.classList.remove('p265empty');const cs=getComputedStyle(e);let ok=cs.display!=='none'&&cs.visibility!=='hidden'&&e.getBoundingClientRect().height>=4;if(ok&&!(e.innerText||'').trim()&&!e.querySelector('input,button,select,textarea,canvas,svg,table,img,video'))ok=false;e.classList.toggle('p265empty',!ok&&cs.display!=='none');if(had)e.classList.add('p265off');return ok;}catch(x){return true;}}
 function head(v,k){let top=v.querySelector(':scope>.p250top');const pt=v.querySelector(':scope>.ptitle');let title=v.dataset.p265t||'',sub=SUB[k]||'';
   if(pt){const h=pt.querySelector('h1,h2,h3');title=(clean(h?h.textContent:pt.textContent).split(/\s+\?|\s*\?\s|\s+·\s+|\s+update\s+\d/i)[0]||'').trim()||title;if(k==='map')title='Map';pt.classList.add('p265hide');v.dataset.p265t=title;}
-  if(!title)title=cap(k);if(!top){top=document.createElement('div');top.className='p250top p265top';v.prepend(top);}
+  if(!title)title=cap(k);try{const o=window.__p87head&&window.__p87head(k);if(o){title=o[0];sub=o[1];}}catch(e){}if(!top){top=document.createElement('div');top.className='p250top p265top';v.prepend(top);}
   const html='<h2>'+E(title)+'</h2><div class="p250sub">'+E(sub)+'</div>';if(top.innerHTML!==html)top.innerHTML=html;if(v.firstElementChild!==top)v.prepend(top);return title;}
 function groups(v,title){const kids=[...v.children].filter(e=>!SKIP(e)&&visible(e));const G=[];let cur=null;
   kids.forEach(e=>{if(e.matches('.alertbar,.alerts')||e.querySelector(':scope>.alertbar,:scope>.alertrow')){e.classList.remove('p265off');e.dataset.p265g='';e.classList.add('p265pin');return;}
@@ -24297,7 +24297,7 @@ function groups(v,title){const kids=[...v.children].filter(e=>!SKIP(e)&&visible(
   return G;}
 function restyle(v,k){try{if(!v||v.id!=='view')return;v.classList.add('p250v','p265');v.dataset.p265k=k;const title=head(v,k);
   v.querySelectorAll(':scope>details').forEach(d=>{const sm=d.querySelector(':scope>summary');if(sm&&/^\s*\W*\s*more on this screen/i.test(sm.textContent)&&!d.open&&!d.dataset.p265o){d.dataset.p265o='1';d.open=true;}});
-  const G=NOTAB[k]?[]:groups(v,title);let bar=v.querySelector(':scope>.p265tabs');
+  const G=(NOTAB[k]||(window.__p87flat&&window.__p87flat[k]))?[]:groups(v,title);let bar=v.querySelector(':scope>.p265tabs');
   if(G.length<2){if(bar)bar.remove();v.querySelectorAll(':scope>.p265off').forEach(e=>e.classList.remove('p265off'));return;}
   const st=window._p250tab||(window._p250tab={});const key='full:'+k;const names=G.map(g=>g.name);let i=names.indexOf(st[key]);if(i<0)i=0;
   if(!bar){bar=document.createElement('div');bar.className='p250tabs p265tabs';bar.setAttribute('role','tablist');}
@@ -25233,7 +25233,7 @@ if(VIEWS&&VIEWS.p250l){const _l2=VIEWS.p250l;VIEWS.p250l=function(v){const r=_l2
   v.querySelectorAll('.p250row').forEach(row=>{const t=row.querySelector('.p250t');if(!t||t.querySelector('.p278lk'))return;[...t.querySelectorAll('span,b,em')].forEach(sp=>{if(/attack in \d+ turn/i.test(sp.textContent||'')&&!sp.querySelector('*')){sp.classList.add('p278lk');sp.setAttribute('data-p278def','');sp.setAttribute('role','button');sp.title='Open the defence plan';}});});
 }catch(e){}return r;};}
 document.addEventListener('click',e=>{const t=e.target;if(!t||!t.closest)return;const d=t.closest('[data-p278def]');if(d){e.preventDefault();e.stopPropagation();openTab('p250a','Defend a land');return;}
-  const g2=t.closest('[data-p278go]');if(g2){e.preventDefault();e.stopPropagation();try{window.__p250classic=null;go(g2.dataset.p278go);}catch(_){}}},true);
+  const g2=t.closest('[data-p278go]');if(g2){e.preventDefault();e.stopPropagation();try{if(g2.dataset.p278go==='covert'){openTab('p250a','Scout');return;}window.__p250classic=null;go(g2.dataset.p278go);}catch(_){}}},true);
 
 /* ---------- 9. No information without an action ---------- */
 function lnk(label,attr){return '<button type="button" class="p278go" '+attr+'>'+E(label)+' ›</button>';}
@@ -25677,9 +25677,7 @@ if(VIEWS&&VIEWS.p250a){const _a25=VIEWS.p250a;VIEWS.p250a=function(v){const r=_a
 /* ---------- 27. 21.0 Hierarchy, not fewer features. Pages with many tabs get a first row of groups and a second row
    with the tabs of the chosen group. A red dot only where something needs you; empty tabs are lighter. ---------- */
 const GROUPS={
-  p250a:[['Operations',['On the move','Targets','War planner','Scout','Defend a land','Home defence','Covert Ops','Spies','Covert']],['Intelligence',['Battle reports','All battle reports']],['Management',['Staff','Calculator']]],
-  p250al:[['Command',['HQ','Intelligence']],['Military',['Defence','Joint attacks','War room']],['Diplomacy',['Diplomacy','All diplomacy']],['People',['Members','Roles','Alliance roles','Join','Found your own','Invite code']],['Communication',['Chat','Messages','Comms','Letters']],['Administration',['Treasury','Leave','Alliance']]],
-  p250o:[['Today',['Do now','Last battles','Events']],['World',['World','Intel Reports','Reports','Full overview']]]};
+};
 const ATTN=/^(defence|joint attacks|under attack|messages|chat|diplomacy)$/i;
 const tName=b=>((b.childNodes[0]&&b.childNodes[0].nodeType===3?b.childNodes[0].textContent:b.textContent)||'').trim().replace(/\s+\d+$/,'');
 function emptyTab(n,c){try{n=n.toLowerCase();if(n==='on the move')return !(c.fleets||[]).some(f=>f.status==='outbound'||f.status==='battle'||f.status==='returning');
@@ -25803,11 +25801,20 @@ if(typeof cmdScoutRegion==='function'){const _sr30=cmdScoutRegion;cmdScoutRegion
       const opp=it.flags.filter(f=>/^(Weak|Army abroad)/.test(f));if(opp.length){if(c.isAI){if(Math.random()<0.5)mark(c,rid,true);}else{try{sitrep(c,'intel','🎯 FOUND IT: '+r.name+' ('+r.coord+'): '+opp.join(', ')+'. Mark it for your alliance.',{coord:r.coord,sev:2,go:'p250a'});}catch(e){}}}}}}catch(e){}return res;};try{window.cmdScoutRegion=cmdScoutRegion;}catch(e){}}
 if(typeof aiPickACSTarget==='function'){const _pk30=aiPickACSTarget;aiPickACSTarget=function(o,cl){try{if(cl){const L=marks(cl);for(const m of L.slice().reverse()){const r=_rgId(m.rid);if(!r)continue;const tv=acsTravel(o,r);if(tv<=(typeof ACS_MAX_WINDOW!=='undefined'?ACS_MAX_WINDOW:12)-1&&!sameTheaterAlly(o,r)&&!(typeof napActive==='function'&&napActive(o,r.owner)))return {r,tv};}}}catch(e){}return _pk30.apply(this,arguments);};try{window.aiPickACSTarget=aiPickACSTarget;}catch(e){}}
 function chips(fl){return fl.map(f=>'<span class="p292c '+f[0]+'">'+E(f[1])+'</span>').join('');}
-function reportsHTML(c){const I=c._regionIntel||{};const L=Object.keys(I).map(k=>({rid:+k,it:I[k]})).filter(x=>!x.it.miss&&G.tick-x.it.tick<=TTL()).sort((a,b)=>b.it.tick-a.it.tick).slice(0,6);const inCl=c.clan!=null;
-  if(!L.length)return '';const cl=clanOf(c);const mk=cl?marks(cl):[];
-  return '<div class="p292"><div class="p278wh">Scout reports · what they mean and what to do</div>'+L.map(x=>{const r=_rgId(x.rid);if(!r)return '';const o=r.owner!=null?G.countries[r.owner]:null;const fl=flagsFor(c,r,x.it);const marked=mk.some(m=>m.rid===r.id);
-    return '<div class="p278wr"><div>'+xyBtn(r.coord)+' <b>'+E(r.name)+'</b> <span class="muted">'+(o?E(o.tag||o.name):'empty')+' · '+(G.tick-x.it.tick)+' turns old</span><div class="p250s">defence '+(x.it.exact?F(x.it.hi):F(x.it.lo)+' to '+F(x.it.hi))+(x.it.conf?' · '+x.it.conf+'% sure':'')+'</div>'+(fl.length?'<div>'+chips(fl)+'</div>':'')+'</div><div class="p278wb2">'+(inCl&&!marked&&o?'<button type="button" class="btn sm p250btn'+(fl.some(f=>f[0]==='good')?' p250main':'')+'" data-p292mark="'+r.id+'">Mark for alliance</button>':marked?'<span class="p292c good">marked</span>':'')+'<button type="button" class="btn sm ghost p250btn" data-p288="'+r.id+'">Attack</button><button type="button" class="btn sm ghost p250btn" data-p278calc="a|'+r.id+'">Calculator</button></div></div>';}).join('')+'</div>';}
-if(VIEWS&&VIEWS.p250a){const _a30=VIEWS.p250a;VIEWS.p250a=function(v){const r=_a30.apply(this,arguments);try{const c=ME();if(!c)return r;const bs=[...v.querySelectorAll(':scope>.p250box:not(.pin)')];const box=bs.find(b=>b.dataset.p268t==='Scouted')||bs.find(b=>b.dataset.p268t==='Scout')||bs.find(b=>b.dataset.p268t==='Not scouted');const h=reportsHTML(c);if(box&&h&&!box.querySelector('.p292')){[...box.children].forEach(ch=>{if(/^\s*nothing here\.?\s*$/i.test(ch.textContent||''))ch.remove();});const hd=box.querySelector(':scope>.p250h');if(hd)hd.insertAdjacentHTML('afterend',h);else box.insertAdjacentHTML('afterbegin',h);}}catch(e){}return r;};}
+function reportsHTML(c){const I=c._regionIntel||{};const all=Object.keys(I).map(k=>({rid:+k,it:I[k]})).filter(x=>x.it&&!x.it.miss&&_rgId(x.rid)&&_rgId(x.rid).owner!==c.id).sort((a,b)=>b.it.tick-a.it.tick);
+  const fresh=all.filter(x=>G.tick-x.it.tick<=TTL()).slice(0,12),old=all.filter(x=>G.tick-x.it.tick>TTL()).slice(0,8);const inCl=c.clan!=null;const cl=clanOf(c);const mk=cl?marks(cl):[];
+  const army=it=>{try{const L=Object.entries(it.comp||{}).filter(a=>a[1]>0).sort((a,b)=>b[1]-a[1]);if(!L.length)return '';return L.slice(0,5).map(a=>F(a[1])+' '+E(((typeof UBYK!=='undefined'&&UBYK[a[0]])||{n:a[0]}).n)).join(', ')+(L.length>5?', and '+(L.length-5)+' more kinds':'');}catch(e){return '';}};
+  const head='<div class="p292"><div class="p278wh">Your scout reports · the army you saw, and what to do</div>';const costLn='<div class="p250s p86cost">A scout costs '+(typeof SCOUT_COST!=='undefined'?F(SCOUT_COST):'some')+' influence and 1 command. Radar on the land can make it fail.</div>';
+  if(!all.length)return head+'<div class="p278wr"><div><b>No reports yet</b><div class="p250s">Press Scout on a land below. The report shows the exact army for '+TTL()+' turns and stays here after that as an old report.</div></div></div>'+costLn+'</div>';
+  return head+fresh.map(x=>{const r=_rgId(x.rid);const o=r.owner!=null?G.countries[r.owner]:null;const fl=flagsFor(c,r,x.it);const marked=mk.some(m=>m.rid===r.id);const age=G.tick-x.it.tick;const a=army(x.it);
+    return '<div class="p278wr"><div>'+xyBtn(r.coord)+' <b>'+E(r.name)+'</b> <span class="muted">'+(o?E(o.name):'empty land')+' · '+(age?age+(age===1?' turn old':' turns old'):'this turn')+' · good for '+Math.max(0,TTL()-age)+' more</span><div class="p250s">defence '+(x.it.exact?F(x.it.hi):F(x.it.lo)+' to '+F(x.it.hi))+(x.it.conf?' · '+x.it.conf+'% sure':'')+'</div>'+(a?'<div class="p250s">'+a+'</div>':'')+(fl.length?'<div>'+chips(fl)+'</div>':'')+'</div><div class="p278wb2">'+(inCl&&!marked&&o?'<button type="button" class="btn sm p250btn'+(fl.some(f=>f[0]==='good')?' p250main':'')+'" data-p292mark="'+r.id+'">Mark for alliance</button>':marked?'<span class="p292c good">marked</span>':'')+'<button type="button" class="btn sm ghost p250btn" data-p288="'+r.id+'">Attack</button><button type="button" class="btn sm ghost p250btn" data-p278calc="a|'+r.id+'">Calculator</button></div></div>';}).join('')+
+   old.map(x=>{const r=_rgId(x.rid);const o=r.owner!=null?G.countries[r.owner]:null;const age=G.tick-x.it.tick;const a=army(x.it);
+    return '<div class="p278wr p86old"><div>'+xyBtn(r.coord)+' <b>'+E(r.name)+'</b> <span class="muted">'+(o?E(o.name):'empty land')+' · '+age+' turns old</span><div class="p250s"><b class="warn">Old report</b>: the army may have changed. Then: defence '+F(x.it.hi)+(a?' · '+a:'')+'</div></div><div class="p278wb2"><button type="button" class="btn sm p250btn" data-p250="scout" data-id="'+r.id+'">Scout again</button></div></div>';}).join('')+costLn+'</div>';}
+if(VIEWS&&VIEWS.p250a){const _a30=VIEWS.p250a;VIEWS.p250a=function(v){const r=_a30.apply(this,arguments);try{const c=ME();if(!c)return r;const bs=[...v.querySelectorAll(':scope>.p250box:not(.pin)')];const box=bs.find(b=>b.dataset.p268t==='Scouted');const first=bs.find(b=>b.dataset.p268t==='Not scouted');const h=reportsHTML(c);if(box&&h&&!box.querySelector('.p292')){[...box.children].forEach(ch=>{if(/^\s*nothing here\.?\s*$/i.test(ch.textContent||''))ch.remove();});const hd=box.querySelector(':scope>.p250h');if(hd)hd.insertAdjacentHTML('afterend',h);else box.insertAdjacentHTML('afterbegin',h);
+    if(first&&first!==box&&(box.compareDocumentPosition(first)&Node.DOCUMENT_POSITION_PRECEDING))first.parentNode.insertBefore(box,first);
+    try{box.querySelectorAll(':scope>.p250row').forEach(x=>x.remove());}catch(e){}
+    try{if(first){const olds=new Set([...box.querySelectorAll('.p86old [data-p250="scout"]')].map(b=>b.dataset.id));let gone=0;first.querySelectorAll(':scope>.p250row').forEach(rw=>{const b=rw.querySelector('[data-p250="scout"]');if(b&&olds.has(b.dataset.id)){rw.remove();gone++;}});if(gone){const cn=first.querySelector(':scope>.p250h .p250n,:scope>.p250h span:last-child');if(cn&&/^\d+$/.test((cn.textContent||'').trim()))cn.textContent=Math.max(0,(+cn.textContent)-gone)||'';}}}catch(e){}
+    try{const n=box.querySelectorAll('.p292 .p278wr:not(.p86old)').length,cn=box.querySelector(':scope>.p250h .p250n,:scope>.p250h span:last-child');if(cn&&/^\d*$/.test((cn.textContent||'').trim()))cn.textContent=n||'';}catch(e){}}}catch(e){}return r;};}
 document.addEventListener('click',e=>{const b=e.target&&e.target.closest&&e.target.closest('[data-p292mark]');if(!b)return;e.preventDefault();e.stopPropagation();const c=ME();const r=mark(c,+b.dataset.p292mark);try{toast(r.ok?'Marked for your alliance: it shows in Alliance › HQ and allies plan joint attacks on it.':r.error,r.ok?'good':'warn');}catch(_){}try{save();go(view);}catch(_){}},true);
 function intelHTML(c){const cl=clanOf(c);if(!cl)return '';const mk=marks(cl);const M=clanMembers(cl);const chief=M.find(m=>(cl.roles||{})[m.id]==='spymaster');
   const foes=new Set();(G.wars||[]).filter(w=>w.active&&(w.a===cl.id||w.b===cl.id)).forEach(w=>foes.add(w.a===cl.id?w.b:w.a));const tB=brainOf(cl);if(tB&&tB.target!=null)foes.add(tB.target);
@@ -26718,16 +26725,21 @@ if(typeof VIEWS!=='undefined'&&VIEWS.p250b){const _b69=VIEWS.p250b;VIEWS.p250b=f
  window.addEventListener('click',e=>{const t=e.target;if(!t||!t.closest)return;const bg=t.closest('.p287bg');const row=t.closest('.p281');if(!bg&&!row)return;
    const tk=t.closest('button[data-p250="take"]');if(tk){e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();p73Attack(tk.dataset.id);return;}
    if(bg&&t.closest('button,a')&&!t.closest('.p287x'))setTimeout(closeNx,0);},true);
- // auto-buy: the money it will spend is in the forecast, and what it bought is in Events
- if(typeof projection==='function'){const _pj73=projection;projection=function(c){const pj=_pj73.apply(this,arguments);try{if(!inT&&c&&c.isAI===false&&c._p18auto&&pj&&pj.net){let cost=0;
-     const src=(c._pj&&c._pj.net)?c._pj.net:pj.net;['food','energy'].forEach(k=>{const net=Math.min(src[k]||0,pj.net[k]||0);if(net>=0)return;const after=Math.max(0,(c.res[k]||0)+net);if(after>-net*6)return; // auto-buy looks after this turn's use
-     const pr=(G.prices&&G.prices[k])||1;const q=Math.floor(Math.min(-net*10,capOf(c,k)-after,Math.max(0,(c.res.money||0)+((pj.net.money)||0))*0.2/Math.max(1,pr)));if(q>0){pj.net[k]=(pj.net[k]||0)+q;const bp=(typeof BASEP!=='undefined'&&BASEP[k])||pr;const heat=Math.max(0,Math.min(1,(pr/bp-1)/2));const vol=q>-net*8?Math.max(0,Math.min(1,q/60000)):0;cost+=q*pr*(1+Math.max(0.05,Math.min(0.45,0.05+heat*0.30+vol*0.10)));}});
+ // auto-buy: the money it will spend is in the forecast, and what it bought is in Events.
+ // 22.0: the purchase is made at the start of the turn from the same plan the forecast shows, so the two cannot differ.
+ const HUM73=()=>{try{if(typeof __mpHumanList==='function')return __mpHumanList();}catch(e){}const c=ME();return c?[c]:[];};
+ function plan73(c,pj){const out=[];try{let money=Math.max(0,c.res.money||0);['food','energy'].forEach(k=>{const net=(pj.net&&pj.net[k])||0;if(net>=0)return;const have=c.res[k]||0;if(Math.max(0,have+net)>-net*6)return;
+     const pr=(G.prices&&G.prices[k])||1;const q=Math.floor(Math.min(-net*10,capOf(c,k)-have,money*0.2/Math.max(1,pr)));if(q>0){const bp=(typeof BASEP!=='undefined'&&BASEP[k])||pr;const heat=Math.max(0,Math.min(1,(pr/bp-1)/2));const vol=q>-net*8?Math.max(0,Math.min(1,q/60000)):0;const cost=q*pr*(1+Math.max(0.05,Math.min(0.45,0.05+heat*0.30+vol*0.10)));out.push({k,q,cost});money=Math.max(0,money-cost);}});}catch(e){}return out;}
+ let _pj73raw=null;
+ if(typeof projection==='function'){const _pj73=projection;_pj73raw=_pj73;projection=function(c){const pj=_pj73.apply(this,arguments);try{if(!inT&&c&&c.isAI===false&&c._p18auto&&pj&&pj.net){let cost=0;plan73(c,pj).forEach(x=>{pj.net[x.k]=(pj.net[x.k]||0)+x.q;cost+=x.cost;});
      if(cost>0){pj.net.money=(pj.net.money||0)-cost;if(pj.cons)pj.cons.money=(pj.cons.money||0)+cost;pj._p73auto=cost;}}}catch(e){}return pj;};try{window.projection=projection;}catch(e){}}
  if(typeof cmdMarket==='function'){const _cm73=cmdMarket;cmdMarket=function(c,k,side,q){const m0=c&&c.res?c.res.money||0:0;const r=_cm73.apply(this,arguments);
    try{if(inT&&r&&r.ok&&c&&c.isAI===false&&side==='buy'){const a=(c._p73ab=c._p73ab||{});a[k]=(a[k]||0)+(+q||0);a.$=(a.$||0)+Math.max(0,m0-(c.res.money||0));}}catch(e){}return r;};try{window.cmdMarket=cmdMarket;}catch(e){}}
- if(typeof runTick==='function'){const _rt73=runTick;runTick=function(){inT++;let out;try{out=_rt73.apply(this,arguments);}finally{inT--;}
-   try{const c=ME();if(c&&c._p73ab){const a=c._p73ab;c._p73ab=null;const parts=Object.keys(a).filter(k=>k!=='$').map(k=>F(a[k])+' '+((RMETA[k]&&RMETA[k].l)||k).toLowerCase());
-     if(parts.length)sitrep(c,'economy','🛒 Auto-buy bought '+parts.join(' and ')+' for '+(((RMETA.money||{}).i)||'')+F(a.$)+' before it ran out. Switch it off under Market › Automatic.',{go:'p250m'});}}catch(e){}return out;};try{window.runTick=runTick;}catch(e){}}
+ if(typeof runTick==='function'){const _rt73=runTick;runTick=function(){inT++;let out;const held=[];
+   try{if(_pj73raw&&!(G._winner!=null||G._seasonEnd))HUM73().forEach(c=>{try{if(!c||c.isAI!==false||c.retired||!c._p18auto)return;plan73(c,_pj73raw(c)).forEach(x=>{try{cmdMarket(c,x.k,'buy',x.q);}catch(e){}});c._p18auto=false;held.push(c);}catch(e){}});}catch(e){}
+   try{out=_rt73.apply(this,arguments);}finally{inT--;held.forEach(c=>{c._p18auto=true;});}
+   try{HUM73().forEach(c=>{if(c&&c._p73ab){const a=c._p73ab;c._p73ab=null;const parts=Object.keys(a).filter(k=>k!=='$').map(k=>F(a[k])+' '+((RMETA[k]&&RMETA[k].l)||k).toLowerCase());
+     if(parts.length)sitrep(c,'economy','🛒 Auto-buy bought '+parts.join(' and ')+' for '+(((RMETA.money||{}).i)||'')+F(a.$)+' before it ran out. Switch it off under Market › Automatic.',{go:'p250m'});}});}catch(e){}return out;};try{window.runTick=runTick;}catch(e){}}
 }
 
 /* 74. 21.8.2, balance and loose ends: a plan for new lands keeps trying for 10 turns; many battle reports at one place fold;
@@ -27173,7 +27185,7 @@ if(typeof VIEWS!=='undefined'&&VIEWS.p250b){const _b69=VIEWS.p250b;VIEWS.p250b=f
    return out;};}
  // c. the incoming warning measures the threat with the real battle maths
  if(typeof incomingTo==='function'){const _it=incomingTo;const memo={t:-1,m:new Map()};incomingTo=function(cid){const L=_it.apply(this,arguments);try{if(memo.t!==G.tick){memo.t=G.tick;memo.m=new Map();}const d=G.countries[cid];
-   L.forEach(i=>{try{if(!i||!i.region||!i.fleet||!i.fleet.units||!i.from||i.from.id==null)return;const k=cid+':'+i.fleet.id;let v=memo.m.get(k);if(v==null){const B=battleCalc(i.from,i.fleet.units,i.region,d,defenderPool(i.region,d).units,{});v=B&&B.ratio>0?B.ratio:-1;memo.m.set(k,v);}if(v>0)i.threat=v;}catch(e){}});}catch(e){}return L;};try{window.incomingTo=incomingTo;}catch(e){}}
+   L.forEach(i=>{try{if(!i||!i.region||!i.fleet||!i.fleet.units||!i.from||i.from.id==null)return;let sg=0;try{sg=Math.round(fleetSize(d.units))+':'+((d.fleets||[]).length)+':'+Math.round(fleetSize(i.fleet.units));}catch(e){}const k=cid+':'+i.fleet.id+':'+sg;let v=memo.m.get(k);if(v==null){const B=battleCalc(i.from,i.fleet.units,i.region,d,defenderPool(i.region,d).units,{});v=B&&B.ratio>0?B.ratio:-1;memo.m.set(k,v);}if(v>0)i.threat=v;}catch(e){}});}catch(e){}return L;};try{window.incomingTo=incomingTo;}catch(e){}}
  // e. an army that marched on a land which changed hands on the way, and now faces a hopeless fight, turns back on
  //    arrival. The same for you and for computer nations: nobody is thrown at a wall that was not there when they left.
  if(typeof cmdOp==='function'){const _op=cmdOp;cmdOp=function(c,rid){const n0=c&&c.fleets?c.fleets.length:0;const out=_op.apply(this,arguments);
@@ -27268,6 +27280,64 @@ if(typeof VIEWS!=='undefined'&&VIEWS.p250b){const _b69=VIEWS.p250b;VIEWS.p250b=f
  kick();
  window.__p85={riv:RIV,img:IMG,base:BASE,run:run,off:off};
 }catch(e){try{console.error('p85',e);}catch(_){}}})();
+
+/* 86. 22.0 Scouting has one place: Army > Scout.
+   The reports stand first on that tab, with the army that was seen. A report older than the scout time stays as an
+   "old report" with Scout again, it no longer disappears. The old Covert Ops page and the battle reports point there,
+   and every scout message opens it. */
+(function(){try{
+ const css=document.createElement('style');css.id='p86css';css.textContent='.p86old{opacity:.82}.p219scout>*{display:none!important}.p219scout>.p86ptr{display:flex!important;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}';document.head.appendChild(css);
+ function count(c){try{const I=c._regionIntel||{};return Object.keys(I).filter(k=>I[k]&&!I[k].miss).length;}catch(e){return 0;}}
+ function ptr(){try{const v=document.getElementById('view');if(!v)return;const c=ME();if(!c)return;
+   const b=v.querySelector('.p219scout');if(b&&!b.querySelector('.p86ptr')){const d=document.createElement('div');d.className='p86ptr';d.innerHTML='<div><b>Your scout reports are on the Scout tab</b><div class="muted small">'+count(c)+' report'+(count(c)===1?'':'s')+', newest first, with the army that was seen.</div></div><button type="button" class="btn sm" data-p278tab="p250a|Scout">Open scout reports</button>';b.appendChild(d);}
+   const bx=[...v.querySelectorAll(':scope>.p250box')].find(x=>(x.dataset.p268t==='Battles'||x.dataset.p268t==='Battle reports')&&x.offsetParent&&(window._p250tab||{}).p250a==='Battle reports');if(bx&&!bx.querySelector('.p86row')){const n=count(c);const d=document.createElement('div');d.className='p250row p86row';d.innerHTML='<div class="p250m"><div class="p250t">Scout reports</div><div class="p250s">'+(n?n+' report'+(n===1?'':'s')+' on lands you scouted':'none yet: scout a land to see its army')+'</div></div><div class="p250b"><button type="button" class="p278go" data-p278tab="p250a|Scout">Scout reports ›</button><button type="button" class="p278go" data-p250="classic" data-id="battles">All battle reports ›</button></div>';[...bx.children].forEach(ch=>{if(/^\s*nothing here\.?\s*$/i.test(ch.textContent||''))ch.remove();});const hd=bx.querySelector(':scope>.p250h');if(hd&&hd.nextSibling)bx.insertBefore(d,hd.nextSibling);else bx.appendChild(d);if(!bx.querySelector('.p250row:not(.p86row)')){const e2=document.createElement('div');e2.className='p250e';e2.textContent='No battles yet. Your attacks and defences show up here.';bx.appendChild(e2);}}}catch(e){}}
+ // a double click sends one scout: a second scout order inside the same 0.7 s of clicking is refused, and the top bar shows the cost at once
+ if(typeof cmdScoutRegion==='function'){let lastUI=0;const _sr86=cmdScoutRegion;cmdScoutRegion=function(c,rid){try{const ev=(typeof window!=='undefined')?window.event:null;if(c&&c.isAI===false&&ev&&(ev.type==='click'||ev.type==='pointerup'||ev.type==='touchend')){const now=Date.now();if(now-lastUI<700)return {ok:false,error:'One scout at a time.'};lastUI=now;setTimeout(()=>{try{drawTop();}catch(_){}},350);}}catch(e){}return _sr86.apply(this,arguments);};try{window.cmdScoutRegion=cmdScoutRegion;}catch(e){}}
+ if(typeof go==='function'){const _g86=go;go=function(){const r=_g86.apply(this,arguments);try{ptr();}catch(e){}return r;};try{window.go=go;}catch(e){}}
+ {const vv=document.getElementById('view');if(vv)new MutationObserver(()=>{if(!ptr._q)ptr._q=requestAnimationFrame(()=>{ptr._q=0;ptr();});}).observe(vv,{childList:true});}
+ document.addEventListener('click',e=>{if(e.target&&e.target.closest&&e.target.closest('#view .p250tabs'))setTimeout(ptr,0);},true);document.addEventListener('change',e=>{if(e.target&&e.target.classList&&e.target.classList.contains('p266sel'))setTimeout(ptr,0);},true);
+}catch(e){try{console.error('p86',e);}catch(_){}}})();
+
+/* 87. 22.1 Two levels: a page and its tabs.
+   Army and Overview lose their row of groups; every tab is in one row (a drop-down on a phone). The old full screens
+   under Army (War planner, Home defence, Covert Ops) carry the page name with the tab as subtitle, and show all their
+   blocks in one scroll instead of a third row of tabs. "All battle reports" is reached from Battle reports, and Home
+   defence lives under Army only. The coordinate field and the army rank stand on the tabs where they are used. */
+(function(){try{
+ const NAV=k=>{try{const a=document.querySelector('.p250nav [data-k="'+k+'"]');const t=a&&(a.querySelector('span:last-child')||a).textContent.trim();return t||null;}catch(e){return null;}};
+ const PAGE={calc:'p250a',around:'p250a',self:'p250a',covert:'p250a',battles:'p250a',dashboard:'p250o',reports:'p250o',production:'p250b',military:'p250b',market:'p250e',economy:'p250e',research:'p250r',clans:'p250al',roles:'p250al',diplomacy:'p250al',mail:'p250al',rankings:'p250k'};
+ const SUB={calc:'Calculator',around:'War planner',self:'Home defence',battles:'Battle reports',dashboard:'Full overview',reports:'Turn log',production:'All buildings',military:'Armed Forces',market:'Limit orders',economy:'Tax & government',research:'Research tree',rankings:'Full rankings',roles:'Alliance roles',diplomacy:'All diplomacy'};
+ window.__p87flat={around:1,self:1,covert:1,reports:1,dashboard:1,production:1,military:1,market:1,economy:1,diplomacy:1,clans:1,mail:1,rankings:1};
+ window.__p87head=function(k){const pg=PAGE[k];if(!pg)return null;let sub=SUB[k];if(!sub){const b=document.querySelector('#view .p250tabs [data-id="'+k+'"]');sub=b?b.textContent.trim():'';}if(!sub)sub=({covert:'Covert Ops',clans:'Alliance',mail:'Comms'})[k]||'';return [NAV(pg)||({p250k:'Rankings',p250r:'Research',p250b:'Build',p250e:'Economy',p250al:'Alliance',p250o:'Overview',p250a:'Army'})[pg]||pg,sub];};
+ const css=document.createElement('style');css.id='p87css';css.textContent='#view .p87hide{display:none!important}';document.head.appendChild(css);
+ function regenSel(bar){try{const sel=bar.nextElementSibling;if(!sel||!sel.classList.contains('p266sel'))return;const btns=[...bar.querySelectorAll(':scope>button')];const html=btns.map((b,i)=>'<option value="'+i+'"'+(b.classList.contains('on')?' selected':'')+'>'+E((b.textContent||'').trim())+'</option>').join('');if(sel.innerHTML!==html)sel.innerHTML=html;}catch(e){}}
+ function pageOf(){try{const k=window.__p250classic;if(k&&typeof view!=='undefined'&&view===k){const m=Object.assign({calc:'p250a',staff:'p250a'},PAGE);return m[k]||null;}return typeof view!=='undefined'?String(view):null;}catch(e){return null;}}
+ function fix(){try{const v=document.getElementById('view');if(!v)return;const pg=pageOf();const bar=v.querySelector(':scope>.p250tabs:not(.p265tabs)');if(!bar)return;let ch=0;
+   const ex=id=>bar.querySelector(':scope>button[data-id="'+id+'"]');
+   bar.querySelectorAll(':scope>.p279sep').forEach(x=>{x.remove();ch++;});
+   if(pg==='p250a'){const a=ex('around');if(a&&a.textContent.trim()!=='War planner'){a.textContent='War planner';ch++;}const b=ex('battles');if(b){b.remove();ch++;}}
+   if(pg==='p250o'){const r=ex('reports');if(r&&r.textContent.trim()!=='Turn log'){r.textContent='Turn log';ch++;}}
+   if(pg==='p250l'){const s=ex('self');if(s){s.remove();ch++;}}
+   if(pg==='p250e'){const m2=ex('market');if(m2&&m2.textContent.trim()!=='Limit orders'){m2.textContent='Limit orders';m2.title='Limit orders, your position, price history and quick buy';ch++;}const e2=ex('economy');if(e2){e2.remove();ch++;}if(view==='economy'){const own=bar.querySelector(':scope>button[data-p278tab="p250e|Tax & government"]');if(own&&!own.classList.contains('on')){own.classList.add('on');ch++;}}}
+   if(view==='calc'){const own=bar.querySelector(':scope>button[data-p278tab$="|Calculator"]');if(own&&!own.classList.contains('on')){own.classList.add('on');ch++;}}
+   if(bar.classList.contains('p194old')){bar.classList.remove('p194old');ch++;}
+   if(view==='around'){const p15=v.querySelector(':scope>.p15');if(p15&&!p15.classList.contains('p87hide')){p15.classList.add('p87hide');ch++;}}
+   if(pg==='p250al'||pg==='p250e'||pg==='p250b'||pg==='p250k'||pg==='p250r'){bar.querySelectorAll(':scope>button.p289hide').forEach(x=>{x.classList.remove('p289hide');ch++;});const g2=v.querySelector(':scope>.p289g');if(g2){g2.remove();ch++;}}
+   const g=v.querySelector(':scope>.p289g');if(g&&(pg==='p250a'||pg==='p250o')){g.remove();ch++;}
+   bar.querySelectorAll(':scope>button.p289hide').forEach(x=>{if(pg==='p250a'||pg==='p250o'){x.classList.remove('p289hide');ch++;}});
+   if(ch)regenSel(bar);
+   if(pg==='p250a'&&view==='p250a'){const on=bar.querySelector(':scope>button.on');const t=on?((on.childNodes[0]&&on.childNodes[0].textContent)||on.textContent).trim():'';
+     const coord=/^(On the move|Targets|Scout)$/.test(t);const rank=coord||!matchMedia('(max-width:700px)').matches;
+     const cf=v.querySelector(':scope>.p250box.p75');if(cf)cf.classList.toggle('p87hide',!coord);const rk=v.querySelector(':scope>.p274rank');if(rk)rk.classList.toggle('p87hide',!rank);}}catch(e){}}
+ css.textContent+='.p250more>.p264more,.p250more>.p264full,.p250more>a[data-id="p250e"],.p250sh .p264full{display:none!important}';
+ window.addEventListener('click',e=>{const b=e.target&&e.target.closest&&e.target.closest('#view>.p250tabs>button');if(!b)return;const t=((b.childNodes[0]&&b.childNodes[0].textContent)||b.textContent||'').trim();if(t!=='Calculator'||pageOf()!=='p250a')return;e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();try{(window._p250tab||(window._p250tab={})).p250a='Calculator';window.__p250classic='calc';go('calc');}catch(_){}},true);
+ document.addEventListener('change',e=>{const s=e.target;if(!s||!s.classList||!s.classList.contains('p266sel')||pageOf()!=='p250a')return;const o=s.options[s.selectedIndex];if(o&&o.textContent.trim()==='Calculator'){e.stopImmediatePropagation();try{(window._p250tab||(window._p250tab={})).p250a='Calculator';window.__p250classic='calc';go('calc');}catch(_){}}},true);
+ window.addEventListener('click',e=>{const a=e.target&&e.target.closest&&e.target.closest('.p250more a[data-id="p250d"],.p250sh a[data-id="p250d"],[data-k="p250d"]');if(!a)return;try{const c=ME();const inCl=c&&c.clan!=null;if(inCl)return;e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();try{const sh=document.getElementById('p250sheet');if(sh)sh.remove();}catch(_){}window.__p250classic='diplomacy';go('diplomacy');}catch(_){}},true);
+ if(typeof go==='function'){const _g87=go;go=function(){const r=_g87.apply(this,arguments);try{fix();}catch(e){}return r;};try{window.go=go;}catch(e){}}
+ document.addEventListener('click',e=>{if(e.target&&e.target.closest&&e.target.closest('#view .p250tabs'))setTimeout(fix,0);},true);
+ document.addEventListener('change',e=>{if(e.target&&e.target.classList&&e.target.classList.contains('p266sel'))setTimeout(fix,0);},true);
+ {const vv=document.getElementById('view');if(vv)new MutationObserver(()=>{if(!fix._q)fix._q=requestAnimationFrame(()=>{fix._q=0;fix();});}).observe(vv,{childList:true});}
+}catch(e){try{console.error('p87',e);}catch(_){}}})();
 
 try{window.atkPanel=atkPanel;window.calcAttack=calcAttack;}catch(e){} // for the test routine
 }catch(e){try{console.error('p278',e);}catch(_){}}})();
