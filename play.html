@@ -23788,7 +23788,7 @@ function expandOne(c){const p=c.pers||{};const w=EXP[p.arch]||((p.expand||0)>55?
   const home=regionsOf(c);if(!home.length)return false;const nx=new Set([G.nexusId].concat(G.nexusIds||[]));
   const busy=new Set((c.fleets||[]).filter(f=>f&&f.status!=='done'&&f.status!=='returning').map(f=>f.target));
   const atk=power(c,'atk');if(!(atk>0))return false;let best=null,bt=99,bd=1e18;
-  G.regions.forEach(r=>{if(r.owner!=null||r.nexus||nx.has(r.id)||r._p183s||r._p186s||busy.has(r.id))return;let hm=null,t=99;try{hm=homeFor(c,r);if(hm)t=travelFor(c,hm,r);}catch(e){}if(t>4)return;
+  const _cl=new Set(home.map(h=>h.cluster));G.regions.forEach(r=>{if(r.owner!=null||!_cl.has(r.cluster)||r.nexus||nx.has(r.id)||r._p183s||r._p186s||busy.has(r.id))return;let hm=null,t=99;try{hm=homeFor(c,r);if(hm)t=travelFor(c,hm,r);}catch(e){}if(t>4)return;
     const d=regionDef(r);if(atk<d*1.6)return;if(t<bt||(t===bt&&d<bd)){best=r;bt=t;bd=d;}});
   if(!best)return false;const f=Math.min(1,bd*1.8/atk);if(f>0.6)return false;const com={};for(const k in (c.units||{})){const n=Math.ceil((c.units[k]||0)*f);if(n>0)com[k]=n;}
   if(!Object.keys(com).length)return false;let res=null;try{res=cmdOp(c,best.id,com,{});}catch(e){}if(res&&res.ok){c._p262x=(c._p262x||0)+1;return true;}return false;}
@@ -27008,6 +27008,22 @@ try{const st=document.createElement('style');st.id='p300css';st.textContent=
   '@media (max-width:600px){#view .scroll{overflow-x:auto}}'+
   '.p278xy,.tag.lk{color:color-mix(in srgb,var(--accent) 62%,#fff)}';
   document.head.appendChild(st);}catch(e){}
+})();
+</script>
+<script>/* p301 */
+// 22.4: a world that moves.
+// 1. Every computer nation wants at least some new ground (expand 60 or more). Before, two out of three stayed on one land all season.
+// 2. A computer nation judges an enemy land by the troops that really defend it (home army or its far share, plus the local
+//    garrison), with a 30% margin, instead of the whole army times the ground bonus. It used to see about twice the real defence,
+//    so it called off attacks it would have won.
+(function(){'use strict';
+const EXPAND_MIN=60,DEF_MARGIN=1.3,GUESS_SCALE=0.6;
+let _pc=null,_pt=-1;function pool(r,o){if(_pt!==G.tick||!_pc){_pc=new Map();_pt=G.tick;}const key=r.id*100000+o.id;const hit=_pc.get(key);if(hit!==undefined)return hit;const v=pool0(r,o);_pc.set(key,v);return v;}
+function pool0(r,o){let U;try{U=mergeUnits([garrisonUnits(r),p17Far(o,r)?p17Reach(o.units,o):o.units]);}catch(e){return null;}try{return power(o,'def',U);}catch(e){return null;}}
+try{if(typeof aiKnownDef==='function'){const _k=aiKnownDef;aiKnownDef=function(c,r){const base=_k.apply(this,arguments);try{if(base==null||!c||!r||r.owner==null||r.owner===c.id)return base;
+    const o=G.countries[r.owner];if(!o||o.retired)return base;const p=pool(r,o);if(!(p>0))return base;return Math.min(base,p*DEF_MARGIN);}catch(e){return base;}};try{window.aiKnownDef=aiKnownDef;}catch(e){}}}catch(e){}
+try{if(typeof aiGuessDef==='function'){const _g=aiGuessDef;aiGuessDef=function(c,r){const k=aiKnownDef(c,r);if(k!=null)return k;return _g.apply(this,arguments)*GUESS_SCALE;};try{window.aiGuessDef=aiGuessDef;}catch(e){}}}catch(e){}
+try{if(typeof aiDecide==='function'){const _d=aiDecide;aiDecide=function(c){try{if(c&&c.isAI&&c.pers&&!c._p301){c._p301=1;if((c.pers.expand||0)<EXPAND_MIN)c.pers.expand=EXPAND_MIN;}}catch(e){}return _d.apply(this,arguments);};try{window.aiDecide=aiDecide;}catch(e){}}}catch(e){}
 })();
 </script>
 
