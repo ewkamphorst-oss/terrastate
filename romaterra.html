@@ -28072,6 +28072,392 @@ try{if(typeof advanceBattle==='function'){const _a=advanceBattle;advanceBattle=f
 window.__p307={active,say};
 })();
 </script>
+<script>/* p308a 23.8: fewer tabs, no empty tabs. Nothing is removed: tab buttons are hidden, and every hidden tab stays reachable
+   (a "More" tab, a link row inside the kept tab, a "Back to" row on top of the old tab). openTab()/go() routes still land on the old tab.
+   1. Tabs with nothing in them are hidden until they have content (decided from game state, or from the page's own empty box).
+   2. Alliance (in an alliance): HQ, Defence, Joint attacks, Members, Diplomacy, Talk. Out of an alliance: Join, Found your own, Invite code, Diplomacy, More.
+   3. Army: On the move, Targets, Scout, Defend a land, Battle reports, More (Calculator, Staff, War planner, Home defence, Covert Ops).
+   4. Build: Buildings, Troops, In progress. Rankings: Nations, Alliances, Around you. Overview: Do now, Last battles, World, Events, More.
+   5. The phone drop-down gets the same pruned list.  6. Old war alerts: "Join it in Homeland." is rewritten at runtime. */
+(function(){'use strict';
+if(typeof window==='undefined'||typeof document==='undefined')return;
+const ME_=()=>{try{return G&&G.countries&&G.you!=null?G.countries[G.you]:null;}catch(e){return null;}};
+const nm=b=>(b.dataset&&b.dataset.p308n)||((b.childNodes[0]&&b.childNodes[0].textContent)||b.textContent||'').trim();
+const match=(b,s)=>s.indexOf('id:')===0?(b.dataset&&b.dataset.id===s.slice(3)):nm(b)===s;
+const boxOf=(v,name)=>[...v.querySelectorAll(':scope>.p250box')].find(b=>{const h=b.querySelector(':scope>.p250h');const t=(b.dataset&&b.dataset.p268t)||(h&&h.childNodes[0]&&h.childNodes[0].textContent)||'';return t.trim()===name;});
+const filled=name=>v=>{const b=boxOf(v,name);return !b||!!b.querySelector('.p250row');}; // the page's own box has rows (no box found: keep the tab)
+/* ---- state tests: true = the tab has something ---- */
+const hasBattles=()=>{const c=ME_();return !c||(G.battles||[]).some(b=>b&&(b.atkId===c.id||b.defId===c.id));};
+const covertUsable=()=>{try{const c=ME_();if(!c)return true;const d=BUILD.find(x=>x.k==='covert');
+  return bTotal(c,'covert')>=1||bTotal(c,'intel')>=1||(c.queue||[]).some(q=>q&&q.k==='covert')||(c._covertLog||[]).length>0||(d?buildUnlocked(c,d):true);}catch(e){return true;}};
+const intelKnown=()=>{try{const c=ME_();const cl=(G.clans||[]).find(x=>x&&x.id===c.clan);return !cl||Object.keys(cl._dos||{}).length>0||Object.keys(c._regionIntel||{}).length>0;}catch(e){return true;}};
+const CFG=[
+ {k:'ov',sig:['Do now','World'],order:['Do now','Last battles','World','Events'],more:['Full overview','Turn log'],cond:{'Last battles':hasBattles}},
+ {k:'ar',sig:['Targets','Scout'],order:['On the move','Targets','Scout','Defend a land','Battle reports'],more:['Calculator','Staff','War planner','Home defence','id:covert'],cond:{'id:covert':covertUsable}},
+ {k:'la',sig:['All lands','Map'],cond:{'New':filled('New'),'Under attack':filled('Under attack')}},
+ {k:'bu',sig:['Buildings','Troops'],order:['Buildings','Troops','In progress'],kids:{'Buildings':['All buildings'],'Troops':['Armed Forces']},cond:{'In progress':filled('In progress')}},
+ {k:'ra',sig:['Nations','Alliances'],order:['Nations','Alliances','Around you'],kids:{'Nations':['Full rankings']}},
+ {k:'al',sig:['Members','Treasury'],order:['HQ','Defence','Joint attacks','Members','Diplomacy','Chat'],rename:{Chat:'Talk'},pos:'bottom',
+  kids:{'HQ':['Intelligence','Treasury'],'Joint attacks':['War room'],'Members':['Roles','Leave'],'Diplomacy':['All diplomacy'],'Chat':['Messages','id:mail']},
+  labels:{Leave:'Leave the alliance'},cond:{'Intelligence':intelKnown}},
+ {k:'an',sig:['Join','Found your own'],order:['Join','Found your own','Invite code','Diplomacy'],more:['Messages','Alliance','Alliance roles','id:mail']}
+];
+window.__p308aopen=window.__p308aopen||{};
+try{const css=document.createElement('style');css.id='p308css';
+ css.textContent='#view .p250tabs .p308h{display:none!important}#view .p250tabs .p308par{border-color:var(--accent);color:var(--text)}'+
+ '.p308row{display:flex;flex-wrap:wrap;gap:6px 8px;align-items:center;margin:0 0 10px;font-size:13px}.p308row>span{color:var(--muted,#9aa4b2)}.p308row .btn{padding:6px 10px;min-height:0;font-size:12px;text-transform:none;letter-spacing:0}.p308row .btn.on{border-color:var(--accent);font-weight:700}';
+ document.head.appendChild(css);}catch(e){}
+const barsOf=v=>[...v.querySelectorAll(':scope>.p250tabs:not(.p265tabs)')];
+const cfgFor=bar=>{const names=[...bar.querySelectorAll(':scope>button:not(.p308more)')].map(nm);return CFG.find(c=>c.sig.every(s=>names.indexOf(s)>=0));};
+const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+function apply(v,bar){
+ const cfg=cfgFor(bar);if(!cfg)return;
+ const btns=[...bar.querySelectorAll(':scope>button:not(.p308more)')];
+ if(cfg.rename)btns.forEach(b=>{const n=nm(b);if(cfg.rename[n]&&!b.dataset.p308n){b.dataset.p308n=n;if(b.childNodes[0]&&b.childNodes[0].nodeType===3)b.childNodes[0].textContent=cfg.rename[n]+(b.childNodes.length>1?' ':'');else b.textContent=cfg.rename[n];}});
+ const find=s=>btns.find(b=>match(b,s));
+ const why=new Map(),kidOf=new Map(),off=new Set();
+ (cfg.more||[]).forEach(s=>{const b=find(s);if(b)why.set(b,'more');});
+ Object.keys(cfg.kids||{}).forEach(p=>cfg.kids[p].forEach(s=>{const b=find(s);if(b){why.set(b,'kid');kidOf.set(b,p);}}));
+ Object.keys(cfg.cond||{}).forEach(s=>{const b=find(s);if(!b)return;let ok=true;try{ok=!!cfg.cond[s](v,bar);}catch(e){}
+  if(!ok){if(why.has(b))off.add(b);else why.set(b,'empty');}});
+ const label=b=>{const n=nm(b);return (cfg.labels&&cfg.labels[n])||(cfg.rename&&cfg.rename[n])||n;};
+ btns.forEach(b=>{const hid=why.has(b);if(b.classList.contains('p308h')!==hid)b.classList.toggle('p308h',hid);
+  const i=(cfg.order||[]).indexOf(b.dataset.p308n&&cfg.rename?b.dataset.p308n:nm(b));const o=i>=0?String(i):'50';if(b.style.order!==o)b.style.order=o;b.classList.remove('p308par');});
+ const moreItems=(cfg.more||[]).map(find).filter(b=>b&&why.get(b)==='more');
+ let mb=bar.querySelector(':scope>.p308more');
+ if(moreItems.length){if(!mb){mb=document.createElement('button');mb.type='button';mb.className='p250tab p308more';mb.setAttribute('role','tab');mb.textContent='More';mb.style.order='99';bar.appendChild(mb);}}
+ else if(mb){mb.remove();mb=null;}
+ const act=btns.find(b=>b.classList.contains('on'));const aw=act?why.get(act):null;
+ let open=!!window.__p308aopen[cfg.k];
+ if(aw==='more'){open=true;window.__p308aopen[cfg.k]=true;}
+ if(mb)mb.classList.toggle('p308par',open||aw==='more');
+ const parent=aw==='kid'?find(kidOf.get(act)):null;
+ if(parent)parent.classList.add('p308par');
+ // the open tab is empty: show the first tab (once per page render)
+ if(aw==='empty'&&!bar._p308fb){bar._p308fb=1;const f=btns.find(b=>!why.has(b));if(f)setTimeout(()=>{try{f.click();}catch(e){}},0);}
+ // phone drop-down: same pruned list; values stay the index of the real button
+ const sel=bar.nextElementSibling&&bar.nextElementSibling.classList&&bar.nextElementSibling.classList.contains('p266sel')?bar.nextElementSibling:null;
+ const all=[...bar.querySelectorAll(':scope>button')];
+ if(sel){const vis=all.filter(b=>!b.classList.contains('p308h')).sort((a,b)=>(+a.style.order||0)-(+b.style.order||0));
+  const onB=parent||(aw==='more'&&mb?mb:act);
+  const html=vis.map(b=>'<option value="'+all.indexOf(b)+'"'+(b===onB?' selected':'')+'>'+esc(b===mb?'More':label(b))+'</option>').join('');
+  if(sel.innerHTML!==html)sel.innerHTML=html;}
+ // link rows
+ const goBtn=(b,on)=>'<button type="button" class="btn sm ghost'+(on?' on':'')+'" data-p308go="'+esc(nm(b))+'">'+esc(label(b))+'</button>';
+ const mk=(cls,html)=>{const d=document.createElement('div');d.className='p308row '+cls;d.innerHTML=html;return d;};
+ const want=[];
+ if(open&&moreItems.length)want.push(['m',mk('p308m',moreItems.filter(b=>!off.has(b)||b===act).map(b=>goBtn(b,b===act)).join(''))]);
+ if(parent)want.push(['b',mk('p308b','<button type="button" class="btn sm ghost" data-p308go="'+esc(nm(parent))+'">&lsaquo; Back to '+esc(label(parent))+'</button>')]);
+ if(act&&!why.has(act)&&cfg.kids&&cfg.kids[nm(act)]){const ks=cfg.kids[nm(act)].map(find).filter(b=>b&&!off.has(b));
+  if(ks.length)want.push([cfg.pos==='bottom'?'x':'l',mk('p308l','<span>Also:</span> '+ks.map(b=>goBtn(b,false)).join(''))]);}
+ const key=want.map(w=>w[0]+w[1].innerHTML).join('#');
+ const have=[...v.querySelectorAll(':scope>.p308row')];
+ if(key!==v._p308key||have.length!==want.length){have.forEach(r=>r.remove());let anchor=sel||bar;
+  want.forEach(w=>{if(w[0]==='x'){v.insertBefore(w[1],v.querySelector(':scope>.p264all')||null);}else{anchor.insertAdjacentElement('afterend',w[1]);anchor=w[1];}});
+  v._p308key=key;}
+}
+let busy=false;
+function sync(){if(busy)return;busy=true;try{const v=document.getElementById('view');if(!v)return;
+ const bars=barsOf(v);
+ if(!bars.length){v.querySelectorAll(':scope>.p308row').forEach(r=>r.remove());v._p308key=null;}
+ else bars.forEach(bar=>{try{apply(v,bar);}catch(e){}});
+ fixText(v);}catch(e){}finally{busy=false;}}
+function fixText(v){try{if((v.textContent||'').indexOf('Join it in Homeland')<0)return;const w=document.createTreeWalker(v,4);let n;while((n=w.nextNode())){if(n.nodeValue.indexOf('Join it in Homeland.')>=0)n.nodeValue=n.nodeValue.replace(/Join it in Homeland\./g,'Join it on Alliance, Joint attacks.');}}catch(e){}}
+// clicks: the More tab and the link rows
+window.addEventListener('click',e=>{const t=e.target&&e.target.closest?e.target:null;if(!t)return;
+ const m=t.closest('.p308more');
+ if(m){e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();const cfg=cfgFor(m.parentNode);if(cfg)window.__p308aopen[cfg.k]=!window.__p308aopen[cfg.k];sync();return;}
+ const g=t.closest('[data-p308go]');
+ if(g){e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();const bar=barsOf(document.getElementById('view'))[0];if(!bar)return;
+  const b=[...bar.querySelectorAll(':scope>button:not(.p308more)')].find(x=>nm(x)===g.dataset.p308go);
+  if(b){bar._p308fb=0;b.click();setTimeout(sync,0);try{document.getElementById('view').scrollIntoView({block:'start'});}catch(x){}}}
+},true);
+document.addEventListener('change',e=>{if(e.target&&e.target.classList&&e.target.classList.contains('p266sel'))setTimeout(sync,0);},true);
+document.addEventListener('click',e=>{if(e.target&&e.target.closest&&e.target.closest('#view .p250tabs'))setTimeout(sync,0);},false);
+try{if(typeof go==='function'){const _g=go;go=function(){const r=_g.apply(this,arguments);try{barsOf(document.getElementById('view')).forEach(b=>{b._p308fb=0;});sync();}catch(e){}return r;};try{window.go=go;}catch(e){}}}catch(e){}
+['p250o','p250a','p250l','p250b','p250k','p250al'].forEach(k=>{try{if(typeof VIEWS!=='undefined'&&VIEWS[k]){const o=VIEWS[k];VIEWS[k]=function(){const r=o.apply(this,arguments);try{sync();}catch(e){}return r;};}}catch(e){}});
+try{const hook=()=>{const v=document.getElementById('view');if(v)new MutationObserver(()=>{if(!sync._q)sync._q=requestAnimationFrame(()=>{sync._q=0;sync();});}).observe(v,{childList:true});};
+ if(document.body)hook();else document.addEventListener('DOMContentLoaded',hook);}catch(e){}
+try{setInterval(sync,600);}catch(e){}
+// for tests: the tabs that are visible on the open page
+window.__p308a={sync,count(){const v=document.getElementById('view');const bar=v&&barsOf(v)[0];if(!bar)return null;
+ const b=[...bar.querySelectorAll(':scope>button')].filter(x=>!x.classList.contains('p308h'));const s=bar.nextElementSibling&&bar.nextElementSibling.classList.contains('p266sel')?bar.nextElementSibling:null;
+ return {tabs:b.map(nm),n:b.length,sel:s?s.options.length:null};}};
+})();
+</script>
+<script>/* p308b 23.8: the Map, readable and usable */
+// 1. Political colours: yours (gold, white solid border, star), alliance (blue, white dashed border), rival that aims at you (red, dotted
+//    border, cross), other nations (four muted shades, one per nation, no border), empty land (dark, dashed light border). New legend.
+// 2. Labels: after every draw, labels that overlap are hidden (priority: your lands, Nexus, lands under attack, theatre names, hex numbers,
+//    sector numbers). From zoom 2 to 5 your lands, the Nexus and lands under attack get a name. Hex numbers get a light colour with a dark halo.
+// 3. Icon buttons get a visible caption and aria-label. 4. Phone: when a land sheet opens, the map moves so the land stays above the sheet;
+//    the close button says Close. 5. Fleets and incoming attacks with turns left were already drawn by the map: not touched.
+(function(){'use strict';
+if(typeof window==='undefined'||typeof document==='undefined')return;
+const ME_=()=>{try{return typeof you==='function'?you():(G&&G.countries?G.countries[G.you]:null);}catch(e){return null;}};
+const phone=()=>{try{return window.innerWidth<=700;}catch(e){return false;}};
+const SH=['#6f6c8e','#5a8386','#8a6f86','#7a8394'];
+
+/* ---------- 1. colours ---------- */
+try{if(typeof wmOwnerStyle==='function'){const _s=wmOwnerStyle;wmOwnerStyle=function(r,c,hostiles,mode){
+  let st=_s.apply(this,arguments);
+  try{if(st&&mode==='political'){
+    if(st.mark==='neutral'&&r.owner!=null){st=Object.assign({},st,{fill:SH[Math.abs(+r.owner||0)%SH.length],op:.92,stroke:'#0a1420',sw:.35});}
+    else if(st.mark==='you')st=Object.assign({},st,{stroke:'#ffffff',sw:1.2});
+    else if(st.mark==='ally')st=Object.assign({},st,{stroke:'#ffffff',sw:.9});
+    else if(st.mark==='foe')st=Object.assign({},st,{stroke:'#ffffff',sw:.9});
+    else if(st.mark==='open')st=Object.assign({},st,{fill:'#08182c',op:.85});}}catch(e){}
+  return st;};try{window.wmOwnerStyle=wmOwnerStyle;}catch(e){}}}catch(e){}
+
+/* ---------- styles ---------- */
+try{const st=document.createElement('style');st.textContent=
+ '#wmlabels text[fill="#08121e"]{fill:#f4f8ff;stroke:#06101c;stroke-width:2.6px;paint-order:stroke;opacity:1}'+
+ '.p308lab text{font-family:Archivo,system-ui,sans-serif;font-size:10px;font-weight:700;fill:#fff;stroke:#06101c;stroke-width:3px;paint-order:stroke}'+
+ '.wm-b.p308b{height:auto;min-height:38px;width:46px;display:inline-flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:3px 0}'+
+ '.p308c{font:600 8.5px/1 system-ui,sans-serif;letter-spacing:0;color:inherit;opacity:.9;white-space:nowrap;pointer-events:none}'+
+ 'body.map-open .wm-b.p308b{width:46px;height:auto}body.map-open .wm-btns{grid-template-columns:46px 46px!important}'+
+ '.p308lg{display:flex;flex-wrap:wrap;gap:4px 12px;align-items:center}.p308lg>span{display:inline-flex;align-items:center;gap:5px}'+
+ '.wm-legend.p308on{background:rgba(8,18,30,.92);font-size:11px;color:#c9d6ea;max-width:min(600px,calc(100% - 80px))}'+
+ 'button.p308x{min-width:64px;width:auto;padding:0 12px;white-space:nowrap}';
+ document.head.appendChild(st);}catch(e){}
+
+/* ---------- legend (political mode) ---------- */
+const HEX='6.5,0 3.25,5.6 -3.25,5.6 -6.5,0 -3.25,-5.6 3.25,-5.6';
+const ico=(fill,stroke,dash,mark,w)=>'<svg width="18" height="18" viewBox="-9 -9 18 18" aria-hidden="true"><polygon points="'+HEX+'" fill="'+fill+'" stroke="'+stroke+'" stroke-width="'+(w||1.4)+'"'+(dash?' stroke-dasharray="'+dash+'"':'')+'/>'+(mark?'<text y="3.5" text-anchor="middle" font-size="10" font-weight="700" fill="#08121e">'+mark+'</text>':'')+'</svg>';
+const ln=(col)=>'<span style="display:inline-block;width:18px;border-top:2px dashed '+col+'"></span>';
+function legend(box){try{const lg=box.querySelector('#wmlegend');if(!lg)return;
+  const mode=(typeof mapView!=='undefined'&&mapView.mode)||'political';
+  if(mode!=='political'){if(lg.dataset.p308){lg.dataset.p308='';lg.classList.remove('p308on');}return;}
+  if(lg.dataset.p308==='1')return;const R=typeof RELCOL!=='undefined'?RELCOL:{self:'#e3b341',alliance:'#4f8cff',enemy:'#f0625f'};
+  const sw=SH.map(c=>'<i style="display:inline-block;width:9px;height:9px;border-radius:2px;background:'+c+'"></i>').join('');
+  lg.innerHTML='<div class="p308lg"><span>'+ico(R.self,'#fff','', '★',2)+'Yours</span><span>'+ico(R.alliance,'#fff','3 2')+'Your alliance</span><span>'+ico(R.enemy,'#fff','1 2','×')+'Rival, aims at you</span><span>'+sw+'Other nations</span><span>'+ico('#08182c','#8fd4ff','2 2')+'Empty land</span><span>'+ln(R.self)+'Your army</span><span>'+ln(R.enemy)+'Incoming attack</span></div>';
+  lg.dataset.p308='1';lg.classList.add('p308on');}catch(e){}}
+
+/* ---------- 3. captions ---------- */
+const CAP={in:'Zoom in',out:'Zoom out',fit:'World',me:'Home',find:'Find',layers:'Layers',chat:'Chat',fleets:'Armies',pins:'Pins',dip:'Pacts',labels:'Names',legend:'Key'};
+function captions(box){try{box.querySelectorAll('.wm-b').forEach(b=>{if(b.classList.contains('p308b'))return;
+  let k=b.dataset.z||b.dataset.l||'';let t=CAP[k];if(!t&&b.classList.contains('p278lg'))t='Key';if(!t)t=(b.title||'').split(' ')[0]||'Button';
+  const full=b.title||t;b.classList.add('p308b');b.setAttribute('aria-label',full);if(!b.title)b.title=full;
+  const s=document.createElement('span');s.className='p308c';s.textContent=t;b.appendChild(s);});
+  const cc=box.querySelector('[data-cardclose]');if(cc&&!cc.classList.contains('p308x')){cc.classList.add('p308x');cc.setAttribute('aria-label','Close');cc.title='Close';cc.textContent='✕ Close';}}catch(e){}}
+
+/* ---------- 2. labels ---------- */
+function labels(svg){try{const L=svg.querySelector('#wmlabels');if(!L||!WM||!WM.cam)return;const k=WM.cam.k,c=ME_();if(!c||k<WM.HEXK)return;
+  L.querySelectorAll('.p308lab').forEach(e=>e.remove());
+  if(k<5&&WM.layers.labels){const set=new Map();(G.regions||[]).forEach(r=>{if(r&&r.owner===c.id)set.set(r.id,r);});
+    try{const nx=nexus();if(nx)set.set(nx.id,nx);}catch(e){}try{incomingTo(c.id).forEach(x=>{if(x&&x.region)set.set(x.region.id,x.region);});}catch(e){}
+    const cam=WM.cam,cw=svg.clientWidth||600,ch=svg.clientHeight||360;let h='';
+    set.forEach(r=>{const p=regionXY(r);const sx=cw/2+(p.x-cam.x)*k,sy=ch/2+(p.y-cam.y)*k;if(sx<-20||sx>cw+20||sy<-20||sy>ch+20)return;
+      const nm=String(r.name||r.coord||'').slice(0,16).replace(/[<>&"]/g,'');
+      h+='<g class="p308lab" data-p="0" transform="translate('+p.x.toFixed(1)+' '+(p.y+0).toFixed(1)+') scale('+(1/k).toFixed(4)+')" pointer-events="none"><text y="22" text-anchor="middle">'+nm+'</text></g>';});
+    if(h)L.insertAdjacentHTML('beforeend',h);}
+  const items=[...L.children].filter(g=>g.tagName==='g'||g.tagName==='G');
+  const pr=g=>{if(g.dataset.p==='0')return 0;const t=g.querySelectorAll('text');const x=(t[0]&&t[0].textContent)||'';if(t[0]&&t[0].getAttribute('font-weight')==='700'&&t.length>=2)return 2;if(/^\d+:\d$/.test(x))return 5;if(/^\d+$/.test(x))return 4;return 3;};
+  items.forEach(g=>{if(g.style.display)g.style.display='';});
+  const rs=items.map((g,i)=>({g,i,p:pr(g),r:g.getBoundingClientRect()}));
+  rs.sort((a,b)=>a.p-b.p||a.i-b.i);const acc=[],hide=[];const pad=2;
+  rs.forEach(o=>{const r=o.r;if(!r.width&&!r.height)return;
+    if(acc.some(a=>r.left<a.right+pad&&r.right>a.left-pad&&r.top<a.bottom+pad&&r.bottom>a.top-pad))hide.push(o.g);else acc.push(r);});
+  hide.forEach(g=>{g.style.display='none';});}catch(e){}}
+
+/* ---------- 4. phone: keep the selected land above the sheet ---------- */
+let lastSel=null,selAt=0;
+function lift(box){try{if(!phone())return;const card=box.querySelector('#mapcard');if(!card||card.style.display==='none'||WM.sel==null){lastSel=null;return;}
+  const key=WM.sel+'@'+(G.tick||0);if(lastSel!==key){lastSel=key;selAt=Date.now();}
+  if(Date.now()-selAt>2500)return;
+  setTimeout(()=>{try{const svg=box.querySelector('#wsvg'),cam=WM.cam;if(!svg||!cam||card.style.display==='none')return;
+    const r=(G.regions||[]).find(x=>x.id===WM.sel);if(!r)return;const p=regionXY(r),br=box.getBoundingClientRect(),cr=card.getBoundingClientRect();
+    const cw=box.clientWidth,ch=box.clientHeight,k=cam.k;const sx=br.left+cw/2+(p.x-cam.x)*k,sy=br.top+ch/2+(p.y-cam.y)*k;
+    const top=Math.max(br.top,0)+50,bot=Math.min(cr.top,innerHeight)-50;if(bot<=top)return;
+    let dy=0,dx=0;if(sy>bot||sy<top)dy=sy-(top+bot)/2;if(sx<30||sx>br.left+cw-70)dx=sx-(br.left+cw*0.42);
+    if(!dx&&!dy)return;cam.x+=dx/k;cam.y+=dy/k;
+    svg.dispatchEvent(new WheelEvent('wheel',{deltaY:0,clientX:br.left+cw/2,clientY:br.top+ch/2,bubbles:true,cancelable:true}));}catch(e){}},300);}catch(e){}}
+
+/* ---------- glue ---------- */
+let raf=0;
+function post(){try{const box=document.getElementById('wmap');if(!box)return;const svg=box.querySelector('#wsvg');
+  captions(box);legend(box);if(svg)labels(svg);lift(box);}catch(e){}}
+function later(){if(raf)return;raf=requestAnimationFrame(()=>{raf=0;post();});}
+function hook(){try{const box=document.getElementById('wmap');if(!box||box.dataset.p308)return;box.dataset.p308='1';
+  const svg=box.querySelector('#wsvg');if(svg)new MutationObserver(later).observe(svg,{childList:true});
+  const card=box.querySelector('#mapcard');if(card)new MutationObserver(later).observe(card,{childList:true,attributes:true,attributeFilter:['style']});}catch(e){}}
+try{if(typeof VIEWS!=='undefined'&&VIEWS.map){const _m=VIEWS.map;VIEWS.map=function(){const r=_m.apply(this,arguments);try{hook();post();}catch(e){}return r;};}}catch(e){}
+})();
+</script>
+<script>/* p308c 23.8: screens must not contradict each other, and a calmer start.
+   1 one defence verdict (window.__p308def), 2 one research advice, 3 protection length read live, 4 wizard step 3 with one
+   primary button and an Advanced fold, 5 calm Overview while a small nation is attacked, 6 purpose line on the alliance
+   Treasury tab, 7 automatic alliance chat folded, 8 joint attack targets sorted by reachable first.
+   Same style as p305 to p307: small, defensive, idempotent DOM changes, re-applied after every render. */
+(function(){'use strict';
+if(typeof window==='undefined'||typeof document==='undefined'||window.__MP__)return;
+const ME=()=>{try{return G&&G.countries?G.countries[G.you]:null;}catch(e){return null;}};
+const F=n=>{try{return fmt(Math.round(n||0));}catch(e){return String(Math.round(n||0));}};
+const VIEW=()=>document.getElementById('view');
+const regByCoord=co=>{try{return (G.regions||[]).find(r=>r&&r.coord===co)||null;}catch(e){return null;}};
+function firstRegion(el){try{const t=el.querySelector('[data-coord],[data-p278xy]');if(!t)return null;const r=regByCoord(t.dataset.coord||t.dataset.p278xy);const c=ME();return r&&c&&r.owner===c.id?r:null;}catch(e){return null;}}
+function setHTML(el,h){if(el&&el.innerHTML!==h)el.innerHTML=h;}
+
+/* ------------------------------------------------------------------ 1. one defence verdict */
+// Computed the way the real battle is: all fleets heading for the land are merged, the defender pool is what really stands there,
+// battleCalc runs the three battle turns. attack and defence are shown on the same scale (defence = attack / battle ratio).
+window.__p308def=function(rid){try{
+  const c=ME();const r=typeof rid==='object'&&rid?rid:_rgId(rid);if(!c||!r||r.owner!==c.id)return null;
+  const inc=(incomingTo(c.id)||[]).filter(x=>x&&x.region&&x.region.id===r.id);if(!inc.length)return null;
+  let A=0,best=-1,atkC=null;const U={};
+  inc.forEach(x=>{A+=x.atkP||0;const u=(x.fleet&&x.fleet.units)||{};for(const k in u)U[k]=(U[k]||0)+(u[k]||0);if((x.atkP||0)>best){best=x.atkP||0;atkC=x.from;}});
+  const eta=Math.max(0,Math.min.apply(null,inc.map(x=>x.eta||0)));
+  let D0=0;try{D0=regionDef(r)||0;}catch(e){}
+  let r0=null,r1=null,take=null,blocked='',sim=false;
+  try{if(atkC&&atkC.id!=null&&fleetSize(U)>0){const B=battleCalc(atkC,U,r,c,defenderPool(r,c).units,{tick0:G.tick+Math.max(0,eta-1)});if(B&&B.ticks&&B.ticks.length){r0=+B.ticks[0].ratio||0;r1=+B.ratio||0;take=!!B.wouldTake;blocked=B.blocked||'';sim=true;}}}catch(e){}
+  if(!sim){r0=r1=A/Math.max(1,D0);take=r0>=1.25;}
+  const ratio=Math.max(r0||0,r1||0);const eff=ratio>0?A/ratio:D0;
+  let level=take?2:(ratio>=0.85?1:0);if(take&&blocked)level=0;
+  let short=Math.max(0,Math.round(A-eff));if(level===2&&short<1)short=Math.max(1,Math.round(A*0.1));if(level===0)short=0;
+  return {attack:Math.round(A),defence:Math.round(eff),short,verdict:['holds','close call','will likely fall'][level],level,ratio,eta,protectedBy:blocked||'',rid:r.id};
+}catch(e){return null;}};
+const CLS=['good','warn','bad'];const VERB=['holds','is a close call','will likely fall'];
+const PROTN={shield:'your shield',beginner:'beginner protection',emergency:'emergency shield',last:'last-land shield, once',admin:'protection'};
+function verdictHTML(d){let h='<b class="'+CLS[d.level]+'">'+d.verdict+'</b>'+(d.level===0&&d.protectedBy?' <span class="muted">('+(PROTN[d.protectedBy]||'protected')+' stops the capture)</span>':'');if(d.level>0&&d.short>0)h+=' · <b class="bad">short '+F(d.short)+'</b>';return h;}
+function lineHTML(d){return 'their attack <b>'+F(d.attack)+'</b> · your defence <b>'+F(d.defence)+'</b> · '+verdictHTML(d);}
+function syncDefence(){const v=VIEW();if(!v)return;const c=ME();if(!c)return;let any=false;try{any=(incomingTo(c.id)||[]).length>0;}catch(e){}
+  // Overview defence row and the Army / Home defence panel: "their attack X · your defence Y · verdict"
+  v.querySelectorAll('.p276n,.p278inc .p250s').forEach(el=>{if(!/their attack/i.test(el.textContent))return;const box=el.closest('.p276,.p278inc')||el.parentNode;const r=firstRegion(box);const d=r&&window.__p308def(r);if(d)setHTML(el,lineHTML(d));});
+  v.querySelectorAll('.p276').forEach(p=>{const r=firstRegion(p);const d=r&&window.__p308def(r);if(!d)return;
+    const ok=p.querySelector('.p276ok'),bad=p.querySelector('.p276bad');
+    if(ok&&d.level>0){ok.className='p276bad';setHTML(ok,'The battle calculation says this land <b>'+VERB[d.level]+'</b> ('+(d.short>0?'short '+F(d.short)+' defence':'it is that close')+'). Add defence before the attack lands.');}
+    if(bad){const h=bad.innerHTML;const n=h.replace(/With every step it is still short\.? You will likely lose this land/,d.level===2?'With every step it is still short. The battle calculation says this land will likely fall':'The battle calculation says this land '+VERB[d.level]+', the steps below add margin');if(n!==h)bad.innerHTML=n;}});
+  // Army "Defend a land" line and the land cards on Lands
+  v.querySelectorAll('.p250row').forEach(row=>{const s=row.querySelector('.p250s');if(!s)return;const t=s.textContent;
+    if(/^attack in \d+ turns? · (short|you hold|holds|close call|will likely)/.test(t)){const r=firstRegion(row.querySelector('.p250t')||row);const d=r&&window.__p308def(r);if(d){const m=/^attack in (\d+) turns?/.exec(t);setHTML(s,'attack in '+m[1]+' turn'+(m[1]==='1'?'':'s')+' · '+verdictHTML(d));}}
+    else if(/^defence [^·]*vs attack /.test(t)){const r=firstRegion(row.querySelector('.p250t')||row);const d=r&&window.__p308def(r);if(d){if(s.dataset.p308r==null)s.dataset.p308r=s.innerHTML.replace(/^defence [^·]*vs attack [^·]*/,'');setHTML(s,'defence '+F(d.defence)+' vs attack '+F(d.attack)+' · '+verdictHTML(d)+' '+s.dataset.p308r);}}});
+  v.querySelectorAll('.p280h').forEach(h=>{if(!/your land/.test(h.textContent))return;const r=firstRegion(h);const d=r&&window.__p308def(r);const s=h.querySelector('.p280sum');if(d&&s)setHTML(s,'attack <b class="bad">'+F(d.attack)+'</b> · defence <b class="good">'+F(d.defence)+'</b> · '+verdictHTML(d));});
+  v.querySelectorAll('.p8front .p8f2').forEach(el=>{let d=null;try{const inc=(incomingTo(c.id)||[]).sort((a,b)=>a.eta-b.eta)[0];d=inc&&window.__p308def(inc.region);}catch(e){}if(d)setHTML(el,'Your defence '+F(d.defence)+' against about '+F(d.attack)+': '+verdictHTML(d)+'.');});
+  // Armed Forces: the nation-wide totals get names that cannot be mistaken for one attacked land
+  v.querySelectorAll('.p197g.def .p197k').forEach(k=>{const t='Nation defence power (all lands together)';if(k.textContent!==t){k.textContent=t;k.title='Total over the whole nation. The defence of one attacked land is on Army, Defend a land.';}});
+  v.querySelectorAll('.p197g.atk .p197k').forEach(k=>{const t='Army attack power (whole army)';if(k.textContent!==t)k.textContent=t;});
+  const box=v.querySelector('.p197');if(box){let n=box.querySelector('.p308cnat');if(any&&!n){n=document.createElement('div');n.className='p308cnat muted small';n.textContent='These are totals for the whole nation. The defence of a land that is under attack is shown on Army, Defend a land.';box.appendChild(n);}if(!any&&n)n.remove();}}
+
+/* ------------------------------------------------------------------ 2. one research advice */
+// The Research page decides its advice inside its own code. Render that page in a detached container and read the result, so
+// Overview can never pick another project than the page it links to.
+let _ra={k:null,v:null};
+function researchAdvice(){try{const c=ME();if(!c||typeof VIEWS==='undefined'||!VIEWS.p250r)return null;
+  const key=[G.tick,(c.tech||[]).length,(c.rq||[]).length,c.clan,(incomingTo(c.id)||[]).length,Math.floor((c.res&&c.res.research||0)/500)].join('|');if(_ra.k===key)return _ra.v;
+  const div=document.createElement('div');const sv=window._p250tab;window._p250tab=Object.assign({},sv||{},{p250r:'Available'});
+  try{VIEWS.p250r(div);}finally{window._p250tab=sv;}
+  let out=null;const a=div.querySelector('.p295a');const hd=div.querySelector('.p295h .p295x.on');
+  if(a&&hd){const h=hd.closest('.p295h');const pk=h.dataset.p295h;const name=(h.querySelector('b')||{}).textContent||'';
+    const row=[...div.querySelectorAll('.p250row')].find(r=>r.dataset.p295===pk&&r.querySelector('[data-p250="res"]'));
+    out={path:pk,name,why:(a.querySelector('.muted')||{textContent:''}).textContent.replace(/^\s*because\s*/,'').replace(/\.$/,''),tech:row?row.querySelector('[data-p250="res"]').dataset.id:null};}
+  _ra={k:key,v:out};return out;}catch(e){return null;}}
+window.__p308advice=researchAdvice;
+function syncResearch(){const v=VIEW();const row=v&&v.querySelector('.p250row.p302');if(!row)return;const c=ME();const a=researchAdvice();if(!a||row.dataset.p308===a.path+'|'+a.tech+'|'+G.tick)return;
+  let h;const e=s=>String(s).replace(/[&<>"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m]));
+  const d=a.tech&&typeof TECH!=='undefined'?TECH.find(x=>x.k===a.tech):null;
+  if(d){const can=(c.res.research||0)>=d.cost.research&&(c.res.money||0)>=d.cost.money;
+    h='<div class="p250m"><div class="p250t">Research: '+e(d.n)+'</div><div class="p250s">'+e(d.d||'')+' · '+F(d.cost.research)+' research, '+F(d.cost.money)+' money · '+(can?'you can start it now':'you have '+F(c.res.research||0)+' research')+' · advised ('+e(a.name)+') because '+e(a.why)+'</div></div><div class="p250b">'+(can?'<button type="button" class="btn sm p250btn p250main" data-p302r="'+e(d.k)+'">Start</button>':'<button type="button" class="btn sm p250btn" data-p250="go" data-id="p250r">Research</button>')+'</div>';}
+  else h='<div class="p250m"><div class="p250t">Research advice: '+e(a.name)+'</div><div class="p250s">Advised because '+e(a.why)+'. Nothing in this path can be started yet.</div></div><div class="p250b"><button type="button" class="btn sm p250btn" data-p250="go" data-id="p250r">Research</button></div>';
+  row.innerHTML=h;row.dataset.p308=a.path+'|'+a.tech+'|'+G.tick;}
+
+/* ------------------------------------------------------------------ 3. protection length, read live */
+const _protC={};function protFor(diff,len){const _k=diff+'|'+len;if(_k in _protC)return _protC[_k];const _v=protFor0(diff,len);if(_v!=null)_protC[_k]=_v;return _v;}
+function protFor0(diff,len){try{if(typeof SOLO_DIFFS==='undefined'||typeof applySoloSettings!=='function'||typeof G==='undefined'||!G)return null;
+  const g=n=>{try{return (0,eval)('typeof '+n+"!=='undefined'?"+n+':undefined');}catch(e){return undefined;}};
+  const keep={P:NEWBIE_PROTECT,S:SEASON_TICKS,FW:g('FINALE_WINDOW'),EN:g('ENDGAME_TICKS'),D:SOLO_DIFF};const had=G.solo;let out=null;
+  try{G.solo=Object.assign({},had||{},{diff,len});applySoloSettings();out=NEWBIE_PROTECT;}
+  finally{G.solo=had;if(had===undefined)delete G.solo;NEWBIE_PROTECT=keep.P;SEASON_TICKS=keep.S;SOLO_DIFF=keep.D;try{if(keep.FW!==undefined&&g('FINALE_WINDOW')!==keep.FW)FINALE_WINDOW=keep.FW;}catch(e){void 0;}try{if(keep.EN!==undefined&&g('ENDGAME_TICKS')!==keep.EN)ENDGAME_TICKS=keep.EN;}catch(e){void 0;}}
+  return out;}catch(e){return null;}}
+const PROT_RX=/\b\d+ (ticks|turns) of protection/;
+const turnsWord=n=>n+' turn'+(n===1?'':'s');
+function syncProtection(){if(!document.getElementById('wizbody'))return;const sel=(id,at)=>{const b=document.querySelector('#'+id+' .btn:not(.ghost)');return b?b.dataset[at]:null;};
+  const len=sel('lens','len');if(!len)return;
+  document.querySelectorAll('#diffs [data-diff]').forEach(b=>{const n=protFor(b.dataset.diff,len);if(n==null)return;const t=b.getAttribute('title')||'';if(PROT_RX.test(t)){const nt=t.replace(PROT_RX,turnsWord(n)+' of protection');if(nt!==t)b.setAttribute('title',nt);}});
+  const dd=document.getElementById('diffd'),diff=sel('diffs','diff');if(dd&&diff){const n=protFor(diff,len);if(n!=null&&PROT_RX.test(dd.textContent)){const nt=dd.textContent.replace(PROT_RX,turnsWord(n)+' of protection');if(nt!==dd.textContent)dd.textContent=nt;}}}
+
+/* ------------------------------------------------------------------ 4. wizard step 3: one button, the rest under Advanced */
+function summaryText(){const pre=document.querySelector('#presets .sel strong');const diff=document.querySelector('#diffs .btn:not(.ghost)');const len=document.querySelector('#lens .btn:not(.ghost)');
+  const parts=[pre?pre.textContent.trim():'',diff?diff.textContent.trim():'',len?len.textContent.replace(/\s*·\s*/,', ').trim()+' turns':''].filter(Boolean);
+  let p=null;try{if(diff&&len)p=protFor(diff.dataset.diff,len.dataset.len);}catch(e){}
+  return {parts,p};}
+window.__p308cadvOpen=false;
+function syncWizard(){const wb=document.getElementById('wizbody'),pre=document.getElementById('presets'),go=document.getElementById('go');if(!wb||!pre||!go)return;
+  let adv=wb.querySelector('.p308cadv');
+  if(!adv){const nodes=[];let st=pre.previousElementSibling;if(st&&st.tagName!=='P')st=null;if(st)nodes.push(st);nodes.push(pre);
+    let n=pre.nextElementSibling;const end=document.getElementById('soloopts');while(n){if(n===go||n.contains(go))break;nodes.push(n);if(n===end||(!end&&n.tagName==='DETAILS'))break;n=n.nextElementSibling;}
+    const sum=document.createElement('div');sum.className='p308cstart';
+    adv=document.createElement('details');adv.className='p308cadv';adv.open=!!window.__p308cadvOpen;adv.innerHTML='<summary>Advanced: playstyle, difficulty, game length, government</summary>';
+    nodes[0].before(sum);sum.after(adv);nodes.forEach(x=>adv.appendChild(x));
+    adv.addEventListener('toggle',()=>{window.__p308cadvOpen=adv.open;});}
+  const sum=wb.querySelector('.p308cstart');const s=summaryText();
+  if(sum){const h='<b>Your start:</b> '+s.parts.map(x=>'<span class="p308cchip">'+x.replace(/[&<>]/g,'')+'</span>').join(' ')+(s.p!=null?' <span class="muted">· '+turnsWord(s.p)+' of newcomer protection</span>':'')+'<div class="muted small">Press the button below to start with this. Everything can be changed under Advanced.</div>';setHTML(sum,h);}}
+
+/* ------------------------------------------------------------------ 5. calm Overview while a small nation is attacked */
+function syncOverview(){const v=VIEW();const c=ME();if(!v||!c)return;const pin=v.querySelector(':scope>.p278top'),dn=v.querySelector(':scope>.p250box[data-p268t="Do now"]');if(!pin||!dn)return;
+  let n=0,small=false;try{n=(incomingTo(c.id)||[]).length;small=regionsOf(c).length<4;}catch(e){}
+  if(!n||!small||!pin.querySelector('.p278inc'))return;
+  const inc=pin.querySelector('.p278inc');if(pin.firstElementChild!==inc)pin.insertBefore(inc,pin.firstChild);
+  let d=dn.querySelector('.p308cmore');
+  const rows=[...pin.querySelectorAll(':scope>.p250row:not(.p278inc)'),...dn.querySelectorAll(':scope>.p250row')];
+  if(!rows.length&&!d)return;
+  if(!d){d=document.createElement('details');d.className='p308cmore';d.open=!!window.__p308cmoreOpen;d.innerHTML='<summary></summary>';const h=dn.querySelector('.p250h');if(h)h.after(d);else dn.prepend(d);d.addEventListener('toggle',()=>{window.__p308cmoreOpen=d.open;});}
+  rows.forEach(r=>d.appendChild(r));
+  const cnt=d.querySelectorAll(':scope>.p250row').length;const sm=d.querySelector('summary');const t='More to do ('+cnt+')';if(sm.textContent!==t)sm.textContent=t;}
+
+/* ------------------------------------------------------------------ 6. what the alliance treasury is for */
+function syncTreasury(){const v=VIEW();const box=v&&v.querySelector('.p250box[data-p268t="Treasury"]');if(!box||box.querySelector('.p308ctre'))return;const c=ME();if(!c||c.clan==null)return;
+  const cl=(G.clans||[]).find(x=>x.id===c.clan);if(!cl||typeof CLAN_WONDERS==='undefined'||!CLAN_WONDERS.length)return;
+  const built=(cl.wonders||[]).length,role=(cl.roles||{})[c.id];const off=role==='leader'||role==='officer'||role==='commander';
+  const ex=CLAN_WONDERS[0];const h=document.createElement('div');h.className='p250row p308ctre';
+  h.innerHTML='<div class="p250m"><div class="p250t">What donations are for</div><div class="p250s">The pot pays for alliance wonders: permanent bonuses for every member ('+CLAN_WONDERS.map(w=>w.n).join(', ')+'; for example '+ex.n+': '+ex.d+'). '+(off?'You can commission one when the pot covers it.':'The leader and officers commission them; you can donate and take small amounts out.')+' '+built+' of '+CLAN_WONDERS.length+' built so far. Nothing else spends it.</div></div><div class="p250b"><button type="button" class="btn sm ghost p250btn" data-p250="classic" data-id="clans">Alliance wonders</button></div>';
+  const r0=box.querySelector('.p250row');if(r0)r0.before(h);else box.appendChild(h);}
+
+/* ------------------------------------------------------------------ 7. alliance chat: automatic messages folded */
+function syncChat(){const v=VIEW();const box=v&&v.querySelector('.p250box[data-p268t="Chat"]');if(!box)return;
+  const author=r=>{const n=r.querySelector('[data-p278nat]');if(n)return G.countries&&G.countries[+n.dataset.p278nat];const t=((r.querySelector('.p250t')||{}).textContent||'').trim();return t&&(G.countries||[]).find(o=>o&&o.name===t);};
+  const rows=[...box.querySelectorAll(':scope>.p250row')].filter(r=>!r.classList.contains('p308ctg')&&r.querySelector('.p250t')&&!r.querySelector('textarea'));
+  const auto=rows.filter(r=>{const o=author(r);return !!(o&&o.isAI!==false&&o.id!==G.you);});
+  let tg=box.querySelector('.p308ctg');
+  if(!auto.length){if(tg)tg.remove();return;}
+  const open=!!window.__p308cchatOpen;
+  if(!tg){tg=document.createElement('div');tg.className='p250row p308ctg';tg.innerHTML='<div class="p250m"><div class="p250s"></div></div><div class="p250b"><button type="button" class="btn sm ghost p250btn" data-p308cchat="1"></button></div>';const w=box.querySelector('.p250row');if(w)w.after(tg);else box.prepend(tg);}
+  const t=(open?'Hide ':'Show ')+auto.length+' automatic message'+(auto.length===1?'':'s');const b=tg.querySelector('button');if(b.textContent!==t)b.textContent=t;
+  const s=tg.querySelector('.p250s');const st='Written by computer members. Messages from people stay visible.';if(s.textContent!==st)s.textContent=st;
+  auto.forEach(r=>{r.classList.add('p308cauto');const dsp=open?'':'none';if(r.style.display!==dsp)r.style.display=dsp;});}
+document.addEventListener('click',e=>{const b=e.target&&e.target.closest&&e.target.closest('[data-p308cchat]');if(!b)return;e.preventDefault();e.stopPropagation();window.__p308cchatOpen=!window.__p308cchatOpen;syncChat();},true);
+
+/* ------------------------------------------------------------------ 8. joint attack targets: reachable first */
+function syncJoint(){const v=VIEW();if(!v)return;const parents=new Set();v.querySelectorAll('.p278wr').forEach(r=>{if(r.parentNode)parents.add(r.parentNode);});
+  parents.forEach(par=>{const rows=[...par.children].filter(r=>r.classList.contains('p278wr')&&/your army there in \d+|out of your reach|cannot be there/.test((r.querySelector('.p250s')||{textContent:''}).textContent));
+    if(rows.length<2)return;
+    const key=r=>{const t=r.querySelector('.p250s').textContent;const m=/there in (\d+) turn/.exec(t);return [/defence unknown/.test(t)?1:0,m?+m[1]:999];};
+    const sorted=rows.map((r,i)=>({r,i,k:key(r)})).sort((a,b)=>a.k[0]-b.k[0]||a.k[1]-b.k[1]||a.i-b.i).map(x=>x.r);
+    if(sorted.every((r,i)=>r===rows[i]))return;
+    const after=rows[rows.length-1].nextSibling;sorted.forEach(r=>par.insertBefore(r,after));});}
+
+/* ------------------------------------------------------------------ run after every render */
+let busy=false,timer=null,mo=null;
+function run(){if(busy)return;busy=true;try{
+  [syncDefence,syncResearch,syncOverview,syncTreasury,syncChat,syncJoint,syncProtection,syncWizard].forEach(f=>{try{f();}catch(e){}});
+  }finally{busy=false;try{if(mo)mo.takeRecords();}catch(e){}}}
+function soon(){if(timer)return;timer=setTimeout(()=>{timer=null;run();},40);}
+try{mo=new MutationObserver(()=>{if(!busy)soon();});const st=()=>{if(document.body)mo.observe(document.body,{childList:true,subtree:true});else setTimeout(st,300);};st();}catch(e){}
+document.addEventListener('click',()=>{setTimeout(soon,0);setTimeout(soon,120);},true);
+setInterval(()=>{try{run();}catch(e){}},1500);
+try{const st=document.createElement('style');st.id='p308ccss';
+  st.textContent='.p308cadv{border:1px solid var(--border2,#345);border-radius:10px;padding:8px 12px;margin:10px 0;background:var(--bg2,transparent)}'
+  +'.p308cadv>summary{cursor:pointer;font-weight:600;font-size:13px;color:var(--muted,#9ab)}'
+  +'.p308cstart{margin:10px 0 4px;padding:10px 12px;border-left:3px solid var(--accent,#4a8);background:var(--bg2,transparent);border-radius:6px}'
+  +'.p308cchip{display:inline-block;padding:2px 9px;margin:0 2px;border-radius:999px;border:1px solid var(--border2,#345);font-weight:600;font-size:13px}'
+  +'#go{min-width:240px;font-size:15px;padding-top:10px;padding-bottom:10px}'
+  +'.p308cmore{border:1px dashed var(--border2,#345);border-radius:8px;margin:6px 0;padding:0 8px;opacity:.92}'
+  +'.p308cmore>summary{cursor:pointer;padding:8px 4px;font-size:13px;color:var(--muted,#9ab);font-weight:600}'
+  +'.p308cmore[open]{opacity:1}.p308cnat{margin-top:8px}'
+  +'@media(max-width:560px){#go{width:100%}}';
+  document.head.appendChild(st);}catch(e){}
+window.__p308={run,protFor};
+})();
+</script>
 
 </body>
 </html>
