@@ -2050,7 +2050,7 @@ function travelFor(c,from,to){const pth=c.path?PBYK[c.path]:null;const slow=pth&
 // defence-only — attacks and ACS keep the flat distance-based travel, so the stealth/battle/assault tempo is untouched.
 const REINFORCE_SLOW=0.5;
 function fleetHasSlow(units){for(const k in (units||{})){if((units[k]||0)>0&&!((UBYK[k]||{}).fast))return true;}return false;}
-function reinforceTravel(c,from,to,units){const base=travelFor(c,from,to);return fleetHasSlow(units)?base+Math.max(1,Math.ceil(base*REINFORCE_SLOW)):base;}
+function reinforceTravel(c,from,to,units){const base=travelFor(c,from,to);/* 23.7: defenders move on inner lines, so help can arrive before the attack lands. Same sector 1 turn; next sector 2 (fast units) or 3; another cluster 3 (fast units) or 5. */const d=travelDist(from,to);return fleetHasSlow(units)?(d>=100?5:d>=10?3:1):(d>=100?3:d>=10?2:1);}
 function travelDist(a,b){return a.cluster!==b.cluster?100:a.sector!==b.sector?10:1;}
 function homeFor(c,target){let best=null,bd=1e9;regionsOf(c).forEach(r=>{const d=travelDist(r,target);if(d<bd){bd=d;best=r;}});return best;}
 const BATTLE_TICKS=3;
@@ -2699,7 +2699,7 @@ function recallFleet(c,fid){const f=(c.fleets||[]).find(x=>x.id===fid&&(x.status
 function canDefend(c,r){if(!r||r.owner==null)return false;if(r.owner===c.id)return true;const o=G.countries[r.owner];if(!o)return false;if(c.clan!=null&&o.clan===c.clan)return true;const hc=homeCluster(c);return hc!=null&&hc===homeCluster(o);/* your theater is your team, theater-mates can reinforce each other */}
 // Station a defensive fleet on your own or an allied region (pre-emptive garrison OR
 // mid-battle reinforcement, on arrival it joins that region's defensive pool).
-function cmdStation(c,rid,committed){const r=_rgId(rid);if(!canDefend(c,r))return err('You can only station on your own or an allied region');{const _g=p7HomeGuard(c,r);if(_g)return _g;}
+function cmdStation(c,rid,committed){const r=_rgId(rid);if(!canDefend(c,r))return err('You can only station on your own or an allied region');/* 23.7: a computer ally does not send help that would arrive after the fight is over */if(c.isAI!==false&&r.owner!=null&&r.owner!==c.id){try{const _h=homeFor(c,r)||regionsOf(c)[0];const _inc=incomingTo(r.owner).filter(x=>x.region&&x.region.id===r.id);if(_h&&_inc.length){const _tv=reinforceTravel(c,_h,r,cleanInts(committed));if(_inc.every(x=>x.eta+BATTLE_TICKS-1<_tv))return err('Cannot reach it in time');}}catch(e){}}{const _g=p7HomeGuard(c,r);if(_g)return _g;}
   // v3.19 anti-clog (mirrors the 6-wave assault cap): one nation may hold at most 6 defensive fleets committed to a
   // single region. Effective defence is already limited by the garrison cap; this just stops an object-flood grief
   // (hundreds of tiny garrison fleets) that would bloat the roster UI and slow tick resolution. Consolidate instead.
@@ -10660,7 +10660,7 @@ VIEWS.fleets=v=>{const c=you();const inc=incomingTo(c.id);const cl0=clanOf(c);
     const fastT=(home&&rr)?travelFor(c,home,rr):null; // fast-only ETA: base travel, no heavy-column slowdown
     const note=t=>{if(t==null)return '';if(tEta==null)return `Arrives in <b>${t}t</b>. No active attack here — it stands as a garrison.`;if(t<=tEta)return `<span style="color:var(--ok)">✅ Arrives in <b>${t}t</b>, before the attack lands (in <b>${tEta}t</b>). Everything you send fights.</span>`;if(t<=tEta+2)return `<span style="color:var(--alert)">◐ Arrives in <b>${t}t</b>, after the attack starts but within the 3-tick battle — it still joins this fight.</span>`;
       const rescue=(fastT!=null&&fastT<=tEta+2&&fastT<t)?` <b style="color:var(--ok)">⚡ Fast units alone arrive in ${fastT}t, in time.</b> <button class="btn sm" onclick="var b=document.getElementById('fastfill');if(b)b.click();">⚡ Switch to fast only</button>`:' Drop the heavy units, or station this as a garrison for next time.';
-      return `<span style="color:var(--warn)">⚠ Arrives in <b>${t}t</b>, too late for this battle (heavy units slow the column 50%) — it lands as a garrison for next time.${rescue}</span>`;};
+      return `<span style="color:var(--warn)">⚠ Arrives in <b>${t}t</b>, too late for this battle (heavy units are slower) — it lands as a garrison for next time.${rescue}</span>`;};
     const upd=()=>{if(!home||!rr)return;const com=readInputs(duiBox);const t=reinforceTravel(c,home,rr,com);const ev=v.querySelector('#detaVal');if(ev)ev.textContent=t;const en=v.querySelector('#detaNote');if(en)en.innerHTML=`<div class="small mb">${note(t)}</div>`;};
     duiBox.querySelectorAll('input[data-cu]').forEach(inp=>inp.addEventListener('input',upd));
     v.querySelectorAll('[data-qbox="dui"]').forEach(b=>b.addEventListener('click',()=>setTimeout(upd,0)));upd();}}
@@ -27947,6 +27947,129 @@ try{
    +'.p306u .p306a{display:flex;gap:6px;flex:0 0 auto}';
   document.head.appendChild(st);
 }catch(e){}
+})();
+</script>
+<script>/* p307a 23.7: the first five turns */
+// Real players start a game, send the first attack and then never press END TURN (143 sent an attack, 31 saw a battle).
+// 1. While you own one land and your first army is on its way or fighting, one pinned row on Overview (class p307e) says what to
+//    do ("Press END TURN") with a button, and the real END TURN button pulses (class p307pulse, still when the system asks for
+//    reduced motion). Both go away when the land is taken or the attack is gone.
+// 2. In that time the rows that contradict it are hidden on Overview (Next land / Train first, "Step N of 5", Standby).
+// 3. Field training: a last task "Press END TURN until your army lands". The "You know the basics" card comes when the first land
+//    is taken (or at turn 3 when no attack is out). One new count: first-land.
+// 4. A research or a building queued on another page during training: back to Overview with a short note.
+// 5. Solo only: the very first attack of a game, from one land, before turn 10, on empty land (never a nation), arrives one turn
+//    after it leaves and its three fighting phases are fought in one turn (so the land is yours at turn 2, not turn 5).
+// 6. Overview: "Next land" first while you own fewer than 3 lands; toast "First attack sent (+400 influence)".
+// 7. Top bar: a "-N/t fix" chip in the first 10 turns is not red when the stock lasts more than 20 turns.
+(function(){'use strict';
+if(typeof window==='undefined'||typeof document==='undefined')return;
+const ME_=()=>{try{return G&&G.countries&&G.you!=null?G.countries[G.you]:null;}catch(e){return null;}};
+const SOLO=()=>{try{return typeof isSoloGame==='function'&&isSoloGame()&&!window.__MP__;}catch(e){return false;}};
+const landsOf=c=>{let n=0;try{(G.regions||[]).forEach(r=>{if(r&&r.owner===c.id)n++;});}catch(e){return 99;}return n;};
+const isAtk=f=>f&&f.intent!=='garrison'&&f.intent!=='reinforce';
+const outFleets=c=>(c.fleets||[]).filter(f=>isAtk(f)&&(f.status==='outbound'||f.status==='battle'));
+function active(){const c=ME_();if(!c||!SOLO()||c.isAI)return null;if(landsOf(c)!==1)return null;const fl=outFleets(c);return fl.length?{c,fl}:null;}
+function endTurn(){try{p6EndTurn();}catch(e){try{soloAdvance();}catch(x){}}}
+
+/* ---------- styles ---------- */
+try{const st=document.createElement('style');st.textContent=
+ '@keyframes p307pulse{0%,100%{box-shadow:0 0 0 0 rgba(55,217,169,.6)}50%{box-shadow:0 0 0 9px rgba(55,217,169,0)}}'+
+ '.p307pulse{animation:p307pulse 1.6s ease-in-out infinite}'+
+ '@media (prefers-reduced-motion:reduce){.p307pulse{animation:none;outline:2px solid var(--accent2,#37d9a9);outline-offset:2px}}'+
+ '.p307h{display:none!important}.p307e{border-left:3px solid var(--accent2,#37d9a9)}';
+ document.head.appendChild(st);}catch(e){}
+
+/* ---------- 1 + 2 + 6: Overview ---------- */
+function say(a){const bf=a.fl.find(f=>f.status==='battle');
+  if(bf){if(bf._p307q)return 'Your army fights for the land. Press END TURN to see the result.';return 'Battle, phase '+Math.min(3,(bf.bTick||0)+1)+' of 3. Press END TURN.';}
+  const n=Math.max(1,Math.min.apply(null,a.fl.map(f=>(f.eta||0)-G.tick)));return 'Your army lands in '+n+(n===1?' turn':' turns')+'. Press END TURN.';}
+function rowHTML(a){return '<section class="p250box pin p307e"><div class="p250row"><div class="p250m"><div class="p250t">'+say(a)+'</div><div class="p250s">Each press moves the world one turn.</div></div><div class="p250b"><button type="button" class="btn sm p250btn p250main" data-p307="end">END TURN</button></div></div></section>';}
+function overview(v,a){
+  const top=v.querySelector('.p250top');if(!top)return;
+  const ex=v.querySelector('.p307e');
+  if(a){const t=say(a);if(!ex)top.insertAdjacentHTML('afterend',rowHTML(a));else{const e=ex.querySelector('.p250t');if(e&&e.textContent!==t)e.textContent=t;}}
+  else if(ex)ex.remove();
+  const box=[...v.querySelectorAll('.p250box')].find(b=>b.dataset&&b.dataset.p268t==='Do now')||v;
+  const rows=[...box.querySelectorAll('.p250row')];
+  let next=null;
+  rows.forEach(r=>{const t=((r.querySelector('.p250t')||{}).textContent||'').trim();
+    const isNext=/^Next land/.test(t);if(isNext)next=r;
+    const hide=!!a&&(r.classList.contains('p305')||isNext||/is on Standby/.test(t));
+    if(hide!==r.classList.contains('p307h'))r.classList.toggle('p307h',hide);});
+  // item 6: on the skip path "Next land" goes first while you own fewer than 3 lands
+  try{const c=ME_();if(next&&!a&&c&&landsOf(c)<3&&rows[0]!==next)next.parentNode.insertBefore(next,rows[0]);}catch(e){}
+}
+
+/* ---------- 7: a red "-N/t fix" chip that is not a problem ---------- */
+function calm(){try{const c=ME_();if(!c||!SOLO()||((G.tick||0)-((G.season&&G.season.startTick)||0))>10)return;
+  const chips=document.querySelectorAll('#strip .res-buy,#strip [data-clarity-res]');if(!chips.length)return;const pj=projection(c);
+  chips.forEach(el=>{let k=el.getAttribute('data-clarity-res');
+    if(!k){const t=((el.querySelector('.k')||{}).textContent)||'';k=(typeof RES!=='undefined'?RES:[]).find(r=>RMETA[r]&&t.indexOf(RMETA[r].l)>=0);}
+    const net=k&&pj&&pj.net?pj.net[k]:0;if(!(net<0))return;
+    const left=(c.res[k]||0)/-net;if(!(left>20))return;
+    const d=el.querySelector('.d');if(d&&d.classList.contains('neg')){d.classList.remove('neg');d.classList.add('p307calm');const x=d.querySelector('span');if(x)x.remove();}
+    el.title='The stock lasts more than '+Math.min(999,Math.floor(left))+' turns.';});}catch(e){}}
+
+/* ---------- 3: first-land count ---------- */
+function count(){try{const c=ME_();if(!c||!SOLO()||c.isAI||landsOf(c)<2)return;
+  if(typeof trackEvent==='function')trackEvent('first-land');else if(window.__p302count)window.__p302count('first-land');}catch(e){}}
+
+function sync(){try{const a=active();
+  document.querySelectorAll('.p19turn,.p250end').forEach(e=>{if(!!a!==e.classList.contains('p307pulse'))e.classList.toggle('p307pulse',!!a);});
+  const v=document.getElementById('view');
+  if(v&&typeof view!=='undefined'&&view==='p250o'&&v.querySelector('.p250top'))overview(v,a);
+  else if(v&&v.querySelector('.p307e'))v.querySelectorAll('.p307e').forEach(e=>e.remove());
+  count();calm();}catch(e){}}
+try{if(typeof VIEWS!=='undefined'&&VIEWS.p250o){const _o=VIEWS.p250o;VIEWS.p250o=function(v){const r=_o.apply(this,arguments);try{if(v&&v.querySelector)overview(v,active());sync();}catch(e){}return r;};}}catch(e){}
+try{if(typeof go==='function'){const _g=go;go=function(){const r=_g.apply(this,arguments);try{sync();}catch(e){}return r;};try{window.go=go;}catch(e){}}}catch(e){}
+try{if(typeof runTick==='function'){const _r=runTick;runTick=function(){const r=_r.apply(this,arguments);try{if(r&&typeof r.then==='function')r.then(sync,()=>{});else sync();}catch(e){}return r;};try{window.runTick=runTick;}catch(e){}}}catch(e){}
+try{setInterval(sync,1000);}catch(e){}
+try{const hook=()=>{const s=document.getElementById('strip');if(s)new MutationObserver(()=>calm()).observe(s,{childList:true,subtree:true});};
+  if(document.body)hook();else document.addEventListener('DOMContentLoaded',hook);}catch(e){}
+document.addEventListener('click',e=>{const b=e.target&&e.target.closest&&e.target.closest('[data-p307="end"],[data-p260="train"][data-k="land"]');if(!b)return;e.preventDefault();e.stopPropagation();endTurn();},true);
+
+/* ---------- 3: last training task ---------- */
+try{if(typeof TRAIN_TASKS!=='undefined'&&Array.isArray(TRAIN_TASKS)&&!TRAIN_TASKS.some(t=>t&&t.k==='land')){
+  const t={k:'land',t:'Press END TURN until your army lands',btn:'END TURN',
+    ok:c=>landsOf(c)>1||(G.tick>=3&&!outFleets(c).length)};
+  Object.defineProperty(t,'d',{configurable:true,get(){const c=ME_();return c&&outFleets(c).length?'Each press moves the world one turn. Your army marches, fights and takes the land.':'Each press moves the world one turn: builds and research move on.';}});
+  TRAIN_TASKS.push(t);}}catch(e){}
+
+/* ---------- 4 + 6: toasts ---------- */
+let quiet=false;const dn={}; // at turn 0 the game's own "Done:" toast repeats on every render (done[k]=0 is falsy): once per tick is enough
+try{if(typeof toast==='function'){const _t=toast;toast=function(msg){try{const s=String(msg==null?'':msg);
+  if(quiet&&/\d\/3:/.test(s))return;
+  if(/^\W*Done: /.test(s)){const k=s+'@'+G.tick;if(dn[k])return;dn[k]=1;}
+  const m=/^\W*Directive complete: Launch an? [A-Za-z ]{2,20} \(\+(\d+) influence\)$/.exec(s);
+  if(m)arguments[0]='First attack sent (+'+m[1]+' influence)';
+  else if(/^\W*Done: Take your first land/.test(s)&&SOLO())return;
+  else if(/^\W*Done: (Start a research|Queue a building)/.test(s)&&SOLO()&&typeof trainOn==='function'&&trainOn()&&typeof view!=='undefined'&&view!=='p250o'){
+    arguments[0]='Done. Next task on the Overview.';setTimeout(()=>{try{go('p250o');}catch(e){}},60);}
+  }catch(e){}return _t.apply(this,arguments);};try{window.toast=toast;}catch(e){}}}catch(e){}
+
+/* ---------- 5: first attack: one turn march, battle in one turn ---------- */
+try{if(typeof sitrep==='function'){const _s=sitrep;sitrep=function(c,cat,msg){try{if(quiet&&typeof msg==='string'&&/tick \d of 3/.test(msg))return;}catch(e){}return _s.apply(this,arguments);};try{window.sitrep=sitrep;}catch(e){}}}catch(e){}
+try{if(typeof cmdOp==='function'){const _c=cmdOp;cmdOp=function(c,rid,committed,opts){
+  let want=false;
+  try{if(SOLO()&&c&&c.id===G.you&&!c.isAI&&c._train&&!G._p307q&&landsOf(c)===1&&(G.tick-((G.season&&G.season.startTick)||0))<10&&!(opts&&opts.departIn>0)
+    &&!(c.fleets||[]).length&&!(G.battles||[]).some(b=>b&&b.atkId===c.id)){
+    const r=_rgId(rid);const nx=new Set([G.nexusId].concat(G.nexusIds||[]));want=!!(r&&r.owner==null&&!r.nexus&&!nx.has(r.id));}}catch(e){}
+  const res=_c.apply(this,arguments);
+  try{if(res&&res.ok&&want){
+    const f=(c.fleets||[]).find(x=>x&&x.id===G._fid-1)||(c.fleets||[])[(c.fleets||[]).length-1];
+    if(f&&f.target===rid&&f.status==='outbound'&&f.eta>G.tick+1){const old=f.eta;f.eta=G.tick+1;f._p307q=1;G._p307q=1; // at most one quick attack per game
+      if(res.data){res.data.land=res.data.arrive=f.eta;res.data.eta=1;}
+      (c.sitrep||[]).slice(0,5).forEach(sr=>{if(sr)['head','text'].forEach(k=>{if(typeof sr[k]==='string'&&sr[k].indexOf('Launched')>=0)sr[k]=sr[k].replace(/lands (tick #|turn )(\d+)/,(m,a,n)=>+n===old?'lands '+a+f.eta:m);});});}
+  }}catch(e){}
+  return res;};try{window.cmdOp=cmdOp;}catch(e){}}}catch(e){}
+try{if(typeof advanceBattle==='function'){const _a=advanceBattle;advanceBattle=function(c,f){
+  if(f&&f._p307q&&!f._p307d&&f.status==='battle'&&(f.bTick||0)===0&&c&&c.id===G.you&&SOLO()){
+    f._p307d=1;quiet=true;
+    try{for(let i=0;i<3&&f.status==='battle';i++){G._btlTick=-1;_a.call(this,c,f);}}finally{quiet=false;}
+    return;}
+  return _a.apply(this,arguments);};try{window.advanceBattle=advanceBattle;}catch(e){}}}catch(e){}
+window.__p307={active,say};
 })();
 </script>
 
