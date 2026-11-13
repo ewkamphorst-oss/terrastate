@@ -27293,6 +27293,280 @@ document.addEventListener('click',e=>{const b=e.target&&e.target.closest&&e.targ
 window.__p305={steps:STEPS,state,strikeOp,strikeRow};
 })();
 </script>
+<script>/* p306a */
+// 23.5 fix layer (loads last). Works unchanged in Terrastate, Romaterra and Ironfront.
+// 1. Money forecast: auto-buy of food/energy (p73) is a one-time purchase. It is taken out of the per-turn cost and income
+//    again (the real purchase still happens at the start of the turn), kept as projection()._p306buy, and Overview shows
+//    one honest line "Auto-buy this turn: ..." in the Do now box. Income stays capped at the storage room (p300).
+// 2. Overview: the "waiting in the treasury, build ..." row (p302) is removed while income is negative.
+// 3. (Research advice on Overview: not done, the advice function is private to its layer.)
+// 4. Overview: the "Step N of 5" row (p305) is hidden while the field training card is on the page.
+// 5. Small text fixes at runtime: "(0 weeks ...)" in the manual, "Build in the Production tab" in the manual,
+//    "Join it in Homeland." in alliance war alerts, and the stray badge digit in page titles ("Army1").
+(function(){'use strict';
+if(typeof window==='undefined')return;
+const HAS_DOC=typeof document!=='undefined';
+
+/* ---------- 1. forecast: auto-buy is not a running cost ---------- */
+try{
+  const base=window.projection||(typeof projection==='function'?projection:null);
+  if(typeof base==='function'&&!base.__p306){
+    const w=function(c){const p=base.apply(this,arguments);
+      try{
+        if(p&&p._p73auto>0&&!(p._p306buy>0)&&p.net&&p.cons){
+          const cost=+p._p73auto;
+          p._p306buy=cost;
+          p.cons.money=Math.max(0,(+p.cons.money||0)-cost);
+          let n=(+p.net.money||0)+cost;
+          // keep p300's rule: income above the storage room is not income
+          try{if(c&&c.res&&typeof capOf==='function'){const cap=capOf(c,'money');
+            if(cap>0&&isFinite(cap)){const room=Math.max(0,cap-(+c.res.money||0));if(n>room){(p._p300lost=p._p300lost||{}).money=n-room;n=room;}}}}catch(e){}
+          p.net.money=n;
+        }
+      }catch(e){}
+      return p;};
+    w.__p306=1;
+    try{Object.keys(base).forEach(k=>{w[k]=base[k];});}catch(e){}
+    try{projection=w;}catch(e){}
+    try{window.projection=w;}catch(e){}
+  }
+}catch(e){}
+
+if(!HAS_DOC)return;
+
+const ME_=()=>{try{return G&&G.countries&&G.you!=null?G.countries[G.you]:null;}catch(e){return null;}};
+const ESC=s=>{try{return typeof esc==='function'?esc(s):String(s);}catch(e){return String(s);}};
+const PRJ=c=>{try{return window.projection(c);}catch(e){try{return projection(c);}catch(_){return null;}}};
+const RL=k=>{try{return String((RMETA[k]&&RMETA[k].l)||k).toLowerCase();}catch(e){return k;}};
+const MONEY=n=>{try{return fmt(n,true);}catch(e){return String(Math.round(n));}};
+
+function buyRow(c,pj){
+  const cost=pj._p306buy;let names=[];
+  try{const was=c._p18auto;let raw=null;c._p18auto=false;try{raw=PRJ(c);}finally{c._p18auto=was;}
+    if(raw&&raw.net)['food','energy'].forEach(k=>{if(((pj.net[k]||0)-(raw.net[k]||0))>0.5)names.push(RL(k));});}catch(e){}
+  const what=names.length?names.join(' and '):'supplies';
+  const why=c.shield?'one-time purchase because your stock runs low while the shield halves production':'one-time purchase because your stock runs low';
+  return '<div class="p250row p306"><div class="p250m"><div class="p250t">Auto-buy this turn: '+ESC(what)+' for '+ESC(MONEY(cost))+'</div><div class="p250s">'+why+'</div></div><div class="p250b"><button type="button" class="btn sm p250btn" data-p250="go" data-id="p250e">Economy</button></div></div>';}
+
+function overviewFix(v){
+  const c=ME_();if(!c||!v||!v.querySelectorAll)return;
+  let pj=null;try{pj=PRJ(c);}catch(e){}
+  // 1. honest auto-buy line
+  try{if(pj&&pj._p306buy>0&&!v.querySelector('.p306')){
+    const box=[...v.querySelectorAll('.p250box')].find(b=>b.dataset&&b.dataset.p268t==='Do now')||v.querySelector('.p250box:not(.pin)');
+    if(box){const h=buyRow(c,pj);const rows=box.querySelectorAll('.p250row');
+      if(rows.length)rows[0].insertAdjacentHTML('afterend',h);else box.insertAdjacentHTML('beforeend',h);}}}catch(e){}
+  // 2. no "waiting in the treasury, build ..." while income is negative
+  try{if(pj&&pj.net&&(+pj.net.money||0)<0)v.querySelectorAll('.p302').forEach(r=>{if(r.querySelector('[data-p302b]'))r.remove();});}catch(e){}
+  // 4. no "Step N of 5" row while the field training card is shown
+  try{if(/FIELD TRAINING(?! COMPLETE)/i.test(v.textContent||''))v.querySelectorAll('.p305').forEach(r=>r.remove());}catch(e){}
+}
+try{if(typeof VIEWS!=='undefined'&&VIEWS.p250o){const _o=VIEWS.p250o;VIEWS.p250o=function(v){const r=_o.apply(this,arguments);try{overviewFix(v);}catch(e){}return r;};}}catch(e){}
+
+/* ---------- 5. small texts ---------- */
+// a, b: manual texts. Data part (HELP bullets, MANUAL pages, which are built once at load with the default season length)
+const ZERO=/\s*\(0 weeks[^)]*\)/g,WEEKS=/<code>\d+<\/code> ticks \(\d+ weeks at one tick per hour\)/g;
+function seasonTxt(){const T=(typeof SEASON_TICKS!=='undefined'&&SEASON_TICKS>0)?SEASON_TICKS:0;if(!T)return null;const w=Math.round(T/168);
+  return '<code>'+T+'</code> ticks'+(w>=1?' ('+w+(w===1?' week':' weeks')+' at one tick per hour)':'');}
+function fixStr(s){let x=s;try{
+  if(x.indexOf('(0 weeks')>=0)x=x.replace(ZERO,'');
+  if(x.indexOf(' weeks at one tick per hour)')>=0){const t=seasonTxt();if(t)x=x.replace(WEEKS,t);}
+  if(x.indexOf('Build in the Production tab')>=0)x=x.replace('Build in the Production tab','Build on the Build page');}catch(e){}return x;}
+function fixData(o,d){try{if(!o||d>5)return;
+  if(Array.isArray(o)){for(let i=0;i<o.length;i++){const x=o[i];if(typeof x==='string'){const y=fixStr(x);if(y!==x)o[i]=y;}else if(x&&typeof x==='object')fixData(x,d+1);}return;}
+  if(typeof o==='object'){for(const k in o){const x=o[k];if(typeof x==='string'){const y=fixStr(x);if(y!==x)o[k]=y;}else if(x&&typeof x==='object')fixData(x,d+1);}}}catch(e){}}
+function fixManual(){try{if(typeof HELP!=='undefined')fixData(HELP,0);}catch(e){}try{if(typeof MANUAL!=='undefined')fixData(MANUAL,0);}catch(e){}}
+fixManual();
+try{const f=window.showManual;if(typeof f==='function'&&!f.__p306){const w=function(){fixManual();return f.apply(this,arguments);};w.__p306=1;window.showManual=w;}}catch(e){}
+// a: text built at render time ("(0 weeks at one turn per hour)" in the field manual and other texts): fix new nodes
+const PTS=/points to #\d+that is/;
+function fixDom(root){try{const tc=root&&root.textContent;if(!tc||(tc.indexOf('(0 weeks')<0&&tc.indexOf('Build in the Production tab')<0&&!PTS.test(tc)))return;
+  const w=document.createTreeWalker(root,NodeFilter.SHOW_TEXT,null);let n;const todo=[];
+  while((n=w.nextNode()))if(n.nodeValue.indexOf('(0 weeks')>=0||n.nodeValue.indexOf('Build in the Production tab')>=0||PTS.test(n.nodeValue))todo.push(n);
+  todo.forEach(t=>{t.nodeValue=t.nodeValue.replace(ZERO,'').replace('Build in the Production tab','Build on the Build page').replace(/(points to #\d+)(that is)/,'$1 $2');});
+  // the field manual page writes it with a bold word: Build in the <b>Production</b> tab
+  const BOLD='Build in the <b>Production</b> tab';
+  if(tc.indexOf('Build in the Production tab')>=0){const els=[root].concat([].slice.call(root.querySelectorAll('div,p,li,span')));
+    els.forEach(e=>{if(e.innerHTML&&e.innerHTML.indexOf(BOLD)>=0&&![].some.call(e.children,c=>c.innerHTML&&c.innerHTML.indexOf(BOLD)>=0))e.innerHTML=e.innerHTML.replace(BOLD,'Build on the <b>Build</b> page');});}
+  }catch(e){}}
+try{const obs=new MutationObserver(ms=>{ms.forEach(m=>{m.addedNodes&&m.addedNodes.forEach(n=>{if(n.nodeType===1)fixDom(n);});});});
+  const hook=()=>{const v=document.getElementById('view');if(v)obs.observe(v,{childList:true,subtree:true});if(document.body)obs.observe(document.body,{childList:true});if(v)fixDom(v);};
+  if(document.body)hook();else document.addEventListener('DOMContentLoaded',hook);}catch(e){}
+// c: alliance war alert
+const HOME=/Join it in Homeland\./g,HOME2='Join it on Alliance, Joint attacks.';
+['sitrep','cmdWarAlert'].forEach(n=>{try{const f=window[n];if(typeof f!=='function'||f.__p306)return;
+  const w=function(){try{for(let i=0;i<arguments.length;i++)if(typeof arguments[i]==='string'&&arguments[i].indexOf('Join it in Homeland.')>=0)arguments[i]=arguments[i].replace(HOME,HOME2);}catch(e){}return f.apply(this,arguments);};
+  w.__p306=1;try{Object.keys(f).forEach(k=>{w[k]=f[k];});}catch(e){}
+  try{window[n]=w;}catch(e){}}catch(e){}});
+// e: page title "Army1" (the badge digit of the menu entry sticks to the name)
+try{const h=window.__p87head;if(typeof h==='function'&&!h.__p306){const w=function(){const o=h.apply(this,arguments);try{if(o&&typeof o[0]==='string')o[0]=o[0].replace(/\d+$/,'').trim();}catch(e){}return o;};w.__p306=1;window.__p87head=w;}}catch(e){}
+})();
+</script>
+<script>/* p306b */
+/* p306b: three small additions, one layer, works unchanged in Terrastate, Romaterra and Ironfront.
+   1. Overview: one compact line under the "Season goal" line that shows the cost of the prize building before you own the
+      prize region, have/need and turns-to-afford once you own it, and "Hold N more turns" once it is built (class p306g).
+   2. Rule: in a SOLO season of 100 turns or fewer the influence part of CC_COST is 3500 instead of 5000. Every text that shows
+      the cost reads CC_COST live, so they all agree. Never touched on a multiplayer client or on the headless server.
+   3. Army page: when you are under attack the tab row sits directly under the page title; the red panel stays fully visible on
+      the "Defend a land" tab and folds into one line (class p306u) with a Defend button on every other tab. */
+(function(){
+'use strict';
+
+/* ---------------------------------------------------------------- 2. cost that fits a short season */
+let BASE_INFL=null;
+function soloBrowser(){try{return typeof isSoloGame==='function'&&isSoloGame()&&typeof window!=='undefined'&&!window.__MP__;}catch(e){return false;}}
+function syncCost(){try{
+  if(typeof CC_COST==='undefined'||!CC_COST||typeof CC_COST.influence!=='number')return;
+  if(BASE_INFL==null){BASE_INFL=(typeof window!=='undefined'&&window.__p306bBase)||CC_COST.influence;try{window.__p306bBase=BASE_INFL;}catch(e){}}
+  let want=BASE_INFL;
+  if(soloBrowser()){let st=NaN;try{st=Number(SEASON_TICKS);}catch(e){}if(st>0&&st<=100)want=Math.min(BASE_INFL,3500);}
+  if(CC_COST.influence!==want)CC_COST.influence=want;
+}catch(e){}}
+try{syncCost();}catch(e){}
+try{if(typeof applySoloSettings==='function'){const _as=applySoloSettings;applySoloSettings=function(){const r=_as.apply(this,arguments);syncCost();return r;};try{window.applySoloSettings=applySoloSettings;}catch(e){}}}catch(e){}
+try{if(typeof cmdBuildCC==='function'){const _cc=cmdBuildCC;cmdBuildCC=function(){syncCost();return _cc.apply(this,arguments);};try{window.cmdBuildCC=cmdBuildCC;}catch(e){}}}catch(e){}
+try{if(typeof runTick==='function'){const _rt=runTick;runTick=function(){syncCost();return _rt.apply(this,arguments);};try{window.runTick=runTick;}catch(e){}}}catch(e){}
+try{if(typeof document!=='undefined'&&typeof setInterval==='function')setInterval(syncCost,1500);}catch(e){}
+
+if(typeof document==='undefined'||typeof VIEWS==='undefined')return;
+
+/* ---------------------------------------------------------------- helpers */
+const ME=()=>{try{return G.countries[G.you];}catch(e){return null;}};
+const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const num=(n,money)=>{try{return fmt(n,!!money);}catch(e){return String(Math.round(n));}};
+const lab=k=>{try{return String((RMETA[k]&&RMETA[k].l)||k).toLowerCase();}catch(e){return k;}};
+const isMoney=k=>{try{return !!(RMETA[k]&&RMETA[k].money);}catch(e){return false;}};
+
+let _name=null;
+function ccName(){ // the name the game itself uses for the building: taken from the error text of cmdBuildCC
+  if(_name)return _name;
+  try{const sc=document.scripts;for(let i=0;i<sc.length&&!_name;i++){const t=sc[i].textContent||'';if(t.indexOf('function cmdBuildCC')<0)continue;
+    const m=/return err\('([^'+]{3,40}), '\+affordMsg\(c,CC_COST\)\)/.exec(t);if(m)_name=m[1];}}catch(e){}
+  return _name||(_name='Command Center');
+}
+function nexList(){try{return (typeof nexuses==='function'?nexuses():[nexus()]).filter(Boolean);}catch(e){return [];}}
+function costText(){try{return Object.keys(CC_COST).map(k=>isMoney(k)?num(CC_COST[k],true):num(CC_COST[k],false)+' '+lab(k)).join(', ');}catch(e){return '';}}
+const plural=(n,w)=>n+' '+w+(n===1?'':'s');
+
+/* ---------------------------------------------------------------- 1. Overview goal progress */
+function goalHTML(){
+  const c=ME();if(!c)return '';
+  syncCost();
+  const name=ccName();
+  const mine=nexList().filter(n=>n.owner===c.id);
+  if(!mine.length)return '<span class="muted">Then build the '+esc(name)+': '+esc(costText())+'</span>';
+  const act=mine.find(n=>n.ccBuild||n.commandCenter);
+  if(act){
+    const hold=(typeof NEXUS_HOLD!=='undefined'?NEXUS_HOLD:12);
+    let n,extra='';
+    if(act.commandCenter){const held=(act.ccHolder===act.owner)?(act.ccHeld||0):0;n=Math.max(0,hold-held);}
+    else{const left=Math.max(0,act.ccBuild.done-G.tick);n=left+hold;extra=' ('+plural(left,'turn')+' to finish the '+esc(name)+', then '+plural(hold,'turn')+' of holding)';}
+    return '<b>Hold '+plural(n,'more turn')+'</b>'+extra;
+  }
+  const nx=mine[0];
+  let pj=null;try{pj=projection(c);}catch(e){}
+  const parts=Object.keys(CC_COST).map(k=>{
+    const have=(c.res&&c.res[k])||0,need=CC_COST[k],money=isMoney(k);
+    const hn=num(have,money)+' / '+num(need,money);
+    const net=pj&&pj.net?pj.net[k]:0;
+    if(have>=need)return {k,t:esc(lab(k))+' '+hn+' ok',w:-1};
+    let w,t;if(!(net>0)){w=Infinity;t='not growing';}else{const n=Math.ceil((need-have)/net);w=n;t=plural(n,'turn');}
+    return {k,t:esc(lab(k))+' '+hn+' ('+t+')',w};
+  }).sort((a,b)=>b.w-a.w);
+  const short=parts.some(p=>p.w>=0);
+  let unlockNote='',locked=false;
+  try{const u=ccUnlockTick();if(G.tick<u){locked=true;unlockNote=' · opens in '+plural(u-G.tick,'turn');}}catch(e){}
+  let cpNoteTxt='',cpOk=true;if((c.cp||0)<2){cpOk=false;cpNoteTxt=' · needs 2 command points';}
+  let html='<b>You hold it. Build the '+esc(name)+':</b> '+parts.map(p=>p.t).join(' · ')+unlockNote+cpNoteTxt;
+  if(parts.length&&parts[0].k==='influence'&&parts[0].w>0)html+='<span class="p306h"> · influence grows faster with more lands and a diplomat on your staff</span>';
+  if(!short&&!locked&&cpOk)html+=' <button type="button" class="btn sm p306b" data-p306="build" data-p306n="'+esc(nx.id)+'">Build it</button>';
+  return html;
+}
+function overviewLine(v){
+  v.querySelectorAll(':scope .p306g').forEach(x=>x.remove());
+  const h=goalHTML();if(!h)return;
+  const d=document.createElement('div');d.className='p306g small';d.innerHTML=h;
+  const bar=v.querySelector('.p261bar'),top=v.querySelector('.p250top');
+  if(bar)bar.insertAdjacentElement('afterend',d);else if(top)top.insertAdjacentElement('afterend',d);else v.insertAdjacentElement('afterbegin',d);
+}
+try{if(VIEWS.p250o){const _o=VIEWS.p250o;VIEWS.p250o=function(v){const r=_o.apply(this,arguments);try{overviewLine(v);}catch(e){}return r;};}}catch(e){}
+
+/* ---------------------------------------------------------------- 3. Army page: tabs first */
+function firstLine(pin){
+  const h=pin.querySelector('.p276h')||pin.querySelector('.p250row .p250t')||pin.querySelector('.p250row');
+  let t=h?h.textContent:pin.textContent.replace(/^\s*Under attack\s*/i,'');
+  t=t.replace(/\s+/g,' ').trim();
+  if(t.length>150)t=t.slice(0,147)+'...';
+  const n=pin.querySelectorAll('.p276h').length;
+  return t+(n>1?' (+'+(n-1)+' more)':'');
+}
+function armySync(v){
+  const pin=v.querySelector(':scope>.p250box.pin'),line=v.querySelector(':scope>.p306u');
+  if(!pin||!line)return;
+  const on=v.querySelector(':scope>.p250tabs .p250tab.on');
+  const def=!!(on&&/^Defend a land/i.test((on.textContent||'').trim()));
+  if(def){pin.style.display='';line.style.display='none';}
+  else{line.style.display='';pin.style.display=line.dataset.open==='1'?'':'none';
+    const b=line.querySelector('[data-p306="more"]');if(b)b.textContent=line.dataset.open==='1'?'Hide details':'Details';}
+}
+function armyRearrange(v){
+  v.querySelectorAll(':scope>.p306u').forEach(x=>x.remove());
+  const pin=v.querySelector(':scope>.p250box.pin'),bar=v.querySelector(':scope>.p250tabs');
+  if(!pin||!bar)return;
+  const top=v.querySelector(':scope>.p250top');
+  let sel=bar.nextElementSibling;if(!(sel&&sel.classList&&sel.classList.contains('p266sel')))sel=null;
+  let anchor=top;
+  if(top){top.insertAdjacentElement('afterend',bar);anchor=bar;if(sel){bar.insertAdjacentElement('afterend',sel);anchor=sel;}}
+  else{v.insertAdjacentElement('afterbegin',bar);anchor=bar;}
+  const line=document.createElement('div');line.className='p306u';
+  line.innerHTML='<span class="p306t">Under attack: '+esc(firstLine(pin))+'</span><span class="p306a"><button type="button" class="btn sm p306d" data-p306="defend">Defend</button> <button type="button" class="btn sm ghost p306m" data-p306="more">Details</button></span>';
+  anchor.insertAdjacentElement('afterend',line);
+  line.insertAdjacentElement('afterend',pin);
+  armySync(v);
+}
+try{if(VIEWS.p250a){const _a=VIEWS.p250a;VIEWS.p250a=function(v){const r=_a.apply(this,arguments);try{armyRearrange(v);}catch(e){}return r;};}}catch(e){}
+
+/* ---------------------------------------------------------------- events */
+try{
+  document.addEventListener('click',function(e){
+    try{
+      const t=e.target&&e.target.closest?e.target:null;if(!t)return;
+      const b=t.closest('[data-p306]');
+      if(b){
+        e.preventDefault();e.stopPropagation();
+        const act=b.dataset.p306;
+        if(act==='defend'){(window._p250tab||(window._p250tab={})).p250a='Defend a land';go('p250a');return;}
+        if(act==='more'){const line=b.closest('.p306u');if(line){line.dataset.open=line.dataset.open==='1'?'0':'1';armySync(line.parentNode);}return;}
+        if(act==='build'){
+          const c=ME();if(!c)return;
+          let r=null;try{r=cmdBuildCC(c,(b.dataset.p306n!==""&&!isNaN(+b.dataset.p306n)?+b.dataset.p306n:undefined));}catch(x){r={ok:false,error:'Could not start it'};}
+          try{if(r&&r.ok)toast('The '+ccName()+' is under construction.','good');else toast((r&&r.error)||'Could not start it','bad');}catch(x){}
+          try{go('p250o');}catch(x){}
+          return;
+        }
+        return;
+      }
+      if(t.closest('.p250tab,.p266sel'))setTimeout(function(){try{const v=document.getElementById('view');if(v)armySync(v);}catch(x){}},0);
+    }catch(x){}
+  },true);
+  document.addEventListener('change',function(e){
+    try{if(e.target&&e.target.closest&&e.target.closest('.p266sel'))setTimeout(function(){try{const v=document.getElementById('view');if(v)armySync(v);}catch(x){}},0);}catch(x){}
+  },true);
+}catch(e){}
+
+/* ---------------------------------------------------------------- style */
+try{
+  const st=document.createElement('style');st.id='p306bcss';
+  st.textContent='.p306g{margin:2px 0 8px;padding:5px 10px;border:1px solid var(--border2,#345);border-radius:8px;background:var(--bg2,transparent);line-height:1.5}'
+   +'.p306g .btn{margin-left:6px}'
+   +'.p306u{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:6px 10px;margin:0 0 10px;padding:8px 12px;border:1px solid var(--bad,#c33);border-left-width:4px;border-radius:10px;background:rgba(200,50,50,.12);font-size:13px}'
+   +'.p306u .p306t{flex:1 1 220px;min-width:0;color:var(--bad,#e66);font-weight:700}'
+   +'.p306u .p306a{display:flex;gap:6px;flex:0 0 auto}';
+  document.head.appendChild(st);
+}catch(e){}
+})();
+</script>
 
 </body>
 </html>
