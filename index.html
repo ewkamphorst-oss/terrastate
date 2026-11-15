@@ -65,13 +65,20 @@
 .l20c{background:var(--panel);border:1px solid var(--line);border-top:3px solid var(--c,var(--gold));border-radius:12px;padding:16px}
 .l20c b{display:block;font-size:19px;margin-bottom:6px}.l20c span{color:#cfd8e6;line-height:1.5;font-size:15px}
 .l20c.eco{--c:#37d9a9}.l20c.mil{--c:#ef4444}.l20c.dip{--c:#3aa0ff}.l20c.ind{--c:#f6b62b}
+.l23hero{display:flex;align-items:center;min-height:min(72vh,640px);padding:56px 0 64px;position:relative;overflow:hidden;isolation:isolate;background:#060b14 url(img/v3/hero.jpg) center/cover no-repeat}
+.l23hero>.l15w{width:100%}.l23hero h1{max-width:15em;text-shadow:0 2px 18px rgba(0,0,0,.6)}.l23hero .lead{max-width:36em}
+@media(max-width:700px){.l23hero{min-height:min(78vh,620px);padding:36px 0 44px}}
+.l23vid{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:-2;pointer-events:none}
+.l23shade{position:absolute;inset:0;z-index:-1;background:linear-gradient(90deg,rgba(6,11,20,.92) 0%,rgba(6,11,20,.78) 45%,rgba(6,11,20,.18) 100%),linear-gradient(180deg,rgba(6,11,20,0) 60%,rgba(6,11,20,.95) 100%)}
+@media(max-width:700px){.l23shade{background:linear-gradient(180deg,rgba(6,11,20,.80) 0%,rgba(6,11,20,.72) 60%,rgba(6,11,20,.96) 100%)}}
+@media(prefers-reduced-motion:reduce){.l23vid{display:none}}
 </style>
 </head>
 <body class="l15">
 <nav class="l15nav" aria-label="Main"><div class="l15w"><a class="l15logo" href="#top"><img src="icons/terrastate-64.png" alt="" width="30" height="30"><span>TERRA<b>STATE</b></span></a>
 <div class="l15links"><a href="#worlds">The three games</a><a href="world/">The worlds</a><a href="#rule">How to play</a><a href="hall-of-fame.html">Ranking</a><a href="#faq">FAQ</a></div>
 <a class="l15btn" href="play.html">Play now ▶</a></div></nav>
-<header class="l15hero" id="top"><div class="l15w"><div class="l15k">Free grand strategy in your browser</div>
+<header class="l15hero l23hero" id="top"><video class="l23vid" autoplay muted loop playsinline preload="metadata" poster="img/v3/hero.jpg" aria-hidden="true" tabindex="-1"><source src="img/v3/hero-s.mp4" type="video/mp4" media="(max-width:700px)"><source src="img/v3/hero.mp4" type="video/mp4"></video><div class="l23shade" aria-hidden="true"></div><div class="l15w"><div class="l15k">Free grand strategy in your browser</div>
 <h1>Command your nation against 500 AI nations.</h1>
 <p class="lead">No account. No waiting. No pay-to-win. Build, scout and strike with your allies, then take the prize at the end of the season. On a computer or a phone.</p>
 <div class="l20play"><a class="l15btn l20big" href="play.html">Play now ▶</a><div class="l20eras"><span class="l20rec">Start in the modern world</span><span>or play another era: <a href="romaterra.html">Rome</a> · <a href="ironfront.html">1944</a></span></div></div></div></header>
@@ -170,5 +177,6 @@ if(LS('ts_voted'))msg.textContent='Thanks, your vote is in. You can change it an
 send.addEventListener('click',function(){send.disabled=true;msg.textContent='Sending...';
 fetch(U,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain'},body:JSON.stringify({type:'poll',voter:id,mp:A.mp||'',turn:A.turn||''})}).then(function(){LS('ts_vote',JSON.stringify(A));LS('ts_voted','1');msg.textContent='Thanks, your vote is in. The results go to the maker only.';paint();}).catch(function(){msg.textContent='Could not send. Check your connection and try again.';paint();});});
 paint();})();</script>
+<script>(function(){try{var v=document.querySelector(".l23vid");if(!v)return;var c=navigator.connection;if((c&&c.saveData)||matchMedia("(prefers-reduced-motion:reduce)").matches){v.removeAttribute("autoplay");v.pause();v.style.display="none";return;}v.addEventListener("error",function(){v.style.display="none";},true);var p=v.play();if(p&&p.catch)p.catch(function(){v.style.display="none";});}catch(e){}})();</script>
 </body>
 </html>
