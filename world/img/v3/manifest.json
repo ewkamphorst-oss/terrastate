@@ -5705,6 +5705,1284 @@
    },
    "bron": "iGe0u.jpg",
    "zip": "playterrastate_recent_batch2"
+  },
+  {
+   "nr": 240,
+   "groep": "portret",
+   "werelden": [
+    "ts"
+   ],
+   "plek": "vrouw donkere krullen, zwarte col (Terrastate)",
+   "naam": "ts-vrouw-krullen",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/portretten/ts-vrouw-krullen-s.webp",
+    "px": [
+     161,
+     240
+    ],
+    "kb": 2
+   },
+   "bron": "CbMWC.jpg",
+   "zip": "playterrastate_units_portraits_new"
+  },
+  {
+   "nr": 241,
+   "groep": "portret",
+   "werelden": [
+    "ts"
+   ],
+   "plek": "vrouw kort krulhaar, marineblauwe blazer (Terrastate)",
+   "naam": "ts-vrouw-blazer-donker",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/portretten/ts-vrouw-blazer-donker-s.webp",
+    "px": [
+     161,
+     240
+    ],
+    "kb": 2
+   },
+   "bron": "E8lL7.jpg",
+   "zip": "playterrastate_units_portraits_new"
+  },
+  {
+   "nr": 242,
+   "groep": "portret",
+   "werelden": [
+    "ts"
+   ],
+   "plek": "vrouw kort zwart haar, zwarte col (Terrastate)",
+   "naam": "ts-vrouw-kort-haar",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/portretten/ts-vrouw-kort-haar-s.webp",
+    "px": [
+     161,
+     240
+    ],
+    "kb": 1
+   },
+   "bron": "kmWFH.jpg",
+   "zip": "playterrastate_units_portraits_new"
+  },
+  {
+   "nr": 243,
+   "groep": "portret",
+   "werelden": [
+    "ts"
+   ],
+   "plek": "vrouw blond met bril, blazer (Terrastate)",
+   "naam": "ts-vrouw-bril",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/portretten/ts-vrouw-bril-s.webp",
+    "px": [
+     161,
+     240
+    ],
+    "kb": 3
+   },
+   "bron": "dZ36t.jpg",
+   "zip": "playterrastate_units_portraits_new"
+  },
+  {
+   "nr": 244,
+   "groep": "portret",
+   "werelden": [
+    "if"
+   ],
+   "plek": "vrouw zwarte bob, beige regenjas (Ironfront)",
+   "naam": "if-vrouw-regenjas",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/portretten/if-vrouw-regenjas-s.webp",
+    "px": [
+     161,
+     240
+    ],
+    "kb": 3
+   },
+   "bron": "2uFvZ.jpg",
+   "zip": "playterrastate_units_portraits_new"
+  },
+  {
+   "nr": 245,
+   "groep": "portret",
+   "werelden": [
+    "if"
+   ],
+   "plek": "oudere vrouw met knot, hoge kraag (Ironfront)",
+   "naam": "if-vrouw-oud-knot",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/portretten/if-vrouw-oud-knot-s.webp",
+    "px": [
+     161,
+     240
+    ],
+    "kb": 3
+   },
+   "bron": "OaYvu.jpg",
+   "zip": "playterrastate_units_portraits_new"
+  },
+  {
+   "nr": 246,
+   "groep": "portret",
+   "werelden": [
+    "if"
+   ],
+   "plek": "vrouw rode krullen, sproeten, tweedjas (Ironfront)",
+   "naam": "if-vrouw-krullen-rood",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/portretten/if-vrouw-krullen-rood-s.webp",
+    "px": [
+     161,
+     240
+    ],
+    "kb": 3
+   },
+   "bron": "Samq7.jpg",
+   "zip": "playterrastate_units_portraits_new"
+  },
+  {
+   "nr": 247,
+   "groep": "portret",
+   "werelden": [
+    "if"
+   ],
+   "plek": "jonge vrouw lang haar, eenvoudige jurk (Ironfront)",
+   "naam": "if-vrouw-jong",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/portretten/if-vrouw-jong-s.webp",
+    "px": [
+     161,
+     240
+    ],
+    "kb": 2
+   },
+   "bron": "XC8Vx.jpg",
+   "zip": "playterrastate_units_portraits_new"
+  },
+  {
+   "nr": 248,
+   "groep": "portret",
+   "werelden": [
+    "if"
+   ],
+   "plek": "oudere vrouw wit krulhaar, vest (Ironfront)",
+   "naam": "if-vrouw-oud-vest",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/portretten/if-vrouw-oud-vest-s.webp",
+    "px": [
+     161,
+     240
+    ],
+    "kb": 4
+   },
+   "bron": "dim25.jpg",
+   "zip": "playterrastate_units_portraits_new"
+  },
+  {
+   "nr": 249,
+   "groep": "portret",
+   "werelden": [
+    "if"
+   ],
+   "plek": "vrouw donkere krullen, wollen mantel (Ironfront)",
+   "naam": "if-vrouw-mantel",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/portretten/if-vrouw-mantel-s.webp",
+    "px": [
+     161,
+     240
+    ],
+    "kb": 2
+   },
+   "bron": "fKRa3.jpg",
+   "zip": "playterrastate_units_portraits_new"
+  },
+  {
+   "nr": 250,
+   "groep": "eenheid",
+   "werelden": [
+    "ts"
+   ],
+   "plek": "eenheid ts:militia",
+   "naam": "ts-militia-militia",
+   "groot": {
+    "pad": "world/img/v3/eenheden/ts-militia-militia.webp",
+    "px": [
+     256,
+     256
+    ],
+    "kb": 3
+   },
+   "klein": {
+    "pad": "world/img/v3/eenheden/ts-militia-militia-s.webp",
+    "px": [
+     96,
+     96
+    ],
+    "kb": 1
+   },
+   "bron": "mW6i9.jpg",
+   "zip": "playterrastate_units_portraits_new"
+  },
+  {
+   "nr": 251,
+   "groep": "eenheid",
+   "werelden": [
+    "ts"
+   ],
+   "plek": "eenheid ts:supply_truck",
+   "naam": "ts-bevoorrading-supply_truck",
+   "groot": {
+    "pad": "world/img/v3/eenheden/ts-bevoorrading-supply_truck.webp",
+    "px": [
+     256,
+     256
+    ],
+    "kb": 3
+   },
+   "klein": {
+    "pad": "world/img/v3/eenheden/ts-bevoorrading-supply_truck-s.webp",
+    "px": [
+     96,
+     96
+    ],
+    "kb": 1
+   },
+   "bron": "c9cJw.jpg",
+   "zip": "playterrastate_units_portraits_new"
+  },
+  {
+   "nr": 252,
+   "groep": "eenheid",
+   "werelden": [
+    "ts"
+   ],
+   "plek": "eenheid ts:quantum_hacker",
+   "naam": "ts-hacker-quantum_hacker",
+   "groot": {
+    "pad": "world/img/v3/eenheden/ts-hacker-quantum_hacker.webp",
+    "px": [
+     256,
+     256
+    ],
+    "kb": 4
+   },
+   "klein": {
+    "pad": "world/img/v3/eenheden/ts-hacker-quantum_hacker-s.webp",
+    "px": [
+     96,
+     96
+    ],
+    "kb": 1
+   },
+   "bron": "sfgaR.jpg",
+   "zip": "playterrastate_units_portraits_new"
+  },
+  {
+   "nr": 253,
+   "groep": "eenheid",
+   "werelden": [
+    "ts"
+   ],
+   "plek": "eenheid ts:sam",
+   "naam": "ts-luchtafweer-sam",
+   "groot": {
+    "pad": "world/img/v3/eenheden/ts-luchtafweer-sam.webp",
+    "px": [
+     256,
+     256
+    ],
+    "kb": 3
+   },
+   "klein": {
+    "pad": "world/img/v3/eenheden/ts-luchtafweer-sam-s.webp",
+    "px": [
+     96,
+     96
+    ],
+    "kb": 1
+   },
+   "bron": "seM29.jpg",
+   "zip": "playterrastate_units_portraits_new"
+  },
+  {
+   "nr": 254,
+   "groep": "eenheid",
+   "werelden": [
+    "ts"
+   ],
+   "plek": "eenheid ts:mobile_shield",
+   "naam": "ts-schild-mobile_shield",
+   "groot": {
+    "pad": "world/img/v3/eenheden/ts-schild-mobile_shield.webp",
+    "px": [
+     256,
+     256
+    ],
+    "kb": 2
+   },
+   "klein": {
+    "pad": "world/img/v3/eenheden/ts-schild-mobile_shield-s.webp",
+    "px": [
+     96,
+     96
+    ],
+    "kb": 1
+   },
+   "bron": "5Eb37.jpg",
+   "zip": "playterrastate_units_portraits_new"
+  },
+  {
+   "nr": 255,
+   "groep": "eenheid",
+   "werelden": [
+    "ts"
+   ],
+   "plek": "eenheid ts:decoy",
+   "naam": "ts-schijnkamp-decoy",
+   "groot": {
+    "pad": "world/img/v3/eenheden/ts-schijnkamp-decoy.webp",
+    "px": [
+     256,
+     256
+    ],
+    "kb": 3
+   },
+   "klein": {
+    "pad": "world/img/v3/eenheden/ts-schijnkamp-decoy-s.webp",
+    "px": [
+     96,
+     96
+    ],
+    "kb": 1
+   },
+   "bron": "3nR84.jpg",
+   "zip": "playterrastate_units_portraits_new"
+  },
+  {
+   "nr": 256,
+   "groep": "eenheid",
+   "werelden": [
+    "ro"
+   ],
+   "plek": "eenheid ro:strike_fighter",
+   "naam": "ro-boogschutter-strike_fighter",
+   "groot": {
+    "pad": "world/img/v3/eenheden/ro-boogschutter-strike_fighter.webp",
+    "px": [
+     256,
+     256
+    ],
+    "kb": 5
+   },
+   "klein": {
+    "pad": "world/img/v3/eenheden/ro-boogschutter-strike_fighter-s.webp",
+    "px": [
+     96,
+     96
+    ],
+    "kb": 1
+   },
+   "bron": "el2cW.jpg",
+   "zip": "playterrastate_units_portraits_new"
+  },
+  {
+   "nr": 257,
+   "groep": "eenheid",
+   "werelden": [
+    "ro"
+   ],
+   "plek": "eenheid ro:titan_mech",
+   "naam": "ro-olifant-titan_mech",
+   "groot": {
+    "pad": "world/img/v3/eenheden/ro-olifant-titan_mech.webp",
+    "px": [
+     256,
+     256
+    ],
+    "kb": 8
+   },
+   "klein": {
+    "pad": "world/img/v3/eenheden/ro-olifant-titan_mech-s.webp",
+    "px": [
+     96,
+     96
+    ],
+    "kb": 1
+   },
+   "bron": "Hnw3r.jpg",
+   "zip": "playterrastate_units_portraits_new"
+  },
+  {
+   "nr": 258,
+   "groep": "eenheid",
+   "werelden": [
+    "ro"
+   ],
+   "plek": "eenheid ro:cyber_cell",
+   "naam": "ro-spion-cyber_cell",
+   "groot": {
+    "pad": "world/img/v3/eenheden/ro-spion-cyber_cell.webp",
+    "px": [
+     256,
+     256
+    ],
+    "kb": 6
+   },
+   "klein": {
+    "pad": "world/img/v3/eenheden/ro-spion-cyber_cell-s.webp",
+    "px": [
+     96,
+     96
+    ],
+    "kb": 1
+   },
+   "bron": "iVu2O.jpg",
+   "zip": "playterrastate_units_portraits_new"
+  },
+  {
+   "nr": 259,
+   "groep": "eenheid",
+   "werelden": [
+    "ro"
+   ],
+   "plek": "eenheid ro:spec_ops",
+   "naam": "ro-speculatores-spec_ops",
+   "groot": {
+    "pad": "world/img/v3/eenheden/ro-speculatores-spec_ops.webp",
+    "px": [
+     256,
+     256
+    ],
+    "kb": 7
+   },
+   "klein": {
+    "pad": "world/img/v3/eenheden/ro-speculatores-spec_ops-s.webp",
+    "px": [
+     96,
+     96
+    ],
+    "kb": 1
+   },
+   "bron": "gNxMC.jpg",
+   "zip": "playterrastate_units_portraits_new"
+  },
+  {
+   "nr": 260,
+   "groep": "eenheid",
+   "werelden": [
+    "ro"
+   ],
+   "plek": "eenheid ro:supply_truck",
+   "naam": "ro-wagens-supply_truck",
+   "groot": {
+    "pad": "world/img/v3/eenheden/ro-wagens-supply_truck.webp",
+    "px": [
+     256,
+     256
+    ],
+    "kb": 5
+   },
+   "klein": {
+    "pad": "world/img/v3/eenheden/ro-wagens-supply_truck-s.webp",
+    "px": [
+     96,
+     96
+    ],
+    "kb": 1
+   },
+   "bron": "kN7Du.jpg",
+   "zip": "playterrastate_units_portraits_new"
+  },
+  {
+   "nr": 261,
+   "groep": "eenheid",
+   "werelden": [
+    "ro"
+   ],
+   "plek": "eenheid ro:field_hospital",
+   "naam": "ro-medicus-field_hospital",
+   "groot": {
+    "pad": "world/img/v3/eenheden/ro-medicus-field_hospital.webp",
+    "px": [
+     256,
+     256
+    ],
+    "kb": 6
+   },
+   "klein": {
+    "pad": "world/img/v3/eenheden/ro-medicus-field_hospital-s.webp",
+    "px": [
+     96,
+     96
+    ],
+    "kb": 1
+   },
+   "bron": "zs8JJ.jpg",
+   "zip": "playterrastate_units_portraits_new"
+  },
+  {
+   "nr": 262,
+   "groep": "eenheid",
+   "werelden": [
+    "ro"
+   ],
+   "plek": "eenheid ro:quantum_hacker",
+   "naam": "ro-sicarii-quantum_hacker",
+   "groot": {
+    "pad": "world/img/v3/eenheden/ro-sicarii-quantum_hacker.webp",
+    "px": [
+     256,
+     256
+    ],
+    "kb": 3
+   },
+   "klein": {
+    "pad": "world/img/v3/eenheden/ro-sicarii-quantum_hacker-s.webp",
+    "px": [
+     96,
+     96
+    ],
+    "kb": 1
+   },
+   "bron": "39cTw.jpg",
+   "zip": "playterrastate_units_portraits_new"
+  },
+  {
+   "nr": 263,
+   "groep": "eenheid",
+   "werelden": [
+    "if"
+   ],
+   "plek": "eenheid if:sapper",
+   "naam": "if-genie-sapper",
+   "groot": {
+    "pad": "world/img/v3/eenheden/if-genie-sapper.webp",
+    "px": [
+     256,
+     256
+    ],
+    "kb": 7
+   },
+   "klein": {
+    "pad": "world/img/v3/eenheden/if-genie-sapper-s.webp",
+    "px": [
+     96,
+     96
+    ],
+    "kb": 1
+   },
+   "bron": "SCQCw.jpg",
+   "zip": "playterrastate_units_portraits_new"
+  },
+  {
+   "nr": 264,
+   "groep": "eenheid",
+   "werelden": [
+    "if"
+   ],
+   "plek": "eenheid if:quantum_hacker",
+   "naam": "if-spion-quantum_hacker",
+   "groot": {
+    "pad": "world/img/v3/eenheden/if-spion-quantum_hacker.webp",
+    "px": [
+     256,
+     256
+    ],
+    "kb": 1
+   },
+   "klein": {
+    "pad": "world/img/v3/eenheden/if-spion-quantum_hacker-s.webp",
+    "px": [
+     96,
+     96
+    ],
+    "kb": 0
+   },
+   "bron": "lJPYE.jpg",
+   "zip": "playterrastate_units_portraits_new"
+  },
+  {
+   "nr": 265,
+   "groep": "eenheid",
+   "werelden": [
+    "if"
+   ],
+   "plek": "eenheid if:supply_truck",
+   "naam": "if-bevoorrading-supply_truck",
+   "groot": {
+    "pad": "world/img/v3/eenheden/if-bevoorrading-supply_truck.webp",
+    "px": [
+     256,
+     256
+    ],
+    "kb": 6
+   },
+   "klein": {
+    "pad": "world/img/v3/eenheden/if-bevoorrading-supply_truck-s.webp",
+    "px": [
+     96,
+     96
+    ],
+    "kb": 1
+   },
+   "bron": "uqGQ5.jpg",
+   "zip": "playterrastate_units_portraits_new"
+  },
+  {
+   "nr": 266,
+   "groep": "eenheid",
+   "werelden": [
+    "if"
+   ],
+   "plek": "eenheid if:ghost_squad",
+   "naam": "if-nachtraiders-ghost_squad",
+   "groot": {
+    "pad": "world/img/v3/eenheden/if-nachtraiders-ghost_squad.webp",
+    "px": [
+     256,
+     256
+    ],
+    "kb": 4
+   },
+   "klein": {
+    "pad": "world/img/v3/eenheden/if-nachtraiders-ghost_squad-s.webp",
+    "px": [
+     96,
+     96
+    ],
+    "kb": 1
+   },
+   "bron": "Zd2h9.jpg",
+   "zip": "playterrastate_units_portraits_new"
+  },
+  {
+   "nr": 267,
+   "groep": "eenheid",
+   "werelden": [
+    "if"
+   ],
+   "plek": "eenheid if:mobile_shield",
+   "naam": "if-rookgordijn-mobile_shield",
+   "groot": {
+    "pad": "world/img/v3/eenheden/if-rookgordijn-mobile_shield.webp",
+    "px": [
+     256,
+     256
+    ],
+    "kb": 5
+   },
+   "klein": {
+    "pad": "world/img/v3/eenheden/if-rookgordijn-mobile_shield-s.webp",
+    "px": [
+     96,
+     96
+    ],
+    "kb": 1
+   },
+   "bron": "Hd792.jpg",
+   "zip": "playterrastate_units_portraits_new"
+  },
+  {
+   "nr": 268,
+   "groep": "terrein",
+   "werelden": [
+    "if",
+    "ts"
+   ],
+   "plek": "fabrieksrook bij zonsondergang",
+   "naam": "if-fabrieksrook",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/terrein/if-fabrieksrook-s.webp",
+    "px": [
+     480,
+     322
+    ],
+    "kb": 5
+   },
+   "bron": "0awtT.jpg",
+   "zip": "playterrastate_units_portraits_new"
+  },
+  {
+   "nr": 269,
+   "groep": "terrein",
+   "werelden": [
+    "if"
+   ],
+   "plek": "loopgraven in de modder",
+   "naam": "if-loopgraven-modder",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/terrein/if-loopgraven-modder-s.webp",
+    "px": [
+     480,
+     322
+    ],
+    "kb": 17
+   },
+   "bron": "Kqz35.jpg",
+   "zip": "playterrastate_units_portraits_new"
+  },
+  {
+   "nr": 270,
+   "groep": "terrein",
+   "werelden": [
+    "ro"
+   ],
+   "plek": "donker bos met fakkels",
+   "naam": "ro-bos-fakkels",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/terrein/ro-bos-fakkels-s.webp",
+    "px": [
+     480,
+     322
+    ],
+    "kb": 14
+   },
+   "bron": "TvGN6.jpg",
+   "zip": "playterrastate_units_portraits_new"
+  },
+  {
+   "nr": 271,
+   "groep": "gebouw",
+   "werelden": [
+    "ro"
+   ],
+   "plek": "forum met zuilen bij nacht",
+   "naam": "ro-forum-nacht",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/gebouwen/ro-forum-nacht-s.webp",
+    "px": [
+     480,
+     322
+    ],
+    "kb": 12
+   },
+   "bron": "t7ZGh.jpg",
+   "zip": "playterrastate_units_portraits_new"
+  },
+  {
+   "nr": 272,
+   "groep": "gebouw",
+   "werelden": [
+    "ts"
+   ],
+   "plek": "skyline bij schemer boven water",
+   "naam": "ts-skyline-schemer",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/gebouwen/ts-skyline-schemer-s.webp",
+    "px": [
+     480,
+     322
+    ],
+    "kb": 8
+   },
+   "bron": "ugKPf.jpg",
+   "zip": "playterrastate_units_portraits_new"
+  },
+  {
+   "nr": 273,
+   "groep": "zaal",
+   "werelden": [
+    "ro"
+   ],
+   "plek": "archief met rekken en fakkels",
+   "naam": "ro-archief",
+   "groot": {
+    "pad": "world/img/v3/zalen/ro-archief.webp",
+    "px": [
+     960,
+     644
+    ],
+    "kb": 38
+   },
+   "klein": {
+    "pad": "world/img/v3/zalen/ro-archief-s.webp",
+    "px": [
+     480,
+     322
+    ],
+    "kb": 9
+   },
+   "bron": "2j6f3.jpg",
+   "zip": "playterrastate_units_portraits_new"
+  },
+  {
+   "nr": 274,
+   "groep": "zaal",
+   "werelden": [
+    "ro"
+   ],
+   "plek": "schatkamer met gouden munten",
+   "naam": "ro-schatkamer",
+   "groot": {
+    "pad": "world/img/v3/zalen/ro-schatkamer.webp",
+    "px": [
+     960,
+     644
+    ],
+    "kb": 73
+   },
+   "klein": {
+    "pad": "world/img/v3/zalen/ro-schatkamer-s.webp",
+    "px": [
+     480,
+     322
+    ],
+    "kb": 17
+   },
+   "bron": "DTOGT.jpg",
+   "zip": "playterrastate_units_portraits_new"
+  },
+  {
+   "nr": 275,
+   "groep": "gevecht",
+   "werelden": [
+    "if"
+   ],
+   "plek": "eenmotorig jachtvliegtuig op veld",
+   "naam": "if-jager-veld",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/gevechten/if-jager-veld-s.webp",
+    "px": [
+     480,
+     322
+    ],
+    "kb": 9
+   },
+   "bron": "IRTwY.jpg",
+   "zip": "playterrastate_units_portraits_new"
+  },
+  {
+   "nr": 276,
+   "groep": "gevecht",
+   "werelden": [
+    "if"
+   ],
+   "plek": "zware bommenwerper nacht",
+   "naam": "if-bommenwerper-nacht",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/gevechten/if-bommenwerper-nacht-s.webp",
+    "px": [
+     480,
+     322
+    ],
+    "kb": 6
+   },
+   "bron": "WukPp.jpg",
+   "zip": "playterrastate_units_portraits_new"
+  },
+  {
+   "nr": 277,
+   "groep": "gevecht",
+   "werelden": [
+    "ts",
+    "if"
+   ],
+   "plek": "verwoeste stad bij nacht",
+   "naam": "ruine-nacht",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/gevechten/ruine-nacht-s.webp",
+    "px": [
+     480,
+     322
+    ],
+    "kb": 17
+   },
+   "bron": "N8yov.jpg",
+   "zip": "playterrastate_units_portraits_new"
+  },
+  {
+   "nr": 278,
+   "groep": "trofee",
+   "werelden": [
+    "ro"
+   ],
+   "plek": "Romeinse beker met lauwerkrans (winnaar)",
+   "naam": "ro-beker-laurier",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/emblemen/ro-beker-laurier-s.webp",
+    "px": [
+     134,
+     200
+    ],
+    "kb": 2
+   },
+   "bron": "94THr.jpg",
+   "zip": "playterrastate_units_portraits_new"
+  },
+  {
+   "nr": 279,
+   "groep": "trofee",
+   "werelden": [
+    "ro"
+   ],
+   "plek": "bronzen schaal met laurier",
+   "naam": "ro-schaal-laurier",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/emblemen/ro-schaal-laurier-s.webp",
+    "px": [
+     134,
+     200
+    ],
+    "kb": 2
+   },
+   "bron": "1ffdZ.jpg",
+   "zip": "playterrastate_units_portraits_new"
+  },
+  {
+   "nr": 280,
+   "groep": "portret",
+   "werelden": [
+    "ro"
+   ],
+   "plek": "vrouw gevlochten haar, bruine omslagdoek (Romaterra)",
+   "naam": "ro-vrouw-vlecht",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/portretten/ro-vrouw-vlecht-s.webp",
+    "px": [
+     161,
+     240
+    ],
+    "kb": 3
+   },
+   "bron": "UhE9v.jpg",
+   "zip": "playterrastate_missing_units_portraits"
+  },
+  {
+   "nr": 281,
+   "groep": "portret",
+   "werelden": [
+    "ro"
+   ],
+   "plek": "oudere vrouw grijs krulhaar (Romaterra)",
+   "naam": "ro-vrouw-grijs",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/portretten/ro-vrouw-grijs-s.webp",
+    "px": [
+     161,
+     240
+    ],
+    "kb": 4
+   },
+   "bron": "eaKiH.jpg",
+   "zip": "playterrastate_missing_units_portraits"
+  },
+  {
+   "nr": 282,
+   "groep": "portret",
+   "werelden": [
+    "ro"
+   ],
+   "plek": "vrouw lange krullen, okerkleurige tunica (Romaterra)",
+   "naam": "ro-vrouw-oker",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/portretten/ro-vrouw-oker-s.webp",
+    "px": [
+     161,
+     240
+    ],
+    "kb": 4
+   },
+   "bron": "hw591.jpg",
+   "zip": "playterrastate_missing_units_portraits"
+  },
+  {
+   "nr": 283,
+   "groep": "portret",
+   "werelden": [
+    "ro"
+   ],
+   "plek": "vrouw kort krulhaar, sproeten (Romaterra)",
+   "naam": "ro-vrouw-sproeten",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/portretten/ro-vrouw-sproeten-s.webp",
+    "px": [
+     161,
+     240
+    ],
+    "kb": 4
+   },
+   "bron": "nqiOm.jpg",
+   "zip": "playterrastate_missing_units_portraits"
+  },
+  {
+   "nr": 284,
+   "groep": "portret",
+   "werelden": [
+    "ro"
+   ],
+   "plek": "vrouw rode mantel met broche (Romaterra)",
+   "naam": "ro-vrouw-rode-mantel",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/portretten/ro-vrouw-rode-mantel-s.webp",
+    "px": [
+     161,
+     240
+    ],
+    "kb": 3
+   },
+   "bron": "nwqSn.jpg",
+   "zip": "playterrastate_missing_units_portraits"
+  },
+  {
+   "nr": 285,
+   "groep": "portret",
+   "werelden": [
+    "ro"
+   ],
+   "plek": "man van rond de vijftig in toga (Romaterra, bedoeld voor Quaestor Crassus)",
+   "naam": "ro-man-toga",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/portretten/ro-man-toga-s.webp",
+    "px": [
+     161,
+     240
+    ],
+    "kb": 4
+   },
+   "bron": "UT9H7.jpg",
+   "zip": "playterrastate_missing_units_portraits"
+  },
+  {
+   "nr": 286,
+   "groep": "eenheid",
+   "werelden": [
+    "ts"
+   ],
+   "plek": "eenheid ts:strat_bomber",
+   "naam": "ts-bommenwerper-strat_bomber",
+   "groot": {
+    "pad": "world/img/v3/eenheden/ts-bommenwerper-strat_bomber.webp",
+    "px": [
+     256,
+     256
+    ],
+    "kb": 2
+   },
+   "klein": {
+    "pad": "world/img/v3/eenheden/ts-bommenwerper-strat_bomber-s.webp",
+    "px": [
+     96,
+     96
+    ],
+    "kb": 1
+   },
+   "bron": "uwq5J.jpg",
+   "zip": "playterrastate_missing_units_portraits"
+  },
+  {
+   "nr": 287,
+   "groep": "eenheid",
+   "werelden": [
+    "ts"
+   ],
+   "plek": "eenheid ts:sapper",
+   "naam": "ts-genie-sapper",
+   "groot": {
+    "pad": "world/img/v3/eenheden/ts-genie-sapper.webp",
+    "px": [
+     256,
+     256
+    ],
+    "kb": 6
+   },
+   "klein": {
+    "pad": "world/img/v3/eenheden/ts-genie-sapper-s.webp",
+    "px": [
+     96,
+     96
+    ],
+    "kb": 1
+   },
+   "bron": "ZfMm9.jpg",
+   "zip": "playterrastate_missing_units_portraits"
+  },
+  {
+   "nr": 288,
+   "groep": "eenheid",
+   "werelden": [
+    "ts"
+   ],
+   "plek": "eenheid ts:field_hospital",
+   "naam": "ts-hospitaal-field_hospital",
+   "groot": {
+    "pad": "world/img/v3/eenheden/ts-hospitaal-field_hospital.webp",
+    "px": [
+     256,
+     256
+    ],
+    "kb": 5
+   },
+   "klein": {
+    "pad": "world/img/v3/eenheden/ts-hospitaal-field_hospital-s.webp",
+    "px": [
+     96,
+     96
+    ],
+    "kb": 1
+   },
+   "bron": "ex98I.jpg",
+   "zip": "playterrastate_missing_units_portraits"
+  },
+  {
+   "nr": 289,
+   "groep": "eenheid",
+   "werelden": [
+    "ro"
+   ],
+   "plek": "eenheid ro:ghost_squad",
+   "naam": "ro-schaduw-ghost_squad",
+   "groot": {
+    "pad": "world/img/v3/eenheden/ro-schaduw-ghost_squad.webp",
+    "px": [
+     256,
+     256
+    ],
+    "kb": 4
+   },
+   "klein": {
+    "pad": "world/img/v3/eenheden/ro-schaduw-ghost_squad-s.webp",
+    "px": [
+     96,
+     96
+    ],
+    "kb": 1
+   },
+   "bron": "0Cm47.jpg",
+   "zip": "playterrastate_missing_units_portraits"
+  },
+  {
+   "nr": 290,
+   "groep": "eenheid",
+   "werelden": [
+    "ro"
+   ],
+   "plek": "eenheid ro:ew_drone",
+   "naam": "ro-lokaas-ew_drone",
+   "groot": {
+    "pad": "world/img/v3/eenheden/ro-lokaas-ew_drone.webp",
+    "px": [
+     256,
+     256
+    ],
+    "kb": 3
+   },
+   "klein": {
+    "pad": "world/img/v3/eenheden/ro-lokaas-ew_drone-s.webp",
+    "px": [
+     96,
+     96
+    ],
+    "kb": 1
+   },
+   "bron": "yJMBU.jpg",
+   "zip": "playterrastate_missing_units_portraits"
+  },
+  {
+   "nr": 291,
+   "groep": "eenheid",
+   "werelden": [
+    "if"
+   ],
+   "plek": "eenheid if:cyber_cell",
+   "naam": "if-cyber-cyber_cell",
+   "groot": {
+    "pad": "world/img/v3/eenheden/if-cyber-cyber_cell.webp",
+    "px": [
+     256,
+     256
+    ],
+    "kb": 4
+   },
+   "klein": {
+    "pad": "world/img/v3/eenheden/if-cyber-cyber_cell-s.webp",
+    "px": [
+     96,
+     96
+    ],
+    "kb": 1
+   },
+   "bron": "EIjQ9.jpg",
+   "zip": "playterrastate_missing_units_portraits"
+  },
+  {
+   "nr": 292,
+   "groep": "eenheid",
+   "werelden": [
+    "if"
+   ],
+   "plek": "eenheid if:decoy",
+   "naam": "if-schijnkamp-decoy",
+   "groot": {
+    "pad": "world/img/v3/eenheden/if-schijnkamp-decoy.webp",
+    "px": [
+     256,
+     256
+    ],
+    "kb": 4
+   },
+   "klein": {
+    "pad": "world/img/v3/eenheden/if-schijnkamp-decoy-s.webp",
+    "px": [
+     96,
+     96
+    ],
+    "kb": 1
+   },
+   "bron": "u04Cs.jpg",
+   "zip": "playterrastate_missing_units_portraits"
+  },
+  {
+   "nr": 293,
+   "groep": "eenheid",
+   "werelden": [
+    "if"
+   ],
+   "plek": "eenheid if:field_hospital",
+   "naam": "if-hospitaal-field_hospital",
+   "groot": {
+    "pad": "world/img/v3/eenheden/if-hospitaal-field_hospital.webp",
+    "px": [
+     256,
+     256
+    ],
+    "kb": 7
+   },
+   "klein": {
+    "pad": "world/img/v3/eenheden/if-hospitaal-field_hospital-s.webp",
+    "px": [
+     96,
+     96
+    ],
+    "kb": 1
+   },
+   "bron": "M2gTN.jpg",
+   "zip": "playterrastate_missing_units_portraits"
   }
  ],
  "niet_gebruikt": [
@@ -6031,7 +7309,32 @@
    "bron": "wVtO2.jpg",
    "reden": "uitsnede als embleem knipt de vleugels af",
    "zip": "playterrastate_complete_assets_1"
+  },
+  {
+   "bron": "NgNBd.jpg",
+   "reden": "alle kleding zwart (zwarte helmen en uitrusting), past niet bij de eis geen zwarte uniformen",
+   "zip": "playterrastate_units_portraits_new"
+  },
+  {
+   "bron": "5fUgx.jpg",
+   "reden": "bijna gelijk aan ts-minister-vrouw (grijs haar, donkere blazer, zelfde pose)",
+   "zip": "playterrastate_units_portraits_new"
+  },
+  {
+   "bron": "vOwsj.jpg",
+   "reden": "bijna gelijk aan ts-beker-zilver en if-beker-zilver",
+   "zip": "playterrastate_units_portraits_new"
+  },
+  {
+   "bron": "Hd792.jpg",
+   "reden": "soldaat met stalen helm van Duitse vorm: alleen de rook is bijgesneden voor if-rookgordijn-mobile_shield (de man zelf is niet gebruikt)",
+   "zip": "playterrastate_units_portraits_new"
+  },
+  {
+   "bron": "t6UrU.jpg",
+   "reden": "stalen helm van Duitse vorm (Stahlhelm), Shock Troopers van Ironfront blijven leeg",
+   "zip": "playterrastate_missing_units_portraits"
   }
  ],
- "dubbel_met_versie_2": "53 bestanden uit de zips new_2_2 en new_1_2 zijn dezelfde plaatjes als versie 2 (zelfde bestandsnaam, zelfde beeld) en zijn niet opnieuw omgezet; vijfde zip (playterrastate_max_images): 32 unieke, waarvan 31 gebruikt; zesde zip (playterrastate_extra_batch): 16 unieke, waarvan 15 gebruikt; ronde 2 (z8new/z9new/z10new): 219 unieke, geen pixel-dubbelen"
+ "dubbel_met_versie_2": "53 bestanden uit de zips new_2_2 en new_1_2 zijn dezelfde plaatjes als versie 2 (zelfde bestandsnaam, zelfde beeld) en zijn niet opnieuw omgezet; vijfde zip (playterrastate_max_images): 32 unieke, waarvan 31 gebruikt; zesde zip (playterrastate_extra_batch): 16 unieke, waarvan 15 gebruikt; ronde 2 (z8new/z9new/z10new): 219 unieke, geen pixel-dubbelen; ronde 3 (z11new): 44 unieke, 41 gebruikt, 3 afgekeurd, 1 alleen als uitsnede; ronde 4 (z12new): 15 unieke, 14 gebruikt, 1 afgekeurd"
 }
