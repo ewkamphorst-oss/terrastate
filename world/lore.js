@@ -6,9 +6,9 @@ ts:{
  tagline:'A modern world of invented nations, one prize, and one season to take it.',
  intro:[
   'Terrastate is our world with the names changed. Twenty-five theaters stretch from Europe to Oceania, and every region on the map belongs to a nation that did not exist a year ago. Hundreds of them rose at once when the old order cracked, each with a flag, a cabinet and a plan.',
-  'At the centre of it all sits the Nexus, a sealed region that hums with data and power. Whoever builds a Command Center there and holds it until the season ends writes the next chapter. Everyone else tries to stop them.',
+  'At the centre of it all sits the Nexus, a sealed region that hums with data and power. Whoever builds a Command Center there and holds it for 12 turns writes the next chapter. Everyone else tries to stop them.',
   'Nations here trade, spy, sign pacts and break them. Alliances are formed in the morning and tested by night. Nobody wins alone for long.'],
- facts:[['Prize','The Nexus'],['Win','Build the Command Center and hold it for 12 turns'],['Theaters','25, Europe to Oceania'],['Rivals','Hundreds of AI nations']],
+ facts:[['Prize','The Nexus'],['Win','Build the Command Center and hold it for 12 turns'],['Theaters','25, Europe to Oceania'],['Rivals','500 computer nations in a solo world']],
  units:{
   militia:'Neighbours with rifles and a radio. They will not win a war, but they make every street cost something.',
   infantry:'The backbone of every modern army. Divisions dig in, hold the line and take what the tanks leave behind.',
@@ -28,7 +28,9 @@ ts:{
   titan_mech:'Walking fortresses from the Juggernaut doctrine. A handful of Titans can decide a season.',
   mobile_shield:'Emitters that throw a dome of energy over an army. Hard to kill, harder to get past.',
   field_hospital:'Tents, surgeons and a promise that nobody is left behind. Armies with a hospital stay in the fight.',
-  ew_drone:'Drones that jam, confuse and send false signals. They do little damage and save a great many lives.'},
+  ew_drone:'Drones that jam, confuse and send false signals. They do little damage and save a great many lives.',
+  decoy:'Inflatable guns, heat lamps and spoofed radio. A Decoy Battalion makes a region look stronger than it is to every enemy scout.',
+  sapper:'Engineers with charges and bridging gear. Combat Sappers march with an attack and strip the defender of his ground bonus.'},
  cmd:{
   general:{bio:'A former tank officer who believes the best defence is arriving first.',story:{t:'The Long Road to the Nexus',p:[
    'General Novak never liked waiting rooms. When the old order cracked, he was sitting in one, outside a ministry that no longer had a minister. By evening he had a desk, a staff of eleven and a map with too many new borders.',
@@ -69,9 +71,9 @@ ro:{
  tagline:'The Roman world, from Britannia to Parthia. All roads lead to Roma, and so do all armies.',
  intro:[
   'Romaterra is the ancient world at the moment it could have gone any way. Provinces from Britannia to Parthia are ruled by peoples who each believe the future belongs to them. Roads, tribute and legions bind the land together, and hold it apart.',
-  'In the centre stands Roma. Whoever raises the Imperial Palace there and keeps it until the season turns will be remembered as the master of the world. Many have tried. The city does not care who rules it, only that someone does.',
+  'In the centre stands Roma. Whoever raises the Imperial Palace there and keeps it for 48 turns will be remembered as the master of the world. Many have tried. The city does not care who rules it, only that someone does.',
   'Here, a republic can turn into an empire in a single season, and a tribal confederation can bring a legion to its knees. Grain feeds the cities, timber builds the forts, and iron decides the rest.'],
- facts:[['Prize','Roma'],['Win','Raise the Imperial Palace and hold it for 12 turns'],['World','Britannia to Parthia'],['Rivals','Hundreds of peoples and city states']],
+ facts:[['Prize','Roma'],['Win','Raise the Imperial Palace and hold it for 48 turns'],['World','Britannia to Parthia'],['Rivals','500 computer peoples and city states in a solo world']],
  units:{
   militia:'Farmers and fishermen called from their fields. Give them spears and a wall, and they will hold it longer than you expect.',
   infantry:'The legion is a machine of shields and discipline. Cohorts march twenty miles, build a camp, and fight in the morning.',
@@ -91,7 +93,9 @@ ro:{
   titan_mech:'Living towers of muscle and tusk. Few armies stand their ground when the War Elephants come.',
   mobile_shield:'The tortoise. Shields above, shields in front, shields on every side. Slow, steady and nearly impossible to break.',
   field_hospital:'Physicians with herbs, bandages and steady hands. A wounded legionary who walks again is worth two new recruits.',
-  ew_drone:'Campfires with nobody beside them, banners on empty hills. Decoy Pickets make the enemy fight shadows.'},
+  ew_drone:'Campfires with nobody beside them, banners on empty hills. Decoy Pickets make the enemy fight shadows.',
+  decoy:'Empty tents, tall banners and a few fires lit at dusk. Dummy Camps make a province look better held than it is.',
+  sapper:'Builders of ramps, mines and siege towers. Fabri Sappers march with an attack and take away the defender\'s ground bonus.'},
  cmd:{
   general:{bio:'A legate who has never lost a standard and never intends to.',story:{t:'The Standard of the Ninth',p:[
    'Legate Corvus was a junior officer the day the Ninth lost its eagle standard in a fog-filled valley. He spent three days searching for it with eight men and a borrowed horse. He found it in a farmer\'s barn, being used to hang onions.',
@@ -154,7 +158,9 @@ if:{
   titan_mech:'The heaviest armour on the field. Few guns can stop a Heavy Tank Battalion, and everyone knows it.',
   mobile_shield:'Canisters, wind and timing. A good smoke screen lets an army cross open ground it could never cross in daylight.',
   field_hospital:'Tents near the front, and medics who never stop. A field hospital turns a lost division into a tired one.',
-  ew_drone:'Inflatable tanks, plywood guns and fake radio traffic. Decoy Tanks pull enemy fire toward nothing at all.'},
+  ew_drone:'Inflatable tanks, plywood guns and fake radio traffic. Decoy Tanks pull enemy fire toward nothing at all.',
+  decoy:'Painted canvas, hollow turrets and a lot of tyre tracks. Dummy Tanks make a sector look heavier than it is to every scout who passes.',
+  sapper:'Pioneers with demolition charges and assault boats. Assault Pioneers march with an attack and strip the defender of his ground bonus.'},
  cmd:{
   general:{bio:'A field general who reads the land before he reads the reports.',story:{t:'The Hedgerow Map',p:[
    'General Voss keeps an old farmer\'s map in his coat pocket. It shows every hedgerow, ditch and gate in the valley where he first commanded a battalion. The official maps were wrong. The farmer\'s map was not.',
@@ -269,7 +275,7 @@ L.ro.timeline=[
  {y:'Autumn',t:'Grain ships from Alexandria',p:'Whoever controls the Nile controls the bread of the world. The harbour of Alexandria fills with warships pretending to be merchants.',img:'p/ro-p5.jpg'},
  {y:'Autumn',t:'The Old Guard swears its oath',p:'Veterans and noble families gather on the Capitol and swear to defend Roma, whoever rules it. Their red eagle has never fallen.',img:'r/ro-r3-flag.jpg'},
  {y:'Winter',t:'The Bull Legions come down',p:'From the mountains of Hispania, hard men under a green bull banner march east. They lose often, and they never go home.',img:'r/ro-r4-flag.jpg'},
- {y:'Anno I',t:'Roma stands unclaimed',p:'The city waits. Whoever raises the Imperial Palace and holds it for 12 turns will be remembered for a thousand years. Your people are one of hundreds. March.',img:'ro-map.jpg'}];
+ {y:'Anno I',t:'Roma stands unclaimed',p:'The city waits. Whoever raises the Imperial Palace and holds it for 48 turns will be remembered for a thousand years. Your people are one of hundreds. March.',img:'ro-map.jpg'}];
 L.if.timeline=[
  {y:'Winter 1943',t:'The old treaties burn',p:'One after another, the treaties that kept the peace are torn up. Invented nations with old grudges begin to fill their depots.',img:'if-hero.jpg'},
  {y:'January',t:'Vallmark mobilises',p:'The Federated Republic of Vallmark calls up three classes of reservists. Marshal Kessler orders fuel, shells and patience, in that order.',img:'r/if-r1-flag.jpg'},
@@ -290,4 +296,8 @@ L.tips={
  airdef:'A defensive unit. Place them where enemy strikes hurt you most.',
  sam:'A defensive unit. Place them where enemy strikes hurt you most.',
  air:'Fast and hard-hitting. Strike deep, then pull back before the enemy answers.'};
+/* The end of a season (24.1): the Final Race, per world. */
+L.ts.final={h:'The Final Race for the Nexus',p:['Every consecutive turn the same alliance holds the Nexus, attacks on it get 4% stronger, up to +60%. From half the hold time (6 turns), or from turn 60 if anyone holds it, the strongest computer alliances march on the Nexus and the holder\'s computer allies come to hold it.','Everyone who fights there, attacking or defending, earns score for their side and is named in the season result. The Nexus is held for 12 turns to win outright. If nobody manages it, the Last Battle decides: a point for every turn holding the Nexus, two in the Last Battle.']};
+L.ro.final={h:'The Final Race for Roma',p:['Every consecutive turn the same alliance holds Roma, attacks on it get stronger: 1% a turn in the 48-turn hold of Roma (4% a turn in a 12-turn hold), at most +60%. From half the hold time (24 turns), or from turn 60 if anyone holds it, the strongest computer alliances march on Roma and the holder\'s computer allies come to hold it.','Everyone who fights there, attacking or defending, earns score for their side and is named in the season result. Roma is held for 48 turns to win outright. If nobody manages it, the Last Battle decides: a point for every turn holding Roma, two in the Last Battle.']};
+L.if.final={h:'The Final Race for the Capital Sectors',p:['Every consecutive turn the same alliance holds the Capital Sectors, attacks on them get 4% stronger, up to +60%. From half the hold time (6 turns), or from turn 60 if anyone holds them, the strongest computer alliances march on the Capital Sectors and the holder\'s computer allies come to hold them.','Everyone who fights there, attacking or defending, earns score for their side and is named in the season result. Two of the three Capital Sectors are held for 12 turns to win outright. If nobody manages it, the Last Battle decides: a point for every turn holding a Capital Sector, two in the Last Battle.']};
 })(window.PT_LORE);

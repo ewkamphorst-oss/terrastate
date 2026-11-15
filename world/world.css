@@ -167,3 +167,12 @@ footer a{color:var(--muted)}
  .backs{display:block}.cards.bk{break-before:page;grid-template-columns:repeat(3,63mm);direction:ltr}
  .paper{box-shadow:none;-webkit-print-color-adjust:exact;print-color-adjust:exact}
 }
+/* 24.1: staff roster and research icons */
+.tile .im.ic{background-size:auto 70%;background-repeat:no-repeat;background-position:50% 50%;background-color:#0c1019;aspect-ratio:16/6}
+.sh{margin:22px 0 8px;font-size:13px;letter-spacing:1.5px;text-transform:uppercase;color:var(--acc)}
+.sg{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px}
+.sf{display:grid;grid-template-columns:96px 1fr;gap:12px;align-items:start;background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:12px}
+.sf .sp{width:96px;height:144px;border-radius:10px;overflow:hidden;background:radial-gradient(circle at 50% 45%,#2a3248,#0c1019 75%)}
+.sf .sp img{width:100%;height:100%;object-fit:cover;object-position:50% 14%;display:block}
+.sf .st b{display:block;font-size:16px;margin-bottom:2px}
+@media (max-width:700px){.sg{grid-template-columns:1fr}.sf{grid-template-columns:80px 1fr}.sf .sp{width:80px;height:120px}}

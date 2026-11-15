@@ -34,15 +34,15 @@
 
 var P=PT;document.getElementById('top').innerHTML=P.topbar('index.html');document.getElementById('foot').innerHTML=P.footer();
 document.getElementById('hero').style.backgroundImage='url(img/'+P.w+'-hero.jpg)';
-var h='';P.WORLDS.forEach(function(w){var l=P.L[w],have=Object.keys(P.collected(w)).length;
+var h='';P.WORLDS.forEach(function(w){var l=P.L[w],have=Object.keys(P.collected(w)).length,tot=P.D[w].units.length+P.D[w].cmd.length;
  h+='<div class="tile"><a href="cards.html?w='+w+'" style="text-decoration:none;color:inherit"><div class="im" style="background-image:url(img/'+w+'-hero.jpg)"></div></a><div class="bd" style="position:relative"><img src="img/'+l.back+'" alt="" width="54" style="position:absolute;right:14px;top:-40px;border-radius:8px;box-shadow:0 4px 14px rgba(0,0,0,.6)"><div class="kick">'+P.esc(l.era)+'</div><h3>'+P.esc(l.name)+'</h3><p class="muted small" style="margin:0 0 10px">'+P.esc(l.tagline)+'</p>'+
- '<div class="toc"><a href="cards.html?w='+w+'">Cards '+have+'/25</a><a href="codex.html?w='+w+'">Codex</a><a href="chronicle.html?w='+w+'">Chronicle</a><a href="heroes.html?w='+w+'">Heroes</a><a href="history.html?w='+w+'">History</a></div></div></div>';});
+ '<div class="toc"><a href="cards.html?w='+w+'">Cards '+have+'/'+tot+'</a><a href="codex.html?w='+w+'">Codex</a><a href="chronicle.html?w='+w+'">Chronicle</a><a href="heroes.html?w='+w+'">Heroes</a><a href="history.html?w='+w+'">History</a></div></div></div>';});
 document.getElementById('worlds').innerHTML=h;
-var F=[['🃏','Collect the cards','Every unit and commander has a card: 25 per world, from Common to Legendary. Play on this device and every unit you train unlocks its card here. Print them at real card size.','cards.html'],
-['📖','Read the Codex','The encyclopedia of each world: what the world is, how its governments and doctrines work, and every unit with its numbers from the game.','codex.html'],
+var F=[['🃏','Collect the cards','Every unit and each of the six first commanders has a card: 27 per world, from Common to Legendary. Play on this device and every unit you train unlocks its card here. Print them at real card size.','cards.html'],
+['📖','Read the Codex','The encyclopedia of each world: what the world is, how its governments and doctrines work, the whole staff of commanders, the research tree and every unit with its numbers from the game.','codex.html'],
 ['📰','Your own newspaper','After every season the Chronicle prints a front page about what happened in your world: who won, the biggest battle and how you did.','chronicle.html'],
 ['📜','The history','How each world came to this: the fall of the old order, the rise of the rivals and the road to Season 1.','history.html'],
-['🎖','Meet the commanders','Six commanders per world, each with a short story. You hire them in the game. Here you learn who they are.','heroes.html']];
+['🎖','Meet the commanders','Fifty commanders per world: six with a short story, all with a face and a line. They sit in your staff in the game. Here you learn who they are.','heroes.html']];
 document.getElementById('feats').innerHTML=F.map(function(f){return '<a class="feat" href="'+P.link(f[3])+'"><i aria-hidden="true">'+f[0]+'</i><div><h3 style="margin:0 0 4px">'+f[1]+'</h3><div class="muted small">'+f[2]+'</div></div></a>';}).join('');
 
 </script>

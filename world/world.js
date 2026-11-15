@@ -17,22 +17,22 @@ var PRIZE={ts:'the Nexus',ro:'Roma',if:'the Capital Sectors'};
 var PAGES=[['index.html','Worlds'],['cards.html','Cards'],['codex.html','Codex'],['chronicle.html','Chronicle'],['heroes.html','Heroes'],['history.html','History']];
 function link(p,ww){return p+'?w='+(ww||w);}
 
-/* every collectible of a world, in card order: 19 units then 6 commanders */
+/* every collectible of a world, in card order: the units, then the six first commanders */
 function deck(ww){ww=ww||w;var d=D[ww],l=L[ww],out=[];
- d.units.forEach(function(u){out.push({id:'u:'+u.k,k:u.k,kind:'unit',n:u.n,tier:u.tier,cls:u.cls,phase:u.phase,atk:u.atk,def:u.def,bt:u.bt,fast:u.fast,req:u.req,art:u.art?'img/'+u.art:null,photo:u.art&&/\.jpg$/.test(u.art),lore:l.units[u.k]||''});});
- d.cmd.forEach(function(c){var lc=l.cmd[c.k]||{};out.push({id:'c:'+c.k,k:c.k,kind:'cmd',n:c.n,role:c.role,d:c.d,alt:c.alt,art:'img/'+c.art,photo:/\.jpg$/.test(c.art),lore:lc.bio||''});});
- out.forEach(function(x,i){x.no=i+1;});return out;}
+ d.units.forEach(function(u){out.push({id:'u:'+u.k,k:u.k,kind:'unit',n:u.n,tier:u.tier,cls:u.cls,phase:u.phase,atk:u.atk,def:u.def,bt:u.bt,fast:u.fast,req:u.req,art:u.art?'img/'+u.art:null,photo:u.art&&/\.jpg$|^v3\/eenheden\//.test(u.art),lore:l.units[u.k]||''});});
+ d.cmd.forEach(function(c){var lc=l.cmd[c.k]||{};out.push({id:'c:'+c.k,k:c.k,kind:'cmd',n:c.n,role:c.role,d:c.d,alt:c.alt,art:'img/'+c.art,photo:/\.jpg$|^v3\/portretten\//.test(c.art),lore:lc.bio||''});});
+ out.forEach(function(x,i){x.no=i+1;x.of=out.length;});return out;}
 
-/* fallback picture for the few units without art */
+/* fallback for the few units without art: air units get a silhouette, the rest an empty frame */
 function svgArt(x){var col='#c9d1e3';
  if(x.k==='mobile_shield')return '<img class="ph" src="img/fog.jpg" alt="">';
  if(x.cls==='air'||x.cls==='airdef')return '<svg viewBox="0 0 200 120" width="80%" aria-hidden="true"><g fill="'+col+'" opacity=".85"><path d="M20 62 L120 56 L150 40 L162 40 L150 58 L186 60 L186 66 L150 68 L162 86 L150 86 L120 70 L20 66 Z"/><path d="M60 62 L40 30 L52 30 L84 60 Z"/><path d="M60 66 L40 98 L52 98 L84 68 Z"/><circle cx="188" cy="63" r="4"/></g></svg>';
- return '<svg viewBox="0 0 100 100" width="55%" aria-hidden="true"><circle cx="50" cy="50" r="36" fill="none" stroke="'+col+'" stroke-width="4"/><path d="M50 22 L56 44 L78 44 L60 57 L67 78 L50 65 L33 78 L40 57 L22 44 L44 44Z" fill="'+col+'"/></svg>';}
+ return '';} /* no picture is better than a wrong one: units without a picture get an empty frame, no star */
 
 function texture(ww){return 'img/'+(ww||w)+'-tex.jpg';}
 function cardHTML(x,o){o=o||{};var ww=o.world||w,cl=CLS[ww];
  var cls='card '+(x.kind==='cmd'?'cm':'t'+x.tier)+(o.lock?' lock':'')+(o.big?' big':'');
- var art=x.art?'<img src="'+esc(x.art)+'" alt="'+esc(x.n)+'" loading="lazy"'+(x.photo?' class="ph"':'')+'>':svgArt(x);
+ var art=x.art?'<img src="'+esc(x.art)+'" alt="'+esc(x.n)+'" loading="lazy" onerror="this.style.display=\'none\'"'+(x.photo?' class="ph"':'')+'>':svgArt(x);
  var cn=cl[x.cls]||x.cls,ty=x.kind==='cmd'?'Commander · '+esc(x.role):(x.phase===cn?esc(cn):esc(x.phase)+' · '+esc(cn));
  var st=x.kind==='cmd'?'<span><b>'+esc(x.d.split(' ')[0])+'</b>'+esc(x.d.split(' ').slice(1).join(' '))+'</span>'
    :'<span><b>'+x.atk+'</b>attack</span><span><b>'+x.def+'</b>defence</span><span><b>'+x.bt+'</b>turns</span>';
@@ -40,7 +40,7 @@ function cardHTML(x,o){o=o||{};var ww=o.world||w,cl=CLS[ww];
  return '<div class="'+cls+'" data-id="'+esc(x.id)+'" tabindex="0" role="button" aria-label="'+esc(x.n)+'"><div class="in" style="background-image:url('+texture(ww)+')">'+
   '<div class="nm"><span>'+esc(x.n)+'</span><small>'+rar+'</small></div>'+
   '<div class="art">'+art+'</div><div class="ty">'+ty+'</div><div class="st">'+st+'</div>'+
-  '<div class="fl">'+esc(x.lore)+'</div><div class="ft"><span>'+esc(L[ww].name)+'</span><span>'+x.no+' / 25</span></div></div></div>';}
+  '<div class="fl">'+esc(x.lore)+'</div><div class="ft"><span>'+esc(L[ww].name)+'</span><span>'+x.no+' / '+(x.of||27)+'</span></div></div></div>';}
 
 /* ---- reading your own game save (same website, so the browser shares it) ---- */
 function readSave(ww){try{var s=ls(SAVE[ww||w]);if(!s)return null;var j=s.slice(0,3)==='LZ1'?PT_LZ.d(s.slice(3)):s;return JSON.parse(j);}catch(e){return null;}}
@@ -94,7 +94,7 @@ function shareCard(x,ww){ww=ww||w;var W=630,H=880,cv=document.createElement('can
   var stats=x.kind==='cmd'?[[x.d.split(' ')[0],x.d.split(' ').slice(1).join(' ')]]:[[x.atk,'attack'],[x.def,'defence'],[x.bt,'turns']];var bw=(W-80-(stats.length-1)*12)/stats.length;
   stats.forEach(function(st,i){var bx=40+i*(bw+12);c.fillStyle='rgba(0,0,0,.5)';rr(c,bx,604,bw,74,12);c.fill();c.strokeStyle='rgba(255,255,255,.14)';c.stroke();c.textAlign='center';c.fillStyle='#fff';c.font='800 32px '+F;c.fillText(String(st[0]),bx+bw/2,612);c.fillStyle='#b9c2d6';c.font='500 16px '+F;c.fillText(String(st[1]),bx+bw/2,650);c.textAlign='left';});
   c.fillStyle='#d6dceb';c.font='italic 20px Georgia,serif';wrapText(c,x.lore,40,700,W-80,27,3);
-  c.fillStyle='#8d97ad';c.font='700 16px '+F;c.fillText((L[ww].name+' · '+x.no+' / 25').toUpperCase(),40,812);c.textAlign='right';c.fillText('PLAYTERRASTATE.NL/WORLD',W-40,812);c.textAlign='left';
+  c.fillStyle='#8d97ad';c.font='700 16px '+F;c.fillText((L[ww].name+' · '+x.no+' / '+(x.of||27)).toUpperCase(),40,812);c.textAlign='right';c.fillText('PLAYTERRASTATE.NL/WORLD',W-40,812);c.textAlign='left';
   c.restore();deliver(cv,(L[ww].name+'-'+x.n).replace(/[^A-Za-z0-9]+/g,'-')+'.png');});}
 function shareFront(el){var W=1200,H=1600,cv=document.createElement('canvas');cv.width=W;cv.height=H;var c=cv.getContext('2d'),S='Georgia,"Times New Roman",serif';
  var q=function(s){var n=el.querySelector(s);return n?n.textContent.trim():'';};var mt=[].map.call(el.querySelectorAll('.mt span'),function(n){return n.textContent;});var ph=el.querySelector('.ph');var paras=[].map.call(el.querySelectorAll('.cols p'),function(n){return n.textContent;});
