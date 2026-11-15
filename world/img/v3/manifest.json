@@ -6983,6 +6983,33 @@
    },
    "bron": "M2gTN.jpg",
    "zip": "playterrastate_missing_units_portraits"
+  },
+  {
+   "nr": 294,
+   "groep": "eenheid",
+   "werelden": [
+    "if"
+   ],
+   "plek": "eenheid if:powered_armor",
+   "naam": "if-pantser-powered_armor",
+   "groot": {
+    "pad": "world/img/v3/eenheden/if-pantser-powered_armor.webp",
+    "px": [
+     256,
+     256
+    ],
+    "kb": 3
+   },
+   "klein": {
+    "pad": "world/img/v3/eenheden/if-pantser-powered_armor-s.webp",
+    "px": [
+     96,
+     96
+    ],
+    "kb": 1
+   },
+   "bron": "xVv69.jpg",
+   "zip": "playterrastate_shock_troopers_flat_helmet"
   }
  ],
  "niet_gebruikt": [
@@ -7334,6 +7361,11 @@
    "bron": "t6UrU.jpg",
    "reden": "stalen helm van Duitse vorm (Stahlhelm), Shock Troopers van Ironfront blijven leeg",
    "zip": "playterrastate_missing_units_portraits"
+  },
+  {
+   "bron": "R3bOQ.jpg",
+   "zip": "playterrastate_shock_troopers_flat_helmet",
+   "reden": "helm met Duitse vorm"
   }
  ],
  "dubbel_met_versie_2": "53 bestanden uit de zips new_2_2 en new_1_2 zijn dezelfde plaatjes als versie 2 (zelfde bestandsnaam, zelfde beeld) en zijn niet opnieuw omgezet; vijfde zip (playterrastate_max_images): 32 unieke, waarvan 31 gebruikt; zesde zip (playterrastate_extra_batch): 16 unieke, waarvan 15 gebruikt; ronde 2 (z8new/z9new/z10new): 219 unieke, geen pixel-dubbelen; ronde 3 (z11new): 44 unieke, 41 gebruikt, 3 afgekeurd, 1 alleen als uitsnede; ronde 4 (z12new): 15 unieke, 14 gebruikt, 1 afgekeurd"
