@@ -7010,6 +7010,228 @@
    },
    "bron": "xVv69.jpg",
    "zip": "playterrastate_shock_troopers_flat_helmet"
+  },
+  {
+   "nr": 295,
+   "groep": "eenheid",
+   "werelden": [
+    "ro"
+   ],
+   "plek": "eenheid ro:loitering_munition (slingeraar)",
+   "naam": "ro-slinger-loitering_munition",
+   "bron": "uACFl.jpg",
+   "zip": "playterrastate_complete_assets_1",
+   "groot": {
+    "pad": "world/img/v3/eenheden/ro-slinger-loitering_munition.webp",
+    "px": [
+     256,
+     256
+    ],
+    "kb": 6
+   },
+   "klein": {
+    "pad": "world/img/v3/eenheden/ro-slinger-loitering_munition-s.webp",
+    "px": [
+     96,
+     96
+    ],
+    "kb": 1
+   }
+  },
+  {
+   "nr": 296,
+   "groep": "eenheid",
+   "werelden": [
+    "ro"
+   ],
+   "plek": "eenheid ro:tank (gepantserde ruiters)",
+   "naam": "ro-pantserruiters-tank",
+   "bron": "mhOI3.jpg",
+   "zip": "playterrastate_recent_batch2",
+   "groot": {
+    "pad": "world/img/v3/eenheden/ro-pantserruiters-tank.webp",
+    "px": [
+     256,
+     256
+    ],
+    "kb": 9
+   },
+   "klein": {
+    "pad": "world/img/v3/eenheden/ro-pantserruiters-tank-s.webp",
+    "px": [
+     96,
+     96
+    ],
+    "kb": 1
+   }
+  },
+  {
+   "nr": 297,
+   "groep": "eenheid",
+   "werelden": [
+    "ro"
+   ],
+   "plek": "eenheid ro:strat_bomber (onager)",
+   "naam": "ro-onager-strat_bomber",
+   "bron": "Dz8VI.jpg",
+   "zip": "playterrastate_recent_batch1",
+   "groot": {
+    "pad": "world/img/v3/eenheden/ro-onager-strat_bomber.webp",
+    "px": [
+     256,
+     256
+    ],
+    "kb": 8
+   },
+   "klein": {
+    "pad": "world/img/v3/eenheden/ro-onager-strat_bomber-s.webp",
+    "px": [
+     96,
+     96
+    ],
+    "kb": 1
+   }
+  },
+  {
+   "nr": 298,
+   "groep": "eenheid",
+   "werelden": [
+    "ro"
+   ],
+   "plek": "eenheid ro:interceptor (velites met speer)",
+   "naam": "ro-velites-interceptor",
+   "bron": "Epq1O.jpg",
+   "zip": "playterrastate_complete_assets_1",
+   "groot": {
+    "pad": "world/img/v3/eenheden/ro-velites-interceptor.webp",
+    "px": [
+     256,
+     256
+    ],
+    "kb": 5
+   },
+   "klein": {
+    "pad": "world/img/v3/eenheden/ro-velites-interceptor-s.webp",
+    "px": [
+     96,
+     96
+    ],
+    "kb": 1
+   }
+  },
+  {
+   "nr": 299,
+   "groep": "eenheid",
+   "werelden": [
+    "ts"
+   ],
+   "plek": "eenheid ts:ew_drone (vaste-vleugel UAV)",
+   "naam": "ts-uav-ew_drone",
+   "bron": "w27ga.jpg",
+   "zip": "playterrastate_recent_batch2",
+   "groot": {
+    "pad": "world/img/v3/eenheden/ts-uav-ew_drone.webp",
+    "px": [
+     256,
+     256
+    ],
+    "kb": 2
+   },
+   "klein": {
+    "pad": "world/img/v3/eenheden/ts-uav-ew_drone-s.webp",
+    "px": [
+     96,
+     96
+    ],
+    "kb": 0
+   }
+  },
+  {
+   "nr": 300,
+   "groep": "terrein",
+   "werelden": [
+    "if"
+   ],
+   "plek": "Atlantische kust, strandobstakels en fort",
+   "naam": "if-atlantikwal-fort",
+   "bron": "p5Wfi.jpg",
+   "zip": "playterrastate_complete_assets_1",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/terrein/if-atlantikwal-fort-s.webp",
+    "px": [
+     360,
+     242
+    ],
+    "kb": 8
+   }
+  },
+  {
+   "nr": 301,
+   "groep": "terrein",
+   "werelden": [
+    "if"
+   ],
+   "plek": "Atlantische kust, strandobstakels en klif",
+   "naam": "if-atlantikwal-klif",
+   "bron": "XoiAD.jpg",
+   "zip": "playterrastate_recent_batch2",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/terrein/if-atlantikwal-klif-s.webp",
+    "px": [
+     360,
+     242
+    ],
+    "kb": 8
+   }
+  },
+  {
+   "nr": 302,
+   "groep": "portret",
+   "werelden": [
+    "ro"
+   ],
+   "plek": "leger / legaat man (brons harnas)",
+   "naam": "ro-man-brons-harnas",
+   "bron": "xy5uU.jpg",
+   "zip": "playterrastate_recent_batch2",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/portretten/ro-man-brons-harnas-s.webp",
+    "px": [
+     161,
+     240
+    ],
+    "kb": 6
+   }
+  },
+  {
+   "nr": 303,
+   "groep": "terrein",
+   "werelden": [
+    "if"
+   ],
+   "plek": "Lands header: dal met dorp (sepia)",
+   "naam": "dal-dorp-kop",
+   "bron": "yGtdZ.jpg",
+   "zip": "playterrastate_recent_batch2",
+   "groot": {
+    "pad": "world/img/v3/terrein/dal-dorp-kop.webp",
+    "px": [
+     1168,
+     784
+    ],
+    "kb": 71
+   },
+   "klein": {
+    "pad": "world/img/v3/terrein/dal-dorp-kop-s.webp",
+    "px": [
+     480,
+     322
+    ],
+    "kb": 16
+   }
   }
  ],
  "niet_gebruikt": [
