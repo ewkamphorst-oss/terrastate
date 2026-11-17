@@ -7232,6 +7232,3234 @@
     ],
     "kb": 16
    }
+  },
+  {
+   "nr": 304,
+   "groep": "portret",
+   "werelden": [
+    "ts"
+   ],
+   "plek": "inlichtingen / Director Moreau (grijs kort haar)",
+   "naam": "ts-man-moreau",
+   "bron": "WvXCM.jpg",
+   "zip": "4e919cb1-terrastate_assets_part2",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/portretten/ts-man-moreau-s.webp",
+    "px": [
+     161,
+     240
+    ],
+    "kb": 2
+   }
+  },
+  {
+   "nr": 305,
+   "groep": "portret",
+   "werelden": [
+    "ts"
+   ],
+   "plek": "diplomatie / Consul Ortega (zilver golvend)",
+   "naam": "ts-man-ortega",
+   "bron": "lENar.jpg",
+   "zip": "4e919cb1-terrastate_assets_part2",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/portretten/ts-man-ortega-s.webp",
+    "px": [
+     161,
+     240
+    ],
+    "kb": 3
+   }
+  },
+  {
+   "nr": 306,
+   "groep": "portret",
+   "werelden": [
+    "ts"
+   ],
+   "plek": "diplomatie / Ambassador Kessler (wit haar, bril)",
+   "naam": "ts-man-kessler",
+   "bron": "Wn7Px.jpg",
+   "zip": "4e919cb1-terrastate_assets_part2",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/portretten/ts-man-kessler-s.webp",
+    "px": [
+     161,
+     240
+    ],
+    "kb": 3
+   }
+  },
+  {
+   "nr": 307,
+   "groep": "portret",
+   "werelden": [
+    "ts"
+   ],
+   "plek": "diplomatie / Ambassador Diallo (kaal, coltrui)",
+   "naam": "ts-man-diallo",
+   "bron": "iRXky.jpg",
+   "zip": "4e919cb1-terrastate_assets_part2",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/portretten/ts-man-diallo-s.webp",
+    "px": [
+     161,
+     240
+    ],
+    "kb": 2
+   }
+  },
+  {
+   "nr": 308,
+   "groep": "portret",
+   "werelden": [
+    "ts"
+   ],
+   "plek": "diplomatie / High Envoy Saarinen (grijze baard)",
+   "naam": "ts-man-saarinen",
+   "bron": "5lkKB.jpg",
+   "zip": "399fba94-terrastate_assets_part1",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/portretten/ts-man-saarinen-s.webp",
+    "px": [
+     161,
+     240
+    ],
+    "kb": 2
+   }
+  },
+  {
+   "nr": 309,
+   "groep": "portret",
+   "werelden": [
+    "ts"
+   ],
+   "plek": "diplomatie / Envoy Brenner (blond)",
+   "naam": "ts-man-brenner",
+   "bron": "W2CQk.jpg",
+   "zip": "399fba94-terrastate_assets_part1",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/portretten/ts-man-brenner-s.webp",
+    "px": [
+     161,
+     240
+    ],
+    "kb": 2
+   }
+  },
+  {
+   "nr": 310,
+   "groep": "portret",
+   "werelden": [
+    "ts"
+   ],
+   "plek": "inlichtingen / Handler Quinn (roodbruin, stoppels)",
+   "naam": "ts-man-quinn",
+   "bron": "b5IGl.jpg",
+   "zip": "4e919cb1-terrastate_assets_part2",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/portretten/ts-man-quinn-s.webp",
+    "px": [
+     161,
+     240
+    ],
+    "kb": 2
+   }
+  },
+  {
+   "nr": 311,
+   "groep": "portret",
+   "werelden": [
+    "ts"
+   ],
+   "plek": "inlichtingen / Shadow Chief Akers (half schaduw)",
+   "naam": "ts-man-akers",
+   "bron": "Icn6N.jpg",
+   "zip": "399fba94-terrastate_assets_part1",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/portretten/ts-man-akers-s.webp",
+    "px": [
+     161,
+     240
+    ],
+    "kb": 1
+   }
+  },
+  {
+   "nr": 312,
+   "groep": "portret",
+   "werelden": [
+    "ts"
+   ],
+   "plek": "inlichtingen / Agent Kowalczyk (blond, bomberjack)",
+   "naam": "ts-man-kowalczyk",
+   "bron": "v9mdL.jpg",
+   "zip": "4e919cb1-terrastate_assets_part2",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/portretten/ts-man-kowalczyk-s.webp",
+    "px": [
+     161,
+     240
+    ],
+    "kb": 3
+   }
+  },
+  {
+   "nr": 313,
+   "groep": "portret",
+   "werelden": [
+    "ts"
+   ],
+   "plek": "inlichtingen / Analyst Frey (bril, schermen)",
+   "naam": "ts-man-frey",
+   "bron": "5ML2W.jpg",
+   "zip": "399fba94-terrastate_assets_part1",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/portretten/ts-man-frey-s.webp",
+    "px": [
+     161,
+     240
+    ],
+    "kb": 4
+   }
+  },
+  {
+   "nr": 314,
+   "groep": "portret",
+   "werelden": [
+    "ts"
+   ],
+   "plek": "inlichtingen / Operative Nadia Rahim",
+   "naam": "ts-vrouw-rahim",
+   "bron": "BaPoS.jpg",
+   "zip": "399fba94-terrastate_assets_part1",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/portretten/ts-vrouw-rahim-s.webp",
+    "px": [
+     161,
+     240
+    ],
+    "kb": 1
+   }
+  },
+  {
+   "nr": 315,
+   "groep": "portret",
+   "werelden": [
+    "ts"
+   ],
+   "plek": "extra man jong officier",
+   "naam": "ts-man-jong-officier",
+   "bron": "7ezmj.jpg",
+   "zip": "399fba94-terrastate_assets_part1",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/portretten/ts-man-jong-officier-s.webp",
+    "px": [
+     161,
+     240
+    ],
+    "kb": 4
+   }
+  },
+  {
+   "nr": 316,
+   "groep": "portret",
+   "werelden": [
+    "ts"
+   ],
+   "plek": "extra man commandant pantserpak",
+   "naam": "ts-man-commandant",
+   "bron": "EZ24E.jpg",
+   "zip": "399fba94-terrastate_assets_part1",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/portretten/ts-man-commandant-s.webp",
+    "px": [
+     161,
+     240
+    ],
+    "kb": 4
+   }
+  },
+  {
+   "nr": 317,
+   "groep": "portret",
+   "werelden": [
+    "ts"
+   ],
+   "plek": "extra man ingenieur baard",
+   "naam": "ts-man-ingenieur",
+   "bron": "SW85K.jpg",
+   "zip": "399fba94-terrastate_assets_part1",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/portretten/ts-man-ingenieur-s.webp",
+    "px": [
+     161,
+     240
+    ],
+    "kb": 3
+   }
+  },
+  {
+   "nr": 318,
+   "groep": "portret",
+   "werelden": [
+    "ts"
+   ],
+   "plek": "extra man adviseur wit haar",
+   "naam": "ts-man-adviseur-wit",
+   "bron": "Terrastate_Portrait_Elderly_Advisor.jpg",
+   "zip": "496f8889-terrastate_complete_assets",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/portretten/ts-man-adviseur-wit-s.webp",
+    "px": [
+     161,
+     240
+    ],
+    "kb": 6
+   }
+  },
+  {
+   "nr": 319,
+   "groep": "portret",
+   "werelden": [
+    "ts"
+   ],
+   "plek": "extra vrouw zilverhaar",
+   "naam": "ts-vrouw-zilverhaar",
+   "bron": "KHIEf.jpg",
+   "zip": "399fba94-terrastate_assets_part1",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/portretten/ts-vrouw-zilverhaar-s.webp",
+    "px": [
+     161,
+     240
+    ],
+    "kb": 5
+   }
+  },
+  {
+   "nr": 320,
+   "groep": "portret",
+   "werelden": [
+    "ts"
+   ],
+   "plek": "extra vrouw laboratoriumjas",
+   "naam": "ts-vrouw-labjas",
+   "bron": "KiGtl.jpg",
+   "zip": "399fba94-terrastate_assets_part1",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/portretten/ts-vrouw-labjas-s.webp",
+    "px": [
+     161,
+     240
+    ],
+    "kb": 4
+   }
+  },
+  {
+   "nr": 321,
+   "groep": "portret",
+   "werelden": [
+    "ts"
+   ],
+   "plek": "extra vrouw wetenschapper blauw",
+   "naam": "ts-vrouw-wetenschapper-blauw",
+   "bron": "Terrastate_Portrait_Female_Scientist.jpg",
+   "zip": "496f8889-terrastate_complete_assets",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/portretten/ts-vrouw-wetenschapper-blauw-s.webp",
+    "px": [
+     161,
+     240
+    ],
+    "kb": 3
+   }
+  },
+  {
+   "nr": 322,
+   "groep": "portret",
+   "werelden": [
+    "ro"
+   ],
+   "plek": "diplomatie / Herald Albinus",
+   "naam": "ro-man-albinus",
+   "bron": "uOz3p.jpg",
+   "zip": "4e919cb1-terrastate_assets_part2",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/portretten/ro-man-albinus-s.webp",
+    "px": [
+     161,
+     240
+    ],
+    "kb": 5
+   }
+  },
+  {
+   "nr": 323,
+   "groep": "portret",
+   "werelden": [
+    "ro"
+   ],
+   "plek": "diplomatie / Senator Messala",
+   "naam": "ro-man-messala",
+   "bron": "L8ZSD.jpg",
+   "zip": "399fba94-terrastate_assets_part1",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/portretten/ro-man-messala-s.webp",
+    "px": [
+     161,
+     240
+    ],
+    "kb": 5
+   }
+  },
+  {
+   "nr": 324,
+   "groep": "portret",
+   "werelden": [
+    "ro"
+   ],
+   "plek": "diplomatie / Consul Domitius",
+   "naam": "ro-man-domitius",
+   "bron": "ns6kr.jpg",
+   "zip": "4e919cb1-terrastate_assets_part2",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/portretten/ro-man-domitius-s.webp",
+    "px": [
+     161,
+     240
+    ],
+    "kb": 5
+   }
+  },
+  {
+   "nr": 325,
+   "groep": "portret",
+   "werelden": [
+    "ro"
+   ],
+   "plek": "inlichtingen / Scout Celer",
+   "naam": "ro-man-celer",
+   "bron": "KU4RZ.jpg",
+   "zip": "399fba94-terrastate_assets_part1",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/portretten/ro-man-celer-s.webp",
+    "px": [
+     161,
+     240
+    ],
+    "kb": 5
+   }
+  },
+  {
+   "nr": 326,
+   "groep": "portret",
+   "werelden": [
+    "ro"
+   ],
+   "plek": "inlichtingen / Courier Mercator",
+   "naam": "ro-man-mercator",
+   "bron": "W2h2y.jpg",
+   "zip": "399fba94-terrastate_assets_part1",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/portretten/ro-man-mercator-s.webp",
+    "px": [
+     161,
+     240
+    ],
+    "kb": 4
+   }
+  },
+  {
+   "nr": 327,
+   "groep": "portret",
+   "werelden": [
+    "ro"
+   ],
+   "plek": "inlichtingen / Frumentarius Naso",
+   "naam": "ro-man-naso",
+   "bron": "YhiAo.jpg",
+   "zip": "4e919cb1-terrastate_assets_part2",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/portretten/ro-man-naso-s.webp",
+    "px": [
+     161,
+     240
+    ],
+    "kb": 4
+   }
+  },
+  {
+   "nr": 328,
+   "groep": "portret",
+   "werelden": [
+    "ro"
+   ],
+   "plek": "inlichtingen / Master of Whispers Tacitus",
+   "naam": "ro-man-tacitus",
+   "bron": "4BaX9.jpg",
+   "zip": "399fba94-terrastate_assets_part1",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/portretten/ro-man-tacitus-s.webp",
+    "px": [
+     161,
+     240
+    ],
+    "kb": 3
+   }
+  },
+  {
+   "nr": 329,
+   "groep": "portret",
+   "werelden": [
+    "ro"
+   ],
+   "plek": "inlichtingen / Umbra",
+   "naam": "ro-man-umbra",
+   "bron": "vuh9W.jpg",
+   "zip": "4e919cb1-terrastate_assets_part2",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/portretten/ro-man-umbra-s.webp",
+    "px": [
+     161,
+     240
+    ],
+    "kb": 3
+   }
+  },
+  {
+   "nr": 330,
+   "groep": "portret",
+   "werelden": [
+    "ro"
+   ],
+   "plek": "inlichtingen / Chief of Scouts Sertorius",
+   "naam": "ro-man-sertorius",
+   "bron": "dHkgg.jpg",
+   "zip": "4e919cb1-terrastate_assets_part2",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/portretten/ro-man-sertorius-s.webp",
+    "px": [
+     161,
+     240
+    ],
+    "kb": 5
+   }
+  },
+  {
+   "nr": 331,
+   "groep": "portret",
+   "werelden": [
+    "ro"
+   ],
+   "plek": "extra man jong harnas",
+   "naam": "ro-man-jong-harnas",
+   "bron": "1Jpbz.jpg",
+   "zip": "399fba94-terrastate_assets_part1",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/portretten/ro-man-jong-harnas-s.webp",
+    "px": [
+     161,
+     240
+    ],
+    "kb": 5
+   }
+  },
+  {
+   "nr": 332,
+   "groep": "portret",
+   "werelden": [
+    "ro"
+   ],
+   "plek": "extra man centurio krullen",
+   "naam": "ro-man-centurio-krullen",
+   "bron": "4LxfC.jpg",
+   "zip": "399fba94-terrastate_assets_part1",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/portretten/ro-man-centurio-krullen-s.webp",
+    "px": [
+     161,
+     240
+    ],
+    "kb": 7
+   }
+  },
+  {
+   "nr": 333,
+   "groep": "portret",
+   "werelden": [
+    "ro"
+   ],
+   "plek": "extra man oud harnas",
+   "naam": "ro-man-oud-harnas",
+   "bron": "5TaGu.jpg",
+   "zip": "399fba94-terrastate_assets_part1",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/portretten/ro-man-oud-harnas-s.webp",
+    "px": [
+     161,
+     240
+    ],
+    "kb": 7
+   }
+  },
+  {
+   "nr": 334,
+   "groep": "portret",
+   "werelden": [
+    "ro"
+   ],
+   "plek": "extra man toga goud",
+   "naam": "ro-man-toga-goud",
+   "bron": "AU7ZN.jpg",
+   "zip": "399fba94-terrastate_assets_part1",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/portretten/ro-man-toga-goud-s.webp",
+    "px": [
+     161,
+     240
+    ],
+    "kb": 5
+   }
+  },
+  {
+   "nr": 335,
+   "groep": "portret",
+   "werelden": [
+    "ro"
+   ],
+   "plek": "extra man jong speer",
+   "naam": "ro-man-jong-speer",
+   "bron": "Ki24H.jpg",
+   "zip": "399fba94-terrastate_assets_part1",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/portretten/ro-man-jong-speer-s.webp",
+    "px": [
+     161,
+     240
+    ],
+    "kb": 5
+   }
+  },
+  {
+   "nr": 336,
+   "groep": "portret",
+   "werelden": [
+    "ro"
+   ],
+   "plek": "extra man senator grijs",
+   "naam": "ro-man-senator-grijs",
+   "bron": "Romaterra_Portrait_Elder_Senator.jpg",
+   "zip": "496f8889-terrastate_complete_assets",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/portretten/ro-man-senator-grijs-s.webp",
+    "px": [
+     161,
+     240
+    ],
+    "kb": 5
+   }
+  },
+  {
+   "nr": 337,
+   "groep": "portret",
+   "werelden": [
+    "ro"
+   ],
+   "plek": "extra man legioenofficier",
+   "naam": "ro-man-legioenofficier",
+   "bron": "Romaterra_Portrait_Legionary_Officer.jpg",
+   "zip": "496f8889-terrastate_complete_assets",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/portretten/ro-man-legioenofficier-s.webp",
+    "px": [
+     161,
+     240
+    ],
+    "kb": 5
+   }
+  },
+  {
+   "nr": 338,
+   "groep": "portret",
+   "werelden": [
+    "ro"
+   ],
+   "plek": "extra vrouw scout vlecht",
+   "naam": "ro-vrouw-scout-vlecht",
+   "bron": "MJRUv.jpg",
+   "zip": "399fba94-terrastate_assets_part1",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/portretten/ro-vrouw-scout-vlecht-s.webp",
+    "px": [
+     161,
+     240
+    ],
+    "kb": 5
+   }
+  },
+  {
+   "nr": 339,
+   "groep": "portret",
+   "werelden": [
+    "ro"
+   ],
+   "plek": "extra vrouw edel juwelen",
+   "naam": "ro-vrouw-edel-juwelen",
+   "bron": "TlQeC.jpg",
+   "zip": "399fba94-terrastate_assets_part1",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/portretten/ro-vrouw-edel-juwelen-s.webp",
+    "px": [
+     161,
+     240
+    ],
+    "kb": 6
+   }
+  },
+  {
+   "nr": 340,
+   "groep": "portret",
+   "werelden": [
+    "ro"
+   ],
+   "plek": "extra vrouw edel rood",
+   "naam": "ro-vrouw-edel-rood",
+   "bron": "Romaterra_Portrait_Female_Noble.jpg",
+   "zip": "496f8889-terrastate_complete_assets",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/portretten/ro-vrouw-edel-rood-s.webp",
+    "px": [
+     161,
+     240
+    ],
+    "kb": 6
+   }
+  },
+  {
+   "nr": 341,
+   "groep": "portret",
+   "werelden": [
+    "ro"
+   ],
+   "plek": "extra vrouw oud diadeem",
+   "naam": "ro-vrouw-oud-diadeem",
+   "bron": "gFEao.jpg",
+   "zip": "4e919cb1-terrastate_assets_part2",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/portretten/ro-vrouw-oud-diadeem-s.webp",
+    "px": [
+     161,
+     240
+    ],
+    "kb": 7
+   }
+  },
+  {
+   "nr": 342,
+   "groep": "portret",
+   "werelden": [
+    "if"
+   ],
+   "plek": "diplomatie / Attache Dumont",
+   "naam": "if-man-dumont",
+   "bron": "s8pn4.jpg",
+   "zip": "4e919cb1-terrastate_assets_part2",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/portretten/if-man-dumont-s.webp",
+    "px": [
+     161,
+     240
+    ],
+    "kb": 3
+   }
+  },
+  {
+   "nr": 343,
+   "groep": "portret",
+   "werelden": [
+    "if"
+   ],
+   "plek": "diplomatie / Envoy Sorensen",
+   "naam": "if-man-sorensen",
+   "bron": "wOy7x.jpg",
+   "zip": "4e919cb1-terrastate_assets_part2",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/portretten/if-man-sorensen-s.webp",
+    "px": [
+     161,
+     240
+    ],
+    "kb": 2
+   }
+  },
+  {
+   "nr": 344,
+   "groep": "portret",
+   "werelden": [
+    "if"
+   ],
+   "plek": "diplomatie / Liaison Officer Reyes",
+   "naam": "if-man-reyes",
+   "bron": "7a4ms.jpg",
+   "zip": "399fba94-terrastate_assets_part1",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/portretten/if-man-reyes-s.webp",
+    "px": [
+     161,
+     240
+    ],
+    "kb": 2
+   }
+  },
+  {
+   "nr": 345,
+   "groep": "portret",
+   "werelden": [
+    "if"
+   ],
+   "plek": "diplomatie / Ambassador Whitlock",
+   "naam": "if-man-whitlock",
+   "bron": "x9gRr.jpg",
+   "zip": "4e919cb1-terrastate_assets_part2",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/portretten/if-man-whitlock-s.webp",
+    "px": [
+     161,
+     240
+    ],
+    "kb": 2
+   }
+  },
+  {
+   "nr": 346,
+   "groep": "portret",
+   "werelden": [
+    "if"
+   ],
+   "plek": "diplomatie / Ambassador Varga",
+   "naam": "if-man-varga",
+   "bron": "lK0Sy.jpg",
+   "zip": "4e919cb1-terrastate_assets_part2",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/portretten/if-man-varga-s.webp",
+    "px": [
+     161,
+     240
+    ],
+    "kb": 2
+   }
+  },
+  {
+   "nr": 347,
+   "groep": "portret",
+   "werelden": [
+    "if"
+   ],
+   "plek": "diplomatie / Foreign Secretary Langley",
+   "naam": "if-man-langley",
+   "bron": "Isx7l.jpg",
+   "zip": "399fba94-terrastate_assets_part1",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/portretten/if-man-langley-s.webp",
+    "px": [
+     161,
+     240
+    ],
+    "kb": 2
+   }
+  },
+  {
+   "nr": 348,
+   "groep": "portret",
+   "werelden": [
+    "if"
+   ],
+   "plek": "inlichtingen / Signals Officer Finch",
+   "naam": "if-man-finch",
+   "bron": "VJMic.jpg",
+   "zip": "399fba94-terrastate_assets_part1",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/portretten/if-man-finch-s.webp",
+    "px": [
+     161,
+     240
+    ],
+    "kb": 3
+   }
+  },
+  {
+   "nr": 349,
+   "groep": "portret",
+   "werelden": [
+    "if"
+   ],
+   "plek": "inlichtingen / Codebreaker Ellis",
+   "naam": "if-man-ellis",
+   "bron": "BreIM.jpg",
+   "zip": "399fba94-terrastate_assets_part1",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/portretten/if-man-ellis-s.webp",
+    "px": [
+     161,
+     240
+    ],
+    "kb": 3
+   }
+  },
+  {
+   "nr": 350,
+   "groep": "portret",
+   "werelden": [
+    "if"
+   ],
+   "plek": "inlichtingen / Agent Moreau",
+   "naam": "if-man-moreau",
+   "bron": "0iNCx.jpg",
+   "zip": "399fba94-terrastate_assets_part1",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/portretten/if-man-moreau-s.webp",
+    "px": [
+     161,
+     240
+    ],
+    "kb": 3
+   }
+  },
+  {
+   "nr": 351,
+   "groep": "portret",
+   "werelden": [
+    "if"
+   ],
+   "plek": "inlichtingen / Handler Vance",
+   "naam": "if-man-vance",
+   "bron": "JcVbu.jpg",
+   "zip": "399fba94-terrastate_assets_part1",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/portretten/if-man-vance-s.webp",
+    "px": [
+     161,
+     240
+    ],
+    "kb": 3
+   }
+  },
+  {
+   "nr": 352,
+   "groep": "portret",
+   "werelden": [
+    "if"
+   ],
+   "plek": "inlichtingen / Agent Kalina",
+   "naam": "if-man-kalina",
+   "bron": "fYfmS.jpg",
+   "zip": "4e919cb1-terrastate_assets_part2",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/portretten/if-man-kalina-s.webp",
+    "px": [
+     161,
+     240
+    ],
+    "kb": 2
+   }
+  },
+  {
+   "nr": 353,
+   "groep": "portret",
+   "werelden": [
+    "if"
+   ],
+   "plek": "inlichtingen / Spymaster Rook",
+   "naam": "if-man-rook",
+   "bron": "cTUKA.jpg",
+   "zip": "4e919cb1-terrastate_assets_part2",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/portretten/if-man-rook-s.webp",
+    "px": [
+     161,
+     240
+    ],
+    "kb": 2
+   }
+  },
+  {
+   "nr": 354,
+   "groep": "portret",
+   "werelden": [
+    "if"
+   ],
+   "plek": "extra man oud bril sepia",
+   "naam": "if-man-oud-bril-sepia",
+   "bron": "4WwyC.jpg",
+   "zip": "399fba94-terrastate_assets_part1",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/portretten/if-man-oud-bril-sepia-s.webp",
+    "px": [
+     161,
+     240
+    ],
+    "kb": 2
+   }
+  },
+  {
+   "nr": 355,
+   "groep": "portret",
+   "werelden": [
+    "if"
+   ],
+   "plek": "extra man jong stoppels",
+   "naam": "if-man-jong-stoppels",
+   "bron": "oYScY.jpg",
+   "zip": "4e919cb1-terrastate_assets_part2",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/portretten/if-man-jong-stoppels-s.webp",
+    "px": [
+     161,
+     240
+    ],
+    "kb": 3
+   }
+  },
+  {
+   "nr": 356,
+   "groep": "portret",
+   "werelden": [
+    "if"
+   ],
+   "plek": "extra man overall",
+   "naam": "if-man-overall",
+   "bron": "yJPQx.jpg",
+   "zip": "4e919cb1-terrastate_assets_part2",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/portretten/if-man-overall-s.webp",
+    "px": [
+     161,
+     240
+    ],
+    "kb": 3
+   }
+  },
+  {
+   "nr": 357,
+   "groep": "portret",
+   "werelden": [
+    "if"
+   ],
+   "plek": "extra vrouw olijf jas",
+   "naam": "if-vrouw-olijf",
+   "bron": "8yCGZ.jpg",
+   "zip": "399fba94-terrastate_assets_part1",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/portretten/if-vrouw-olijf-s.webp",
+    "px": [
+     161,
+     240
+    ],
+    "kb": 2
+   }
+  },
+  {
+   "nr": 358,
+   "groep": "portret",
+   "werelden": [
+    "if"
+   ],
+   "plek": "extra vrouw medic",
+   "naam": "if-vrouw-medic",
+   "bron": "Ironfront_Portrait_Female_Medic.jpg",
+   "zip": "496f8889-terrastate_complete_assets",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/portretten/if-vrouw-medic-s.webp",
+    "px": [
+     161,
+     240
+    ],
+    "kb": 2
+   }
+  },
+  {
+   "nr": 359,
+   "groep": "portret",
+   "werelden": [
+    "if"
+   ],
+   "plek": "extra vrouw jong kort haar",
+   "naam": "if-vrouw-jong-kort",
+   "bron": "YY03B.jpg",
+   "zip": "4e919cb1-terrastate_assets_part2",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/portretten/if-vrouw-jong-kort-s.webp",
+    "px": [
+     161,
+     240
+    ],
+    "kb": 3
+   }
+  },
+  {
+   "nr": 360,
+   "groep": "portret",
+   "werelden": [
+    "if"
+   ],
+   "plek": "extra vrouw oud krullen",
+   "naam": "if-vrouw-oud-krullen",
+   "bron": "kzwBu.jpg",
+   "zip": "4e919cb1-terrastate_assets_part2",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/portretten/if-vrouw-oud-krullen-s.webp",
+    "px": [
+     161,
+     240
+    ],
+    "kb": 3
+   }
+  },
+  {
+   "nr": 362,
+   "groep": "eenheid",
+   "werelden": [
+    "ts"
+   ],
+   "plek": "eenheid ts:mobile_shield (truck met panelen en veld)",
+   "naam": "ts-emitter-mobile_shield",
+   "bron": "VtTBe.jpg",
+   "zip": "399fba94-terrastate_assets_part1",
+   "groot": {
+    "pad": "world/img/v3/eenheden/ts-emitter-mobile_shield.webp",
+    "px": [
+     256,
+     256
+    ],
+    "kb": 5
+   },
+   "klein": {
+    "pad": "world/img/v3/eenheden/ts-emitter-mobile_shield-s.webp",
+    "px": [
+     96,
+     96
+    ],
+    "kb": 1
+   }
+  },
+  {
+   "nr": 365,
+   "groep": "eenheid",
+   "werelden": [
+    "ro"
+   ],
+   "plek": "eenheid ro:sam (schildmuur met speren)",
+   "naam": "ro-schildmuur-sam",
+   "bron": "c1spu.jpg",
+   "zip": "4e919cb1-terrastate_assets_part2",
+   "groot": {
+    "pad": "world/img/v3/eenheden/ro-schildmuur-sam.webp",
+    "px": [
+     256,
+     256
+    ],
+    "kb": 13
+   },
+   "klein": {
+    "pad": "world/img/v3/eenheden/ro-schildmuur-sam-s.webp",
+    "px": [
+     96,
+     96
+    ],
+    "kb": 2
+   }
+  },
+  {
+   "nr": 366,
+   "groep": "gebouw",
+   "werelden": [
+    "ts"
+   ],
+   "plek": "Military Base",
+   "naam": "ts-militaire-basis",
+   "bron": "0UM0p.jpg",
+   "zip": "399fba94-terrastate_assets_part1",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/gebouwen/ts-militaire-basis-s.webp",
+    "px": [
+     360,
+     242
+    ],
+    "kb": 9
+   }
+  },
+  {
+   "nr": 367,
+   "groep": "gebouw",
+   "werelden": [
+    "ts"
+   ],
+   "plek": "Deep Mine",
+   "naam": "ts-diepe-mijn",
+   "bron": "OIYN4.jpg",
+   "zip": "399fba94-terrastate_assets_part1",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/gebouwen/ts-diepe-mijn-s.webp",
+    "px": [
+     360,
+     242
+    ],
+    "kb": 12
+   }
+  },
+  {
+   "nr": 368,
+   "groep": "gebouw",
+   "werelden": [
+    "ts"
+   ],
+   "plek": "Grand Monument",
+   "naam": "ts-monument-obelisk",
+   "bron": "9l339.jpg",
+   "zip": "399fba94-terrastate_assets_part1",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/gebouwen/ts-monument-obelisk-s.webp",
+    "px": [
+     360,
+     242
+    ],
+    "kb": 9
+   }
+  },
+  {
+   "nr": 369,
+   "groep": "gebouw",
+   "werelden": [
+    "ts"
+   ],
+   "plek": "Fortress Network",
+   "naam": "ts-bergvesting",
+   "bron": "A6Vuv.jpg",
+   "zip": "399fba94-terrastate_assets_part1",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/gebouwen/ts-bergvesting-s.webp",
+    "px": [
+     360,
+     242
+    ],
+    "kb": 16
+   }
+  },
+  {
+   "nr": 370,
+   "groep": "gebouw",
+   "werelden": [
+    "ts"
+   ],
+   "plek": "Power Plant",
+   "naam": "ts-centrale-koeltorens",
+   "bron": "YObyE.jpg",
+   "zip": "4e919cb1-terrastate_assets_part2",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/gebouwen/ts-centrale-koeltorens-s.webp",
+    "px": [
+     360,
+     242
+    ],
+    "kb": 8
+   }
+  },
+  {
+   "nr": 371,
+   "groep": "gebouw",
+   "werelden": [
+    "ts"
+   ],
+   "plek": "Intelligence HQ",
+   "naam": "ts-inlichtingen-toren",
+   "bron": "u3hYP.jpg",
+   "zip": "4e919cb1-terrastate_assets_part2",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/gebouwen/ts-inlichtingen-toren-s.webp",
+    "px": [
+     360,
+     242
+    ],
+    "kb": 8
+   }
+  },
+  {
+   "nr": 372,
+   "groep": "gebouw",
+   "werelden": [
+    "ts"
+   ],
+   "plek": "Forward Logistics Hub",
+   "naam": "ts-logistiek-containers",
+   "bron": "enQ9b.jpg",
+   "zip": "4e919cb1-terrastate_assets_part2",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/gebouwen/ts-logistiek-containers-s.webp",
+    "px": [
+     360,
+     242
+    ],
+    "kb": 10
+   }
+  },
+  {
+   "nr": 373,
+   "groep": "gebouw",
+   "werelden": [
+    "ts"
+   ],
+   "plek": "Radar Array wachttoren",
+   "naam": "ts-wachttoren-klif",
+   "bron": "3A2B6.jpg",
+   "zip": "399fba94-terrastate_assets_part1",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/gebouwen/ts-wachttoren-klif-s.webp",
+    "px": [
+     360,
+     242
+    ],
+    "kb": 12
+   }
+  },
+  {
+   "nr": 374,
+   "groep": "gebouw",
+   "werelden": [
+    "ts"
+   ],
+   "plek": "Provincial Capitol glastoren",
+   "naam": "ts-glastoren",
+   "bron": "AARG4.jpg",
+   "zip": "399fba94-terrastate_assets_part1",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/gebouwen/ts-glastoren-s.webp",
+    "px": [
+     360,
+     242
+    ],
+    "kb": 16
+   }
+  },
+  {
+   "nr": 375,
+   "groep": "gebouw",
+   "werelden": [
+    "ts"
+   ],
+   "plek": "Aerospace Command koepel",
+   "naam": "ts-koepelgebouw",
+   "bron": "bIMEu.jpg",
+   "zip": "4e919cb1-terrastate_assets_part2",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/gebouwen/ts-koepelgebouw-s.webp",
+    "px": [
+     360,
+     242
+    ],
+    "kb": 16
+   }
+  },
+  {
+   "nr": 376,
+   "groep": "gebouw",
+   "werelden": [
+    "ts"
+   ],
+   "plek": "Advanced Research Campus",
+   "naam": "ts-onderzoeksgebouw-blauw",
+   "bron": "0ONXb.jpg",
+   "zip": "399fba94-terrastate_assets_part1",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/gebouwen/ts-onderzoeksgebouw-blauw-s.webp",
+    "px": [
+     360,
+     242
+    ],
+    "kb": 14
+   }
+  },
+  {
+   "nr": 377,
+   "groep": "gebouw",
+   "werelden": [
+    "ts"
+   ],
+   "plek": "Heavy Industrial Complex",
+   "naam": "ts-industriecomplex",
+   "bron": "oiq2X.jpg",
+   "zip": "4e919cb1-terrastate_assets_part2",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/gebouwen/ts-industriecomplex-s.webp",
+    "px": [
+     360,
+     242
+    ],
+    "kb": 17
+   }
+  },
+  {
+   "nr": 378,
+   "groep": "gebouw",
+   "werelden": [
+    "ro"
+   ],
+   "plek": "Triumphal Arch schemer",
+   "naam": "ro-triomfboog-schemer",
+   "bron": "EaD4V.jpg",
+   "zip": "399fba94-terrastate_assets_part1",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/gebouwen/ro-triomfboog-schemer-s.webp",
+    "px": [
+     360,
+     242
+    ],
+    "kb": 16
+   }
+  },
+  {
+   "nr": 379,
+   "groep": "gebouw",
+   "werelden": [
+    "ro"
+   ],
+   "plek": "Provincial Capitol tempel",
+   "naam": "ro-capitool-tempel",
+   "bron": "n0fpR.jpg",
+   "zip": "4e919cb1-terrastate_assets_part2",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/gebouwen/ro-capitool-tempel-s.webp",
+    "px": [
+     360,
+     242
+    ],
+    "kb": 16
+   }
+  },
+  {
+   "nr": 380,
+   "groep": "gebouw",
+   "werelden": [
+    "ro"
+   ],
+   "plek": "Castra woestijn",
+   "naam": "ro-castra-woestijn",
+   "bron": "oM2cE.jpg",
+   "zip": "4e919cb1-terrastate_assets_part2",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/gebouwen/ro-castra-woestijn-s.webp",
+    "px": [
+     360,
+     242
+    ],
+    "kb": 20
+   }
+  },
+  {
+   "nr": 381,
+   "groep": "gebouw",
+   "werelden": [
+    "ro"
+   ],
+   "plek": "amfitheater",
+   "naam": "ro-amfitheater",
+   "bron": "jnUYg.jpg",
+   "zip": "4e919cb1-terrastate_assets_part2",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/gebouwen/ro-amfitheater-s.webp",
+    "px": [
+     360,
+     242
+    ],
+    "kb": 17
+   }
+  },
+  {
+   "nr": 382,
+   "groep": "gebouw",
+   "werelden": [
+    "ro"
+   ],
+   "plek": "paleis op aquaduct",
+   "naam": "ro-paleis-aquaduct",
+   "bron": "k6Dcz.jpg",
+   "zip": "4e919cb1-terrastate_assets_part2",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/gebouwen/ro-paleis-aquaduct-s.webp",
+    "px": [
+     360,
+     242
+    ],
+    "kb": 19
+   }
+  },
+  {
+   "nr": 383,
+   "groep": "gebouw",
+   "werelden": [
+    "if"
+   ],
+   "plek": "Fortress Line betonnen bunker",
+   "naam": "if-bunkerlinie-beton",
+   "bron": "4AHM7.jpg",
+   "zip": "399fba94-terrastate_assets_part1",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/gebouwen/if-bunkerlinie-beton-s.webp",
+    "px": [
+     360,
+     242
+    ],
+    "kb": 8
+   }
+  },
+  {
+   "nr": 384,
+   "groep": "gebouw",
+   "werelden": [
+    "if"
+   ],
+   "plek": "Bunker Line",
+   "naam": "if-bunker-heuvel",
+   "bron": "idhCQ.jpg",
+   "zip": "4e919cb1-terrastate_assets_part2",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/gebouwen/if-bunker-heuvel-s.webp",
+    "px": [
+     360,
+     242
+    ],
+    "kb": 9
+   }
+  },
+  {
+   "nr": 385,
+   "groep": "gebouw",
+   "werelden": [
+    "if"
+   ],
+   "plek": "Underground Depot bunkerfabriek",
+   "naam": "if-depot-bunkerfabriek",
+   "bron": "Ironfront_Building_Bunker_Factory.jpg",
+   "zip": "496f8889-terrastate_complete_assets",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/gebouwen/if-depot-bunkerfabriek-s.webp",
+    "px": [
+     360,
+     242
+    ],
+    "kb": 13
+   }
+  },
+  {
+   "nr": 386,
+   "groep": "gebouw",
+   "werelden": [
+    "if"
+   ],
+   "plek": "Airfield Command hangar",
+   "naam": "if-vliegveld-hangar",
+   "bron": "pbkt3.jpg",
+   "zip": "4e919cb1-terrastate_assets_part2",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/gebouwen/if-vliegveld-hangar-s.webp",
+    "px": [
+     360,
+     242
+    ],
+    "kb": 7
+   }
+  },
+  {
+   "nr": 387,
+   "groep": "gebouw",
+   "werelden": [
+    "if"
+   ],
+   "plek": "fabriek met schoorstenen",
+   "naam": "if-fabriek-schoorstenen",
+   "bron": "GE6jP.jpg",
+   "zip": "399fba94-terrastate_assets_part1",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/gebouwen/if-fabriek-schoorstenen-s.webp",
+    "px": [
+     360,
+     242
+    ],
+    "kb": 11
+   }
+  },
+  {
+   "nr": 388,
+   "groep": "terrein",
+   "werelden": [
+    "ts"
+   ],
+   "plek": "regenwoud rivier schemer",
+   "naam": "ts-regenwoud-rivier",
+   "bron": "LX8uS.jpg",
+   "zip": "399fba94-terrastate_assets_part1",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/terrein/ts-regenwoud-rivier-s.webp",
+    "px": [
+     360,
+     242
+    ],
+    "kb": 13
+   }
+  },
+  {
+   "nr": 389,
+   "groep": "terrein",
+   "werelden": [
+    "ts"
+   ],
+   "plek": "savanne met weg",
+   "naam": "ts-savanne-weg",
+   "bron": "k9FVm.jpg",
+   "zip": "4e919cb1-terrastate_assets_part2",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/terrein/ts-savanne-weg-s.webp",
+    "px": [
+     360,
+     242
+    ],
+    "kb": 13
+   }
+  },
+  {
+   "nr": 390,
+   "groep": "terrein",
+   "werelden": [
+    "ts"
+   ],
+   "plek": "bergdal met weg",
+   "naam": "ts-bergdal-weg",
+   "bron": "cb9rL.jpg",
+   "zip": "4e919cb1-terrastate_assets_part2",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/terrein/ts-bergdal-weg-s.webp",
+    "px": [
+     360,
+     242
+    ],
+    "kb": 14
+   }
+  },
+  {
+   "nr": 391,
+   "groep": "terrein",
+   "werelden": [
+    "ts"
+   ],
+   "plek": "steppe met masten en molens",
+   "naam": "ts-steppe-masten",
+   "bron": "eITUL.jpg",
+   "zip": "4e919cb1-terrastate_assets_part2",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/terrein/ts-steppe-masten-s.webp",
+    "px": [
+     360,
+     242
+    ],
+    "kb": 8
+   }
+  },
+  {
+   "nr": 392,
+   "groep": "terrein",
+   "werelden": [
+    "ts"
+   ],
+   "plek": "woestijn snelweg pijpleiding raffinaderij",
+   "naam": "ts-woestijn-snelweg",
+   "bron": "8Obz8.jpg",
+   "zip": "399fba94-terrastate_assets_part1",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/terrein/ts-woestijn-snelweg-s.webp",
+    "px": [
+     360,
+     242
+    ],
+    "kb": 13
+   }
+  },
+  {
+   "nr": 393,
+   "groep": "terrein",
+   "werelden": [
+    "ts"
+   ],
+   "plek": "sneeuwstad bergen",
+   "naam": "ts-gletsjer-stad",
+   "bron": "3Z16r.jpg",
+   "zip": "399fba94-terrastate_assets_part1",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/terrein/ts-gletsjer-stad-s.webp",
+    "px": [
+     360,
+     242
+    ],
+    "kb": 13
+   }
+  },
+  {
+   "nr": 394,
+   "groep": "terrein",
+   "werelden": [
+    "ts"
+   ],
+   "plek": "sneeuwbasis berg",
+   "naam": "ts-sneeuwbasis",
+   "bron": "7PK2N.jpg",
+   "zip": "399fba94-terrastate_assets_part1",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/terrein/ts-sneeuwbasis-s.webp",
+    "px": [
+     360,
+     242
+    ],
+    "kb": 15
+   }
+  },
+  {
+   "nr": 395,
+   "groep": "terrein",
+   "werelden": [
+    "ts"
+   ],
+   "plek": "sneeuwstad nevel",
+   "naam": "ts-sneeuwstad-nevel",
+   "bron": "ZmEzK.jpg",
+   "zip": "4e919cb1-terrastate_assets_part2",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/terrein/ts-sneeuwstad-nevel-s.webp",
+    "px": [
+     360,
+     242
+    ],
+    "kb": 13
+   }
+  },
+  {
+   "nr": 396,
+   "groep": "terrein",
+   "werelden": [
+    "ts"
+   ],
+   "plek": "industriezone in mist",
+   "naam": "ts-industriezone-mist",
+   "bron": "Terrastate_Landscape_Industrial_Zone.jpg",
+   "zip": "496f8889-terrastate_complete_assets",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/terrein/ts-industriezone-mist-s.webp",
+    "px": [
+     360,
+     242
+    ],
+    "kb": 11
+   }
+  },
+  {
+   "nr": 397,
+   "groep": "terrein",
+   "werelden": [
+    "ts"
+   ],
+   "plek": "kustbasis op klif",
+   "naam": "ts-kustbasis-klif",
+   "bron": "ZCJvC.jpg",
+   "zip": "4e919cb1-terrastate_assets_part2",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/terrein/ts-kustbasis-klif-s.webp",
+    "px": [
+     360,
+     242
+    ],
+    "kb": 10
+   }
+  },
+  {
+   "nr": 398,
+   "groep": "terrein",
+   "werelden": [
+    "ts"
+   ],
+   "plek": "kristalstad",
+   "naam": "ts-kristalstad",
+   "bron": "qawi7.jpg",
+   "zip": "4e919cb1-terrastate_assets_part2",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/terrein/ts-kristalstad-s.webp",
+    "px": [
+     360,
+     242
+    ],
+    "kb": 11
+   }
+  },
+  {
+   "nr": 399,
+   "groep": "terrein",
+   "werelden": [
+    "ts"
+   ],
+   "plek": "woestijn zonnetorens",
+   "naam": "ts-woestijn-zonnetorens",
+   "bron": "zga8Z.jpg",
+   "zip": "4e919cb1-terrastate_assets_part2",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/terrein/ts-woestijn-zonnetorens-s.webp",
+    "px": [
+     360,
+     242
+    ],
+    "kb": 15
+   }
+  },
+  {
+   "nr": 400,
+   "groep": "terrein",
+   "werelden": [
+    "ts"
+   ],
+   "plek": "reactorcomplex bergen",
+   "naam": "ts-reactor-berg",
+   "bron": "iS0X9.jpg",
+   "zip": "4e919cb1-terrastate_assets_part2",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/terrein/ts-reactor-berg-s.webp",
+    "px": [
+     360,
+     242
+    ],
+    "kb": 16
+   }
+  },
+  {
+   "nr": 401,
+   "groep": "terrein",
+   "werelden": [
+    "ro"
+   ],
+   "plek": "landgoed villas heuvels",
+   "naam": "ro-landgoed-villas",
+   "bron": "1Vm0D.jpg",
+   "zip": "399fba94-terrastate_assets_part1",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/terrein/ro-landgoed-villas-s.webp",
+    "px": [
+     360,
+     242
+    ],
+    "kb": 20
+   }
+  },
+  {
+   "nr": 402,
+   "groep": "terrein",
+   "werelden": [
+    "ro"
+   ],
+   "plek": "aquaduct avond",
+   "naam": "ro-aquaduct-avond",
+   "bron": "EGnEe.jpg",
+   "zip": "399fba94-terrastate_assets_part1",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/terrein/ro-aquaduct-avond-s.webp",
+    "px": [
+     360,
+     242
+    ],
+    "kb": 16
+   }
+  },
+  {
+   "nr": 403,
+   "groep": "terrein",
+   "werelden": [
+    "ro"
+   ],
+   "plek": "woestijntoren",
+   "naam": "ro-woestijntoren",
+   "bron": "6ktKS.jpg",
+   "zip": "399fba94-terrastate_assets_part1",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/terrein/ro-woestijntoren-s.webp",
+    "px": [
+     360,
+     242
+    ],
+    "kb": 18
+   }
+  },
+  {
+   "nr": 404,
+   "groep": "terrein",
+   "werelden": [
+    "ro"
+   ],
+   "plek": "bergpas fakkels",
+   "naam": "ro-bergpas-fakkels",
+   "bron": "7EMy0.jpg",
+   "zip": "399fba94-terrastate_assets_part1",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/terrein/ro-bergpas-fakkels-s.webp",
+    "px": [
+     360,
+     242
+    ],
+    "kb": 20
+   }
+  },
+  {
+   "nr": 405,
+   "groep": "terrein",
+   "werelden": [
+    "ro"
+   ],
+   "plek": "Griekse haven tempel",
+   "naam": "ro-haven-tempel-griekenland",
+   "bron": "MSJnE.jpg",
+   "zip": "399fba94-terrastate_assets_part1",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/terrein/ro-haven-tempel-griekenland-s.webp",
+    "px": [
+     360,
+     242
+    ],
+    "kb": 21
+   }
+  },
+  {
+   "nr": 406,
+   "groep": "terrein",
+   "werelden": [
+    "ro"
+   ],
+   "plek": "eilandhaven vuurtoren",
+   "naam": "ro-haven-vuurtoren",
+   "bron": "Y6ySJ.jpg",
+   "zip": "4e919cb1-terrastate_assets_part2",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/terrein/ro-haven-vuurtoren-s.webp",
+    "px": [
+     360,
+     242
+    ],
+    "kb": 20
+   }
+  },
+  {
+   "nr": 407,
+   "groep": "terrein",
+   "werelden": [
+    "ro"
+   ],
+   "plek": "woestijnstad",
+   "naam": "ro-woestijnstad",
+   "bron": "klFrc.jpg",
+   "zip": "4e919cb1-terrastate_assets_part2",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/terrein/ro-woestijnstad-s.webp",
+    "px": [
+     360,
+     242
+    ],
+    "kb": 15
+   }
+  },
+  {
+   "nr": 408,
+   "groep": "terrein",
+   "werelden": [
+    "if"
+   ],
+   "plek": "Atlantische kust klif haven",
+   "naam": "if-kust-klif-haven",
+   "bron": "1Jyes.jpg",
+   "zip": "399fba94-terrastate_assets_part1",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/terrein/if-kust-klif-haven-s.webp",
+    "px": [
+     360,
+     242
+    ],
+    "kb": 12
+   }
+  },
+  {
+   "nr": 409,
+   "groep": "terrein",
+   "werelden": [
+    "if"
+   ],
+   "plek": "loopgraaf brug modder",
+   "naam": "if-loopgraaf-brug",
+   "bron": "3FvFI.jpg",
+   "zip": "399fba94-terrastate_assets_part1",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/terrein/if-loopgraaf-brug-s.webp",
+    "px": [
+     360,
+     242
+    ],
+    "kb": 20
+   }
+  },
+  {
+   "nr": 410,
+   "groep": "terrein",
+   "werelden": [
+    "if"
+   ],
+   "plek": "artillerie in modder",
+   "naam": "if-artillerie-modder",
+   "bron": "9Qwnu.jpg",
+   "zip": "399fba94-terrastate_assets_part1",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/terrein/if-artillerie-modder-s.webp",
+    "px": [
+     360,
+     242
+    ],
+    "kb": 14
+   }
+  },
+  {
+   "nr": 411,
+   "groep": "terrein",
+   "werelden": [
+    "if"
+   ],
+   "plek": "konvooi modderweg",
+   "naam": "if-konvooi-modder",
+   "bron": "BwrBF.jpg",
+   "zip": "399fba94-terrastate_assets_part1",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/terrein/if-konvooi-modder-s.webp",
+    "px": [
+     360,
+     242
+    ],
+    "kb": 15
+   }
+  },
+  {
+   "nr": 412,
+   "groep": "terrein",
+   "werelden": [
+    "if"
+   ],
+   "plek": "steppe met schoorsteenrook",
+   "naam": "if-steppe-schoorsteen",
+   "bron": "WCLzi.jpg",
+   "zip": "399fba94-terrastate_assets_part1",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/terrein/if-steppe-schoorsteen-s.webp",
+    "px": [
+     360,
+     242
+    ],
+    "kb": 7
+   }
+  },
+  {
+   "nr": 413,
+   "groep": "terrein",
+   "werelden": [
+    "if"
+   ],
+   "plek": "brandende velden",
+   "naam": "if-brandende-velden",
+   "bron": "XWJBW.jpg",
+   "zip": "4e919cb1-terrastate_assets_part2",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/terrein/if-brandende-velden-s.webp",
+    "px": [
+     360,
+     242
+    ],
+    "kb": 8
+   }
+  },
+  {
+   "nr": 414,
+   "groep": "terrein",
+   "werelden": [
+    "if"
+   ],
+   "plek": "bos en heuvels",
+   "naam": "if-bos-heuvels",
+   "bron": "eIFiG.jpg",
+   "zip": "4e919cb1-terrastate_assets_part2",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/terrein/if-bos-heuvels-s.webp",
+    "px": [
+     360,
+     242
+    ],
+    "kb": 13
+   }
+  },
+  {
+   "nr": 415,
+   "groep": "terrein",
+   "werelden": [
+    "if"
+   ],
+   "plek": "tanks in woestijn",
+   "naam": "if-tanks-woestijn",
+   "bron": "HAS3K.jpg",
+   "zip": "399fba94-terrastate_assets_part1",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/terrein/if-tanks-woestijn-s.webp",
+    "px": [
+     360,
+     242
+    ],
+    "kb": 14
+   }
+  },
+  {
+   "nr": 416,
+   "groep": "terrein",
+   "werelden": [
+    "if"
+   ],
+   "plek": "tankkolom modder",
+   "naam": "if-tankkolom-modder",
+   "bron": "Ironfront_Unit_Tank_Column.jpg",
+   "zip": "496f8889-terrastate_complete_assets",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/terrein/if-tankkolom-modder-s.webp",
+    "px": [
+     360,
+     242
+    ],
+    "kb": 15
+   }
+  },
+  {
+   "nr": 417,
+   "groep": "gevecht",
+   "werelden": [
+    "ts"
+   ],
+   "plek": "gevechtsverslag drone-vlucht",
+   "naam": "ts-dronevlucht",
+   "bron": "2LChK.jpg",
+   "zip": "399fba94-terrastate_assets_part1",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/gevechten/ts-dronevlucht-s.webp",
+    "px": [
+     360,
+     242
+    ],
+    "kb": 13
+   }
+  },
+  {
+   "nr": 418,
+   "groep": "gevecht",
+   "werelden": [
+    "ts"
+   ],
+   "plek": "gevechtsverslag exopantser",
+   "naam": "ts-exopantser-veld",
+   "bron": "iVxSP.jpg",
+   "zip": "4e919cb1-terrastate_assets_part2",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/gevechten/ts-exopantser-veld-s.webp",
+    "px": [
+     360,
+     242
+    ],
+    "kb": 16
+   }
+  },
+  {
+   "nr": 419,
+   "groep": "gevecht",
+   "werelden": [
+    "ts"
+   ],
+   "plek": "gevechtsverslag mech",
+   "naam": "ts-mech-berg",
+   "bron": "E9e40.jpg",
+   "zip": "399fba94-terrastate_assets_part1",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/gevechten/ts-mech-berg-s.webp",
+    "px": [
+     360,
+     242
+    ],
+    "kb": 21
+   }
+  },
+  {
+   "nr": 420,
+   "groep": "gevecht",
+   "werelden": [
+    "ts"
+   ],
+   "plek": "gevechtsverslag hovervoertuigen",
+   "naam": "ts-hovervoertuigen",
+   "bron": "DdPL4.jpg",
+   "zip": "399fba94-terrastate_assets_part1",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/gevechten/ts-hovervoertuigen-s.webp",
+    "px": [
+     360,
+     242
+    ],
+    "kb": 17
+   }
+  },
+  {
+   "nr": 421,
+   "groep": "gevecht",
+   "werelden": [
+    "ts"
+   ],
+   "plek": "gevechtsverslag hovertanks",
+   "naam": "ts-hovertanks",
+   "bron": "CrhgT.jpg",
+   "zip": "399fba94-terrastate_assets_part1",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/gevechten/ts-hovertanks-s.webp",
+    "px": [
+     360,
+     242
+    ],
+    "kb": 15
+   }
+  },
+  {
+   "nr": 422,
+   "groep": "gevecht",
+   "werelden": [
+    "ts"
+   ],
+   "plek": "gevechtsverslag artillerie",
+   "naam": "ts-artillerie-ijs",
+   "bron": "I8cfJ.jpg",
+   "zip": "399fba94-terrastate_assets_part1",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/gevechten/ts-artillerie-ijs-s.webp",
+    "px": [
+     360,
+     242
+    ],
+    "kb": 17
+   }
+  },
+  {
+   "nr": 423,
+   "groep": "gevecht",
+   "werelden": [
+    "ro"
+   ],
+   "plek": "gevechtsverslag boogschutters ballista",
+   "naam": "ro-boogschutters-ballista",
+   "bron": "E2FMX.jpg",
+   "zip": "399fba94-terrastate_assets_part1",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/gevechten/ro-boogschutters-ballista-s.webp",
+    "px": [
+     360,
+     242
+    ],
+    "kb": 18
+   }
+  },
+  {
+   "nr": 424,
+   "groep": "gevecht",
+   "werelden": [
+    "ro"
+   ],
+   "plek": "gevechtsverslag ruiterij",
+   "naam": "ro-ruiterij-aanval",
+   "bron": "S8ZMO.jpg",
+   "zip": "399fba94-terrastate_assets_part1",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/gevechten/ro-ruiterij-aanval-s.webp",
+    "px": [
+     360,
+     242
+    ],
+    "kb": 16
+   }
+  },
+  {
+   "nr": 425,
+   "groep": "gevecht",
+   "werelden": [
+    "ro"
+   ],
+   "plek": "gevechtsverslag belegeringstorens",
+   "naam": "ro-belegering-torens",
+   "bron": "SLLjC.jpg",
+   "zip": "399fba94-terrastate_assets_part1",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/gevechten/ro-belegering-torens-s.webp",
+    "px": [
+     360,
+     242
+    ],
+    "kb": 18
+   }
+  },
+  {
+   "nr": 426,
+   "groep": "gevecht",
+   "werelden": [
+    "ro"
+   ],
+   "plek": "gevechtsverslag falanx",
+   "naam": "ro-falanx-heuvel",
+   "bron": "oUQ0g.jpg",
+   "zip": "4e919cb1-terrastate_assets_part2",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/gevechten/ro-falanx-heuvel-s.webp",
+    "px": [
+     360,
+     242
+    ],
+    "kb": 19
+   }
+  },
+  {
+   "nr": 427,
+   "groep": "gevecht",
+   "werelden": [
+    "if"
+   ],
+   "plek": "gevechtsverslag infanterie modder",
+   "naam": "if-infanterie-modder",
+   "bron": "9W8O2.jpg",
+   "zip": "399fba94-terrastate_assets_part1",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/gevechten/if-infanterie-modder-s.webp",
+    "px": [
+     360,
+     242
+    ],
+    "kb": 17
+   }
+  },
+  {
+   "nr": 428,
+   "groep": "gevecht",
+   "werelden": [
+    "if"
+   ],
+   "plek": "gevechtsverslag infanterie heuvels",
+   "naam": "if-patrouille-heuvels",
+   "bron": "UOn6j.jpg",
+   "zip": "399fba94-terrastate_assets_part1",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/gevechten/if-patrouille-heuvels-s.webp",
+    "px": [
+     360,
+     242
+    ],
+    "kb": 11
+   }
+  },
+  {
+   "nr": 429,
+   "groep": "gevecht",
+   "werelden": [
+    "if"
+   ],
+   "plek": "gevechtsverslag geschut modder",
+   "naam": "if-geschut-modder",
+   "bron": "wJ8Ph.jpg",
+   "zip": "4e919cb1-terrastate_assets_part2",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/gevechten/if-geschut-modder-s.webp",
+    "px": [
+     360,
+     242
+    ],
+    "kb": 13
+   }
+  },
+  {
+   "nr": 430,
+   "groep": "zaal",
+   "werelden": [
+    "ts"
+   ],
+   "plek": "Map kop wereldkaart",
+   "naam": "ts-kop-wereldkaart",
+   "bron": "YHXs3.jpg",
+   "zip": "4e919cb1-terrastate_assets_part2",
+   "groot": {
+    "pad": "world/img/v3/zalen/ts-kop-wereldkaart.webp",
+    "px": [
+     1168,
+     784
+    ],
+    "kb": 50
+   },
+   "klein": {
+    "pad": "world/img/v3/zalen/ts-kop-wereldkaart-s.webp",
+    "px": [
+     480,
+     322
+    ],
+    "kb": 9
+   }
+  },
+  {
+   "nr": 431,
+   "groep": "zaal",
+   "werelden": [
+    "ts"
+   ],
+   "plek": "Staff kop commandocentrum",
+   "naam": "ts-kop-commandocentrum",
+   "bron": "2rpPR.jpg",
+   "zip": "399fba94-terrastate_assets_part1",
+   "groot": {
+    "pad": "world/img/v3/zalen/ts-kop-commandocentrum.webp",
+    "px": [
+     1168,
+     784
+    ],
+    "kb": 102
+   },
+   "klein": {
+    "pad": "world/img/v3/zalen/ts-kop-commandocentrum-s.webp",
+    "px": [
+     480,
+     322
+    ],
+    "kb": 22
+   }
+  },
+  {
+   "nr": 432,
+   "groep": "zaal",
+   "werelden": [
+    "ts"
+   ],
+   "plek": "Home defence kop kanonnenvesting (ook Planetary Shield)",
+   "naam": "ts-kop-kanonnenvesting",
+   "bron": "jlLEY.jpg",
+   "zip": "4e919cb1-terrastate_assets_part2",
+   "groot": {
+    "pad": "world/img/v3/zalen/ts-kop-kanonnenvesting.webp",
+    "px": [
+     1168,
+     784
+    ],
+    "kb": 148
+   },
+   "klein": {
+    "pad": "world/img/v3/zalen/ts-kop-kanonnenvesting-s.webp",
+    "px": [
+     480,
+     322
+    ],
+    "kb": 32
+   }
+  },
+  {
+   "nr": 433,
+   "groep": "zaal",
+   "werelden": [
+    "ts"
+   ],
+   "plek": "Covert Ops kop stad nacht",
+   "naam": "ts-kop-stad-nacht",
+   "bron": "cixRL.jpg",
+   "zip": "4e919cb1-terrastate_assets_part2",
+   "groot": {
+    "pad": "world/img/v3/zalen/ts-kop-stad-nacht.webp",
+    "px": [
+     1168,
+     784
+    ],
+    "kb": 157
+   },
+   "klein": {
+    "pad": "world/img/v3/zalen/ts-kop-stad-nacht-s.webp",
+    "px": [
+     480,
+     322
+    ],
+    "kb": 34
+   }
+  },
+  {
+   "nr": 434,
+   "groep": "zaal",
+   "werelden": [
+    "ts"
+   ],
+   "plek": "Messages kop skyline",
+   "naam": "ts-kop-skyline-blauw",
+   "bron": "ywWg7.jpg",
+   "zip": "4e919cb1-terrastate_assets_part2",
+   "groot": {
+    "pad": "world/img/v3/zalen/ts-kop-skyline-blauw.webp",
+    "px": [
+     1168,
+     784
+    ],
+    "kb": 149
+   },
+   "klein": {
+    "pad": "world/img/v3/zalen/ts-kop-skyline-blauw-s.webp",
+    "px": [
+     480,
+     322
+    ],
+    "kb": 33
+   }
+  },
+  {
+   "nr": 435,
+   "groep": "zaal",
+   "werelden": [
+    "ts"
+   ],
+   "plek": "startscherm stad",
+   "naam": "ts-startscherm",
+   "bron": "OKDG1.jpg",
+   "zip": "399fba94-terrastate_assets_part1",
+   "groot": {
+    "pad": "world/img/v3/zalen/ts-startscherm.webp",
+    "px": [
+     1920,
+     1080
+    ],
+    "kb": 163
+   },
+   "klein": {
+    "pad": "world/img/v3/zalen/ts-startscherm-s.webp",
+    "px": [
+     480,
+     270
+    ],
+    "kb": 20
+   }
+  },
+  {
+   "nr": 436,
+   "groep": "zaal",
+   "werelden": [
+    "ro"
+   ],
+   "plek": "Map kop stad op heuvel",
+   "naam": "ro-kop-stad-heuvel",
+   "bron": "Az9bC.jpg",
+   "zip": "399fba94-terrastate_assets_part1",
+   "groot": {
+    "pad": "world/img/v3/zalen/ro-kop-stad-heuvel.webp",
+    "px": [
+     1168,
+     784
+    ],
+    "kb": 112
+   },
+   "klein": {
+    "pad": "world/img/v3/zalen/ro-kop-stad-heuvel-s.webp",
+    "px": [
+     480,
+     322
+    ],
+    "kb": 22
+   }
+  },
+  {
+   "nr": 437,
+   "groep": "zaal",
+   "werelden": [
+    "ro"
+   ],
+   "plek": "Home defence kop woestijnvesting",
+   "naam": "ro-kop-woestijnstad",
+   "bron": "klFrc.jpg",
+   "zip": "4e919cb1-terrastate_assets_part2",
+   "groot": {
+    "pad": "world/img/v3/zalen/ro-kop-woestijnstad.webp",
+    "px": [
+     1168,
+     784
+    ],
+    "kb": 126
+   },
+   "klein": {
+    "pad": "world/img/v3/zalen/ro-kop-woestijnstad-s.webp",
+    "px": [
+     480,
+     322
+    ],
+    "kb": 26
+   }
+  },
+  {
+   "nr": 438,
+   "groep": "zaal",
+   "werelden": [
+    "ro"
+   ],
+   "plek": "Speculatores kop heuvels met toren",
+   "naam": "ro-kop-heuvels-toren",
+   "bron": "rEVUW.jpg",
+   "zip": "4e919cb1-terrastate_assets_part2",
+   "groot": {
+    "pad": "world/img/v3/zalen/ro-kop-heuvels-toren.webp",
+    "px": [
+     1168,
+     784
+    ],
+    "kb": 109
+   },
+   "klein": {
+    "pad": "world/img/v3/zalen/ro-kop-heuvels-toren-s.webp",
+    "px": [
+     480,
+     322
+    ],
+    "kb": 24
+   }
+  },
+  {
+   "nr": 439,
+   "groep": "zaal",
+   "werelden": [
+    "ro"
+   ],
+   "plek": "Messages kop forum schemer",
+   "naam": "ro-kop-forum-schemer",
+   "bron": "EaD4V.jpg",
+   "zip": "399fba94-terrastate_assets_part1",
+   "groot": {
+    "pad": "world/img/v3/zalen/ro-kop-forum-schemer.webp",
+    "px": [
+     1168,
+     784
+    ],
+    "kb": 137
+   },
+   "klein": {
+    "pad": "world/img/v3/zalen/ro-kop-forum-schemer-s.webp",
+    "px": [
+     480,
+     322
+    ],
+    "kb": 27
+   }
+  },
+  {
+   "nr": 440,
+   "groep": "zaal",
+   "werelden": [
+    "if"
+   ],
+   "plek": "Map kop steppe",
+   "naam": "if-kop-steppe",
+   "bron": "WCLzi.jpg",
+   "zip": "399fba94-terrastate_assets_part1",
+   "groot": {
+    "pad": "world/img/v3/zalen/if-kop-steppe.webp",
+    "px": [
+     1168,
+     784
+    ],
+    "kb": 75
+   },
+   "klein": {
+    "pad": "world/img/v3/zalen/if-kop-steppe-s.webp",
+    "px": [
+     480,
+     322
+    ],
+    "kb": 14
+   }
+  },
+  {
+   "nr": 441,
+   "groep": "zaal",
+   "werelden": [
+    "if"
+   ],
+   "plek": "Covert Ops kop ruine stad",
+   "naam": "if-kop-ruine-stad",
+   "bron": "sRWvy.jpg",
+   "zip": "4e919cb1-terrastate_assets_part2",
+   "groot": {
+    "pad": "world/img/v3/zalen/if-kop-ruine-stad.webp",
+    "px": [
+     1168,
+     784
+    ],
+    "kb": 104
+   },
+   "klein": {
+    "pad": "world/img/v3/zalen/if-kop-ruine-stad-s.webp",
+    "px": [
+     480,
+     322
+    ],
+    "kb": 23
+   }
+  },
+  {
+   "nr": 442,
+   "groep": "zaal",
+   "werelden": [
+    "if"
+   ],
+   "plek": "Messages kop ruine dorp",
+   "naam": "if-kop-ruine-dorp",
+   "bron": "Ironfront_Landscape_Ruined_Town.jpg",
+   "zip": "496f8889-terrastate_complete_assets",
+   "groot": {
+    "pad": "world/img/v3/zalen/if-kop-ruine-dorp.webp",
+    "px": [
+     1168,
+     784
+    ],
+    "kb": 134
+   },
+   "klein": {
+    "pad": "world/img/v3/zalen/if-kop-ruine-dorp-s.webp",
+    "px": [
+     480,
+     322
+    ],
+    "kb": 27
+   }
+  },
+  {
+   "nr": 443,
+   "groep": "embleem",
+   "werelden": [
+    "ts"
+   ],
+   "plek": "alliantie zeshoek",
+   "naam": "ts-embleem-zeshoek",
+   "bron": "BUgPC.jpg",
+   "zip": "399fba94-terrastate_assets_part1",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/emblemen/ts-embleem-zeshoek-s.webp",
+    "px": [
+     134,
+     200
+    ],
+    "kb": 1
+   }
+  },
+  {
+   "nr": 444,
+   "groep": "embleem",
+   "werelden": [
+    "ts"
+   ],
+   "plek": "alliantie donker metaal",
+   "naam": "ts-embleem-metaalknoop",
+   "bron": "H2SAH.jpg",
+   "zip": "399fba94-terrastate_assets_part1",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/emblemen/ts-embleem-metaalknoop-s.webp",
+    "px": [
+     134,
+     200
+    ],
+    "kb": 2
+   }
+  },
+  {
+   "nr": 445,
+   "groep": "embleem",
+   "werelden": [
+    "ts"
+   ],
+   "plek": "alliantie schild blauw",
+   "naam": "ts-embleem-schild-blauw",
+   "bron": "Terrastate_Emblem_Geometric_Shield.jpg",
+   "zip": "496f8889-terrastate_complete_assets",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/emblemen/ts-embleem-schild-blauw-s.webp",
+    "px": [
+     134,
+     200
+    ],
+    "kb": 3
+   }
+  },
+  {
+   "nr": 446,
+   "groep": "embleem",
+   "werelden": [
+    "ts"
+   ],
+   "plek": "alliantie driehoek ring",
+   "naam": "ts-embleem-driehoek",
+   "bron": "Zbqpk.jpg",
+   "zip": "4e919cb1-terrastate_assets_part2",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/emblemen/ts-embleem-driehoek-s.webp",
+    "px": [
+     134,
+     200
+    ],
+    "kb": 1
+   }
+  },
+  {
+   "nr": 447,
+   "groep": "embleem",
+   "werelden": [
+    "ts"
+   ],
+   "plek": "alliantie ruit T",
+   "naam": "ts-embleem-ruit",
+   "bron": "d9Ac7.jpg",
+   "zip": "4e919cb1-terrastate_assets_part2",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/emblemen/ts-embleem-ruit-s.webp",
+    "px": [
+     134,
+     200
+    ],
+    "kb": 0
+   }
+  },
+  {
+   "nr": 448,
+   "groep": "embleem",
+   "werelden": [
+    "ro"
+   ],
+   "plek": "alliantie helm schild krans",
+   "naam": "ro-embleem-helm-schild",
+   "bron": "3YuDt.jpg",
+   "zip": "399fba94-terrastate_assets_part1",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/emblemen/ro-embleem-helm-schild-s.webp",
+    "px": [
+     134,
+     200
+    ],
+    "kb": 3
+   }
+  },
+  {
+   "nr": 449,
+   "groep": "embleem",
+   "werelden": [
+    "ro"
+   ],
+   "plek": "alliantie lauwerkrans rood",
+   "naam": "ro-embleem-lauwer-rood",
+   "bron": "WXFTg.jpg",
+   "zip": "399fba94-terrastate_assets_part1",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/emblemen/ro-embleem-lauwer-rood-s.webp",
+    "px": [
+     134,
+     200
+    ],
+    "kb": 3
+   }
+  },
+  {
+   "nr": 450,
+   "groep": "embleem",
+   "werelden": [
+    "ro"
+   ],
+   "plek": "alliantie kompas krans",
+   "naam": "ro-embleem-kompas-krans",
+   "bron": "WbfdH.jpg",
+   "zip": "4e919cb1-terrastate_assets_part2",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/emblemen/ro-embleem-kompas-krans-s.webp",
+    "px": [
+     134,
+     200
+    ],
+    "kb": 2
+   }
+  },
+  {
+   "nr": 451,
+   "groep": "embleem",
+   "werelden": [
+    "ro"
+   ],
+   "plek": "alliantie schild lauwer",
+   "naam": "ro-embleem-schild-lauwer",
+   "bron": "oE0OA.jpg",
+   "zip": "4e919cb1-terrastate_assets_part2",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/emblemen/ro-embleem-schild-lauwer-s.webp",
+    "px": [
+     134,
+     200
+    ],
+    "kb": 3
+   }
+  },
+  {
+   "nr": 452,
+   "groep": "embleem",
+   "werelden": [
+    "ro"
+   ],
+   "plek": "alliantie handdruk brons",
+   "naam": "ro-embleem-handdruk",
+   "bron": "tVp19.jpg",
+   "zip": "4e919cb1-terrastate_assets_part2",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/emblemen/ro-embleem-handdruk-s.webp",
+    "px": [
+     134,
+     200
+    ],
+    "kb": 4
+   }
+  },
+  {
+   "nr": 453,
+   "groep": "embleem",
+   "werelden": [
+    "if"
+   ],
+   "plek": "alliantie schild olijf",
+   "naam": "if-embleem-schild-olijf",
+   "bron": "Du6uc.jpg",
+   "zip": "399fba94-terrastate_assets_part1",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/emblemen/if-embleem-schild-olijf-s.webp",
+    "px": [
+     134,
+     200
+    ],
+    "kb": 1
+   }
+  },
+  {
+   "nr": 454,
+   "groep": "embleem",
+   "werelden": [
+    "if"
+   ],
+   "plek": "alliantie geometrisch wapen",
+   "naam": "if-embleem-wapen",
+   "bron": "NgdAW.jpg",
+   "zip": "399fba94-terrastate_assets_part1",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/emblemen/if-embleem-wapen-s.webp",
+    "px": [
+     134,
+     200
+    ],
+    "kb": 1
+   }
+  },
+  {
+   "nr": 455,
+   "groep": "embleem",
+   "werelden": [
+    "if"
+   ],
+   "plek": "alliantie V donker metaal",
+   "naam": "if-embleem-v-metaal",
+   "bron": "krGeQ.jpg",
+   "zip": "4e919cb1-terrastate_assets_part2",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/emblemen/if-embleem-v-metaal-s.webp",
+    "px": [
+     134,
+     200
+    ],
+    "kb": 3
+   }
+  },
+  {
+   "nr": 456,
+   "groep": "trofee",
+   "werelden": [
+    "ts",
+    "ro",
+    "if"
+   ],
+   "plek": "beker Conqueror",
+   "naam": "beker-conqueror",
+   "bron": "u7Y7W.jpg",
+   "zip": "4e919cb1-terrastate_assets_part2",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/emblemen/beker-conqueror-s.webp",
+    "px": [
+     134,
+     200
+    ],
+    "kb": 3
+   }
+  },
+  {
+   "nr": 457,
+   "groep": "gevecht",
+   "werelden": [
+    "ts"
+   ],
+   "plek": "gevechtsverslag hovervoertuigen 2",
+   "naam": "ts-hovervoertuigen-2",
+   "bron": "RFcHz.jpg",
+   "zip": "399fba94-terrastate_assets_part1",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/gevechten/ts-hovervoertuigen-2-s.webp",
+    "px": [
+     360,
+     242
+    ],
+    "kb": 17
+   }
+  },
+  {
+   "nr": 458,
+   "groep": "eenheid",
+   "werelden": [
+    "ts"
+   ],
+   "plek": "eenheid ts:loitering_munition (zwerm van 20+ drones)",
+   "naam": "ts-drones-loitering_munition",
+   "bron": "a6F3e.jpg",
+   "zip": "4e919cb1-terrastate_assets_part2",
+   "groot": {
+    "pad": "world/img/v3/eenheden/ts-drones-loitering_munition.webp",
+    "px": [
+     256,
+     256
+    ],
+    "kb": 2
+   },
+   "klein": {
+    "pad": "world/img/v3/eenheden/ts-drones-loitering_munition-s.webp",
+    "px": [
+     96,
+     96
+    ],
+    "kb": 0
+   }
+  },
+  {
+   "nr": 459,
+   "groep": "eenheid",
+   "werelden": [
+    "ts"
+   ],
+   "plek": "eenheid ts:interceptor (straaljager)",
+   "naam": "ts-straaljager-interceptor",
+   "bron": "jk5AW.jpg",
+   "zip": "4e919cb1-terrastate_assets_part2",
+   "groot": {
+    "pad": "world/img/v3/eenheden/ts-straaljager-interceptor.webp",
+    "px": [
+     256,
+     256
+    ],
+    "kb": 1
+   },
+   "klein": {
+    "pad": "world/img/v3/eenheden/ts-straaljager-interceptor-s.webp",
+    "px": [
+     96,
+     96
+    ],
+    "kb": 0
+   }
+  },
+  {
+   "nr": 460,
+   "groep": "eenheid",
+   "werelden": [
+    "ro"
+   ],
+   "plek": "eenheid ro:mobile_shield (testudo)",
+   "naam": "ro-testudo-mobile_shield",
+   "bron": "EIurg.jpg",
+   "zip": "399fba94-terrastate_assets_part1",
+   "groot": {
+    "pad": "world/img/v3/eenheden/ro-testudo-mobile_shield.webp",
+    "px": [
+     256,
+     256
+    ],
+    "kb": 6
+   },
+   "klein": {
+    "pad": "world/img/v3/eenheden/ro-testudo-mobile_shield-s.webp",
+    "px": [
+     96,
+     96
+    ],
+    "kb": 1
+   }
+  },
+  {
+   "nr": 461,
+   "groep": "gevecht",
+   "werelden": [
+    "ts"
+   ],
+   "plek": "gevechtsverslag drones en gunship",
+   "naam": "ts-drones-gunship",
+   "bron": "1ngdo.jpg",
+   "zip": "399fba94-terrastate_assets_part1",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/gevechten/ts-drones-gunship-s.webp",
+    "px": [
+     360,
+     242
+    ],
+    "kb": 16
+   }
   }
  ],
  "niet_gebruikt": [
