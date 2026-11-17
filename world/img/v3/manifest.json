@@ -10460,6 +10460,1823 @@
     ],
     "kb": 16
    }
+  },
+  {
+   "nr": 462,
+   "groep": "portret",
+   "werelden": [
+    "ts"
+   ],
+   "plek": "extra vrouw rood kort haar",
+   "naam": "ts-vrouw-officier-rood",
+   "bron": "Replacement_Terrastate_Portrait_Female_Officer.jpg",
+   "zip": "14080bc6-terrastate_replacements_1",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/portretten/ts-vrouw-officier-rood-s.webp",
+    "px": [
+     161,
+     240
+    ],
+    "kb": 3
+   }
+  },
+  {
+   "nr": 463,
+   "groep": "portret",
+   "werelden": [
+    "ts"
+   ],
+   "plek": "extra man technicus stoppels",
+   "naam": "ts-man-technicus",
+   "bron": "Replacement_Terrastate_Portrait_Male_Technician.jpg",
+   "zip": "14080bc6-terrastate_replacements_1",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/portretten/ts-man-technicus-s.webp",
+    "px": [
+     161,
+     240
+    ],
+    "kb": 4
+   }
+  },
+  {
+   "nr": 464,
+   "groep": "portret",
+   "werelden": [
+    "ts"
+   ],
+   "plek": "extra vrouw zilvergrijs kort",
+   "naam": "ts-vrouw-zilvergrijs-kort",
+   "bron": "Replacement_Terrastate_Portrait_Older_Female.jpg",
+   "zip": "14080bc6-terrastate_replacements_1",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/portretten/ts-vrouw-zilvergrijs-kort-s.webp",
+    "px": [
+     161,
+     240
+    ],
+    "kb": 5
+   }
+  },
+  {
+   "nr": 465,
+   "groep": "portret",
+   "werelden": [
+    "ro"
+   ],
+   "plek": "extra vrouw krijgster vlechten fakkels",
+   "naam": "ro-vrouw-krijger-vlecht",
+   "bron": "Replacement_Romaterra_Portrait_Female_Warrior.jpg",
+   "zip": "14080bc6-terrastate_replacements_1",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/portretten/ro-vrouw-krijger-vlecht-s.webp",
+    "px": [
+     161,
+     240
+    ],
+    "kb": 7
+   }
+  },
+  {
+   "nr": 466,
+   "groep": "portret",
+   "werelden": [
+    "ro"
+   ],
+   "plek": "extra man jong scout harnas",
+   "naam": "ro-man-scout-jong",
+   "bron": "Replacement_Romaterra_Portrait_Male_Scout.jpg",
+   "zip": "14080bc6-terrastate_replacements_1",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/portretten/ro-man-scout-jong-s.webp",
+    "px": [
+     161,
+     240
+    ],
+    "kb": 5
+   }
+  },
+  {
+   "nr": 467,
+   "groep": "portret",
+   "werelden": [
+    "if"
+   ],
+   "plek": "extra vrouw koerier krullen",
+   "naam": "if-vrouw-koerier",
+   "bron": "Replacement_Ironfront_Portrait_Female_Courier.jpg",
+   "zip": "14080bc6-terrastate_replacements_1",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/portretten/if-vrouw-koerier-s.webp",
+    "px": [
+     161,
+     240
+    ],
+    "kb": 4
+   }
+  },
+  {
+   "nr": 468,
+   "groep": "portret",
+   "werelden": [
+    "if"
+   ],
+   "plek": "extra man officier jas kortgeknipt",
+   "naam": "if-man-officier-jas",
+   "bron": "Replacement_Ironfront_Portrait_Male_Officer.jpg",
+   "zip": "14080bc6-terrastate_replacements_1",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/portretten/if-man-officier-jas-s.webp",
+    "px": [
+     161,
+     240
+    ],
+    "kb": 3
+   }
+  },
+  {
+   "nr": 469,
+   "groep": "portret",
+   "werelden": [
+    "if"
+   ],
+   "plek": "extra man oud bril grijs",
+   "naam": "if-man-oud-bril-grijs",
+   "bron": "Replacement_Ironfront_Portrait_Older_Male.jpg",
+   "zip": "14080bc6-terrastate_replacements_1",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/portretten/if-man-oud-bril-grijs-s.webp",
+    "px": [
+     161,
+     240
+    ],
+    "kb": 3
+   }
+  },
+  {
+   "nr": 470,
+   "groep": "embleem",
+   "werelden": [
+    "ts"
+   ],
+   "plek": "alliantie pijl zeshoek",
+   "naam": "ts-embleem-pijl-zeshoek",
+   "bron": "Replacement_Terrastate_Emblem_Geometric.jpg",
+   "zip": "14080bc6-terrastate_replacements_1",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/emblemen/ts-embleem-pijl-zeshoek-s.webp",
+    "px": [
+     134,
+     200
+    ],
+    "kb": 1
+   }
+  },
+  {
+   "nr": 471,
+   "groep": "embleem",
+   "werelden": [
+    "ts"
+   ],
+   "plek": "alliantie knoop blauw",
+   "naam": "ts-embleem-knoop-blauw",
+   "bron": "Terrastate_Emblem_Geometric2.jpg",
+   "zip": "9cf4e2d8-terrastate_complete_batch_2026",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/emblemen/ts-embleem-knoop-blauw-s.webp",
+    "px": [
+     134,
+     200
+    ],
+    "kb": 1
+   }
+  },
+  {
+   "nr": 472,
+   "groep": "embleem",
+   "werelden": [
+    "ts"
+   ],
+   "plek": "alliantie gevouwen blokken",
+   "naam": "ts-embleem-gevouwen",
+   "bron": "Terrastate_Emblem_Geometric3.jpg",
+   "zip": "c0d752b0-terrastate_final_part1_landscapes_emblems",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/emblemen/ts-embleem-gevouwen-s.webp",
+    "px": [
+     134,
+     200
+    ],
+    "kb": 1
+   }
+  },
+  {
+   "nr": 473,
+   "groep": "embleem",
+   "werelden": [
+    "ro"
+   ],
+   "plek": "alliantie schild geometrisch goud",
+   "naam": "ro-embleem-schild-geometrisch",
+   "bron": "Replacement_Romaterra_Emblem_Filled_Geometric.jpg",
+   "zip": "14080bc6-terrastate_replacements_1",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/emblemen/ro-embleem-schild-geometrisch-s.webp",
+    "px": [
+     134,
+     200
+    ],
+    "kb": 3
+   }
+  },
+  {
+   "nr": 474,
+   "groep": "embleem",
+   "werelden": [
+    "ro"
+   ],
+   "plek": "alliantie schild krans goud",
+   "naam": "ro-embleem-schild-krans",
+   "bron": "Replacement_Romaterra_Emblem_Shield_Laurel.jpg",
+   "zip": "14080bc6-terrastate_replacements_1",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/emblemen/ro-embleem-schild-krans-s.webp",
+    "px": [
+     134,
+     200
+    ],
+    "kb": 3
+   }
+  },
+  {
+   "nr": 475,
+   "groep": "embleem",
+   "werelden": [
+    "ro"
+   ],
+   "plek": "alliantie brons lauwer ringen",
+   "naam": "ro-embleem-brons-lauwer",
+   "bron": "Romaterra_Emblem_BronzeLaurel.jpg",
+   "zip": "9cf4e2d8-terrastate_complete_batch_2026",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/emblemen/ro-embleem-brons-lauwer-s.webp",
+    "px": [
+     134,
+     200
+    ],
+    "kb": 4
+   }
+  },
+  {
+   "nr": 476,
+   "groep": "embleem",
+   "werelden": [
+    "ro"
+   ],
+   "plek": "alliantie brons schild",
+   "naam": "ro-embleem-brons-schild",
+   "bron": "Romaterra_Emblem_BronzeGeometric.jpg",
+   "zip": "c0d752b0-terrastate_final_part1_landscapes_emblems",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/emblemen/ro-embleem-brons-schild-s.webp",
+    "px": [
+     134,
+     200
+    ],
+    "kb": 1
+   }
+  },
+  {
+   "nr": 477,
+   "groep": "embleem",
+   "werelden": [
+    "if"
+   ],
+   "plek": "alliantie schild groen",
+   "naam": "if-embleem-schild-groen",
+   "bron": "Replacement_Ironfront_Emblem_Geometric.jpg",
+   "zip": "14080bc6-terrastate_replacements_1",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/emblemen/if-embleem-schild-groen-s.webp",
+    "px": [
+     134,
+     200
+    ],
+    "kb": 2
+   }
+  },
+  {
+   "nr": 478,
+   "groep": "embleem",
+   "werelden": [
+    "if"
+   ],
+   "plek": "alliantie ruit dubbel",
+   "naam": "if-embleem-ruit-dubbel",
+   "bron": "Ironfront_Emblem_GeometricDiamond2.jpg",
+   "zip": "9cf4e2d8-terrastate_complete_batch_2026",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/emblemen/if-embleem-ruit-dubbel-s.webp",
+    "px": [
+     134,
+     200
+    ],
+    "kb": 1
+   }
+  },
+  {
+   "nr": 479,
+   "groep": "embleem",
+   "werelden": [
+    "if"
+   ],
+   "plek": "alliantie ruit olijf",
+   "naam": "if-embleem-ruit-olijf",
+   "bron": "Ironfront_Emblem_OliveGeometric.jpg",
+   "zip": "c0d752b0-terrastate_final_part1_landscapes_emblems",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/emblemen/if-embleem-ruit-olijf-s.webp",
+    "px": [
+     134,
+     200
+    ],
+    "kb": 1
+   }
+  },
+  {
+   "nr": 480,
+   "groep": "trofee",
+   "werelden": [
+    "ts",
+    "ro",
+    "if"
+   ],
+   "plek": "medaille Top 10%",
+   "naam": "medal-top10",
+   "bron": "Medal_Top10Percent.jpg",
+   "zip": "c0d752b0-terrastate_final_part1_landscapes_emblems",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/emblemen/medal-top10-s.webp",
+    "px": [
+     134,
+     200
+    ],
+    "kb": 2
+   }
+  },
+  {
+   "nr": 481,
+   "groep": "trofee",
+   "werelden": [
+    "ts",
+    "ro",
+    "if"
+   ],
+   "plek": "beker Conqueror goud",
+   "naam": "beker-conqueror-goud",
+   "bron": "Trophy_Conqueror_GoldenCup.jpg",
+   "zip": "9cf4e2d8-terrastate_complete_batch_2026",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/emblemen/beker-conqueror-goud-s.webp",
+    "px": [
+     134,
+     200
+    ],
+    "kb": 2
+   }
+  },
+  {
+   "nr": 482,
+   "groep": "icoon",
+   "werelden": [
+    "if"
+   ],
+   "plek": "Market/Stock Rations",
+   "naam": "if-rations",
+   "bron": "Ironfront_Icon_Rations.jpg",
+   "zip": "9cf4e2d8-terrastate_complete_batch_2026",
+   "groot": {
+    "pad": "world/img/v3/iconen/if-rations.webp",
+    "px": [
+     256,
+     256
+    ],
+    "kb": 3
+   },
+   "klein": {
+    "pad": "world/img/v3/iconen/if-rations-s.webp",
+    "px": [
+     96,
+     96
+    ],
+    "kb": 0
+   }
+  },
+  {
+   "nr": 483,
+   "groep": "icoon",
+   "werelden": [
+    "if"
+   ],
+   "plek": "Market/Stock Coal",
+   "naam": "if-kolen",
+   "bron": "Ironfront_Icon_Coal.jpg",
+   "zip": "9cf4e2d8-terrastate_complete_batch_2026",
+   "groot": {
+    "pad": "world/img/v3/iconen/if-kolen.webp",
+    "px": [
+     256,
+     256
+    ],
+    "kb": 6
+   },
+   "klein": {
+    "pad": "world/img/v3/iconen/if-kolen-s.webp",
+    "px": [
+     96,
+     96
+    ],
+    "kb": 1
+   }
+  },
+  {
+   "nr": 484,
+   "groep": "icoon",
+   "werelden": [
+    "if"
+   ],
+   "plek": "Market/Stock Steel",
+   "naam": "if-staal",
+   "bron": "Ironfront_Icon_Steel.jpg",
+   "zip": "9cf4e2d8-terrastate_complete_batch_2026",
+   "groot": {
+    "pad": "world/img/v3/iconen/if-staal.webp",
+    "px": [
+     256,
+     256
+    ],
+    "kb": 9
+   },
+   "klein": {
+    "pad": "world/img/v3/iconen/if-staal-s.webp",
+    "px": [
+     96,
+     96
+    ],
+    "kb": 1
+   }
+  },
+  {
+   "nr": 485,
+   "groep": "icoon",
+   "werelden": [
+    "if"
+   ],
+   "plek": "Market/Stock Petrol",
+   "naam": "if-benzine",
+   "bron": "Ironfront_Icon_Petrol.jpg",
+   "zip": "9cf4e2d8-terrastate_complete_batch_2026",
+   "groot": {
+    "pad": "world/img/v3/iconen/if-benzine.webp",
+    "px": [
+     256,
+     256
+    ],
+    "kb": 8
+   },
+   "klein": {
+    "pad": "world/img/v3/iconen/if-benzine-s.webp",
+    "px": [
+     96,
+     96
+    ],
+    "kb": 1
+   }
+  },
+  {
+   "nr": 486,
+   "groep": "icoon",
+   "werelden": [
+    "if"
+   ],
+   "plek": "Market/Stock Radio Gear",
+   "naam": "if-radio",
+   "bron": "Ironfront_Icon_RadioGear.jpg",
+   "zip": "9cf4e2d8-terrastate_complete_batch_2026",
+   "groot": {
+    "pad": "world/img/v3/iconen/if-radio.webp",
+    "px": [
+     256,
+     256
+    ],
+    "kb": 8
+   },
+   "klein": {
+    "pad": "world/img/v3/iconen/if-radio-s.webp",
+    "px": [
+     96,
+     96
+    ],
+    "kb": 1
+   }
+  },
+  {
+   "nr": 487,
+   "groep": "icoon",
+   "werelden": [
+    "if"
+   ],
+   "plek": "onderzoekspad Intelligence",
+   "naam": "if-onderzoekspad",
+   "bron": "Ironfront_Icon_ResearchPath.jpg",
+   "zip": "9cf4e2d8-terrastate_complete_batch_2026",
+   "groot": {
+    "pad": "world/img/v3/iconen/if-onderzoekspad.webp",
+    "px": [
+     256,
+     256
+    ],
+    "kb": 3
+   },
+   "klein": {
+    "pad": "world/img/v3/iconen/if-onderzoekspad-s.webp",
+    "px": [
+     96,
+     96
+    ],
+    "kb": 1
+   }
+  },
+  {
+   "nr": 488,
+   "groep": "eenheid",
+   "werelden": [
+    "ts"
+   ],
+   "plek": "eenheid ts:ew_drone (zwevende drones)",
+   "naam": "ts-hoverdrones-ew_drone",
+   "bron": "Replacement_Terrastate_Unit_Hover_Drones.jpg",
+   "zip": "14080bc6-terrastate_replacements_1",
+   "groot": {
+    "pad": "world/img/v3/eenheden/ts-hoverdrones-ew_drone.webp",
+    "px": [
+     256,
+     256
+    ],
+    "kb": 10
+   },
+   "klein": {
+    "pad": "world/img/v3/eenheden/ts-hoverdrones-ew_drone-s.webp",
+    "px": [
+     96,
+     96
+    ],
+    "kb": 1
+   }
+  },
+  {
+   "nr": 489,
+   "groep": "eenheid",
+   "werelden": [
+    "ro"
+   ],
+   "plek": "eenheid ro:infantry (effen schilden)",
+   "naam": "ro-schilden-infantry",
+   "bron": "Replacement_Romaterra_Unit_Plain_Shields.jpg",
+   "zip": "14080bc6-terrastate_replacements_1",
+   "groot": {
+    "pad": "world/img/v3/eenheden/ro-schilden-infantry.webp",
+    "px": [
+     256,
+     256
+    ],
+    "kb": 13
+   },
+   "klein": {
+    "pad": "world/img/v3/eenheden/ro-schilden-infantry-s.webp",
+    "px": [
+     96,
+     96
+    ],
+    "kb": 2
+   }
+  },
+  {
+   "nr": 490,
+   "groep": "eenheid",
+   "werelden": [
+    "ro"
+   ],
+   "plek": "eenheid ro:tank (ruiterij effen)",
+   "naam": "ro-ruiters-tank",
+   "bron": "Replacement_Romaterra_Unit_Cavalry_Plain.jpg",
+   "zip": "14080bc6-terrastate_replacements_1",
+   "groot": {
+    "pad": "world/img/v3/eenheden/ro-ruiters-tank.webp",
+    "px": [
+     256,
+     256
+    ],
+    "kb": 12
+   },
+   "klein": {
+    "pad": "world/img/v3/eenheden/ro-ruiters-tank-s.webp",
+    "px": [
+     96,
+     96
+    ],
+    "kb": 2
+   }
+  },
+  {
+   "nr": 491,
+   "groep": "eenheid",
+   "werelden": [
+    "if"
+   ],
+   "plek": "eenheid if:infantry (zonder helm)",
+   "naam": "if-voetvolk-infantry",
+   "bron": "Replacement_Ironfront_Unit_Infantry_NoHelmet.jpg",
+   "zip": "14080bc6-terrastate_replacements_1",
+   "groot": {
+    "pad": "world/img/v3/eenheden/if-voetvolk-infantry.webp",
+    "px": [
+     256,
+     256
+    ],
+    "kb": 13
+   },
+   "klein": {
+    "pad": "world/img/v3/eenheden/if-voetvolk-infantry-s.webp",
+    "px": [
+     96,
+     96
+    ],
+    "kb": 2
+   }
+  },
+  {
+   "nr": 492,
+   "groep": "gevecht",
+   "werelden": [
+    "ts"
+   ],
+   "plek": "gevechtsverslag hoverdrones",
+   "naam": "ts-hoverdrones-gevecht",
+   "bron": "Replacement_Terrastate_Unit_Hover_Drones.jpg",
+   "zip": "14080bc6-terrastate_replacements_1",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/gevechten/ts-hoverdrones-gevecht-s.webp",
+    "px": [
+     360,
+     242
+    ],
+    "kb": 14
+   }
+  },
+  {
+   "nr": 493,
+   "groep": "gevecht",
+   "werelden": [
+    "ro"
+   ],
+   "plek": "gevechtsverslag effen schilden",
+   "naam": "ro-schilden-gevecht",
+   "bron": "Replacement_Romaterra_Unit_Plain_Shields.jpg",
+   "zip": "14080bc6-terrastate_replacements_1",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/gevechten/ro-schilden-gevecht-s.webp",
+    "px": [
+     360,
+     242
+    ],
+    "kb": 18
+   }
+  },
+  {
+   "nr": 494,
+   "groep": "gevecht",
+   "werelden": [
+    "ro"
+   ],
+   "plek": "gevechtsverslag ruiterij effen",
+   "naam": "ro-ruiters-gevecht",
+   "bron": "Replacement_Romaterra_Unit_Cavalry_Plain.jpg",
+   "zip": "14080bc6-terrastate_replacements_1",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/gevechten/ro-ruiters-gevecht-s.webp",
+    "px": [
+     360,
+     242
+    ],
+    "kb": 16
+   }
+  },
+  {
+   "nr": 495,
+   "groep": "gevecht",
+   "werelden": [
+    "if"
+   ],
+   "plek": "gevechtsverslag infanterie zonder helm",
+   "naam": "if-voetvolk-gevecht",
+   "bron": "Replacement_Ironfront_Unit_Infantry_NoHelmet.jpg",
+   "zip": "14080bc6-terrastate_replacements_1",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/gevechten/if-voetvolk-gevecht-s.webp",
+    "px": [
+     360,
+     242
+    ],
+    "kb": 17
+   }
+  },
+  {
+   "nr": 496,
+   "groep": "gebouw",
+   "werelden": [
+    "ts"
+   ],
+   "plek": "Fortress Network deur",
+   "naam": "ts-fortress-netwerk-deur",
+   "bron": "Terrastate_Building_FortressNetwork.jpg",
+   "zip": "9cf4e2d8-terrastate_complete_batch_2026",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/gebouwen/ts-fortress-netwerk-deur-s.webp",
+    "px": [
+     360,
+     242
+    ],
+    "kb": 15
+   }
+  },
+  {
+   "nr": 497,
+   "groep": "gebouw",
+   "werelden": [
+    "ts"
+   ],
+   "plek": "Forward Logistics Hub",
+   "naam": "ts-logistiek-hub-bord",
+   "bron": "Terrastate_Building_ForwardLogisticsHub.jpg",
+   "zip": "9cf4e2d8-terrastate_complete_batch_2026",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/gebouwen/ts-logistiek-hub-bord-s.webp",
+    "px": [
+     360,
+     242
+    ],
+    "kb": 10
+   }
+  },
+  {
+   "nr": 498,
+   "groep": "gebouw",
+   "werelden": [
+    "ts"
+   ],
+   "plek": "Intelligence HQ nacht",
+   "naam": "ts-inlichtingen-hq-nacht",
+   "bron": "Terrastate_Building_IntelligenceHQ.jpg",
+   "zip": "9cf4e2d8-terrastate_complete_batch_2026",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/gebouwen/ts-inlichtingen-hq-nacht-s.webp",
+    "px": [
+     360,
+     242
+    ],
+    "kb": 12
+   }
+  },
+  {
+   "nr": 499,
+   "groep": "gebouw",
+   "werelden": [
+    "ts"
+   ],
+   "plek": "Power Plant nacht",
+   "naam": "ts-centrale-nacht",
+   "bron": "Terrastate_Building_PowerPlant.jpg",
+   "zip": "9cf4e2d8-terrastate_complete_batch_2026",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/gebouwen/ts-centrale-nacht-s.webp",
+    "px": [
+     360,
+     242
+    ],
+    "kb": 8
+   }
+  },
+  {
+   "nr": 500,
+   "groep": "gebouw",
+   "werelden": [
+    "ro"
+   ],
+   "plek": "Provincial Capitol zuilen",
+   "naam": "ro-provinciehuis-zuilen",
+   "bron": "Romaterra_Building_ProvincialCapitol.jpg",
+   "zip": "9cf4e2d8-terrastate_complete_batch_2026",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/gebouwen/ro-provinciehuis-zuilen-s.webp",
+    "px": [
+     360,
+     242
+    ],
+    "kb": 12
+   }
+  },
+  {
+   "nr": 501,
+   "groep": "gebouw",
+   "werelden": [
+    "ro"
+   ],
+   "plek": "Slinger Camp",
+   "naam": "ro-slingerkamp",
+   "bron": "Romaterra_Building_SlingerCamp.jpg",
+   "zip": "9cf4e2d8-terrastate_complete_batch_2026",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/gebouwen/ro-slingerkamp-s.webp",
+    "px": [
+     360,
+     242
+    ],
+    "kb": 12
+   }
+  },
+  {
+   "nr": 502,
+   "groep": "gebouw",
+   "werelden": [
+    "ro"
+   ],
+   "plek": "Triumphal Arch vuurschalen",
+   "naam": "ro-triomfboog-vuurschalen",
+   "bron": "Romaterra_Building_TriumphalArch.jpg",
+   "zip": "9cf4e2d8-terrastate_complete_batch_2026",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/gebouwen/ro-triomfboog-vuurschalen-s.webp",
+    "px": [
+     360,
+     242
+    ],
+    "kb": 15
+   }
+  },
+  {
+   "nr": 503,
+   "groep": "gebouw",
+   "werelden": [
+    "if"
+   ],
+   "plek": "Advanced War College kaarttafel",
+   "naam": "if-oorlogsschool-kaarttafel",
+   "bron": "Ironfront_Building_AdvancedWarCollege.jpg",
+   "zip": "9cf4e2d8-terrastate_complete_batch_2026",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/gebouwen/if-oorlogsschool-kaarttafel-s.webp",
+    "px": [
+     360,
+     242
+    ],
+    "kb": 13
+   }
+  },
+  {
+   "nr": 504,
+   "groep": "gebouw",
+   "werelden": [
+    "if"
+   ],
+   "plek": "Fortress Line tankvallen",
+   "naam": "if-fortlinie-tankvallen",
+   "bron": "Ironfront_Building_FortressLine.jpg",
+   "zip": "9cf4e2d8-terrastate_complete_batch_2026",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/gebouwen/if-fortlinie-tankvallen-s.webp",
+    "px": [
+     360,
+     242
+    ],
+    "kb": 12
+   }
+  },
+  {
+   "nr": 505,
+   "groep": "gebouw",
+   "werelden": [
+    "if"
+   ],
+   "plek": "Forward Supply Depot rangeerterrein",
+   "naam": "if-depot-rangeerterrein",
+   "bron": "Ironfront_Building_ForwardSupplyDepot.jpg",
+   "zip": "9cf4e2d8-terrastate_complete_batch_2026",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/gebouwen/if-depot-rangeerterrein-s.webp",
+    "px": [
+     360,
+     242
+    ],
+    "kb": 12
+   }
+  },
+  {
+   "nr": 506,
+   "groep": "gebouw",
+   "werelden": [
+    "if"
+   ],
+   "plek": "Provincial Capitol",
+   "naam": "if-provinciehuis",
+   "bron": "Ironfront_Building_ProvincialCapitol.jpg",
+   "zip": "9cf4e2d8-terrastate_complete_batch_2026",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/gebouwen/if-provinciehuis-s.webp",
+    "px": [
+     360,
+     242
+    ],
+    "kb": 10
+   }
+  },
+  {
+   "nr": 507,
+   "groep": "gebouw",
+   "werelden": [
+    "if"
+   ],
+   "plek": "Reconnaissance Wing vliegveld",
+   "naam": "if-verkenningsvliegveld",
+   "bron": "Ironfront_Building_ReconnaissanceWing.jpg",
+   "zip": "9cf4e2d8-terrastate_complete_batch_2026",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/gebouwen/if-verkenningsvliegveld-s.webp",
+    "px": [
+     360,
+     242
+    ],
+    "kb": 12
+   }
+  },
+  {
+   "nr": 508,
+   "groep": "terrein",
+   "werelden": [
+    "ts"
+   ],
+   "plek": "regenwoud rivier schemer 2",
+   "naam": "ts-regenwoud-rivier-2",
+   "bron": "Terrastate_Landscape_RainforestRiver.jpg",
+   "zip": "9cf4e2d8-terrastate_complete_batch_2026",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/terrein/ts-regenwoud-rivier-2-s.webp",
+    "px": [
+     360,
+     242
+    ],
+    "kb": 17
+   }
+  },
+  {
+   "nr": 509,
+   "groep": "terrein",
+   "werelden": [
+    "ts"
+   ],
+   "plek": "woestijn snelweg raffinaderij 2",
+   "naam": "ts-woestijn-raffinaderij",
+   "bron": "Terrastate_Landscape_DesertHighwayRefinery.jpg",
+   "zip": "9cf4e2d8-terrastate_complete_batch_2026",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/terrein/ts-woestijn-raffinaderij-s.webp",
+    "px": [
+     360,
+     242
+    ],
+    "kb": 13
+   }
+  },
+  {
+   "nr": 510,
+   "groep": "terrein",
+   "werelden": [
+    "ts"
+   ],
+   "plek": "bergdal weg mist",
+   "naam": "ts-bergdal-mist",
+   "bron": "Terrastate_Landscape_MountainValley.jpg",
+   "zip": "9cf4e2d8-terrastate_complete_batch_2026",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/terrein/ts-bergdal-mist-s.webp",
+    "px": [
+     360,
+     242
+    ],
+    "kb": 14
+   }
+  },
+  {
+   "nr": 511,
+   "groep": "terrein",
+   "werelden": [
+    "ts"
+   ],
+   "plek": "savanne weg 2",
+   "naam": "ts-savanne-weg-2",
+   "bron": "Terrastate_Landscape_SavannaRoad.jpg",
+   "zip": "9cf4e2d8-terrastate_complete_batch_2026",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/terrein/ts-savanne-weg-2-s.webp",
+    "px": [
+     360,
+     242
+    ],
+    "kb": 14
+   }
+  },
+  {
+   "nr": 512,
+   "groep": "terrein",
+   "werelden": [
+    "ts"
+   ],
+   "plek": "steppe windturbines",
+   "naam": "ts-steppe-windturbines",
+   "bron": "Terrastate_Landscape_SteppeWindTurbines.jpg",
+   "zip": "9cf4e2d8-terrastate_complete_batch_2026",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/terrein/ts-steppe-windturbines-s.webp",
+    "px": [
+     360,
+     242
+    ],
+    "kb": 9
+   }
+  },
+  {
+   "nr": 513,
+   "groep": "terrein",
+   "werelden": [
+    "ts"
+   ],
+   "plek": "poolgletsjer ijsschotsen",
+   "naam": "ts-poolgletsjer",
+   "bron": "Terrastate_Landscape_PolarGlacier.jpg",
+   "zip": "c0d752b0-terrastate_final_part1_landscapes_emblems",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/terrein/ts-poolgletsjer-s.webp",
+    "px": [
+     360,
+     242
+    ],
+    "kb": 17
+   }
+  },
+  {
+   "nr": 514,
+   "groep": "terrein",
+   "werelden": [
+    "ts"
+   ],
+   "plek": "tropisch eiland haven",
+   "naam": "ts-eiland-haven",
+   "bron": "Terrastate_Landscape_TropicalIslandHarbor.jpg",
+   "zip": "c0d752b0-terrastate_final_part1_landscapes_emblems",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/terrein/ts-eiland-haven-s.webp",
+    "px": [
+     360,
+     242
+    ],
+    "kb": 15
+   }
+  },
+  {
+   "nr": 515,
+   "groep": "terrein",
+   "werelden": [
+    "ts"
+   ],
+   "plek": "kustbasis mist klif 2",
+   "naam": "ts-kust-mist-klif",
+   "bron": "Replacement_Terrastate_StartScreen_Coastal.jpg",
+   "zip": "14080bc6-terrastate_replacements_1",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/terrein/ts-kust-mist-klif-s.webp",
+    "px": [
+     360,
+     242
+    ],
+    "kb": 7
+   }
+  },
+  {
+   "nr": 516,
+   "groep": "terrein",
+   "werelden": [
+    "ro"
+   ],
+   "plek": "alpenpas sneeuw",
+   "naam": "ro-alpenpas-sneeuw",
+   "bron": "Romaterra_Landscape_AlpinePassSnow.jpg",
+   "zip": "c0d752b0-terrastate_final_part1_landscapes_emblems",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/terrein/ro-alpenpas-sneeuw-s.webp",
+    "px": [
+     360,
+     242
+    ],
+    "kb": 26
+   }
+  },
+  {
+   "nr": 517,
+   "groep": "terrein",
+   "werelden": [
+    "ro"
+   ],
+   "plek": "Griekse haven tempel avond",
+   "naam": "ro-haven-tempel-avond",
+   "bron": "Romaterra_Landscape_GreekHarborTemple.jpg",
+   "zip": "c0d752b0-terrastate_final_part1_landscapes_emblems",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/terrein/ro-haven-tempel-avond-s.webp",
+    "px": [
+     360,
+     242
+    ],
+    "kb": 16
+   }
+  },
+  {
+   "nr": 518,
+   "groep": "terrein",
+   "werelden": [
+    "ro"
+   ],
+   "plek": "eilandhaven vuurtoren 2",
+   "naam": "ro-eilandhaven-vuurtoren",
+   "bron": "Romaterra_Landscape_IslandHarborLighthouse.jpg",
+   "zip": "c0d752b0-terrastate_final_part1_landscapes_emblems",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/terrein/ro-eilandhaven-vuurtoren-s.webp",
+    "px": [
+     360,
+     242
+    ],
+    "kb": 17
+   }
+  },
+  {
+   "nr": 519,
+   "groep": "terrein",
+   "werelden": [
+    "ro"
+   ],
+   "plek": "noordelijke kust mist",
+   "naam": "ro-noordkust-mist",
+   "bron": "Romaterra_Landscape_NorthernCoast.jpg",
+   "zip": "c0d752b0-terrastate_final_part1_landscapes_emblems",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/terrein/ro-noordkust-mist-s.webp",
+    "px": [
+     360,
+     242
+    ],
+    "kb": 6
+   }
+  },
+  {
+   "nr": 520,
+   "groep": "terrein",
+   "werelden": [
+    "ro"
+   ],
+   "plek": "Perzisch hoogland ruines",
+   "naam": "ro-hoogland-ruines",
+   "bron": "Romaterra_Landscape_PersianHighlandRuins.jpg",
+   "zip": "c0d752b0-terrastate_final_part1_landscapes_emblems",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/terrein/ro-hoogland-ruines-s.webp",
+    "px": [
+     360,
+     242
+    ],
+    "kb": 17
+   }
+  },
+  {
+   "nr": 521,
+   "groep": "terrein",
+   "werelden": [
+    "ro"
+   ],
+   "plek": "Donau fort brug",
+   "naam": "ro-donau-fort",
+   "bron": "Romaterra_Landscape_DanubeFort.jpg",
+   "zip": "9cf4e2d8-terrastate_complete_batch_2026",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/terrein/ro-donau-fort-s.webp",
+    "px": [
+     360,
+     242
+    ],
+    "kb": 13
+   }
+  },
+  {
+   "nr": 522,
+   "groep": "terrein",
+   "werelden": [
+    "ro"
+   ],
+   "plek": "woestijnstad oase",
+   "naam": "ro-woestijnstad-oase",
+   "bron": "Romaterra_Landscape_DesertCityOasis.jpg",
+   "zip": "9cf4e2d8-terrastate_complete_batch_2026",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/terrein/ro-woestijnstad-oase-s.webp",
+    "px": [
+     360,
+     242
+    ],
+    "kb": 21
+   }
+  },
+  {
+   "nr": 523,
+   "groep": "terrein",
+   "werelden": [
+    "ro"
+   ],
+   "plek": "Muur van Hadrianus mist",
+   "naam": "ro-muur-hadrianus",
+   "bron": "Romaterra_Landscape_HadriansWall.jpg",
+   "zip": "9cf4e2d8-terrastate_complete_batch_2026",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/terrein/ro-muur-hadrianus-s.webp",
+    "px": [
+     360,
+     242
+    ],
+    "kb": 13
+   }
+  },
+  {
+   "nr": 524,
+   "groep": "terrein",
+   "werelden": [
+    "ro"
+   ],
+   "plek": "Nijl tempels schemer",
+   "naam": "ro-nijl-tempels",
+   "bron": "Romaterra_Landscape_NileTemples.jpg",
+   "zip": "9cf4e2d8-terrastate_complete_batch_2026",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/terrein/ro-nijl-tempels-s.webp",
+    "px": [
+     360,
+     242
+    ],
+    "kb": 12
+   }
+  },
+  {
+   "nr": 525,
+   "groep": "terrein",
+   "werelden": [
+    "if"
+   ],
+   "plek": "Aquitaine dennen wijnranken",
+   "naam": "if-aquitaine",
+   "bron": "Ironfront_Landscape_Aquitaine.jpg",
+   "zip": "9cf4e2d8-terrastate_complete_batch_2026",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/terrein/if-aquitaine-s.webp",
+    "px": [
+     360,
+     242
+    ],
+    "kb": 16
+   }
+  },
+  {
+   "nr": 526,
+   "groep": "terrein",
+   "werelden": [
+    "if"
+   ],
+   "plek": "gebombardeerde straat",
+   "naam": "if-gebombardeerde-straat",
+   "bron": "Ironfront_Landscape_BombedStreet.jpg",
+   "zip": "9cf4e2d8-terrastate_complete_batch_2026",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/terrein/if-gebombardeerde-straat-s.webp",
+    "px": [
+     360,
+     242
+    ],
+    "kb": 14
+   }
+  },
+  {
+   "nr": 527,
+   "groep": "terrein",
+   "werelden": [
+    "if"
+   ],
+   "plek": "Rhonedal",
+   "naam": "if-rhonedal",
+   "bron": "Ironfront_Landscape_RhoneValley.jpg",
+   "zip": "9cf4e2d8-terrastate_complete_batch_2026",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/terrein/if-rhonedal-s.webp",
+    "px": [
+     360,
+     242
+    ],
+    "kb": 7
+   }
+  },
+  {
+   "nr": 528,
+   "groep": "terrein",
+   "werelden": [
+    "if"
+   ],
+   "plek": "Russische winter dorp",
+   "naam": "if-russische-winter",
+   "bron": "Ironfront_Landscape_RussianWinter.jpg",
+   "zip": "9cf4e2d8-terrastate_complete_batch_2026",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/terrein/if-russische-winter-s.webp",
+    "px": [
+     360,
+     242
+    ],
+    "kb": 20
+   }
+  },
+  {
+   "nr": 529,
+   "groep": "terrein",
+   "werelden": [
+    "if"
+   ],
+   "plek": "Atlantische kust klif 2",
+   "naam": "if-atlantische-klif",
+   "bron": "Ironfront_Landscape_AtlanticCoastCliffs.jpg",
+   "zip": "c0d752b0-terrastate_final_part1_landscapes_emblems",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/terrein/if-atlantische-klif-s.webp",
+    "px": [
+     360,
+     242
+    ],
+    "kb": 14
+   }
+  },
+  {
+   "nr": 530,
+   "groep": "terrein",
+   "werelden": [
+    "if"
+   ],
+   "plek": "woestijn tanks stof",
+   "naam": "if-woestijn-tanks",
+   "bron": "Ironfront_Landscape_DesertTanks.jpg",
+   "zip": "c0d752b0-terrastate_final_part1_landscapes_emblems",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/terrein/if-woestijn-tanks-s.webp",
+    "px": [
+     360,
+     242
+    ],
+    "kb": 11
+   }
+  },
+  {
+   "nr": 531,
+   "groep": "terrein",
+   "werelden": [
+    "if"
+   ],
+   "plek": "graansteppe",
+   "naam": "if-graansteppe",
+   "bron": "Ironfront_Landscape_GrainSteppe.jpg",
+   "zip": "c0d752b0-terrastate_final_part1_landscapes_emblems",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/terrein/if-graansteppe-s.webp",
+    "px": [
+     360,
+     242
+    ],
+    "kb": 9
+   }
+  },
+  {
+   "nr": 532,
+   "groep": "terrein",
+   "werelden": [
+    "if"
+   ],
+   "plek": "Scandinavische bossen meren",
+   "naam": "if-bos-meren",
+   "bron": "Ironfront_Landscape_ScandinavianForestLakes.jpg",
+   "zip": "c0d752b0-terrastate_final_part1_landscapes_emblems",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/terrein/if-bos-meren-s.webp",
+    "px": [
+     360,
+     242
+    ],
+    "kb": 16
+   }
+  },
+  {
+   "nr": 533,
+   "groep": "terrein",
+   "werelden": [
+    "if"
+   ],
+   "plek": "besneeuwde bergpas",
+   "naam": "if-sneeuw-bergpas",
+   "bron": "Ironfront_Landscape_SnowyMountainPass.jpg",
+   "zip": "c0d752b0-terrastate_final_part1_landscapes_emblems",
+   "groot": null,
+   "klein": {
+    "pad": "world/img/v3/terrein/if-sneeuw-bergpas-s.webp",
+    "px": [
+     360,
+     242
+    ],
+    "kb": 21
+   }
+  },
+  {
+   "nr": 534,
+   "groep": "zaal",
+   "werelden": [
+    "ts"
+   ],
+   "plek": "Map kop kaartkamer",
+   "naam": "ts-kop-kaartkamer",
+   "bron": "Terrastate_Header_MapRoom.jpg",
+   "zip": "9cf4e2d8-terrastate_complete_batch_2026",
+   "groot": {
+    "pad": "world/img/v3/zalen/ts-kop-kaartkamer.webp",
+    "px": [
+     1168,
+     784
+    ],
+    "kb": 60
+   },
+   "klein": {
+    "pad": "world/img/v3/zalen/ts-kop-kaartkamer-s.webp",
+    "px": [
+     480,
+     322
+    ],
+    "kb": 12
+   }
+  },
+  {
+   "nr": 535,
+   "groep": "zaal",
+   "werelden": [
+    "ts"
+   ],
+   "plek": "Staff kop stafkamer",
+   "naam": "ts-kop-stafkamer",
+   "bron": "Terrastate_Header_StaffRoom.jpg",
+   "zip": "3f9ee26f-terrastate_final_part2_banners_headers",
+   "groot": {
+    "pad": "world/img/v3/zalen/ts-kop-stafkamer.webp",
+    "px": [
+     1168,
+     784
+    ],
+    "kb": 37
+   },
+   "klein": {
+    "pad": "world/img/v3/zalen/ts-kop-stafkamer-s.webp",
+    "px": [
+     480,
+     322
+    ],
+    "kb": 9
+   }
+  },
+  {
+   "nr": 536,
+   "groep": "zaal",
+   "werelden": [
+    "ro"
+   ],
+   "plek": "Overview kop troonzaal",
+   "naam": "ro-kop-troonzaal-fakkels",
+   "bron": "Romaterra_Header_ThroneHall.jpg",
+   "zip": "9cf4e2d8-terrastate_complete_batch_2026",
+   "groot": {
+    "pad": "world/img/v3/zalen/ro-kop-troonzaal-fakkels.webp",
+    "px": [
+     1168,
+     784
+    ],
+    "kb": 76
+   },
+   "klein": {
+    "pad": "world/img/v3/zalen/ro-kop-troonzaal-fakkels-s.webp",
+    "px": [
+     480,
+     322
+    ],
+    "kb": 14
+   }
+  },
+  {
+   "nr": 537,
+   "groep": "zaal",
+   "werelden": [
+    "if"
+   ],
+   "plek": "Map kop bunkerkaartkamer",
+   "naam": "if-kop-bunkerkaartkamer",
+   "bron": "Ironfront_Header_BunkerMapRoom.jpg",
+   "zip": "9cf4e2d8-terrastate_complete_batch_2026",
+   "groot": {
+    "pad": "world/img/v3/zalen/if-kop-bunkerkaartkamer.webp",
+    "px": [
+     1168,
+     784
+    ],
+    "kb": 105
+   },
+   "klein": {
+    "pad": "world/img/v3/zalen/if-kop-bunkerkaartkamer-s.webp",
+    "px": [
+     480,
+     322
+    ],
+    "kb": 16
+   }
+  },
+  {
+   "nr": 538,
+   "groep": "zaal",
+   "werelden": [
+    "if"
+   ],
+   "plek": "Staff kop stafkamer",
+   "naam": "if-kop-stafkamer",
+   "bron": "Ironfront_Header_StaffRoom.jpg",
+   "zip": "3f9ee26f-terrastate_final_part2_banners_headers",
+   "groot": {
+    "pad": "world/img/v3/zalen/if-kop-stafkamer.webp",
+    "px": [
+     1168,
+     784
+    ],
+    "kb": 100
+   },
+   "klein": {
+    "pad": "world/img/v3/zalen/if-kop-stafkamer-s.webp",
+    "px": [
+     480,
+     322
+    ],
+    "kb": 14
+   }
+  },
+  {
+   "nr": 539,
+   "groep": "zaal",
+   "werelden": [
+    "ts",
+    "ro",
+    "if"
+   ],
+   "plek": "uitslagbanner Victory",
+   "naam": "banner-victory",
+   "bron": "Banner_Victory_Abstract.jpg",
+   "zip": "9cf4e2d8-terrastate_complete_batch_2026",
+   "groot": {
+    "pad": "world/img/v3/zalen/banner-victory.webp",
+    "px": [
+     1168,
+     784
+    ],
+    "kb": 10
+   },
+   "klein": {
+    "pad": "world/img/v3/zalen/banner-victory-s.webp",
+    "px": [
+     480,
+     322
+    ],
+    "kb": 3
+   }
+  },
+  {
+   "nr": 540,
+   "groep": "zaal",
+   "werelden": [
+    "ts",
+    "ro",
+    "if"
+   ],
+   "plek": "uitslagbanner Defeat",
+   "naam": "banner-defeat",
+   "bron": "Banner_Defeat_Abstract.jpg",
+   "zip": "3f9ee26f-terrastate_final_part2_banners_headers",
+   "groot": {
+    "pad": "world/img/v3/zalen/banner-defeat.webp",
+    "px": [
+     1168,
+     784
+    ],
+    "kb": 22
+   },
+   "klein": {
+    "pad": "world/img/v3/zalen/banner-defeat-s.webp",
+    "px": [
+     480,
+     322
+    ],
+    "kb": 6
+   }
+  },
+  {
+   "nr": 541,
+   "groep": "zaal",
+   "werelden": [
+    "ts",
+    "ro",
+    "if"
+   ],
+   "plek": "uitslagbanner Draw/Retreat",
+   "naam": "banner-draw",
+   "bron": "Banner_DrawRetreat_Abstract.jpg",
+   "zip": "3f9ee26f-terrastate_final_part2_banners_headers",
+   "groot": {
+    "pad": "world/img/v3/zalen/banner-draw.webp",
+    "px": [
+     1168,
+     784
+    ],
+    "kb": 25
+   },
+   "klein": {
+    "pad": "world/img/v3/zalen/banner-draw-s.webp",
+    "px": [
+     480,
+     322
+    ],
+    "kb": 4
+   }
+  },
+  {
+   "nr": 542,
+   "groep": "zaal",
+   "werelden": [
+    "ro"
+   ],
+   "plek": "startscherm",
+   "naam": "ro-startscherm",
+   "bron": "Replacement_Romaterra_StartScreen_Clean.jpg",
+   "zip": "14080bc6-terrastate_replacements_1",
+   "groot": {
+    "pad": "world/img/v3/zalen/ro-startscherm.webp",
+    "px": [
+     1920,
+     1080
+    ],
+    "kb": 99
+   },
+   "klein": {
+    "pad": "world/img/v3/zalen/ro-startscherm-s.webp",
+    "px": [
+     480,
+     270
+    ],
+    "kb": 11
+   }
+  },
+  {
+   "nr": 543,
+   "groep": "zaal",
+   "werelden": [
+    "if"
+   ],
+   "plek": "startscherm",
+   "naam": "if-startscherm",
+   "bron": "Replacement_Ironfront_StartScreen_Clean.jpg",
+   "zip": "14080bc6-terrastate_replacements_1",
+   "groot": {
+    "pad": "world/img/v3/zalen/if-startscherm.webp",
+    "px": [
+     1920,
+     1080
+    ],
+    "kb": 107
+   },
+   "klein": {
+    "pad": "world/img/v3/zalen/if-startscherm-s.webp",
+    "px": [
+     480,
+     270
+    ],
+    "kb": 13
+   }
+  },
+  {
+   "nr": 544,
+   "groep": "zaal",
+   "werelden": [
+    "ts"
+   ],
+   "plek": "startscherm kust",
+   "naam": "ts-startscherm-kust",
+   "bron": "Replacement_Terrastate_StartScreen_Coastal.jpg",
+   "zip": "14080bc6-terrastate_replacements_1",
+   "groot": {
+    "pad": "world/img/v3/zalen/ts-startscherm-kust.webp",
+    "px": [
+     1920,
+     1080
+    ],
+    "kb": 81
+   },
+   "klein": {
+    "pad": "world/img/v3/zalen/ts-startscherm-kust-s.webp",
+    "px": [
+     480,
+     270
+    ],
+    "kb": 10
+   }
   }
  ],
  "niet_gebruikt": [
