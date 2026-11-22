@@ -1,6 +1,6 @@
 {
  "versie": 3,
- "datum": "2026-11-15",
+ "datum": "2026-11-22",
  "basis": "https://playterrastate.nl/",
  "afbeeldingen": [
   {
@@ -12277,6 +12277,1275 @@
     ],
     "kb": 10
    }
+  },
+  {
+   "nr": 545,
+   "groep": "gebouw",
+   "werelden": [
+    "if"
+   ],
+   "plek": "Building ArmyGarrison",
+   "naam": "if-army-garrison",
+   "groot": {
+    "pad": "world/img/v3/gebouwen/if-army-garrison.webp",
+    "px": [
+     1200,
+     805
+    ],
+    "kb": 130
+   },
+   "klein": {
+    "pad": "world/img/v3/gebouwen/if-army-garrison-s.webp",
+    "px": [
+     360,
+     241
+    ],
+    "kb": 11
+   },
+   "bron": "Ironfront_Building_ArmyGarrison.jpg",
+   "zip": "AFBEELDINGEN-NIEUW"
+  },
+  {
+   "nr": 546,
+   "groep": "gebouw",
+   "werelden": [
+    "if"
+   ],
+   "plek": "Building CollectiveFarms",
+   "naam": "if-collective-farms",
+   "groot": {
+    "pad": "world/img/v3/gebouwen/if-collective-farms.webp",
+    "px": [
+     1200,
+     805
+    ],
+    "kb": 160
+   },
+   "klein": {
+    "pad": "world/img/v3/gebouwen/if-collective-farms-s.webp",
+    "px": [
+     360,
+     241
+    ],
+    "kb": 18
+   },
+   "bron": "Ironfront_Building_CollectiveFarms.jpg",
+   "zip": "AFBEELDINGEN-NIEUW"
+  },
+  {
+   "nr": 547,
+   "groep": "gebouw",
+   "werelden": [
+    "if"
+   ],
+   "plek": "Building IntelligenceBureau",
+   "naam": "if-intelligence-bureau",
+   "groot": {
+    "pad": "world/img/v3/gebouwen/if-intelligence-bureau.webp",
+    "px": [
+     1200,
+     805
+    ],
+    "kb": 82
+   },
+   "klein": {
+    "pad": "world/img/v3/gebouwen/if-intelligence-bureau-s.webp",
+    "px": [
+     360,
+     241
+    ],
+    "kb": 10
+   },
+   "bron": "Ironfront_Building_IntelligenceBureau.jpg",
+   "zip": "AFBEELDINGEN-NIEUW"
+  },
+  {
+   "nr": 548,
+   "groep": "embleem",
+   "werelden": [
+    "if"
+   ],
+   "plek": "Emblem Alliance1",
+   "naam": "if-alliance1",
+   "groot": {
+    "pad": "world/img/v3/emblemen/if-alliance1.webp",
+    "px": [
+     1200,
+     805
+    ],
+    "kb": 122
+   },
+   "klein": {
+    "pad": "world/img/v3/emblemen/if-alliance1-s.webp",
+    "px": [
+     360,
+     241
+    ],
+    "kb": 6
+   },
+   "bron": "Ironfront_Emblem_Alliance1.jpg",
+   "zip": "AFBEELDINGEN-NIEUW"
+  },
+  {
+   "nr": 549,
+   "groep": "embleem",
+   "werelden": [
+    "if"
+   ],
+   "plek": "Emblem Alliance2",
+   "naam": "if-alliance2",
+   "groot": {
+    "pad": "world/img/v3/emblemen/if-alliance2.webp",
+    "px": [
+     1200,
+     805
+    ],
+    "kb": 116
+   },
+   "klein": {
+    "pad": "world/img/v3/emblemen/if-alliance2-s.webp",
+    "px": [
+     360,
+     241
+    ],
+    "kb": 5
+   },
+   "bron": "Ironfront_Emblem_Alliance2.jpg",
+   "zip": "AFBEELDINGEN-NIEUW"
+  },
+  {
+   "nr": 550,
+   "groep": "embleem",
+   "werelden": [
+    "if"
+   ],
+   "plek": "Emblem Alliance3",
+   "naam": "if-alliance3",
+   "groot": {
+    "pad": "world/img/v3/emblemen/if-alliance3.webp",
+    "px": [
+     1200,
+     805
+    ],
+    "kb": 103
+   },
+   "klein": {
+    "pad": "world/img/v3/emblemen/if-alliance3-s.webp",
+    "px": [
+     360,
+     241
+    ],
+    "kb": 5
+   },
+   "bron": "Ironfront_Emblem_Alliance3.jpg",
+   "zip": "AFBEELDINGEN-NIEUW"
+  },
+  {
+   "nr": 551,
+   "groep": "embleem",
+   "werelden": [
+    "if"
+   ],
+   "plek": "Emblem Alliance4",
+   "naam": "if-alliance4",
+   "groot": {
+    "pad": "world/img/v3/emblemen/if-alliance4.webp",
+    "px": [
+     1200,
+     805
+    ],
+    "kb": 116
+   },
+   "klein": {
+    "pad": "world/img/v3/emblemen/if-alliance4-s.webp",
+    "px": [
+     360,
+     241
+    ],
+    "kb": 5
+   },
+   "bron": "Ironfront_Emblem_Alliance4.jpg",
+   "zip": "AFBEELDINGEN-NIEUW"
+  },
+  {
+   "nr": 552,
+   "groep": "embleem",
+   "werelden": [
+    "if"
+   ],
+   "plek": "Emblem Alliance5",
+   "naam": "if-alliance5",
+   "groot": {
+    "pad": "world/img/v3/emblemen/if-alliance5.webp",
+    "px": [
+     1200,
+     805
+    ],
+    "kb": 129
+   },
+   "klein": {
+    "pad": "world/img/v3/emblemen/if-alliance5-s.webp",
+    "px": [
+     360,
+     241
+    ],
+    "kb": 6
+   },
+   "bron": "Ironfront_Emblem_Alliance5.jpg",
+   "zip": "AFBEELDINGEN-NIEUW"
+  },
+  {
+   "nr": 553,
+   "groep": "embleem",
+   "werelden": [
+    "if"
+   ],
+   "plek": "Emblem Alliance6",
+   "naam": "if-alliance6",
+   "groot": {
+    "pad": "world/img/v3/emblemen/if-alliance6.webp",
+    "px": [
+     1200,
+     805
+    ],
+    "kb": 168
+   },
+   "klein": {
+    "pad": "world/img/v3/emblemen/if-alliance6-s.webp",
+    "px": [
+     360,
+     241
+    ],
+    "kb": 10
+   },
+   "bron": "Ironfront_Emblem_Alliance6.jpg",
+   "zip": "AFBEELDINGEN-NIEUW"
+  },
+  {
+   "nr": 554,
+   "groep": "zaal",
+   "werelden": [
+    "if"
+   ],
+   "plek": "Header Diplomacy",
+   "naam": "if-diplomacy",
+   "groot": {
+    "pad": "world/img/v3/zalen/if-diplomacy.webp",
+    "px": [
+     1200,
+     805
+    ],
+    "kb": 58
+   },
+   "klein": {
+    "pad": "world/img/v3/zalen/if-diplomacy-s.webp",
+    "px": [
+     360,
+     241
+    ],
+    "kb": 4
+   },
+   "bron": "Ironfront_Header_Diplomacy.jpg",
+   "zip": "AFBEELDINGEN-NIEUW"
+  },
+  {
+   "nr": 555,
+   "groep": "zaal",
+   "werelden": [
+    "if"
+   ],
+   "plek": "Header FieldManual",
+   "naam": "if-field-manual",
+   "groot": {
+    "pad": "world/img/v3/zalen/if-field-manual.webp",
+    "px": [
+     1200,
+     805
+    ],
+    "kb": 75
+   },
+   "klein": {
+    "pad": "world/img/v3/zalen/if-field-manual-s.webp",
+    "px": [
+     360,
+     241
+    ],
+    "kb": 3
+   },
+   "bron": "Ironfront_Header_FieldManual.jpg",
+   "zip": "AFBEELDINGEN-NIEUW"
+  },
+  {
+   "nr": 556,
+   "groep": "zaal",
+   "werelden": [
+    "if"
+   ],
+   "plek": "Header HomeDefence",
+   "naam": "if-home-defence",
+   "groot": {
+    "pad": "world/img/v3/zalen/if-home-defence.webp",
+    "px": [
+     1200,
+     805
+    ],
+    "kb": 129
+   },
+   "klein": {
+    "pad": "world/img/v3/zalen/if-home-defence-s.webp",
+    "px": [
+     360,
+     241
+    ],
+    "kb": 12
+   },
+   "bron": "Ironfront_Header_HomeDefence.jpg",
+   "zip": "AFBEELDINGEN-NIEUW"
+  },
+  {
+   "nr": 557,
+   "groep": "zaal",
+   "werelden": [
+    "if"
+   ],
+   "plek": "Header StoryMode",
+   "naam": "if-story-mode",
+   "groot": {
+    "pad": "world/img/v3/zalen/if-story-mode.webp",
+    "px": [
+     1200,
+     805
+    ],
+    "kb": 130
+   },
+   "klein": {
+    "pad": "world/img/v3/zalen/if-story-mode-s.webp",
+    "px": [
+     360,
+     241
+    ],
+    "kb": 9
+   },
+   "bron": "Ironfront_Header_StoryMode.jpg",
+   "zip": "AFBEELDINGEN-NIEUW"
+  },
+  {
+   "nr": 558,
+   "groep": "icoon",
+   "werelden": [
+    "if"
+   ],
+   "plek": "Icon Defence",
+   "naam": "if-defence",
+   "groot": {
+    "pad": "world/img/v3/iconen/if-defence.webp",
+    "px": [
+     800,
+     800
+    ],
+    "kb": 72
+   },
+   "klein": {
+    "pad": "world/img/v3/iconen/if-defence-s.webp",
+    "px": [
+     240,
+     240
+    ],
+    "kb": 5
+   },
+   "bron": "Ironfront_Icon_Defence.jpg",
+   "zip": "AFBEELDINGEN-NIEUW"
+  },
+  {
+   "nr": 559,
+   "groep": "icoon",
+   "werelden": [
+    "if"
+   ],
+   "plek": "Icon Diplomacy",
+   "naam": "if-diplomacy",
+   "groot": {
+    "pad": "world/img/v3/iconen/if-diplomacy.webp",
+    "px": [
+     800,
+     800
+    ],
+    "kb": 66
+   },
+   "klein": {
+    "pad": "world/img/v3/iconen/if-diplomacy-s.webp",
+    "px": [
+     240,
+     240
+    ],
+    "kb": 5
+   },
+   "bron": "Ironfront_Icon_Diplomacy.jpg",
+   "zip": "AFBEELDINGEN-NIEUW"
+  },
+  {
+   "nr": 560,
+   "groep": "icoon",
+   "werelden": [
+    "if"
+   ],
+   "plek": "Icon Economy",
+   "naam": "if-economy",
+   "groot": {
+    "pad": "world/img/v3/iconen/if-economy.webp",
+    "px": [
+     800,
+     800
+    ],
+    "kb": 125
+   },
+   "klein": {
+    "pad": "world/img/v3/iconen/if-economy-s.webp",
+    "px": [
+     240,
+     240
+    ],
+    "kb": 10
+   },
+   "bron": "Ironfront_Icon_Economy.jpg",
+   "zip": "AFBEELDINGEN-NIEUW"
+  },
+  {
+   "nr": 561,
+   "groep": "icoon",
+   "werelden": [
+    "if"
+   ],
+   "plek": "Icon Warfare",
+   "naam": "if-warfare",
+   "groot": {
+    "pad": "world/img/v3/iconen/if-warfare.webp",
+    "px": [
+     800,
+     800
+    ],
+    "kb": 75
+   },
+   "klein": {
+    "pad": "world/img/v3/iconen/if-warfare-s.webp",
+    "px": [
+     240,
+     240
+    ],
+    "kb": 7
+   },
+   "bron": "Ironfront_Icon_Warfare.jpg",
+   "zip": "AFBEELDINGEN-NIEUW"
+  },
+  {
+   "nr": 562,
+   "groep": "terrein",
+   "werelden": [
+    "if"
+   ],
+   "plek": "Landscape SnowyPass",
+   "naam": "if-snowy-pass",
+   "groot": {
+    "pad": "world/img/v3/terrein/if-snowy-pass.webp",
+    "px": [
+     1200,
+     805
+    ],
+    "kb": 113
+   },
+   "klein": {
+    "pad": "world/img/v3/terrein/if-snowy-pass-s.webp",
+    "px": [
+     360,
+     241
+    ],
+    "kb": 15
+   },
+   "bron": "Ironfront_Landscape_SnowyPass.jpg",
+   "zip": "AFBEELDINGEN-NIEUW"
+  },
+  {
+   "nr": 563,
+   "groep": "terrein",
+   "werelden": [
+    "if"
+   ],
+   "plek": "Landscape WinterVillage",
+   "naam": "if-winter-village",
+   "groot": {
+    "pad": "world/img/v3/terrein/if-winter-village.webp",
+    "px": [
+     1200,
+     805
+    ],
+    "kb": 116
+   },
+   "klein": {
+    "pad": "world/img/v3/terrein/if-winter-village-s.webp",
+    "px": [
+     360,
+     241
+    ],
+    "kb": 13
+   },
+   "bron": "Ironfront_Landscape_WinterVillage.jpg",
+   "zip": "AFBEELDINGEN-NIEUW"
+  },
+  {
+   "nr": 564,
+   "groep": "eenheid",
+   "werelden": [
+    "if"
+   ],
+   "plek": "Unit DecoyTanks",
+   "naam": "if-decoy-tanks",
+   "groot": {
+    "pad": "world/img/v3/eenheden/if-decoy-tanks.webp",
+    "px": [
+     800,
+     800
+    ],
+    "kb": 32
+   },
+   "klein": {
+    "pad": "world/img/v3/eenheden/if-decoy-tanks-s.webp",
+    "px": [
+     240,
+     240
+    ],
+    "kb": 3
+   },
+   "bron": "Ironfront_Unit_DecoyTanks.jpg",
+   "zip": "AFBEELDINGEN-NIEUW"
+  },
+  {
+   "nr": 565,
+   "groep": "eenheid",
+   "werelden": [
+    "if"
+   ],
+   "plek": "Unit FighterInterceptor",
+   "naam": "if-fighter-interceptor",
+   "groot": {
+    "pad": "world/img/v3/eenheden/if-fighter-interceptor.webp",
+    "px": [
+     800,
+     800
+    ],
+    "kb": 12
+   },
+   "klein": {
+    "pad": "world/img/v3/eenheden/if-fighter-interceptor-s.webp",
+    "px": [
+     240,
+     240
+    ],
+    "kb": 1
+   },
+   "bron": "Ironfront_Unit_FighterInterceptor.jpg",
+   "zip": "AFBEELDINGEN-NIEUW"
+  },
+  {
+   "nr": 566,
+   "groep": "eenheid",
+   "werelden": [
+    "if"
+   ],
+   "plek": "Unit PartisanRaiders",
+   "naam": "if-partisan-raiders",
+   "groot": {
+    "pad": "world/img/v3/eenheden/if-partisan-raiders.webp",
+    "px": [
+     800,
+     800
+    ],
+    "kb": 33
+   },
+   "klein": {
+    "pad": "world/img/v3/eenheden/if-partisan-raiders-s.webp",
+    "px": [
+     240,
+     240
+    ],
+    "kb": 5
+   },
+   "bron": "Ironfront_Unit_PartisanRaiders.jpg",
+   "zip": "AFBEELDINGEN-NIEUW"
+  },
+  {
+   "nr": 567,
+   "groep": "gebouw",
+   "werelden": [
+    "ro"
+   ],
+   "plek": "Building Academy",
+   "naam": "ro-academy",
+   "groot": {
+    "pad": "world/img/v3/gebouwen/ro-academy.webp",
+    "px": [
+     1200,
+     805
+    ],
+    "kb": 79
+   },
+   "klein": {
+    "pad": "world/img/v3/gebouwen/ro-academy-s.webp",
+    "px": [
+     360,
+     241
+    ],
+    "kb": 9
+   },
+   "bron": "Romaterra_Building_Academy.jpg",
+   "zip": "AFBEELDINGEN-NIEUW"
+  },
+  {
+   "nr": 568,
+   "groep": "gebouw",
+   "werelden": [
+    "ro"
+   ],
+   "plek": "Building LumberCamp",
+   "naam": "ro-lumber-camp",
+   "groot": {
+    "pad": "world/img/v3/gebouwen/ro-lumber-camp.webp",
+    "px": [
+     1200,
+     805
+    ],
+    "kb": 208
+   },
+   "klein": {
+    "pad": "world/img/v3/gebouwen/ro-lumber-camp-s.webp",
+    "px": [
+     360,
+     241
+    ],
+    "kb": 22
+   },
+   "bron": "Romaterra_Building_LumberCamp.jpg",
+   "zip": "AFBEELDINGEN-NIEUW"
+  },
+  {
+   "nr": 569,
+   "groep": "gebouw",
+   "werelden": [
+    "ro"
+   ],
+   "plek": "Building RoadStation",
+   "naam": "ro-road-station",
+   "groot": {
+    "pad": "world/img/v3/gebouwen/ro-road-station.webp",
+    "px": [
+     1200,
+     805
+    ],
+    "kb": 143
+   },
+   "klein": {
+    "pad": "world/img/v3/gebouwen/ro-road-station-s.webp",
+    "px": [
+     360,
+     241
+    ],
+    "kb": 15
+   },
+   "bron": "Romaterra_Building_RoadStation.jpg",
+   "zip": "AFBEELDINGEN-NIEUW"
+  },
+  {
+   "nr": 570,
+   "groep": "embleem",
+   "werelden": [
+    "ro"
+   ],
+   "plek": "Emblem Alliance1",
+   "naam": "ro-alliance1",
+   "groot": {
+    "pad": "world/img/v3/emblemen/ro-alliance1.webp",
+    "px": [
+     1200,
+     805
+    ],
+    "kb": 61
+   },
+   "klein": {
+    "pad": "world/img/v3/emblemen/ro-alliance1-s.webp",
+    "px": [
+     360,
+     241
+    ],
+    "kb": 5
+   },
+   "bron": "Romaterra_Emblem_Alliance1.jpg",
+   "zip": "AFBEELDINGEN-NIEUW"
+  },
+  {
+   "nr": 571,
+   "groep": "embleem",
+   "werelden": [
+    "ro"
+   ],
+   "plek": "Emblem Alliance2",
+   "naam": "ro-alliance2",
+   "groot": {
+    "pad": "world/img/v3/emblemen/ro-alliance2.webp",
+    "px": [
+     1200,
+     805
+    ],
+    "kb": 69
+   },
+   "klein": {
+    "pad": "world/img/v3/emblemen/ro-alliance2-s.webp",
+    "px": [
+     360,
+     241
+    ],
+    "kb": 4
+   },
+   "bron": "Romaterra_Emblem_Alliance2.jpg",
+   "zip": "AFBEELDINGEN-NIEUW"
+  },
+  {
+   "nr": 572,
+   "groep": "embleem",
+   "werelden": [
+    "ro"
+   ],
+   "plek": "Emblem Alliance3",
+   "naam": "ro-alliance3",
+   "groot": {
+    "pad": "world/img/v3/emblemen/ro-alliance3.webp",
+    "px": [
+     1200,
+     805
+    ],
+    "kb": 70
+   },
+   "klein": {
+    "pad": "world/img/v3/emblemen/ro-alliance3-s.webp",
+    "px": [
+     360,
+     241
+    ],
+    "kb": 3
+   },
+   "bron": "Romaterra_Emblem_Alliance3.jpg",
+   "zip": "AFBEELDINGEN-NIEUW"
+  },
+  {
+   "nr": 573,
+   "groep": "zaal",
+   "werelden": [
+    "ro"
+   ],
+   "plek": "Header Diplomacy",
+   "naam": "ro-diplomacy",
+   "groot": {
+    "pad": "world/img/v3/zalen/ro-diplomacy.webp",
+    "px": [
+     1200,
+     805
+    ],
+    "kb": 135
+   },
+   "klein": {
+    "pad": "world/img/v3/zalen/ro-diplomacy-s.webp",
+    "px": [
+     360,
+     241
+    ],
+    "kb": 10
+   },
+   "bron": "Romaterra_Header_Diplomacy.jpg",
+   "zip": "AFBEELDINGEN-NIEUW"
+  },
+  {
+   "nr": 574,
+   "groep": "zaal",
+   "werelden": [
+    "ro"
+   ],
+   "plek": "Header FieldManual",
+   "naam": "ro-field-manual",
+   "groot": {
+    "pad": "world/img/v3/zalen/ro-field-manual.webp",
+    "px": [
+     1200,
+     805
+    ],
+    "kb": 166
+   },
+   "klein": {
+    "pad": "world/img/v3/zalen/ro-field-manual-s.webp",
+    "px": [
+     360,
+     241
+    ],
+    "kb": 14
+   },
+   "bron": "Romaterra_Header_FieldManual.jpg",
+   "zip": "AFBEELDINGEN-NIEUW"
+  },
+  {
+   "nr": 575,
+   "groep": "zaal",
+   "werelden": [
+    "ro"
+   ],
+   "plek": "Header Staff",
+   "naam": "ro-staff",
+   "groot": {
+    "pad": "world/img/v3/zalen/ro-staff.webp",
+    "px": [
+     1200,
+     805
+    ],
+    "kb": 100
+   },
+   "klein": {
+    "pad": "world/img/v3/zalen/ro-staff-s.webp",
+    "px": [
+     360,
+     241
+    ],
+    "kb": 7
+   },
+   "bron": "Romaterra_Header_Staff.jpg",
+   "zip": "AFBEELDINGEN-NIEUW"
+  },
+  {
+   "nr": 576,
+   "groep": "zaal",
+   "werelden": [
+    "ro"
+   ],
+   "plek": "Header StoryMode",
+   "naam": "ro-story-mode",
+   "groot": {
+    "pad": "world/img/v3/zalen/ro-story-mode.webp",
+    "px": [
+     1200,
+     805
+    ],
+    "kb": 53
+   },
+   "klein": {
+    "pad": "world/img/v3/zalen/ro-story-mode-s.webp",
+    "px": [
+     360,
+     241
+    ],
+    "kb": 5
+   },
+   "bron": "Romaterra_Header_StoryMode.jpg",
+   "zip": "AFBEELDINGEN-NIEUW"
+  },
+  {
+   "nr": 577,
+   "groep": "terrein",
+   "werelden": [
+    "ro"
+   ],
+   "plek": "Landscape AtlasMountains",
+   "naam": "ro-atlas-mountains",
+   "groot": {
+    "pad": "world/img/v3/terrein/ro-atlas-mountains.webp",
+    "px": [
+     1200,
+     805
+    ],
+    "kb": 156
+   },
+   "klein": {
+    "pad": "world/img/v3/terrein/ro-atlas-mountains-s.webp",
+    "px": [
+     360,
+     241
+    ],
+    "kb": 18
+   },
+   "bron": "Romaterra_Landscape_AtlasMountains.jpg",
+   "zip": "AFBEELDINGEN-NIEUW"
+  },
+  {
+   "nr": 578,
+   "groep": "terrein",
+   "werelden": [
+    "ro"
+   ],
+   "plek": "Landscape DanubeFort",
+   "naam": "ro-danube-fort",
+   "groot": {
+    "pad": "world/img/v3/terrein/ro-danube-fort.webp",
+    "px": [
+     1200,
+     805
+    ],
+    "kb": 85
+   },
+   "klein": {
+    "pad": "world/img/v3/terrein/ro-danube-fort-s.webp",
+    "px": [
+     360,
+     241
+    ],
+    "kb": 10
+   },
+   "bron": "Romaterra_Landscape_DanubeFort.jpg",
+   "zip": "AFBEELDINGEN-NIEUW"
+  },
+  {
+   "nr": 579,
+   "groep": "terrein",
+   "werelden": [
+    "ro"
+   ],
+   "plek": "Landscape HadriansWall",
+   "naam": "ro-hadrians-wall",
+   "groot": {
+    "pad": "world/img/v3/terrein/ro-hadrians-wall.webp",
+    "px": [
+     1200,
+     805
+    ],
+    "kb": 73
+   },
+   "klein": {
+    "pad": "world/img/v3/terrein/ro-hadrians-wall-s.webp",
+    "px": [
+     360,
+     241
+    ],
+    "kb": 9
+   },
+   "bron": "Romaterra_Landscape_HadriansWall.jpg",
+   "zip": "AFBEELDINGEN-NIEUW"
+  },
+  {
+   "nr": 580,
+   "groep": "embleem",
+   "werelden": [
+    "ts"
+   ],
+   "plek": "Emblem Alliance1",
+   "naam": "ts-alliance1",
+   "groot": {
+    "pad": "world/img/v3/emblemen/ts-alliance1.webp",
+    "px": [
+     1200,
+     805
+    ],
+    "kb": 40
+   },
+   "klein": {
+    "pad": "world/img/v3/emblemen/ts-alliance1-s.webp",
+    "px": [
+     360,
+     241
+    ],
+    "kb": 4
+   },
+   "bron": "Terrastate_Emblem_Alliance1.jpg",
+   "zip": "AFBEELDINGEN-NIEUW"
+  },
+  {
+   "nr": 581,
+   "groep": "embleem",
+   "werelden": [
+    "ts"
+   ],
+   "plek": "Emblem Alliance2",
+   "naam": "ts-alliance2",
+   "groot": {
+    "pad": "world/img/v3/emblemen/ts-alliance2.webp",
+    "px": [
+     1200,
+     805
+    ],
+    "kb": 41
+   },
+   "klein": {
+    "pad": "world/img/v3/emblemen/ts-alliance2-s.webp",
+    "px": [
+     360,
+     241
+    ],
+    "kb": 4
+   },
+   "bron": "Terrastate_Emblem_Alliance2.jpg",
+   "zip": "AFBEELDINGEN-NIEUW"
+  },
+  {
+   "nr": 582,
+   "groep": "embleem",
+   "werelden": [
+    "ts"
+   ],
+   "plek": "Emblem Alliance3",
+   "naam": "ts-alliance3",
+   "groot": {
+    "pad": "world/img/v3/emblemen/ts-alliance3.webp",
+    "px": [
+     1200,
+     805
+    ],
+    "kb": 36
+   },
+   "klein": {
+    "pad": "world/img/v3/emblemen/ts-alliance3-s.webp",
+    "px": [
+     360,
+     241
+    ],
+    "kb": 2
+   },
+   "bron": "Terrastate_Emblem_Alliance3.jpg",
+   "zip": "AFBEELDINGEN-NIEUW"
+  },
+  {
+   "nr": 583,
+   "groep": "embleem",
+   "werelden": [
+    "ts"
+   ],
+   "plek": "Emblem Alliance4",
+   "naam": "ts-alliance4",
+   "groot": {
+    "pad": "world/img/v3/emblemen/ts-alliance4.webp",
+    "px": [
+     1200,
+     805
+    ],
+    "kb": 40
+   },
+   "klein": {
+    "pad": "world/img/v3/emblemen/ts-alliance4-s.webp",
+    "px": [
+     360,
+     241
+    ],
+    "kb": 3
+   },
+   "bron": "Terrastate_Emblem_Alliance4.jpg",
+   "zip": "AFBEELDINGEN-NIEUW"
+  },
+  {
+   "nr": 584,
+   "groep": "zaal",
+   "werelden": [
+    "ts"
+   ],
+   "plek": "Header Diplomacy",
+   "naam": "ts-diplomacy",
+   "groot": {
+    "pad": "world/img/v3/zalen/ts-diplomacy.webp",
+    "px": [
+     1200,
+     805
+    ],
+    "kb": 41
+   },
+   "klein": {
+    "pad": "world/img/v3/zalen/ts-diplomacy-s.webp",
+    "px": [
+     360,
+     241
+    ],
+    "kb": 5
+   },
+   "bron": "Terrastate_Header_Diplomacy.jpg",
+   "zip": "AFBEELDINGEN-NIEUW"
+  },
+  {
+   "nr": 585,
+   "groep": "zaal",
+   "werelden": [
+    "ts"
+   ],
+   "plek": "Header FieldManual",
+   "naam": "ts-field-manual",
+   "groot": {
+    "pad": "world/img/v3/zalen/ts-field-manual.webp",
+    "px": [
+     1200,
+     805
+    ],
+    "kb": 14
+   },
+   "klein": {
+    "pad": "world/img/v3/zalen/ts-field-manual-s.webp",
+    "px": [
+     360,
+     241
+    ],
+    "kb": 1
+   },
+   "bron": "Terrastate_Header_FieldManual.jpg",
+   "zip": "AFBEELDINGEN-NIEUW"
+  },
+  {
+   "nr": 586,
+   "groep": "zaal",
+   "werelden": [
+    "ts"
+   ],
+   "plek": "Header StoryMode",
+   "naam": "ts-story-mode",
+   "groot": {
+    "pad": "world/img/v3/zalen/ts-story-mode.webp",
+    "px": [
+     1200,
+     805
+    ],
+    "kb": 12
+   },
+   "klein": {
+    "pad": "world/img/v3/zalen/ts-story-mode-s.webp",
+    "px": [
+     360,
+     241
+    ],
+    "kb": 2
+   },
+   "bron": "Terrastate_Header_StoryMode.jpg",
+   "zip": "AFBEELDINGEN-NIEUW"
+  },
+  {
+   "nr": 587,
+   "groep": "icoon",
+   "werelden": [
+    "ts"
+   ],
+   "plek": "Icon Warfare",
+   "naam": "ts-warfare",
+   "groot": {
+    "pad": "world/img/v3/iconen/ts-warfare.webp",
+    "px": [
+     800,
+     800
+    ],
+    "kb": 19
+   },
+   "klein": {
+    "pad": "world/img/v3/iconen/ts-warfare-s.webp",
+    "px": [
+     240,
+     240
+    ],
+    "kb": 2
+   },
+   "bron": "Terrastate_Icon_Warfare.jpg",
+   "zip": "AFBEELDINGEN-NIEUW"
+  },
+  {
+   "nr": 588,
+   "groep": "terrein",
+   "werelden": [
+    "ts"
+   ],
+   "plek": "Landscape ModernDesert",
+   "naam": "ts-modern-desert",
+   "groot": {
+    "pad": "world/img/v3/terrein/ts-modern-desert.webp",
+    "px": [
+     1200,
+     805
+    ],
+    "kb": 77
+   },
+   "klein": {
+    "pad": "world/img/v3/terrein/ts-modern-desert-s.webp",
+    "px": [
+     360,
+     241
+    ],
+    "kb": 9
+   },
+   "bron": "Terrastate_Landscape_ModernDesert.jpg",
+   "zip": "AFBEELDINGEN-NIEUW"
+  },
+  {
+   "nr": 589,
+   "groep": "terrein",
+   "werelden": [
+    "ts"
+   ],
+   "plek": "Landscape MountainValley",
+   "naam": "ts-mountain-valley",
+   "groot": {
+    "pad": "world/img/v3/terrein/ts-mountain-valley.webp",
+    "px": [
+     1200,
+     805
+    ],
+    "kb": 100
+   },
+   "klein": {
+    "pad": "world/img/v3/terrein/ts-mountain-valley-s.webp",
+    "px": [
+     360,
+     241
+    ],
+    "kb": 12
+   },
+   "bron": "Terrastate_Landscape_MountainValley.jpg",
+   "zip": "AFBEELDINGEN-NIEUW"
+  },
+  {
+   "nr": 590,
+   "groep": "terrein",
+   "werelden": [
+    "ts"
+   ],
+   "plek": "Landscape RainforestRiver",
+   "naam": "ts-rainforest-river",
+   "groot": {
+    "pad": "world/img/v3/terrein/ts-rainforest-river.webp",
+    "px": [
+     1200,
+     805
+    ],
+    "kb": 144
+   },
+   "klein": {
+    "pad": "world/img/v3/terrein/ts-rainforest-river-s.webp",
+    "px": [
+     360,
+     241
+    ],
+    "kb": 17
+   },
+   "bron": "Terrastate_Landscape_RainforestRiver.jpg",
+   "zip": "AFBEELDINGEN-NIEUW"
+  },
+  {
+   "nr": 591,
+   "groep": "eenheid",
+   "werelden": [
+    "ts"
+   ],
+   "plek": "Unit Interceptors",
+   "naam": "ts-interceptors",
+   "groot": {
+    "pad": "world/img/v3/eenheden/ts-interceptors.webp",
+    "px": [
+     800,
+     800
+    ],
+    "kb": 25
+   },
+   "klein": {
+    "pad": "world/img/v3/eenheden/ts-interceptors-s.webp",
+    "px": [
+     240,
+     240
+    ],
+    "kb": 2
+   },
+   "bron": "Terrastate_Unit_Interceptors.jpg",
+   "zip": "AFBEELDINGEN-NIEUW"
   }
  ],
  "niet_gebruikt": [
